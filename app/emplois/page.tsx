@@ -363,7 +363,7 @@ export default function JobListingsPage() {
                         {careerCards.map((card) => (
                             <article key={card.title} className="rounded-xl border border-[#d8deeb] bg-white p-3">
                                 <img src={card.image} alt={card.title} className="h-36 w-full rounded-md object-cover" />
-                                <h3 className="mt-3 text-[24px] leading-none font-extrabold text-[#1b2331]">{card.title}</h3>
+                                <h3 className="mt-3 text-[18px] leading-none font-extrabold text-[#1b2331]">{card.title}</h3>
                                 <p className="mt-2 text-[11px] leading-4 text-[#8a95a8]">{card.text}</p>
                             </article>
                         ))}
