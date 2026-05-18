@@ -40,7 +40,7 @@ export default function ExploreCompaniesPage() {
                 </div>
                 <span className="text-[9px] border border-[#c7d5f4] text-[#5c74af] rounded-full px-2 py-0.5">{card.tag}</span>
             </div>
-            <h3 className="mt-2 text-[12px] font-semibold text-[#1d2432]">{card.name}</h3>
+            <h3 className="mt-2 text-[12px] font-bold text-[#1d2432]">{card.name}</h3>
             <p className="text-[9px] text-[#7e889c]">Technologie, information et internet</p>
             <p className="text-[9px] text-[#a2acbd] mt-0.5">Abidjan, Côte d'ivoire</p>
             <p className="mt-2 text-[9px] leading-4 text-[#8a95a8]">{companyDescription}</p>
@@ -87,7 +87,7 @@ export default function ExploreCompaniesPage() {
 
                 <section className="mt-10 sm:mt-14">
                     <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-[22px] sm:text-[26px] font-bold text-[#1b2331]">Secteur d'activité</h2>
+                        <h2 className="text-[22px] sm:text-[26px] font-extrabold text-[#1b2331]">Secteur d'activité</h2>
                         <Link href="#" className="flex items-center text-[10px] text-[#1b2331] font-semibold">
                             Découvrir
                             <ChevronRight className="w-3 h-3 ml-1" />
@@ -113,7 +113,7 @@ export default function ExploreCompaniesPage() {
 
                 <section className="mt-10 sm:mt-12">
                     <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-[18px] sm:text-[26px] font-bold text-[#1b2331]">Nouvelles entreprises à explorer</h2>
+                        <h2 className="text-[18px] sm:text-[26px] font-extrabold text-[#1b2331]">Nouvelles entreprises à explorer</h2>
                         <Link href="#" className="flex items-center text-[10px] text-[#1b2331] font-semibold">
                             Découvrir
                             <ChevronRight className="w-3 h-3 ml-1" />
@@ -126,7 +126,7 @@ export default function ExploreCompaniesPage() {
 
                 <section className="mt-10 sm:mt-12">
                     <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-[18px] sm:text-[26px] font-bold text-[#1b2331]">Les entreprises qui recrutent le plus souvent</h2>
+                        <h2 className="text-[18px] sm:text-[26px] font-extrabold text-[#1b2331]">Les entreprises qui recrutent le plus souvent</h2>
                         <Link href="#" className="flex items-center text-[10px] text-[#1b2331] font-semibold">
                             Découvrir
                             <ChevronRight className="w-3 h-3 ml-1" />
@@ -149,7 +149,7 @@ export default function ExploreCompaniesPage() {
                             </p>
                         </div>
                         <div>
-                            <h4 className="font-semibold text-white">Concept</h4>
+                            <h4 className="font-bold text-white">Concept</h4>
                             <ul className="mt-4 space-y-2 text-[#9098a7] text-sm">
                                 <li><Link href="/emplois">Trouve un emploi</Link></li>
                                 <li><Link href="/offres">Tarification</Link></li>
@@ -157,7 +157,7 @@ export default function ExploreCompaniesPage() {
                             </ul>
                         </div>
                         <div>
-                            <h4 className="font-semibold text-white">Recevoir les notifications d'emploi</h4>
+                            <h4 className="font-bold text-white">Recevoir les notifications d'emploi</h4>
                             <p className="text-sm text-[#9098a7] mt-3">
                                 Les dernières nouvelles sur l'emploi, les articles, envoyés dans votre boîte de réception chaque
                                 semaine.

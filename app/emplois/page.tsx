@@ -254,7 +254,7 @@ export default function JobListingsPage() {
                 </section>
 
                 <section className="mt-9">
-                    <h2 className="text-[18px] sm:text-[22px] font-bold text-[#1b2331]">Recherches populaires</h2>
+                    <h2 className="text-[18px] sm:text-[22px] font-extrabold text-[#1b2331]">Recherches populaires</h2>
                     <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 border-b border-[#d8deeb] pb-3">
                         {popularSearches.map((item, index) => (
                             <button
@@ -276,7 +276,7 @@ export default function JobListingsPage() {
                                 <div className="flex flex-col md:flex-row gap-3 md:gap-4">
                                     <div className="flex-1">
                                         <Link href="/emplois" className="hover:underline">
-                                            <h3 className="text-[16px] font-bold text-[#1b2331]">{job.title}</h3>
+                                            <h3 className="text-[16px] font-extrabold text-[#1b2331]">{job.title}</h3>
                                         </Link>
                                         <div className="mt-2 flex flex-wrap items-center gap-2 text-[9px] text-[#7f8796]">
                                             <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3" />{job.location}</span>
@@ -310,7 +310,7 @@ export default function JobListingsPage() {
 
                 <section className="mt-10 rounded-none bg-gradient-to-r from-[#2b7cf0] via-[#1e5ed4] to-[#153fbf] px-4 sm:px-6 py-8 text-white relative overflow-hidden">
                     <div className="absolute -left-14 bottom-2 w-36 h-36 rounded-full border-[14px] border-[#82b7ff] opacity-35" />
-                    <h2 className="text-[18px] sm:text-[26px] font-bold mb-5 relative z-10">Entreprises populaires</h2>
+                    <h2 className="text-[18px] sm:text-[26px] font-extrabold mb-5 relative z-10">Entreprises populaires</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 relative z-10">
                         {companies.map((company, index) => (
                             <article key={`${company.name}-${index}`} className="rounded-[12px] border border-[#c8d7fb] bg-white text-[#1b2331] p-3">
@@ -334,7 +334,7 @@ export default function JobListingsPage() {
                 </section>
 
                 <section className="mt-10">
-                    <h2 className="text-[20px] sm:text-[28px] font-bold text-[#1b2331]">Catégories d'emploi</h2>
+                    <h2 className="text-[20px] sm:text-[28px] font-extrabold text-[#1b2331]">Catégories d'emploi</h2>
                     <div className="mt-5 flex flex-wrap gap-2">
                         {jobCategories.map((category) => (
                             <button key={category} type="button" className="h-6 rounded-full border border-[#d8deeb] bg-white px-3 text-[9px] text-[#707b90]">
@@ -388,7 +388,7 @@ export default function JobListingsPage() {
                             </p>
                         </div>
                         <div>
-                            <h4 className="font-semibold text-white">Concept</h4>
+                            <h4 className="font-bold text-white">Concept</h4>
                             <ul className="mt-4 space-y-2 text-[#9098a7] text-sm">
                                 <li><Link href="/emplois">Trouve un emploi</Link></li>
                                 <li><Link href="/offres">Tarification</Link></li>
@@ -396,7 +396,7 @@ export default function JobListingsPage() {
                             </ul>
                         </div>
                         <div>
-                            <h4 className="font-semibold text-white">Recevoir les notifications d'emploi</h4>
+                            <h4 className="font-bold text-white">Recevoir les notifications d'emploi</h4>
                             <p className="text-sm text-[#9098a7] mt-3">
                                 Les dernières nouvelles sur l'emploi, les articles, envoyés dans votre boîte de réception chaque
                                 semaine.
