@@ -1,78 +1,81 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { FileText } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { FilePenLine, FileSignature, FileText, PenLine } from "lucide-react"
 
-const documentTypes = [
-  {
-    id: "motivation",
-    title: "Lettre de motivation",
-    description: "Rédigez une lettre de motivation personnalisée pour votre candidature",
-    icon: "📝",
-    color: "bg-purple-100 text-purple-600",
-  },
-  {
-    id: "demission",
-    title: "Lettre de démission",
-    description: "Rédigez une lettre de démission professionnelle et courtoise",
-    icon: "📋",
-    color: "bg-blue-100 text-blue-600",
-  },
-  {
-    id: "recommandation",
-    title: "Lettre de recommandation",
-    description: "Préparez une lettre de recommandation pour un collègue ou employé",
-    icon: "⭐",
-    color: "bg-green-100 text-green-600",
-  },
-]
-
-export default function NouveauDocumentPage() {
+export default function Page() {
   const router = useRouter()
-  const [selectedType, setSelectedType] = useState<string | null>(null)
+  const [selectedType, setSelectedType] = useState("motivation")
 
-  const handleSelectType = (typeId: string) => {
-    setSelectedType(typeId)
-    // Navigate to document creation page
-    router.push(`/creer-document/${typeId}`)
+  const cards = [
+    {
+      id: "motivation",
+      title: "Lettre de motivation",
+      description: "Créez une lettre de motivation personnalisée pour votre candidature",
+      icon: FilePenLine,
+    },
+    {
+      id: "demission",
+      title: "Lettre de démission",
+      description: "Rédigez une lettre de démission professionnelle",
+      icon: FileText,
+    },
+    {
+      id: "recommandation",
+      title: "Lettre de recommandation",
+      description: "Demandez ou rédigez une lettre de recommandation",
+      icon: FileSignature,
+    },
+  ]
+
+  const handleSelect = (type: string) => {
+    setSelectedType(type)
+    router.push(`/creer-document/${type}`)
   }
 
   return (
-      <div className="max-w-4xl mx-auto p-4 sm:p-6">
-        {/* Header */}
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl font-semibold text-gray-900">Nouveau document</h1>
+    <div className="min-h-[calc(100vh-80px)]">
+      <div className="border-b border-[#d9dfea] px-4 py-4 sm:px-6">
+        <h1 className="text-2xl sm:text-[32px] font-semibold leading-none text-[#1b2331]">Nouveau document</h1>
+      </div>
+
+      <div className="mx-auto flex w-full max-w-[980px] flex-col items-center px-4 pb-10 pt-12 sm:px-6 sm:pt-14">
+        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-[10px] border border-[#d7deeb] bg-white">
+          <PenLine className="h-8 w-8 text-[#1cc6df]" strokeWidth={1.8} />
         </div>
 
-        {/* Document Creator Section */}
-        <div className="text-center mb-12">
-          <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-            <FileText className="w-8 h-8 text-blue-600" />
-          </div>
-          <h2 className="text-xl font-semibold mb-2">Créateur de documents</h2>
-          <p className="text-gray-600">Choisissez le type de document que vous souhaitez créer</p>
-        </div>
+        <h2 className="text-[24px] sm:text-[28px] font-semibold text-[#161d2d] text-center">Créateur de documents</h2>
+        <p className="mt-2 text-center text-[14px] text-[#80889a]">
+          Choisissez le type de document que vous souhaitez créer
+        </p>
 
-        {/* Document Types */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {documentTypes.map((type) => (
-            <Card
-              key={type.id}
-              className="cursor-pointer hover:shadow-lg transition-shadow"
-              onClick={() => handleSelectType(type.id)}
-            >
-              <CardContent className="p-8 text-center">
-                <div className={`w-16 h-16 ${type.color} rounded-lg flex items-center justify-center mx-auto mb-4`}>
-                  <span className="text-2xl">{type.icon}</span>
+        <div className="mt-10 grid w-full max-w-[680px] grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+          {cards.map((card) => {
+            const Icon = card.icon
+            const isSelected = selectedType === card.id
+
+            return (
+              <button
+                key={card.id}
+                type="button"
+                onClick={() => handleSelect(card.id)}
+                className={`rounded-[12px] border px-4 py-5 text-center transition-colors ${
+                  isSelected
+                    ? "border-[#6a9ff3] bg-[#f5f9ff]"
+                    : "border-[#e1e6f1] bg-white hover:border-[#cdd6e9]"
+                }`}
+              >
+                <div className="mx-auto mb-3 flex h-7 w-7 items-center justify-center rounded-md bg-[#7f39fb] text-white">
+                  <Icon className="h-4 w-4" strokeWidth={2} />
                 </div>
-                <h3 className="font-semibold text-lg mb-2">{type.title}</h3>
-                <p className="text-gray-600 text-sm">{type.description}</p>
-              </CardContent>
-            </Card>
-          ))}
+                <p className="mx-auto max-w-[145px] text-[14px] font-medium leading-[1.25] text-[#161d2d]">{card.title}</p>
+                <p className="mx-auto mt-2 max-w-[160px] text-[11px] leading-[1.35] text-[#8b93a3]">{card.description}</p>
+              </button>
+            )
+          })}
         </div>
       </div>
+    </div>
   )
 }

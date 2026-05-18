@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { analyzeCVWithOpenAI, extractTextFromFile } from "@/lib/openai-cv-analyzer"
+import { extractTextFromFile } from "@/lib/openai-cv-analyzer"
 import type { CVAnalysis } from "@/lib/@types/openai"
 import { Upload, FileText, CheckCircle, AlertCircle, TrendingUp, Target, Lightbulb, Eye } from "lucide-react"
 
@@ -58,9 +58,18 @@ export default function Page() {
 
         try {
             const cvText = await extractTextFromFile(cvFile)
+            const response = await fetch("/api/analyse-cv", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ cvText }),
+            })
 
-            const analysisResult = await analyzeCVWithOpenAI(cvText)
-            setAnalysis(analysisResult)
+            const payload = (await response.json()) as { analysis?: CVAnalysis; error?: string }
+            if (!response.ok || !payload.analysis) {
+                throw new Error(payload.error || "Analyse IA indisponible")
+            }
+
+            setAnalysis(payload.analysis)
         } catch (err) {
             setError(err instanceof Error ? err.message : "Une erreur est survenue lors de l'analyse.")
         } finally {

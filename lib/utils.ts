@@ -38,7 +38,7 @@ export function isPublicRoute(pathname: string) {
     }
 
     return publicPrefixes.some(prefix =>
-        pathname.startsWith(prefix + '/')
+        pathname === prefix || pathname.startsWith(prefix + '/')
     );
 }
 

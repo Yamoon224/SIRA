@@ -1,25 +1,32 @@
 "use client"
 
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import { useRef, useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { Card, CardContent } from "@/components/ui/card"
-import { MapPin, Clock, Building2, Search, Heart, Bookmark, Upload, Mail, ChevronLeft, ChevronRight } from "lucide-react"
+import { MapPin, Clock, Building2, Search, Heart, Bookmark, Upload, Mail, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 import { jobService } from "@/lib/api/job.service"
 import { IJobOffer } from "@/lib/@types/entities"
 import { formatAmount } from "@/lib/utils"
+import { extractTextFromFile } from "@/lib/openai-cv-analyzer"
+import type { CVAnalysis } from "@/lib/@types/openai"
 
 // Mock user state - in real app this would come from auth context
 const isLoggedIn = false // Change this to true to see logged in state
 
 export default function Page() {
+    const router = useRouter()
+    const cvInputRef = useRef<HTMLInputElement | null>(null)
     const [savedJobs, setSavedJobs] = useState<string[]>([])
     const [popularJobs, setPopularJobs] = useState<IJobOffer[]>([])
     const [jobsLoading, setJobsLoading] = useState(true)
+    const [isAnalyzingCV, setIsAnalyzingCV] = useState(false)
+    const [uploadError, setUploadError] = useState("")
 
     useEffect(() => {
         jobService.getJobs({ limit: 6 })
@@ -30,6 +37,70 @@ export default function Page() {
 
     const toggleSaveJob = (jobId: string) => {
         setSavedJobs((prev) => (prev.includes(jobId) ? prev.filter((id) => id !== jobId) : [...prev, jobId]))
+    }
+
+    const handlePickCV = () => {
+        if (isAnalyzingCV) return
+        cvInputRef.current?.click()
+    }
+
+    const handleCVUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]
+        if (!file) return
+
+        const allowedTypes = [
+            "application/pdf",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "image/png",
+            "image/jpeg",
+            "image/jpg",
+        ]
+
+        if (!allowedTypes.includes(file.type)) {
+            setUploadError("Format non supporté. Utilisez PDF, Word ou image.")
+            event.target.value = ""
+            return
+        }
+
+        if (file.size > 10 * 1024 * 1024) {
+            setUploadError("Le fichier est trop volumineux (max 10MB).")
+            event.target.value = ""
+            return
+        }
+
+        setUploadError("")
+        setIsAnalyzingCV(true)
+
+        try {
+            const cvText = await extractTextFromFile(file)
+            const response = await fetch("/api/analyse-cv", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ cvText }),
+            })
+
+            const payload = (await response.json()) as { analysis?: CVAnalysis; error?: string }
+            if (!response.ok || !payload.analysis) {
+                throw new Error(payload.error || "Analyse IA indisponible")
+            }
+
+            sessionStorage.setItem(
+                "goriya_cv_analysis_result",
+                JSON.stringify({
+                    fileName: file.name,
+                    analyzedAt: new Date().toISOString(),
+                    analysis: payload.analysis,
+                }),
+            )
+
+            router.push("/resultat-analyse-cv")
+        } catch (error) {
+            setUploadError(error instanceof Error ? error.message : "Une erreur est survenue pendant l'analyse.")
+        } finally {
+            setIsAnalyzingCV(false)
+            event.target.value = ""
+        }
     }
 
     const companyCards = [
@@ -109,10 +180,22 @@ export default function Page() {
                             Analysez votre CV. Ameliorez-le pour augmenter vos chances.
                         </h1>
                         <div className="mt-6 sm:mt-9 flex flex-col items-center">
-                            <Button className="h-11 sm:h-12 rounded-full bg-white text-[#20429b] hover:bg-[#f4f7ff] px-5 sm:px-8 font-semibold w-full max-w-[420px] mx-auto">
-                                <Upload className="w-4 h-4 mr-2" />
-                                Telechargez votre Curriculum Vitae ici
+                            <Button
+                                onClick={handlePickCV}
+                                disabled={isAnalyzingCV}
+                                className="h-11 sm:h-12 rounded-full bg-white text-[#20429b] hover:bg-[#f4f7ff] px-5 sm:px-8 font-semibold w-full max-w-[420px] mx-auto"
+                            >
+                                {isAnalyzingCV ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
+                                {isAnalyzingCV ? "Analyse IA en cours..." : "Telechargez votre Curriculum Vitae ici"}
                             </Button>
+                            <input
+                                ref={cvInputRef}
+                                type="file"
+                                accept=".pdf,.doc,.docx,.png,.jpeg,.jpg"
+                                onChange={handleCVUpload}
+                                className="hidden"
+                            />
+                            {uploadError && <p className="mt-3 text-[12px] text-[#ffd4d4]">{uploadError}</p>}
                         </div>
                         <p className="mt-4 sm:mt-6 text-xs sm:text-[13px] text-[#b9d8ff]">Importer votre CV, lettre de motivation ou tout autre document et obtenir un score d'analyse.</p>
                     </div>

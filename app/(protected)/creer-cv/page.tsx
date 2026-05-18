@@ -2,12 +2,12 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Progress } from "@/components/ui/progress"
-import { FileText, User, Briefcase, GraduationCap, Award, Download, Eye, Save, CheckCircle } from "lucide-react"
-import { generatePDF, previewDocument } from "@/lib/document-generator"
+import { FileBadge2, Download, Save, Sparkles } from "lucide-react"
+import { generatePDF } from "@/lib/document-generator"
 
 interface CVData {
     nom: string
@@ -34,312 +34,179 @@ export default function Page() {
         formation: "",
         langues: "",
     })
-    const [isSaved, setIsSaved] = useState(false)
 
     const handleInputChange = (field: keyof CVData, value: string) => {
         setFormData((prev) => ({ ...prev, [field]: value }))
     }
 
     const handleAnalyze = () => {
-        // Simulate analysis progress
+        setAnalysisProgress(0)
         let progress = 0
-        const interval = setInterval(() => {
+        const timer = setInterval(() => {
             progress += 10
             setAnalysisProgress(progress)
             if (progress >= 100) {
-                clearInterval(interval)
+                clearInterval(timer)
             }
-        }, 200)
-    }
-
-    const generateCVContent = (): string => {
-        return `${formData.nom || "[Votre nom]"}
-${formData.email || "[Email]"} | ${formData.telephone || "[Téléphone]"}
-${formData.adresse || "[Adresse]"}
-
-PROFIL PROFESSIONNEL
-${formData.profil || "Décrivez votre profil professionnel, vos objectifs de carrière et ce qui vous distingue des autres candidats."}
-
-EXPÉRIENCE PROFESSIONNELLE
-${formData.experience || "Listez vos expériences professionnelles en commençant par la plus récente. Incluez les dates, le nom de l'entreprise, votre poste et vos principales responsabilités."}
-
-FORMATION
-${formData.formation || "Indiquez votre parcours académique, vos diplômes et certifications pertinentes."}
-
-COMPÉTENCES
-${formData.competences || "Listez vos compétences techniques et professionnelles les plus importantes pour le poste visé."}
-
-LANGUES
-${formData.langues || "Indiquez les langues que vous maîtrisez et votre niveau pour chacune."}`
+        }, 180)
     }
 
     const handleDownloadPDF = () => {
-        const content = generateCVContent()
         const filename = `cv-${formData.nom.toLowerCase().replace(/\s+/g, "-") || "document"}.pdf`
+        const content = `${formData.nom || "Votre nom"}\n${formData.email || "email@example.com"}\n${formData.telephone || "Téléphone"}\n${formData.adresse || "Ville, Pays"}\n\n${formData.profil || "Résumé professionnel"}`
         generatePDF(content, filename)
     }
 
-    const handlePreview = () => {
-        const content = generateCVContent()
-        previewDocument(content)
-    }
-
-    const handleSave = () => {
-        setIsSaved(true)
-        setTimeout(() => setIsSaved(false), 2000)
-    }
-
-    const completionPercentage =
-        (Object.values(formData).filter((value) => value.trim() !== "").length / Object.keys(formData).length) * 100
-
     return (
-            <div className="max-w-7xl mx-auto">
-                <div className="mb-8">
-                    <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Créer CV Intelligent</h1>
-                    <p className="text-gray-600 dark:text-gray-300 mt-1">Créez un CV professionnel avec l'aide de l'IA</p>
-                </div>
+        <div className="min-h-[calc(100vh-80px)]">
+            <div className="border-b border-[#d9dfea] px-4 py-4 sm:px-6">
+                <h1 className="text-2xl sm:text-[32px] font-semibold leading-none text-[#1b2331]">Créer CV Intelligent</h1>
+            </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* CV Creator Section */}
-                    <div className="lg:col-span-2">
-                        <Card className="mb-6">
-                            <CardContent className="mb-6">
-                                    <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-                                        <FileText className="w-8 h-8 text-blue-600" />
+            <div className="mx-auto w-full max-w-[1240px] px-4 py-4 sm:px-6">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-[320px_1fr]">
+                    <div className="space-y-4">
+                        <Card className="overflow-hidden rounded-[12px] border-[#dfe5f1] bg-[#edf0ff]">
+                            <CardContent className="p-4">
+                                <div className="mb-4 text-center">
+                                    <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-white/80 text-[#2f6de6]">
+                                        <FileBadge2 className="h-6 w-6" />
                                     </div>
-                                    <h2 className="text-xl font-semibold mb-2">Créateur de CV</h2>
-                                    <p className="text-gray-600 dark:text-gray-300 mb-6">Générez votre CV professionnel</p>
-
-                                <div className="mb-6">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="text-sm font-medium">Progression</span>
-                                        <span className="text-sm text-gray-600">{Math.round(completionPercentage)}%</span>
-                                    </div>
-                                    <Progress value={completionPercentage} className="h-2" />
+                                    <p className="text-[15px] font-semibold text-[#1f4ec2]">Créateur de CV</p>
+                                    <p className="mt-1 text-[11px] text-[#7d86a0]">Construisez votre CV professionnel</p>
                                 </div>
 
-                                {/* CV Creation Steps */}
-                                <div className="space-y-3 mb-6">
-                                    <div
-                                        className={`flex items-center gap-3 p-3 rounded-lg ${formData.nom ? "bg-blue-50 dark:bg-blue-900/20" : "bg-gray-100 dark:bg-gray-800"}`}
-                                    >
-                                        <User className={`w-5 h-5 ${formData.nom ? "text-blue-600" : "text-gray-600"}`} />
-                                        <span className="text-sm font-medium">Informations personnelles</span>
-                                        {formData.nom && <CheckCircle className="w-4 h-4 text-green-600 ml-auto" />}
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2 rounded-md bg-[#b8bfce] px-3 py-1.5 text-[12px] font-medium text-white">
+                                        <span>🧍</span>
+                                        <span>Informations personnelles</span>
                                     </div>
-                                    <div
-                                        className={`flex items-center gap-3 p-3 rounded-lg ${formData.experience ? "bg-blue-50 dark:bg-blue-900/20" : "bg-gray-100 dark:bg-gray-800"}`}
-                                    >
-                                        <Briefcase className={`w-5 h-5 ${formData.experience ? "text-blue-600" : "text-gray-600"}`} />
-                                        <span className="text-sm font-medium">Expérience professionnelle</span>
-                                        {formData.experience && <CheckCircle className="w-4 h-4 text-green-600 ml-auto" />}
+                                    <div className="flex items-center gap-2 px-3 py-1.5 text-[12px] text-[#8b94ab]">
+                                        <span>👨‍💼</span>
+                                        <span>Expériences professionnelle</span>
                                     </div>
-                                    <div
-                                        className={`flex items-center gap-3 p-3 rounded-lg ${formData.formation ? "bg-blue-50 dark:bg-blue-900/20" : "bg-gray-100 dark:bg-gray-800"}`}
-                                    >
-                                        <GraduationCap className={`w-5 h-5 ${formData.formation ? "text-blue-600" : "text-gray-600"}`} />
-                                        <span className="text-sm font-medium">Formation</span>
-                                        {formData.formation && <CheckCircle className="w-4 h-4 text-green-600 ml-auto" />}
+                                    <div className="flex items-center gap-2 px-3 py-1.5 text-[12px] text-[#8b94ab]">
+                                        <span>📘</span>
+                                        <span>Formation</span>
                                     </div>
-                                    <div
-                                        className={`flex items-center gap-3 p-3 rounded-lg ${formData.competences ? "bg-blue-50 dark:bg-blue-900/20" : "bg-gray-100 dark:bg-gray-800"}`}
-                                    >
-                                        <Award className={`w-5 h-5 ${formData.competences ? "text-blue-600" : "text-gray-600"}`} />
-                                        <span className="text-sm font-medium">Compétences</span>
-                                        {formData.competences && <CheckCircle className="w-4 h-4 text-green-600 ml-auto" />}
+                                    <div className="flex items-center gap-2 px-3 py-1.5 text-[12px] text-[#8b94ab]">
+                                        <span>🏅</span>
+                                        <span>Compétences</span>
                                     </div>
-                                </div>
-
-                                {/* Action Buttons */}
-                                <div className="flex gap-3">
-                                    <Button variant="outline" onClick={handlePreview} className="flex-1 bg-transparent">
-                                        <Eye className="w-4 h-4 mr-2" />
-                                        Prévisualiser
-                                    </Button>
-                                    <Button onClick={handleDownloadPDF} className="flex-1">
-                                        <Download className="w-4 h-4 mr-2" />
-                                        Télécharger PDF
-                                    </Button>
                                 </div>
                             </CardContent>
                         </Card>
 
-                        <Card>
-                            <CardContent className="p-4 sm:p-8 text-center">
-                                <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <span className="text-white text-2xl font-bold">G</span>
-                                </div>
-                                <h2 className="text-xl font-semibold mb-2">Analyse avec Goriya</h2>
-                                <p className="text-gray-600 dark:text-gray-300 mb-6">Score d'optimisation de votre CV</p>
-
-                                <div className="mb-6">
-                                    <div className="text-4xl font-bold text-blue-500 mb-2">{analysisProgress}%</div>
-                                    <Progress value={analysisProgress} className="h-2" />
-                                </div>
-
-                                <div className="grid grid-cols-3 sm:grid-cols-3 gap-2 sm:gap-4 text-sm text-gray-600 dark:text-gray-300 mb-6">
-                                    <div>
-                                        <div className="font-medium">Structure</div>
-                                        <div>Bien</div>
-                                    </div>
-                                    <div>
-                                        <div className="font-medium">Contenu</div>
-                                        <div>Moyen</div>
-                                    </div>
-                                    <div>
-                                        <div className="font-medium">Expérience</div>
-                                        <div>Excellent</div>
+                        <Card className="overflow-hidden rounded-[12px] border-[#e1e6f1] bg-[#f2f4fb]">
+                            <CardContent className="p-4">
+                                <div className="relative mb-2 flex justify-center">
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#2e6fe9] text-white">
+                                        <Sparkles className="h-5 w-5" />
                                     </div>
                                 </div>
+                                <p className="text-center text-[13px] font-semibold text-[#2e6fe9]">Analyse avec Goriya</p>
+                                <p className="mb-2 text-center text-[11px] text-[#8b94ab]">Score d'optimisation de votre CV</p>
 
-                                <Button onClick={handleAnalyze} className="w-full">
+                                <div className="text-center text-[38px] font-bold leading-none text-[#2e6fe9]">{analysisProgress}%</div>
+                                <Progress value={analysisProgress} className="mt-2 h-1.5 bg-[#e6eaf4]" />
+
+                                <div className="mt-3 space-y-2 text-[10px] text-[#99a3b8]">
+                                    <div className="flex items-center justify-between">
+                                        <span>Structure</span>
+                                        <span className="text-[#8dc79b]">Excellent</span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span>Mots-clés</span>
+                                        <span className="text-[#c9b26f]">Moyen</span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span>Expérience</span>
+                                        <span className="text-[#8dc79b]">Très bon</span>
+                                    </div>
+                                </div>
+
+                                <Button onClick={handleAnalyze} className="mt-3 h-8 w-full rounded-full bg-[#2e6fe9] text-[11px] hover:bg-[#275ec6]">
+                                    <Sparkles className="mr-1 h-3.5 w-3.5" />
                                     Analyser avec Goriya
                                 </Button>
                             </CardContent>
                         </Card>
                     </div>
 
-                    {/* Information Form */}
-                    <div className="space-y-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <User className="w-5 h-5" />
-                                        Informations personnelles
-                                    </div>
-                                    <Button variant="ghost" size="sm" onClick={handleSave} disabled={isSaved}>
-                                        {isSaved ? (
-                                            <>
-                                                <CheckCircle className="w-4 h-4 mr-1" />
-                                                Sauvegardé
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Save className="w-4 h-4 mr-1" />
-                                                Sauvegarder
-                                            </>
-                                        )}
-                                    </Button>
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
+                    <Card className="rounded-[12px] border-[#dfe5f1] bg-white">
+                        <CardContent className="p-4">
+                            <h2 className="mb-3 text-[15px] font-semibold text-[#2a3242]">Informations personnelles</h2>
+
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nom complet</label>
+                                    <label className="mb-1 block text-[11px] text-[#8b93a3]">Nom complet</label>
                                     <Input
                                         value={formData.nom}
                                         onChange={(e) => handleInputChange("nom", e.target.value)}
                                         placeholder="Votre nom complet"
+                                        className="h-8 rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                                    <label className="mb-1 block text-[11px] text-[#8b93a3]">Email</label>
                                     <Input
-                                        type="email"
                                         value={formData.email}
                                         onChange={(e) => handleInputChange("email", e.target.value)}
-                                        placeholder="votre.email@example.com"
+                                        placeholder="votre.email@exemple.com"
+                                        className="h-8 rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Téléphone</label>
+                                    <label className="mb-1 block text-[11px] text-[#8b93a3]">Téléphone</label>
                                     <Input
                                         value={formData.telephone}
                                         onChange={(e) => handleInputChange("telephone", e.target.value)}
-                                        placeholder="+33 6 12 34 56 78"
+                                        placeholder="+229 97 39 47 82"
+                                        className="h-8 rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Adresse</label>
+                                    <label className="mb-1 block text-[11px] text-[#8b93a3]">Adresse</label>
                                     <Input
                                         value={formData.adresse}
                                         onChange={(e) => handleInputChange("adresse", e.target.value)}
-                                        placeholder="Votre adresse"
+                                        placeholder="Ville, Pays"
+                                        className="h-8 rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0"
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Résumé professionnel
-                                    </label>
-                                    <Textarea
-                                        value={formData.profil}
-                                        onChange={(e) => handleInputChange("profil", e.target.value)}
-                                        placeholder="Décrivez votre profil professionnel..."
-                                        rows={3}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expérience</label>
-                                    <Textarea
-                                        value={formData.experience}
-                                        onChange={(e) => handleInputChange("experience", e.target.value)}
-                                        placeholder="Décrivez votre expérience professionnelle..."
-                                        rows={4}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Formation</label>
-                                    <Textarea
-                                        value={formData.formation}
-                                        onChange={(e) => handleInputChange("formation", e.target.value)}
-                                        placeholder="Votre parcours académique..."
-                                        rows={3}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Compétences</label>
-                                    <Textarea
-                                        value={formData.competences}
-                                        onChange={(e) => handleInputChange("competences", e.target.value)}
-                                        placeholder="Vos compétences principales..."
-                                        rows={3}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Langues</label>
-                                    <Input
-                                        value={formData.langues}
-                                        onChange={(e) => handleInputChange("langues", e.target.value)}
-                                        placeholder="Français (natif), Anglais (courant)..."
-                                    />
-                                </div>
-                            </CardContent>
-                        </Card>
+                            </div>
 
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Statistiques</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-3">
-                                    <div className="flex justify-between text-sm">
-                                        <span>Profil qualité</span>
-                                        <span className="font-medium">75%</span>
-                                    </div>
-                                    <div className="flex justify-between text-sm">
-                                        <span>Compétences de pointe</span>
-                                        <span className="font-medium">85%</span>
-                                    </div>
-                                    <div className="flex justify-between text-sm">
-                                        <span>Mise en forme</span>
-                                        <span className="font-medium">90%</span>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+                            <div className="mt-3">
+                                <label className="mb-1 block text-[11px] text-[#8b93a3]">Résumé professionnel</label>
+                                <Textarea
+                                    value={formData.profil}
+                                    onChange={(e) => handleInputChange("profil", e.target.value)}
+                                    placeholder="Décrivez brièvement votre profil professionnel..."
+                                    className="min-h-[112px] resize-none rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0"
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
 
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Conseils de Goriya</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
-                                <p>• Ajoutez des mots-clés spécifiques au poste</p>
-                                <p>• Quantifiez vos réalisations avec des chiffres</p>
-                                <p>• Personnalisez votre CV pour chaque candidature</p>
-                            </CardContent>
-                        </Card>
-                    </div>
+                <div className="mx-auto mt-6 flex w-full max-w-[720px] flex-col items-center justify-center gap-3 sm:flex-row">
+                    <Button
+                        variant="ghost"
+                        disabled
+                        className="h-9 w-full sm:min-w-[230px] sm:w-auto rounded-full bg-[#f0f2f8] text-[12px] text-[#a9afbe] hover:bg-[#f0f2f8]"
+                    >
+                        <Save className="mr-1.5 h-3.5 w-3.5" />
+                        Sauvegarder
+                    </Button>
+                    <Button
+                        onClick={handleDownloadPDF}
+                        className="h-9 w-full sm:min-w-[330px] sm:w-auto rounded-full bg-[#7fa6e8] text-[12px] text-white hover:bg-[#6f96d8]"
+                    >
+                        <Download className="mr-1.5 h-3.5 w-3.5" />
+                        Télécharger
+                    </Button>
                 </div>
             </div>
+        </div>
     )
 }

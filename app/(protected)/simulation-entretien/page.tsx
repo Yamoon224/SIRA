@@ -1,67 +1,138 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Send, Star, RotateCcw, MessageSquare, X } from "lucide-react"
+import { Send, Star, RotateCcw, MoreVertical, X, Camera, Mic } from "lucide-react"
+
+
 
 interface Message {
     id: string
     content: string
     sender: "user" | "goriya"
-    timestamp: Date
+    timestamp: string
 }
 
-export default function SimulationEntretienPage() {
+function VideoInterviewBox() {
+    const [stream, setStream] = useState<MediaStream | null>(null)
+    const [cameraActive, setCameraActive] = useState(false)
+
+    // On mount, try to access webcam
+    const videoRef = React.useRef<HTMLVideoElement>(null)
+
+    React.useEffect(() => {
+        if (cameraActive) {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                .then((mediaStream) => {
+                    setStream(mediaStream)
+                    if (videoRef.current) {
+                        videoRef.current.srcObject = mediaStream
+                    }
+                })
+                .catch(() => {
+                    setStream(null)
+                })
+        } else {
+            if (stream) {
+                stream.getTracks().forEach((track) => track.stop())
+                setStream(null)
+            }
+        }
+        return () => {
+            if (stream) {
+                stream.getTracks().forEach((track) => track.stop())
+            }
+        }
+        // eslint-disable-next-line
+    }, [cameraActive])
+
+    return (
+        <div className="flex flex-col items-center justify-center w-full h-full min-h-[500px]">
+            <div className="relative w-full h-[420px] flex items-center justify-center bg-white border border-[#e8edf6] rounded-2xl">
+                {cameraActive && stream ? (
+                    <video
+                        ref={videoRef}
+                        autoPlay
+                        playsInline
+                        className="w-full h-full object-cover rounded-2xl"
+                    />
+                ) : (
+                    <div className="flex flex-col items-center justify-center w-full h-full">
+                        <Camera className="w-10 h-10 text-[#7f8796] mb-2" />
+                        <span className="text-[#7f8796] text-[15px]">Caméra désactivée</span>
+                    </div>
+                )}
+                {/* Progress bar */}
+                <div className="absolute left-4 bottom-6 w-1/3">
+                    <div className="bg-[#e8edf6] rounded-full h-5 flex items-center">
+                        <div className="bg-[#7f8796] h-3 rounded-full ml-1 my-1" style={{ width: '60%' }} />
+                        <span className="absolute left-2 text-xs text-white font-medium">Progression: 60</span>
+                    </div>
+                </div>
+                {/* Camera/Mic controls */}
+                <div className="absolute right-4 bottom-6 flex gap-2">
+                    <button
+                        className={`w-9 h-9 flex items-center justify-center rounded-lg border border-[#e8edf6] bg-white ${cameraActive ? 'text-[#2f6de6]' : 'text-[#7f8796]'} hover:bg-[#f4f5f7]`}
+                        onClick={() => setCameraActive((v) => !v)}
+                        aria-label="Activer/Désactiver la caméra"
+                        type="button"
+                    >
+                        <Camera className="w-5 h-5" />
+                    </button>
+                    <button
+                        className="w-9 h-9 flex items-center justify-center rounded-lg border border-[#e8edf6] bg-white text-[#7f8796] hover:bg-[#f4f5f7]"
+                        aria-label="Activer/Désactiver le micro"
+                        type="button"
+                        disabled
+                    >
+                        <Mic className="w-5 h-5" />
+                    </button>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default function Page() {
     const [messages, setMessages] = useState<Message[]>([
         {
             id: "1",
-            content:
-                "Bonjour, je suis très intéressé par ce poste de Développeur Full-Stack Senior. J'ai 5 ans d'expérience en React et Node.js.",
-            sender: "user",
-            timestamp: new Date(),
+            content: "Bonjour, je suis très intéressé par le poste de Développeur Full-Stack Senior. Zat 5 ans d'expérience en React et Node.js.",
+            sender: "goriya",
+            timestamp: "10:30",
         },
         {
             id: "2",
-            content:
-                "Bonjour Mme, merci pour votre candidature. Votre profil nous intéresse beaucoup. Pouvez-vous me parler de votre expérience avec React JS ?",
-            sender: "goriya",
-            timestamp: new Date(),
+            content: "Bonjour Marie, merci pour votre candidature. Votre profil nous intéresse beaucoup. Pouvez-vous me parler de votre expérience avec React?",
+            sender: "user",
+            timestamp: "10:32",
         },
         {
             id: "3",
-            content:
-                "Bien sûr ! J'ai utilisé React dans plusieurs projets, notamment pour une application de e-commerce où j'ai géré toute la partie front-end avec plus de 100 000 utilisateurs.",
+            content: "Bien sûr ! J'ai utilisé React dans plusieurs projets, notamment pour une application de e-commerce où j'ai géré toute la partie front-end...",
             sender: "user",
-            timestamp: new Date(),
+            timestamp: "10:33",
         },
         {
             id: "4",
-            content: "Parfait ! Nous aimerions vous rencontrer pour un entretien. Êtes-vous disponible cette semaine ?",
+            content: "Merci pour votre retour, je suis très intéressé par cette opportunité. Je suis disponible mercredi après-midi ou vendredi matin. Que préférez-vous commencer le mieux ?",
             sender: "goriya",
-            timestamp: new Date(),
-        },
-        {
-            id: "5",
-            content:
-                "Merci pour votre retour, je suis très intéressé par cette opportunité. Je suis disponible mercredi après-midi ou vendredi matin. Que préférez-vous commencer le mieux ?",
-            sender: "user",
-            timestamp: new Date(),
+            timestamp: "10:35",
         },
     ])
     const [newMessage, setNewMessage] = useState("")
     const [showFeedback, setShowFeedback] = useState(false)
 
-    const handleSendMessage = async () => {
+    const handleSendMessage = () => {
         if (!newMessage.trim()) return
 
         const userMessage: Message = {
             id: Date.now().toString(),
             content: newMessage,
             sender: "user",
-            timestamp: new Date(),
+            timestamp: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }),
         }
 
         setMessages((prev) => [...prev, userMessage])
@@ -73,168 +144,104 @@ export default function SimulationEntretienPage() {
                 id: (Date.now() + 1).toString(),
                 content: "Merci pour votre réponse. Pouvez-vous me parler de vos projets les plus significatifs ?",
                 sender: "goriya",
-                timestamp: new Date(),
+                timestamp: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }),
             }
             setMessages((prev) => [...prev, aiResponse])
         }, 1000)
     }
 
-    const handleRestart = () => {
-        setMessages([])
-        setShowFeedback(false)
-    }
-
     return (
         <div className="p-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-                <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-foreground">Simulation d'Entretien avec Goriya</h1>
-                <div className="flex flex-wrap gap-2 sm:gap-3">
-                    <Button variant="outline" onClick={handleRestart} className="flex items-center gap-2 bg-transparent">
+            <div className="flex items-center justify-between mb-6">
+                <h1 className="text-2xl font-semibold text-[#1b2331]">Simulation d'Entretien avec Goriya</h1>
+                <div className="flex gap-3">
+                    <Button variant="outline" className="flex items-center gap-2 bg-white text-[#1b2331] border-[#d8deeb] hover:bg-[#f4f5f7]">
                         <RotateCcw className="w-4 h-4" />
                         Recommencer
                     </Button>
-                    <Button onClick={() => setShowFeedback(true)} className="flex items-center gap-2">
+                    <Button className="flex items-center gap-2 bg-[#2f6de6] hover:bg-[#2157d3] text-white" onClick={() => setShowFeedback(true)}>
                         <Star className="w-4 h-4" />
                         Voir le Feedback
                     </Button>
                 </div>
             </div>
 
-            {/* Chat Interface */}
-            <Card className="h-[calc(100vh-220px)] sm:h-[600px] flex flex-col">
-                <CardContent className="flex-1 p-0">
-                    {/* Chat Header */}
-                    <div className="flex items-center gap-3 p-4 border-b bg-blue-50">
-                        <Avatar className="w-10 h-10 bg-blue-500">
-                            <AvatarFallback className="text-white font-semibold">G</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <h3 className="font-semibold text-gray-900">Goriya</h3>
-                        </div>
-                        <div className="ml-auto flex gap-2">
-                            <Button variant="ghost" size="sm">
-                                <Star className="w-4 h-4" />
-                            </Button>
-                            <Button variant="ghost" size="sm">
-                                <MessageSquare className="w-4 h-4" />
-                            </Button>
-                        </div>
-                    </div>
-
-                    {/* Messages */}
-                    <div className="flex-1 p-4 space-y-4 overflow-y-auto max-h-[450px]">
-                        {messages.map((message) => (
-                            <div key={message.id} className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}>
-                                <div
-                                    className={`max-w-[70%] p-3 rounded-lg ${message.sender === "user" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-900"
-                                        }`}
-                                >
-                                    <p className="text-sm">{message.content}</p>
-                                    <p className={`text-xs mt-1 ${message.sender === "user" ? "text-blue-100" : "text-gray-500"}`}>
-                                        {message.timestamp.toLocaleTimeString("fr-FR", {
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                        })}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Message Input */}
-                    <div className="p-4 border-t bg-white">
-                        <div className="flex gap-3">
-                            <Input
-                                value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
-                                placeholder="Tapez votre message..."
-                                onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                                className="flex-1"
-                            />
-                            <Button onClick={handleSendMessage} className="px-4">
-                                <Send className="w-4 h-4" />
-                            </Button>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
+            {/* Video Interview Box */}
+            <div className="flex justify-center items-center min-h-[500px]">
+                <VideoInterviewBox />
+            </div>
 
             {/* Feedback Modal */}
             {showFeedback && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <Card className="w-full max-w-2xl mx-4">
-                        <CardContent className="p-6">
-                            <div className="flex justify-between items-start mb-4">
-                                <div></div>
-                                <Button variant="ghost" size="sm" onClick={() => setShowFeedback(false)}>
-                                    <X className="w-4 h-4" />
-                                </Button>
-                            </div>
-
-                            <div className="text-center mb-6">
-                                <Avatar className="w-16 h-16 bg-blue-500 mx-auto mb-4">
-                                    <AvatarFallback className="text-white text-2xl font-bold">G</AvatarFallback>
-                                </Avatar>
-                                <h2 className="text-xl font-semibold mb-2">Feedback de votre entretien</h2>
-                                <p className="text-gray-600">Analyse de votre performance et conseils d'amélioration</p>
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                                <div className="text-center">
-                                    <div className="text-3xl font-bold text-green-500 mb-1">85%</div>
-                                    <div className="text-sm text-gray-600">Score global</div>
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-0 relative">
+                        {/* Close */}
+                        <button
+                            onClick={() => setShowFeedback(false)}
+                            className="absolute top-4 right-4 p-1 hover:bg-gray-100 rounded-full"
+                            aria-label="Fermer"
+                        >
+                            <X className="w-6 h-6 text-[#7f8796]" />
+                        </button>
+                        <div className="px-8 pt-8 pb-6">
+                            <div className="flex flex-col items-center mb-6">
+                                <div className="w-14 h-14 bg-[#2f6de6] rounded-full flex items-center justify-center mb-2">
+                                    <span className="text-white text-2xl font-bold">g</span>
                                 </div>
-                                <div className="text-center">
-                                    <div className="text-3xl font-bold text-blue-500 mb-1">8.5/10</div>
-                                    <div className="text-sm text-gray-600">Communication</div>
+                                <h2 className="text-lg font-bold text-[#1b2331] mb-1">Feedback de votre entretien</h2>
+                                <p className="text-[13px] text-[#7f8796] text-center">Analyse de votre performance et conseils d'amélioration</p>
+                            </div>
+                            <div className="flex justify-center gap-4 mb-6">
+                                <div className="flex flex-col items-center">
+                                    <span className="text-[22px] font-bold text-[#2f6de6]">85%</span>
+                                    <span className="text-[12px] text-[#7f8796]">Score global</span>
                                 </div>
-                                <div className="text-center">
-                                    <div className="text-3xl font-bold text-purple-500 mb-1">12min</div>
-                                    <div className="text-sm text-gray-600">Durée totale</div>
+                                <div className="flex flex-col items-center">
+                                    <span className="text-[22px] font-bold text-[#7c4dff]">8.5/10</span>
+                                    <span className="text-[12px] text-[#7f8796]">Communication</span>
+                                </div>
+                                <div className="flex flex-col items-center">
+                                    <span className="text-[22px] font-bold text-[#a259e6]">12min</span>
+                                    <span className="text-[12px] text-[#7f8796]">Durée totale</span>
                                 </div>
                             </div>
-
-                            <div className="space-y-4 mb-6">
-                                <div>
-                                    <h3 className="font-semibold text-green-600 mb-2">Points forts</h3>
-                                    <ul className="text-sm text-gray-700 space-y-1">
-                                        <li>• Excellente présentation personnelle</li>
-                                        <li>• Réponses structurées et claires</li>
-                                        <li>• Bonne connaissance des entreprises</li>
-                                        <li>• Confiance et professionnalisme</li>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                <div className="rounded-xl border border-[#e8edf6] p-4">
+                                    <div className="font-semibold text-[#2ecc71] mb-2 text-[14px]">Points forts</div>
+                                    <ul className="text-[13px] text-[#1b2331] space-y-1">
+                                        <li>Excellente présentation personnelle</li>
+                                        <li>Réponses structurées et claires</li>
+                                        <li>Bonne connaissance des entreprises</li>
+                                        <li>Confiance et professionnalisme</li>
                                     </ul>
                                 </div>
-
-                                <div>
-                                    <h3 className="font-semibold text-orange-600 mb-2">Points d'amélioration</h3>
-                                    <ul className="text-sm text-gray-700 space-y-1">
-                                        <li>• Développer davantage les exemples concrets</li>
-                                        <li>• Améliorer la gestion du stress</li>
-                                        <li>• Préparer plus de questions sur le poste</li>
+                                <div className="rounded-xl border border-[#e8edf6] p-4">
+                                    <div className="font-semibold text-[#ff9800] mb-2 text-[14px]">Points d'amélioration</div>
+                                    <ul className="text-[13px] text-[#1b2331] space-y-1">
+                                        <li>Développer davantage les exemples concrets</li>
+                                        <li>Améliorer la gestion du stress</li>
+                                        <li>Préparer plus de questions sur le poste</li>
                                     </ul>
                                 </div>
-
-                                <div className="bg-gray-800 text-white p-4 rounded-lg">
-                                    <h3 className="font-semibold mb-2">Recommandations</h3>
-                                    <p className="text-sm">
-                                        Utilisez la méthode STAR pour structurer vos réponses. Pratiquez la respiration profonde pour la
-                                        formation. Préparez 3-5 questions pertinentes sur l'entreprise. Entraînez-vous régulièrement avec
-                                        notre IA Goriya.
-                                    </p>
-                                </div>
                             </div>
-
-                            <div className="flex gap-3">
-                                <Button onClick={() => setShowFeedback(false)} variant="outline" className="flex-1">
-                                    Fermer
-                                </Button>
-                                <Button onClick={handleRestart} className="flex-1">
-                                    Nouvelle simulation
-                                </Button>
+                            <div className="rounded-xl bg-[#2f2e41] text-white p-4 mb-6">
+                                <div className="font-semibold mb-2">Recommandations</div>
+                                <ul className="text-[13px] list-disc pl-5 space-y-1">
+                                    <li>Utilisez la méthode STAR pour structurer vos réponses</li>
+                                    <li>Pratiquez la respiration profonde avant l'entretien</li>
+                                    <li>Préparez 3-5 questions pertinentes sur l'entreprise</li>
+                                    <li>Entraînez-vous régulièrement avec notre simulateur</li>
+                                </ul>
                             </div>
-                        </CardContent>
-                    </Card>
+                            <Button
+                                onClick={() => { setShowFeedback(false); /* reset state if needed */ }}
+                                className="w-full h-10 rounded-full bg-[#2f6de6] hover:bg-[#2157d3] text-white text-[15px] font-semibold"
+                            >
+                                Nouvelle simulation
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

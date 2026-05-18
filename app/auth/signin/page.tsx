@@ -159,7 +159,7 @@ export default function Page() {
                                 href="/"
                                 className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors border border-blue-900 rounded-full px-3 py-1 focus:outline-none">
                                 <ChevronLeft className="w-3 h-3 mr-1" />
-                                return
+                                Retour
                             </Link>
                             <AppLogo />
                         </div>
