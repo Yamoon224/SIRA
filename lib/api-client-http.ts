@@ -2,7 +2,7 @@ import { resolveToken } from './utils';
 import { RequestOptions } from '@/lib/@types/api';
 import axios, { AxiosRequestConfig } from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://goriya-backend-production.up.railway.app';
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://goriya-api.lunion-lab.com';
 
 export async function apiRequest<T>({ endpoint, method = 'GET', data, params }: RequestOptions): Promise<T> {
     try {

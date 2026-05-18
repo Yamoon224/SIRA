@@ -8,8 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { Card, CardContent } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-import { MapPin, Clock, Building2, Users, Star, ArrowRight, Search, Heart, Bookmark } from "lucide-react"
+import { MapPin, Clock, Building2, Search, Heart, Bookmark, Upload, Mail, ChevronLeft, ChevronRight } from "lucide-react"
 import { jobService } from "@/lib/api/job.service"
 import { IJobOffer } from "@/lib/@types/entities"
 import { formatAmount } from "@/lib/utils"
@@ -33,149 +32,275 @@ export default function Page() {
         setSavedJobs((prev) => (prev.includes(jobId) ? prev.filter((id) => id !== jobId) : [...prev, jobId]))
     }
 
+    const companyCards = [
+        { name: "Marketing REVOLUT", logo: "/revolut-logo.png", tag: "3 offres", location: "Technologie, télétravail" },
+        { name: "Twitter", logo: "/generic-bird-logo.png", tag: "Job", location: "Développement & digital" },
+        { name: "Pitch", logo: "/pitch-logo-black.jpg", tag: "3 offres", location: "Edition & média" },
+        { name: "Marketing REVOLUT", logo: "/revolut-logo.png", tag: "1 offres", location: "Technologie, télétravail" },
+        { name: "Pitch", logo: "/pitch-logo-black.jpg", tag: "3 offres", location: "Edition & média" },
+        { name: "Marketing REVOLUT", logo: "/revolut-logo.png", tag: "3 offres", location: "Technologie, télétravail" },
+        { name: "Twitter", logo: "/generic-bird-logo.png", tag: "job", location: "Développement & digital" },
+        { name: "Pitch", logo: "/pitch-logo-black.jpg", tag: "3 offres", location: "Edition & média" },
+        { name: "Marketing REVOLUT", logo: "/revolut-logo.png", tag: "1 offres", location: "Technologie, télétravail" },
+        { name: "Pitch", logo: "/pitch-logo-black.jpg", tag: "3 offres", location: "Edition & média" },
+    ]
+
+    const featureBlocks = [
+        {
+            title: "Analysez votre document",
+            desc: "Téléchargez votre CV, lettre de motivation ou tout autre document et obtenez une analyse intelligente de l'IA qui identifie les points forts et les zones à améliorer en fonction d'un score d'efficacité de 100%.",
+            image: "/images/thesis-illustration.png",
+            reverse: false,
+        },
+        {
+            title: "Simulation d'entretien",
+            desc: "Préparez-vous pour votre prochain entretien d'embauche avec Goriya, en utilisant un chatbot dynamique basé sur un modèle d'intelligence artificielle ou en prenant rendez-vous avec un professionnel des ressources humaines.",
+            image: "/images/lettre-recommandation.png",
+            reverse: true,
+        },
+        {
+            title: "UNE CONNEXION PLUS FACILE AVEC LES RECRUTEURS",
+            desc: "Décrivez votre disponibilité et mettez en valeur votre expérience grâce à un profil complet. Les recruteurs intéressés vous contacteront directement avec des opportunités adaptées.",
+            image: "/images/remote-collab.png",
+            reverse: false,
+        },
+        {
+            title: "TRANSPARENCE TOTALE SUR LES ENTREPRISES",
+            desc: "Découvrez des profils détaillés d'entreprises incluant leur mission, valeurs, environnement de travail, et équipes. Postulez en toute confiance.",
+            image: "/images/search-illustration.png",
+            reverse: true,
+        },
+    ]
+
     if (!isLoggedIn) {
         // Disconnected state - Landing page
         return (
-            <div className="min-h-screen bg-background">
-                <Header />
-
-                {/* Hero Section */}
-                <section className="bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900 text-white py-12 sm:py-20">
-                    <div className="container mx-auto px-4 sm:px-6 text-center">
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-balance">Trouvez votre emploi idéal avec Goriya</h1>
-                        <p className="text-base sm:text-xl mb-6 sm:mb-8 max-w-2xl mx-auto text-pretty">
-                            Connectez-vous avec les meilleures entreprises et découvrez des opportunités qui correspondent à vos
-                            compétences et aspirations.
-                        </p>
-                        <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+            <div className="min-h-screen bg-[#f7f8fb] text-[#111827]">
+                <header className="bg-white border-b border-[#edf1f6]">
+                    <div className="mx-auto max-w-[1180px] px-4 h-[56px] sm:h-[64px] md:h-[72px] flex items-center justify-between">
+                        <Link href="/" className="flex items-center">
+                            <img src="/images/logo.png" alt="Goriya" className="h-8 w-auto" />
+                        </Link>
+                        <nav className="hidden md:flex items-center gap-6 lg:gap-10 text-[13px] text-[#7a8495] font-medium">
+                            <Link href="/" className="text-[#2f6de6]">Accueil</Link>
+                            <Link href="/emplois" className="hover:text-[#2f6de6]">Trouver un emploi</Link>
+                            <Link href="/offres" className="hover:text-[#2f6de6]">Tarifs d'abonnement</Link>
+                        </nav>
+                        <div className="flex items-center gap-2">
                             <Link href="/auth/signin">
-                                <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 transition-colors">
-                                    Commencer maintenant
+                                <Button variant="outline" className="h-8 px-4 rounded-full text-[12px] border-[#b9c8ec] text-[#2f6de6] bg-white">
+                                    Connexion
                                 </Button>
                             </Link>
-                            <Button
-                                size="lg"
-                                variant="outline"
-                                className="border-white text-white hover:bg-white hover:text-blue-600 bg-transparent transition-colors">
-                                En savoir plus
+                            <Button className="h-8 px-4 rounded-full text-[12px] bg-[#2157d3] hover:bg-[#1d4cb9]">Espace entreprise</Button>
+                        </div>
+                    </div>
+                </header>
+
+                <section className="relative overflow-hidden bg-[#1e7df2] text-white py-10 sm:py-14 md:py-16">
+                    <div className="absolute -right-8 top-0 h-full w-[220px] sm:w-[320px] md:w-[380px] hidden md:block">
+                        <div className="absolute top-8 right-16 w-36 h-36 border-[18px] border-[#7ab2ff] rounded-full opacity-60" />
+                        <div className="absolute top-52 right-4 w-24 h-24 border-[14px] border-[#7ab2ff] rounded-full opacity-60" />
+                        <div className="absolute top-40 right-40 w-12 h-12 bg-[#7ab2ff] rounded-full opacity-70" />
+                        <div className="absolute top-20 right-28 w-14 h-14 border-[10px] border-[#7ab2ff] rounded-full opacity-40" />
+                    </div>
+                    <div className="mx-auto max-w-[1180px] px-4 text-center relative z-10">
+                        <h1 className="font-extrabold leading-tight text-2xl xs:text-3xl sm:text-4xl md:text-[40px] lg:text-[56px] max-w-[920px] mx-auto">
+                            Analysez votre CV. Ameliorez-le pour augmenter vos chances.
+                        </h1>
+                        <div className="mt-6 sm:mt-9 flex flex-col items-center">
+                            <Button className="h-11 sm:h-12 rounded-full bg-white text-[#20429b] hover:bg-[#f4f7ff] px-5 sm:px-8 font-semibold w-full max-w-[420px] mx-auto">
+                                <Upload className="w-4 h-4 mr-2" />
+                                Telechargez votre Curriculum Vitae ici
                             </Button>
                         </div>
+                        <p className="mt-4 sm:mt-6 text-xs sm:text-[13px] text-[#b9d8ff]">Importer votre CV, lettre de motivation ou tout autre document et obtenir un score d'analyse.</p>
                     </div>
                 </section>
 
-                {/* Job Search Section */}
-                <section className="py-10 sm:py-16 bg-muted/30">
-                    <div className="container mx-auto px-4 sm:px-6">
-                        <div className="text-center mb-8 sm:mb-12">
-                            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4 text-balance">Offres d'emploi populaires</h2>
-                            <p className="text-muted-foreground max-w-2xl mx-auto text-pretty">
-                                Découvrez les dernières opportunités dans votre domaine
-                            </p>
+                <section className="py-8 sm:py-12 md:py-16 bg-white">
+                    <div className="mx-auto max-w-[1180px] px-2 sm:px-4">
+                        <h2 className="text-center text-2xl xs:text-3xl sm:text-4xl md:text-[38px] lg:text-[46px] leading-none font-extrabold text-[#111827]">Explorer les entreprises.</h2>
+                        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-8 sm:mt-10">
+                            {companyCards.map((card, index) => (
+                                <article key={`${card.name}-${index}`} className="rounded-2xl border border-[#e8edf6] bg-white p-4 min-h-[140px] xs:min-h-[166px]">
+                                    <div className="flex items-center justify-between mb-2 sm:mb-3">
+                                        <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-[#f3f5fa] flex items-center justify-center overflow-hidden">
+                                            <img src={card.logo} alt={card.name} className="w-full h-full object-cover" />
+                                        </div>
+                                        <span className="text-[10px] border border-[#cfe0ff] text-[#7a8db8] rounded-full px-2 py-0.5">{card.tag}</span>
+                                    </div>
+                                    <h3 className="text-[13px] font-semibold text-[#1a2232]">{card.name}</h3>
+                                    <p className="text-[11px] text-[#8a95a8] mt-0.5">{card.location}</p>
+                                    <p className="text-[10px] text-[#9aa5b8] mt-2 leading-4">Reçoit de belles candidatures en peu de temps et offre l'expérience de postuler plus facilement.</p>
+                                    <div className="mt-3 flex gap-2">
+                                        <span className="text-[10px] rounded-full bg-[#f1f5ff] text-[#4f6ea4] px-2 py-0.5">Marketing</span>
+                                        <span className="text-[10px] rounded-full bg-[#f1f5ff] text-[#4f6ea4] px-2 py-0.5">Categorie</span>
+                                    </div>
+                                </article>
+                            ))}
                         </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                            {jobsLoading
-                                ? Array.from({ length: 6 }).map((_, i) => (
-                                    <Card key={i} className="border-border bg-card">
-                                        <CardContent className="p-6 space-y-3">
-                                            <Skeleton className="h-12 w-12 rounded-sm" />
-                                            <Skeleton className="h-5 w-3/4" />
-                                            <Skeleton className="h-4 w-1/2" />
-                                            <Skeleton className="h-4 w-2/3" />
-                                            <Skeleton className="h-4 w-1/3" />
-                                        </CardContent>
-                                    </Card>
-                                ))
-                                : popularJobs.map((job) => (
-                                    <Card
-                                        key={job.id}
-                                        className="hover:shadow-lg transition-all duration-300 hover:scale-[1.02] border-border bg-card"
-                                    >
-                                        <CardContent className="p-6">
-                                            <div className="flex items-start justify-between mb-4">
-                                                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-sm flex items-center justify-center flex-shrink-0">
-                                                    {job.company?.logo ? (
-                                                        <img src={job.company.logo} alt={job.company.name} className="w-full h-full object-cover rounded-sm" />
-                                                    ) : (
-                                                        <Building2 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                                                    )}
-                                                </div>
-                                                <Badge variant="secondary">{job.type}</Badge>
-                                            </div>
-                                            <h3 className="font-semibold text-lg mb-1 text-card-foreground line-clamp-2">{job.title}</h3>
-                                            <p className="text-muted-foreground mb-3 truncate">{job.company?.name ?? "—"}</p>
-                                            <div className="flex items-center text-sm text-muted-foreground mb-2">
-                                                <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-                                                <span className="truncate">{job.location}</span>
-                                            </div>
-                                            <div className="flex items-center text-sm text-muted-foreground mb-4">
-                                                <Clock className="w-4 h-4 mr-1 flex-shrink-0" />
-                                                {new Date(job.publishDate).toLocaleDateString("fr-FR")}
-                                            </div>
-                                            <div className="flex justify-between items-center">
-                                                <span className="font-semibold text-blue-600 dark:text-blue-400 truncate mr-2">{job.salary}</span>
-                                                <Link href={`/emplois`}>
-                                                    <Button size="sm" className="transition-colors flex-shrink-0">
-                                                        Postuler
-                                                    </Button>
-                                                </Link>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                ))
-                            }
-                        </div>
-
-                        <div className="text-center">
-                            <Link href="/emplois">
-                                <Button
-                                    size="lg"
-                                    className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors">
-                                    Voir toutes les offres
-                                    <ArrowRight className="w-4 h-4 ml-2" />
-                                </Button>
+                        <div className="text-center mt-6 sm:mt-8">
+                            <Link href="/explorer-entreprises">
+                                <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-10 sm:h-11 px-6 sm:px-8">+ Decouvrir en plus</Button>
                             </Link>
                         </div>
-                    </div>
-                </section>
-
-                {/* Find Your Job Section */}
-                <section className="py-10 sm:py-16 bg-background">
-                    <div className="container mx-auto px-4 sm:px-6 text-center">
-                        <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4 text-balance">FIND YOUR JOB</h2>
-                        <p className="text-muted-foreground mb-12 max-w-2xl mx-auto text-pretty">
-                            Utilisez nos outils avancés pour trouver l'emploi parfait
-                        </p>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            <div className="text-center group">
-                                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4 transition-transform group-hover:scale-110">
-                                    <Search className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-                                </div>
-                                <h3 className="font-semibold text-lg mb-2 text-foreground">Recherche avancée</h3>
-                                <p className="text-muted-foreground">
-                                    Filtrez par localisation, salaire, type de contrat et plus encore
-                                </p>
-                            </div>
-                            <div className="text-center group">
-                                <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4 transition-transform group-hover:scale-110">
-                                    <Users className="w-8 h-8 text-green-600 dark:text-green-400" />
-                                </div>
-                                <h3 className="font-semibold text-lg mb-2 text-foreground">Réseau professionnel</h3>
-                                <p className="text-muted-foreground">Connectez-vous avec des professionnels de votre secteur</p>
-                            </div>
-                            <div className="text-center group">
-                                <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-4 transition-transform group-hover:scale-110">
-                                    <Star className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-                                </div>
-                                <h3 className="font-semibold text-lg mb-2 text-foreground">Recommandations</h3>
-                                <p className="text-muted-foreground">Recevez des suggestions personnalisées basées sur votre profil</p>
-                            </div>
+                        <div className="mt-10 sm:mt-14 grid grid-cols-2 xs:grid-cols-3 md:grid-cols-5 gap-6 sm:gap-8 items-center opacity-80">
+                            <img src="/partners/oraimo.png" alt="Oraimo" className="h-12 xs:h-14 md:h-16 w-auto mx-auto" />
+                            <img src="/partners/gtco.png" alt="GTCO" className="h-12 xs:h-14 md:h-16 w-auto mx-auto" />
+                            <img src="/partners/te.png" alt="TE" className="h-12 xs:h-14 md:h-16 w-auto mx-auto" />
+                            <img src="/partners/uba.png" alt="UBA" className="h-12 xs:h-14 md:h-16 w-auto mx-auto" />
+                            <img src="/partners/gsk.png" alt="GSK" className="h-12 xs:h-14 md:h-16 w-auto mx-auto" />
                         </div>
                     </div>
                 </section>
 
-                <Footer />
+                <section className="bg-[#f2f4f8] py-10 sm:py-16">
+                    <div className="mx-auto max-w-[960px] px-2 sm:px-4 text-center">
+                        <h2 className="text-xl xs:text-2xl sm:text-3xl md:text-[38px] lg:text-[58px] leading-none font-extrabold text-[#2a62d7] uppercase">TROUVEZ UN EMPLOI</h2>
+                        <p className="text-xs sm:text-[14px] text-[#7d8798] mt-2 sm:mt-4">Des milliers d'opportunités d'emploi vous attendent. Etes-vous prêt(e) a décrocher le poste parfait ?</p>
+                        <div className="mt-6 sm:mt-8 flex justify-center">
+                            <form className="flex w-full max-w-[720px] relative">
+                                <Input
+                                    className="h-10 sm:h-12 rounded-full border-[#dbe4f4] bg-white pr-32 text-sm w-full"
+                                    placeholder="Je recherche un emploi par industrie, poste, mot-cle ou entreprise..."
+                                />
+                                <Button
+                                    type="submit"
+                                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 sm:h-10 rounded-full bg-[#2f6de6] hover:bg-[#2458ba] px-4 sm:px-6 text-xs sm:text-sm font-semibold shadow-md"
+                                >
+                                    Trouver un emploi
+                                </Button>
+                            </form>
+                        </div>
+                        <Button variant="outline" className="mt-6 sm:mt-8 h-10 sm:h-11 px-6 sm:px-8 rounded-full border-[#97b8f5] text-[#2f6de6] bg-transparent w-full sm:w-auto">
+                            Recevoir plus d'offres <Mail className="w-4 h-4 ml-2" />
+                        </Button>
+                    </div>
+                </section>
+
+                <section className="bg-white py-10 sm:py-16">
+                    <div className="mx-auto max-w-[1180px] px-2 sm:px-4">
+                        <h2 className="text-center text-xl xs:text-2xl sm:text-3xl md:text-[38px] lg:text-[44px] leading-none font-extrabold">Comment fonctionne Goriya?</h2>
+                        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-5 sm:gap-7 mt-8 sm:mt-12 text-center">
+                            <div>
+                                <div className="mx-auto w-8 h-8 rounded-full border border-[#bfd0f5] text-[#2f6de6] text-sm flex items-center justify-center">1</div>
+                                <h3 className="mt-4 font-semibold text-[#1c2433]">Creer un compte</h3>
+                                <p className="text-sm text-[#8a95a8] mt-2">La porte d'entree est votre profil. Remplissez-le et laissez l'opportunite vous trouver.</p>
+                            </div>
+                            <div>
+                                <div className="mx-auto w-8 h-8 rounded-full border border-[#bfd0f5] text-[#2f6de6] text-sm flex items-center justify-center">2</div>
+                                <h3 className="mt-4 font-semibold text-[#1c2433]">Telecharger un CV</h3>
+                                <p className="text-sm text-[#8a95a8] mt-2">Goriya met en valeur les competences qui feront ressortir votre candidature.</p>
+                            </div>
+                            <div>
+                                <div className="mx-auto w-8 h-8 rounded-full border border-[#bfd0f5] text-[#2f6de6] text-sm flex items-center justify-center">3</div>
+                                <h3 className="mt-4 font-semibold text-[#1c2433]">Faire valider votre CV par l'IA</h3>
+                                <p className="text-sm text-[#8a95a8] mt-2">Prochaine etape: l'entretien. Une simulation claire et rapide pour se preparer.</p>
+                            </div>
+                            <div>
+                                <div className="mx-auto w-8 h-8 rounded-full border border-[#bfd0f5] text-[#2f6de6] text-sm flex items-center justify-center">4</div>
+                                <h3 className="mt-4 font-semibold text-[#1c2433]">Postuler pour un emploi</h3>
+                                <p className="text-sm text-[#8a95a8] mt-2">Cliquez et envoyez votre candidature en quelques secondes.</p>
+                            </div>
+                        </div>
+                        <div className="mt-8 sm:mt-12 space-y-10 sm:space-y-14">
+                            {featureBlocks.map((item) => (
+                                <div key={item.title} className={`grid grid-cols-1 md:grid-cols-2 items-center gap-6 sm:gap-8 ${item.reverse ? "md:[&>*:first-child]:order-2" : ""}`}>
+                                    <div className="px-1 sm:px-2 md:px-6 text-center md:text-left">
+                                        <h3 className="text-lg xs:text-xl sm:text-2xl md:text-[32px] lg:text-[40px] leading-[1.05] font-extrabold text-[#2f6de6]">{item.title}</h3>
+                                        <p className="mt-3 sm:mt-4 text-[#2d3545] leading-7 text-sm sm:text-base">{item.desc}</p>
+                                    </div>
+                                    <div className="flex justify-center mt-4 md:mt-0">
+                                        <img src={item.image} alt={item.title} className="max-h-[160px] xs:max-h-[200px] sm:max-h-[240px] w-auto object-contain" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                <section className="bg-gradient-to-r from-[#2058d6] to-[#1f4fc5] text-white py-10 sm:py-16 relative overflow-hidden">
+                    <div className="absolute left-0 bottom-0 w-28 h-28 sm:w-52 sm:h-52 rounded-full border-[10px] sm:border-[20px] border-[#7cb0ff] opacity-40 -translate-x-5 sm:-translate-x-10 translate-y-5 sm:translate-y-10" />
+                    <div className="mx-auto max-w-[1180px] px-2 sm:px-4 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center relative z-10">
+                        <div>
+                            <h3 className="text-xl xs:text-2xl sm:text-3xl md:text-[38px] lg:text-[52px] leading-none font-extrabold">Debloquer tout le potentiel de notre application</h3>
+                            <div className="mt-6 sm:mt-8 flex flex-wrap gap-3 justify-center md:justify-start">
+                                <Button variant="outline" className="rounded-full border-white text-white bg-transparent hover:bg-white hover:text-[#1f4fc5] w-full sm:w-auto">Trouver un emploi</Button>
+                                <Button variant="outline" className="rounded-full border-white text-white bg-transparent hover:bg-white hover:text-[#1f4fc5] w-full sm:w-auto">Obtenez plus d'offres</Button>
+                            </div>
+                        </div>
+                        <div className="flex justify-center md:justify-end mt-6 md:mt-0">
+                            <img src="/images/9933453_4323022.png" alt="Application" className="h-[130px] xs:h-[170px] sm:h-[200px] md:h-[240px] w-auto object-contain" />
+                        </div>
+                    </div>
+                </section>
+
+                <section className="py-8 sm:py-14 bg-white">
+                    <div className="mx-auto max-w-[1180px] px-2 sm:px-4">
+                        <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
+                            <h3 className="text-lg xs:text-xl sm:text-2xl font-bold">Prenez votre carriere en main</h3>
+                            <div className="flex gap-2">
+                                <button className="w-8 h-8 rounded-full border border-[#e2e8f5] flex items-center justify-center text-[#7d8cab]"><ChevronLeft className="w-4 h-4" /></button>
+                                <button className="w-8 h-8 rounded-full border border-[#e2e8f5] flex items-center justify-center text-[#7d8cab]"><ChevronRight className="w-4 h-4" /></button>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5">
+                            <article className="rounded-xl border border-[#e9eef8] p-3">
+                                <img src="/ux-presentation-meeting.jpg" alt="visio" className="h-32 xs:h-36 sm:h-40 w-full object-cover rounded-md" />
+                                <h4 className="mt-3 font-semibold">Presentations des revisions UX</h4>
+                                <p className="text-sm text-[#8a95a8] mt-2">Comment creer des presentations convaincantes pour impressionner vos collegues et vos managers ?</p>
+                            </article>
+                            <article className="rounded-xl border border-[#e9eef8] p-3">
+                                <img src="/team-migration-software.jpg" alt="migration" className="h-32 xs:h-36 sm:h-40 w-full object-cover rounded-md" />
+                                <h4 className="mt-3 font-semibold">Migration vers linear 101</h4>
+                                <p className="text-sm text-[#8a95a8] mt-2">Lancer simple: les projets, les sprints, les tickets et le suivi des bugs. Voici comment commencer.</p>
+                            </article>
+                            <article className="rounded-xl border border-[#e9eef8] p-3">
+                                <img src="/api-development-workspace.jpg" alt="api" className="h-32 xs:h-36 sm:h-40 w-full object-cover rounded-md" />
+                                <h4 className="mt-3 font-semibold">Construisez votre pile d'API.</h4>
+                                <p className="text-sm text-[#8a95a8] mt-2">La proliferation des API RESTful et le container runtime ont une croissance enorme a securiser.</p>
+                            </article>
+                        </div>
+                        <div className="text-center mt-6 sm:mt-8">
+                            <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-10 sm:h-11 px-6 sm:px-8">+ Decouvrir plus</Button>
+                        </div>
+                    </div>
+                </section>
+
+                <footer className="bg-[#06080d] text-white pt-10 sm:pt-14 pb-8">
+                    <div className="mx-auto max-w-[1180px] px-2 sm:px-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-10">
+                            <div>
+                                <img src="/images/logo.png" alt="Goriya" className="h-10 sm:h-12 w-auto brightness-0 invert" />
+                                <p className="mt-4 text-sm text-[#9098a7]">Goriya est une plateforme web intelligente qui permet aux utilisateurs d'uploader leur CV, lettre de motivation ou tout autre document professionnel afin d'obtenir une analyse intelligente par IA.</p>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-white">Concept</h4>
+                                <ul className="mt-4 space-y-2 text-[#9098a7] text-sm">
+                                    <li><Link href="/">Trouve un emploi</Link></li>
+                                    <li><Link href="/offres">Tarification</Link></li>
+                                    <li><Link href="/auth/settings">Politique de confidentialite</Link></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-white">Recevoir les notifications d'emploi</h4>
+                                <p className="text-sm text-[#9098a7] mt-3">Les dernieres nouvelles sur l'emploi, les articles, envoyes dans votre boite de reception chaque semaine.</p>
+                                <div className="mt-4 flex gap-2">
+                                    <Input className="h-10 rounded-full border-[#2a2f3a] bg-[#0f121a] text-white" placeholder="Adresse e-mail" />
+                                    <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">S'abonner</Button>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="mt-8 sm:mt-10 pt-4 sm:pt-6 border-t border-[#1c202a] flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4">
+                            <p className="text-xs sm:text-sm text-[#6f7887]">2026 © Goriya. Tous droits reserves.</p>
+                            <div className="flex items-center gap-2">
+                                <Link href="/auth/signin"><Button variant="outline" className="h-8 rounded-full border-[#374153] text-[#d9e5ff] bg-transparent">Connexion</Button></Link>
+                                <Button className="h-8 rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">Espace entreprise</Button>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
             </div>
         )
     }
