@@ -60,7 +60,7 @@ export default function ExploreCompaniesPage() {
                     </Link>
                     <nav className="hidden md:flex items-center gap-6 lg:gap-10 text-[12px] text-[#7a8495] font-medium">
                         <Link href="/" className="text-[#2f6de6]">Accueil</Link>
-                        <Link href="/emplois" className="hover:text-[#2f6de6]">Trouve un emploi</Link>
+                        <Link href="/explorer-emplois" className="hover:text-[#2f6de6]">Trouve un emploi</Link>
                         <Link href="/offres" className="hover:text-[#2f6de6]">Tarifs d'abonnement</Link>
                     </nav>
                     <div className="flex items-center gap-2">
@@ -151,7 +151,7 @@ export default function ExploreCompaniesPage() {
                         <div>
                             <h4 className="font-bold text-white">Concept</h4>
                             <ul className="mt-4 space-y-2 text-[#9098a7] text-sm">
-                                <li><Link href="/emplois">Trouve un emploi</Link></li>
+                                <li><Link href="/explorer-emplois">Trouve un emploi</Link></li>
                                 <li><Link href="/offres">Tarification</Link></li>
                                 <li><Link href="/auth/settings">Politique de confidentialité</Link></li>
                             </ul>

@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -38,6 +39,7 @@ const popularSearches = [
 
 const jobs = [
     {
+        id: "1",
         title: "Data base engineer SQL et PLSQL (H/F)",
         company: "Agence fun side",
         location: "Côti",
@@ -46,8 +48,10 @@ const jobs = [
         logo: "/generic-bird-logo.png",
         image: "/database-engineer-workspace.jpg",
         highlighted: true,
+        category: "Informatique",
     },
     {
+        id: "2",
         title: "Business Developer Junior (H/F)",
         company: "Pitech",
         location: "Côti",
@@ -55,8 +59,10 @@ const jobs = [
         posted: "Il y a 2 jours",
         logo: "/pitch-logo-black.jpg",
         image: "/junior-developer-team.jpg",
+        category: "Commercial",
     },
     {
+        id: "3",
         title: "Business Developer International (H/F)",
         company: "Masonry Zone 4",
         location: "Côti",
@@ -64,8 +70,10 @@ const jobs = [
         posted: "Il y a 29 jours",
         logo: "/revolut-logo.png",
         image: "/international-business-team.jpg",
+        category: "Commercial",
     },
     {
+        id: "4",
         title: "Business Developer Junior (H/F)",
         company: "Pitech",
         location: "Côti",
@@ -73,8 +81,10 @@ const jobs = [
         posted: "Il y a 2 jours",
         logo: "/pitch-logo-black.jpg",
         image: "/junior-developer-team.jpg",
+        category: "Commercial",
     },
     {
+        id: "5",
         title: "Data base engineer SQL et PLSQL (H/F)",
         company: "Agence fun side",
         location: "Côti",
@@ -82,8 +92,10 @@ const jobs = [
         posted: "Il y a 23 jours",
         logo: "/generic-bird-logo.png",
         image: "/database-engineer-workspace.jpg",
+        category: "Informatique",
     },
     {
+        id: "6",
         title: "Business Developer Junior (H/F)",
         company: "Pitech",
         location: "Côti",
@@ -91,8 +103,10 @@ const jobs = [
         posted: "Il y a 2 jours",
         logo: "/pitch-logo-black.jpg",
         image: "/junior-developer-team.jpg",
+        category: "Commercial",
     },
     {
+        id: "7",
         title: "Business Developer Junior (H/F)",
         company: "Pitech",
         location: "Côti",
@@ -100,17 +114,10 @@ const jobs = [
         posted: "Il y a 2 jours",
         logo: "/pitch-logo-black.jpg",
         image: "/junior-developer-team.jpg",
+        category: "Commercial",
     },
     {
-        title: "Business Developer Junior (H/F)",
-        company: "Pitech",
-        location: "Côti",
-        mode: "Télétravail fréquent",
-        posted: "Il y a 2 jours",
-        logo: "/pitch-logo-black.jpg",
-        image: "/junior-developer-team.jpg",
-    },
-    {
+        id: "8",
         title: "Business Developer International (H/F)",
         company: "Masonry Zone 4",
         location: "Côti",
@@ -118,6 +125,7 @@ const jobs = [
         posted: "Il y a 29 jours",
         logo: "/revolut-logo.png",
         image: "/international-business-team.jpg",
+        category: "Commercial",
     },
 ]
 
@@ -183,7 +191,37 @@ const careerCards = [
     },
 ]
 
-export default function JobListingsPage() {
+export default function ExploreJobsPage() {
+    const [searchTerm, setSearchTerm] = useState("")
+    const [selectedFilters, setSelectedFilters] = useState<string[]>([])
+    const [activeTab, setActiveTab] = useState("Candidats")
+    const [activePopularSearch, setActivePopularSearch] = useState("Communication")
+    const [bookmarkedJobs, setBookmarkedJobs] = useState<string[]>([])
+
+    const toggleFilter = (filterLabel: string) => {
+        setSelectedFilters(prev =>
+            prev.includes(filterLabel)
+                ? prev.filter(f => f !== filterLabel)
+                : [...prev, filterLabel]
+        )
+    }
+
+    const toggleBookmark = (jobId: string) => {
+        setBookmarkedJobs(prev =>
+            prev.includes(jobId)
+                ? prev.filter(id => id !== jobId)
+                : [...prev, jobId]
+        )
+    }
+
+    const filteredJobs = jobs.filter(job => {
+        const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                             job.company.toLowerCase().includes(searchTerm.toLowerCase())
+        const matchesPopularSearch = activePopularSearch === "Communication" ||
+                                    job.category.toLowerCase().includes(activePopularSearch.toLowerCase())
+        return matchesSearch && matchesPopularSearch
+    })
+
     return (
         <div className="min-h-screen bg-[#f4f5f7] text-[#111827]">
             <header className="bg-[#f4f5f7]">
@@ -193,7 +231,7 @@ export default function JobListingsPage() {
                     </Link>
                     <nav className="hidden md:flex items-center gap-6 lg:gap-10 text-[12px] text-[#7a8495] font-medium">
                         <Link href="/" className="text-[#2f6de6]">Accueil</Link>
-                        <Link href="/emplois" className="hover:text-[#2f6de6]">Trouve un emploi</Link>
+                        <Link href="/explorer-emplois" className="font-semibold text-[#1b2331]">Trouve un emploi</Link>
                         <Link href="/offres" className="hover:text-[#2f6de6]">Tarifs d'abonnement</Link>
                     </nav>
                     <div className="flex items-center gap-2">
@@ -216,11 +254,13 @@ export default function JobListingsPage() {
                     </p>
 
                     <div className="mt-6 flex justify-center">
-                        <form className="w-full max-w-[690px] relative">
+                        <form className="w-full max-w-[690px] relative" onSubmit={(e) => e.preventDefault()}>
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9aa3b2]" />
                             <Input
                                 className="h-11 rounded-full border-[#d8deeb] bg-white pl-10 pr-36 text-[12px]"
                                 placeholder="Recherchez un emploi par industrie, poste, mot-clé ou entreprise."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
                             />
                             <Button
                                 type="submit"
@@ -236,7 +276,12 @@ export default function JobListingsPage() {
                             <button
                                 key={chip.label}
                                 type="button"
-                                className="h-7 rounded-full border border-[#d8deeb] px-3 text-[10px] text-[#7d8798] bg-white inline-flex items-center gap-2"
+                                onClick={() => toggleFilter(chip.label)}
+                                className={`h-7 rounded-full border px-3 text-[10px] inline-flex items-center gap-2 transition-colors ${
+                                    selectedFilters.includes(chip.label)
+                                        ? "border-[#2f6de6] bg-[#edf4ff] text-[#2f6de6]"
+                                        : "border-[#d8deeb] text-[#7d8798] bg-white"
+                                }`}
                             >
                                 <SlidersHorizontal className="w-3 h-3" />
                                 {chip.label}
@@ -245,7 +290,7 @@ export default function JobListingsPage() {
                         ))}
                         <button
                             type="button"
-                            className="h-7 rounded-full bg-[#2f6de6] text-white px-3 text-[10px] inline-flex items-center gap-1"
+                            className="h-7 rounded-full bg-[#2f6de6] text-white px-3 text-[10px] inline-flex items-center gap-1 hover:bg-[#2458ba]"
                         >
                             <Plus className="w-3 h-3" />
                             Tous les filtres
@@ -256,11 +301,16 @@ export default function JobListingsPage() {
                 <section className="mt-9">
                     <h2 className="text-[18px] sm:text-[22px] font-extrabold text-[#1b2331]">Recherches populaires</h2>
                     <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 border-b border-[#d8deeb] pb-3">
-                        {popularSearches.map((item, index) => (
+                        {popularSearches.map((item) => (
                             <button
                                 key={item}
                                 type="button"
-                                className={`text-[10px] ${index === 0 ? "text-[#2f6de6] font-semibold" : "text-[#8f97a9]"}`}
+                                onClick={() => setActivePopularSearch(item)}
+                                className={`text-[10px] transition-colors ${
+                                    activePopularSearch === item
+                                        ? "text-[#2f6de6] font-semibold"
+                                        : "text-[#8f97a9] hover:text-[#2f6de6]"
+                                }`}
                             >
                                 {item}
                             </button>
@@ -268,37 +318,55 @@ export default function JobListingsPage() {
                     </div>
 
                     <div className="mt-3 space-y-3">
-                        {jobs.map((job, index) => (
-                            <article
-                                key={`${job.title}-${index}`}
-                                className={`rounded-[14px] border p-3 sm:p-4 ${job.highlighted ? "bg-[#eef3ff] border-[#8eb4ff]" : "bg-white border-[#d8deeb]"}`}
-                            >
-                                <div className="flex flex-col md:flex-row gap-3 md:gap-4">
-                                    <div className="flex-1">
-                                        <Link href="/emplois" className="hover:underline">
-                                            <h3 className="text-[16px] font-extrabold text-[#1b2331]">{job.title}</h3>
-                                        </Link>
-                                        <div className="mt-2 flex flex-wrap items-center gap-2 text-[9px] text-[#7f8796]">
-                                            <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3" />{job.location}</span>
-                                            <span className="inline-flex items-center gap-1"><BriefcaseBusiness className="w-3 h-3" />{job.company}</span>
-                                            <span className="inline-flex items-center gap-1 rounded-full border border-[#d8deeb] px-2 py-0.5">{job.mode}</span>
-                                        </div>
-                                        <p className="mt-1 text-[9px] text-[#9aa3b2] inline-flex items-center gap-1"><Clock3 className="w-3 h-3" />{job.posted}</p>
-                                        <div className="mt-3 flex items-center gap-3">
-                                            <div className="w-6 h-6 rounded-full overflow-hidden bg-[#f0f3fb]">
-                                                <img src={job.logo} alt={job.company} className="w-full h-full object-cover" />
+                        {filteredJobs.length > 0 ? (
+                            filteredJobs.map((job) => (
+                                <article
+                                    key={job.id}
+                                    className={`rounded-[14px] border p-3 sm:p-4 transition-colors ${
+                                        job.highlighted ? "bg-[#eef3ff] border-[#8eb4ff]" : "bg-white border-[#d8deeb]"
+                                    }`}
+                                >
+                                    <div className="flex flex-col md:flex-row gap-3 md:gap-4">
+                                        <div className="flex-1">
+                                            <Link href={`/explorer-emplois/${job.id}`} className="hover:underline">
+                                                <h3 className="text-[16px] font-extrabold text-[#1b2331]">{job.title}</h3>
+                                            </Link>
+                                            <div className="mt-2 flex flex-wrap items-center gap-2 text-[9px] text-[#7f8796]">
+                                                <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3" />{job.location}</span>
+                                                <span className="inline-flex items-center gap-1"><BriefcaseBusiness className="w-3 h-3" />{job.company}</span>
+                                                <span className="inline-flex items-center gap-1 rounded-full border border-[#d8deeb] px-2 py-0.5">{job.mode}</span>
                                             </div>
-                                            <button type="button" className="text-[#9aa3b2] hover:text-[#2f6de6]">
-                                                <Heart className="w-4 h-4" />
-                                            </button>
+                                            <p className="mt-1 text-[9px] text-[#9aa3b2] inline-flex items-center gap-1"><Clock3 className="w-3 h-3" />{job.posted}</p>
+                                            <div className="mt-3 flex items-center gap-3">
+                                                <div className="w-6 h-6 rounded-full overflow-hidden bg-[#f0f3fb]">
+                                                    <img src={job.logo} alt={job.company} className="w-full h-full object-cover" />
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => toggleBookmark(job.id)}
+                                                    className={`transition-colors ${
+                                                        bookmarkedJobs.includes(job.id)
+                                                            ? "text-[#2f6de6]"
+                                                            : "text-[#9aa3b2] hover:text-[#2f6de6]"
+                                                    }`}
+                                                >
+                                                    <Heart
+                                                        className={`w-4 h-4 ${bookmarkedJobs.includes(job.id) ? "fill-current" : ""}`}
+                                                    />
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="w-full md:w-[230px] h-[95px] rounded-xl overflow-hidden bg-[#f0f3fb]">
+                                            <img src={job.image} alt={job.title} className="w-full h-full object-cover" />
                                         </div>
                                     </div>
-                                    <div className="w-full md:w-[230px] h-[95px] rounded-xl overflow-hidden bg-[#f0f3fb]">
-                                        <img src={job.image} alt={job.title} className="w-full h-full object-cover" />
-                                    </div>
-                                </div>
-                            </article>
-                        ))}
+                                </article>
+                            ))
+                        ) : (
+                            <div className="text-center py-8 text-[#7f8796]">
+                                Aucune offre d'emploi trouvée correspondant à vos critères.
+                            </div>
+                        )}
                     </div>
 
                     <div className="text-center mt-6">
@@ -337,7 +405,11 @@ export default function JobListingsPage() {
                     <h2 className="text-[20px] sm:text-[28px] font-extrabold text-[#1b2331]">Catégories d'emploi</h2>
                     <div className="mt-5 flex flex-wrap gap-2">
                         {jobCategories.map((category) => (
-                            <button key={category} type="button" className="h-6 rounded-full border border-[#d8deeb] bg-white px-3 text-[9px] text-[#707b90]">
+                            <button
+                                key={category}
+                                type="button"
+                                className="h-6 rounded-full border border-[#d8deeb] bg-white px-3 text-[9px] text-[#707b90] hover:border-[#2f6de6] hover:text-[#2f6de6] transition-colors"
+                            >
                                 {category}
                             </button>
                         ))}
@@ -348,20 +420,31 @@ export default function JobListingsPage() {
                     <div className="flex items-center justify-between mb-5">
                         <h2 className="text-[24px] sm:text-[36px] leading-none font-extrabold text-[#1b2331]">Prenez votre carrière en main</h2>
                         <div className="hidden sm:flex gap-2">
-                            <button type="button" className="w-7 h-7 rounded-full border border-[#d8deeb] text-[#9aa3b2] inline-flex items-center justify-center"><ChevronLeft className="w-3 h-3" /></button>
-                            <button type="button" className="w-7 h-7 rounded-full border border-[#d8deeb] text-[#9aa3b2] inline-flex items-center justify-center"><ChevronRight className="w-3 h-3" /></button>
+                            <button type="button" className="w-7 h-7 rounded-full border border-[#d8deeb] text-[#9aa3b2] inline-flex items-center justify-center hover:border-[#2f6de6] hover:text-[#2f6de6]"><ChevronLeft className="w-3 h-3" /></button>
+                            <button type="button" className="w-7 h-7 rounded-full border border-[#d8deeb] text-[#9aa3b2] inline-flex items-center justify-center hover:border-[#2f6de6] hover:text-[#2f6de6]"><ChevronRight className="w-3 h-3" /></button>
                         </div>
                     </div>
 
                     <div className="inline-flex rounded-full border border-[#d8deeb] overflow-hidden mb-5 bg-white">
-                        <button type="button" className="px-4 h-8 text-[10px] font-semibold text-[#2f6de6] bg-[#edf4ff]">Candidats</button>
-                        <button type="button" className="px-4 h-8 text-[10px] text-[#7f8796]">Étudiants</button>
-                        <button type="button" className="px-4 h-8 text-[10px] text-[#7f8796]">Fonctionnaire</button>
+                        {["Candidats", "Étudiants", "Fonctionnaire"].map((tab) => (
+                            <button
+                                key={tab}
+                                type="button"
+                                onClick={() => setActiveTab(tab)}
+                                className={`px-4 h-8 text-[10px] font-semibold transition-colors ${
+                                    activeTab === tab
+                                        ? "text-[#2f6de6] bg-[#edf4ff]"
+                                        : "text-[#7f8796] hover:text-[#2f6de6]"
+                                }`}
+                            >
+                                {tab}
+                            </button>
+                        ))}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {careerCards.map((card) => (
-                            <article key={card.title} className="rounded-xl border border-[#d8deeb] bg-white p-3">
+                            <article key={card.title} className="rounded-xl border border-[#d8deeb] bg-white p-3 hover:shadow-md transition-shadow">
                                 <img src={card.image} alt={card.title} className="h-36 w-full rounded-md object-cover" />
                                 <h3 className="mt-3 text-[18px] leading-none font-extrabold text-[#1b2331]">{card.title}</h3>
                                 <p className="mt-2 text-[11px] leading-4 text-[#8a95a8]">{card.text}</p>
@@ -390,7 +473,7 @@ export default function JobListingsPage() {
                         <div>
                             <h4 className="font-bold text-white">Concept</h4>
                             <ul className="mt-4 space-y-2 text-[#9098a7] text-sm">
-                                <li><Link href="/emplois">Trouve un emploi</Link></li>
+                                <li><Link href="/explorer-emplois">Trouve un emploi</Link></li>
                                 <li><Link href="/offres">Tarification</Link></li>
                                 <li><Link href="/auth/settings">Politique de confidentialité</Link></li>
                             </ul>

@@ -83,7 +83,7 @@ export default function Page() {
                         </Link>
                         <nav className="hidden md:flex items-center gap-6 lg:gap-10 text-[13px] text-[#7a8495] font-medium">
                             <Link href="/" className="text-[#2f6de6]">Accueil</Link>
-                            <Link href="/emplois" className="hover:text-[#2f6de6]">Trouver un emploi</Link>
+                            <Link href="/explorer-emplois" className="hover:text-[#2f6de6]">Trouver un emploi</Link>
                             <Link href="/offres" className="hover:text-[#2f6de6]">Tarifs d'abonnement</Link>
                         </nav>
                         <div className="flex items-center gap-2">
@@ -360,7 +360,7 @@ export default function Page() {
                 <div className="mb-6 sm:mb-8">
                     <div className="flex items-center justify-between mb-4 sm:mb-6">
                         <h2 className="text-xl sm:text-2xl font-bold text-foreground">Recommandé pour vous</h2>
-                        <Link href="/emplois" className="text-blue-600 hover:text-blue-700 font-medium">
+                        <Link href="/explorer-emplois" className="text-blue-600 hover:text-blue-700 font-medium">
                             Voir tout
                         </Link>
                     </div>
@@ -399,7 +399,7 @@ export default function Page() {
                                         </div>
                                     </div>
 
-                                    <Link href={`/emplois`} className="hover:underline">
+                                    <Link href={`/explorer-emplois/${job.id}`} className="hover:underline">
                                         <h4 className="font-semibold text-lg mb-2 text-foreground line-clamp-2">{job.title}</h4>
                                     </Link>
 

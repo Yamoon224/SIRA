@@ -20,7 +20,7 @@ export function isPublicRoute(pathname: string) {
 
     const publicPrefixes = [
         '/auth',
-        '/emplois',
+        '/explorer-emplois',
         '/explorer-entreprises',
         '/images',
         '/icon',
