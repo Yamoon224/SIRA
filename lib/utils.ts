@@ -13,8 +13,6 @@ export function cn(...inputs: ClassValue[]) {
 export function isPublicRoute(pathname: string) {
     const exactPublicRoutes = [
         '/',
-        '/emplois',
-        '/explorer-entreprises',
         '/manifest.json',
         '/service-worker.js',
         '/favicon.ico',
@@ -22,6 +20,7 @@ export function isPublicRoute(pathname: string) {
 
     const publicPrefixes = [
         '/auth',
+        '/emplois',
         '/explorer-entreprises',
         '/images',
         '/icon',

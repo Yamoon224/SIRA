@@ -1,321 +1,324 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Header } from "@/components/layout/header"
-import { Footer } from "@/components/layout/footer"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { MapPin, Clock, Building2, Heart, Bookmark, Share2, TrendingUp, Award, ChevronDown } from "lucide-react"
-import { jobService } from "@/lib/api/job.service"
+import { Input } from "@/components/ui/input"
+import { Bookmark, Share2, ChevronDown } from "lucide-react"
 
-export default function Page({ params }: { params: { id: string } }) {
-    const [isBookmarked, setIsBookmarked] = useState(false)
-    const [job, setJob] = useState<any>(null)
+const jobDetails = {
+    id: "1",
+    title: "Senior Consultant & Business Developer (H/F)",
+    company: "Pitch",
+    logo: "/pitch-logo-black.jpg",
+    experience: "2-3 ans d'expérience",
+    sector: "Informatique - Télécoms",
+    contract: "CDI - Télétravail occasionnel",
+    salary: "2 500 - 4 500 €",
+    posted: "Il y a 3 jours",
+    tags: ["Apprentissage"],
+    image: "/international-business-team.jpg",
+    description: `Rejoignez l'équipe PITCH Instandable Innovation pour un rôle d'impact direct.
 
-    useEffect(() => {
-        jobService.getJobById(params.id)
-            .then((res) => setJob(res.data))
-            .catch(() => {})
-    }, [params.id])
+Vous soutenir depuis l'Innovation durable 'O.HD jouant d'Ixfahe Pitsa via sa la iles tissages organisant avec ces ressources relatives de reconnaissance avec l'autofinancement de la civilisation.
 
-    if (!job) {
-        return (
-            <div className="min-h-screen bg-background flex items-center justify-center">
-                <p className="text-muted-foreground">Chargement...</p>
-            </div>
-        )
+Si ces enjeux vous intéressent, avez cette opportunité est faite pour vous !
+
+Votre rôle
+
+Nous accueillons un Consultant Senior & Business Developer pour consolidate votre equipe de Konsult Strategique.
+
+Voici après des une solide expérience en conseil et fondant une nouvelle équipe - afin des millions cet conseil ! le petit impact avec rassemblement commercial impact ! Vous recherchez un enjeu de débobination industrielle, de la transition énergétique, de l'immense innovation, ou encore de l'énergie et la motorité.
+
+Vous excellez dans l'urbanisation de nouvelles opportunités, la réponse aux appels d'offres et le développement de relations à long terme — en relish parte du métier qui vous serez détecti.
+
+Nous nous remercions sur le paysage pour vous! en détail. Nous venons s'apercevoir le comparer vos compétences pour approcher l'intérêt professionnel et une telle appétence pour la développement commercial et au partenaires.`,
+    
+    background: `Vous justifiez d'au moins 7 ans d'expérience en conseil, ou performance dans les domaines de l'énergie, de l'industrie ou de la transition énergétique.
+    
+Formation en Ingénierie ou en sciences, idéalement complétée par un diplôme ou une expérience en business development ou achat.
+
+Expérience confirmée des enjeux de la transition énergétique et l'adaptation climatique, avec connaissances spécifiques en énergies renouvelables ou efficacité énergétique.
+
+Expérience confirmée dans la gestion de projets commerciaux ou de partenariats stratégiques.`,
+
+    faqs: [
+        {
+            q: "J'avrai d'un CV d'élégibilité pour postuler à cette offre ?",
+            a: "Cette question est très pertinente. Veuillez retrouver la documentation complète sur nos conditions..."
+        },
+        {
+            q: "Le télétravail est-il possible pour ce poste ?",
+            a: "Oui, le télétravail est possible..."
+        },
+        {
+            q: "Quel est le type de contrat pour ce poste ?",
+            a: "Il s'agit d'un CDI..."
+        },
+        {
+            q: "Une lettre de motivation est-elle obligatoire pour postuler à cette offre ?",
+            a: "Non, mais elle est fortement recommandée..."
+        },
+        {
+            q: "Quelle est la date de début du contrat ?",
+            a: "La date de début est flexible..."
+        },
+    ],
+
+    interviewProcess: `Autorisir indien CV est l'éligibilité pour evaluated votre personne et motivations. Indicatif étude 'Open'Assistant' pour évaluer votre compétences en critique et site évaluation.
+
+Autorisir technique (ROI) - Evaluation en français et en anglais de vous compétences et de site évaluation avec assurance du cursus de recrutement dans des modes d'évaluation réalistes.
+
+Interview finale - Présentation moiselure avec l'équipe PITCH - Une occasion pour discuter vos ambitions, les motivations, l'alité une indication de votre soucis humain très projets.`,
+
+    scoreDetails: {
+        score: 90,
+        items: [
+            { label: "Création de valeur client", value: 40 },
+            { label: "Expérience antérieure est développement", value: 20 },
+            { label: "Cursus de code protéinien", value: 16 },
+            { label: "Aptitude à l'innovation et à l'amélioraton", value: 14 }
+        ]
     }
+}
 
+export default function JobDetailPage({ params }: { params: { id: string } }) {
     return (
-        <div className="min-h-screen bg-background">
-            <Header />
+        <div className="min-h-screen bg-[#f4f5f7]">
+            <header className="bg-white border-b border-[#e8eef6]">
+                <div className="mx-auto max-w-[1180px] px-4 h-[56px] sm:h-[64px] md:h-[72px] flex items-center justify-between">
+                    <Link href="/" className="flex items-center">
+                        <img src="/images/logo.png" alt="Goriya" className="h-8 w-auto" />
+                    </Link>
+                    <nav className="hidden md:flex items-center gap-6 lg:gap-10 text-[12px] text-[#7a8495] font-medium">
+                        <Link href="/" className="text-[#2f6de6]">Accueil</Link>
+                        <Link href="/emplois" className="hover:text-[#2f6de6]">Trouve un emploi</Link>
+                        <Link href="/offres" className="hover:text-[#2f6de6]">Tarifs d'abonnement</Link>
+                    </nav>
+                    <div className="flex items-center gap-2">
+                        <Link href="/auth/signin">
+                            <Button variant="outline" className="h-8 px-4 rounded-full text-[11px] border-[#b9c8ec] text-[#2f6de6] bg-white">
+                                Connexion
+                            </Button>
+                        </Link>
+                        <Button className="h-8 px-4 rounded-full text-[11px] bg-[#2157d3] hover:bg-[#1d4cb9]">Espace entreprise</Button>
+                    </div>
+                </div>
+            </header>
 
-            <main>
-                {/* Hero Section */}
-                <div className="relative h-80 overflow-hidden">
-                    <img
-                        src={job.coverImage || "/placeholder.svg"}
-                        alt="Office environment"
-                        className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black/40" />
-
-                    {/* Job Info Overlay */}
-                    <div className="absolute bottom-6 left-6 right-6">
-                        <div className="flex items-start justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center">
-                                    <img
-                                        src={job.logo || "/placeholder.svg"}
-                                        alt={`${job.company} logo`}
-                                        className="w-12 h-12 rounded-full object-cover"
-                                    />
+            <main className="mx-auto max-w-[1180px] px-4 py-8">
+                <section className="bg-white rounded-xl p-6 sm:p-8 border border-[#e8eef6]">
+                    <div className="flex flex-col lg:flex-row gap-8">
+                        <div className="flex-1">
+                            <div className="flex items-start gap-3 mb-4">
+                                <div className="w-8 h-8 rounded-full overflow-hidden bg-[#f0f3fb]">
+                                    <img src={jobDetails.logo} alt={jobDetails.company} className="w-full h-full object-cover" />
                                 </div>
-                                <div className="text-white">
-                                    <h1 className="text-2xl font-bold mb-2">{job.title}</h1>
-                                    <div className="flex items-center gap-4 text-sm">
-                                        <div className="flex items-center gap-1">
-                                            <Building2 className="w-4 h-4" />
-                                            {job.company}
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            <MapPin className="w-4 h-4" />
-                                            {job.location}
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            <Clock className="w-4 h-4" />
-                                            {job.duration}
-                                        </div>
-                                    </div>
+                                <span className="text-[10px] font-semibold text-[#1b2331]">{jobDetails.company}</span>
+                            </div>
+
+                            <h1 className="text-[32px] sm:text-[40px] leading-tight font-extrabold text-[#1b2331] mb-4">
+                                {jobDetails.title}
+                            </h1>
+
+                            <div className="space-y-2 mb-6 text-[12px]">
+                                <div className="flex flex-wrap gap-4 text-[#7f8796]">
+                                    <span>📍 {jobDetails.sector} • 3 ans</span>
+                                    <span>📋 {jobDetails.contract}</span>
+                                </div>
+                                <div className="flex flex-wrap gap-4 text-[#7f8796]">
+                                    <span>💰 {jobDetails.salary}</span>
+                                    <span>📅 {jobDetails.posted}</span>
+                                </div>
+                                <div className="flex gap-2">
+                                    {jobDetails.tags.map((tag) => (
+                                        <span key={tag} className="text-[10px] rounded-full bg-[#eff4ff] text-[#5b6f98] px-3 py-1">
+                                            {tag}
+                                        </span>
+                                    ))}
                                 </div>
                             </div>
 
-                            <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-                                <Heart className="w-4 h-4" />
+                            <div className="flex gap-3 flex-wrap">
+                                <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-10 px-6 text-[12px] font-semibold">
+                                    Postuler
+                                </Button>
+                                <Button variant="outline" className="rounded-full border-[#d8deeb] h-10 px-4">
+                                    <Bookmark className="w-4 h-4" />
+                                </Button>
+                                <Button variant="outline" className="rounded-full border-[#d8deeb] h-10 px-4">
+                                    <Share2 className="w-4 h-4" />
+                                </Button>
+                            </div>
+                        </div>
+
+                        <div className="lg:w-[280px]">
+                            <div className="space-y-6">
+                                <div>
+                                    <h3 className="text-[11px] font-bold text-[#7f8796] uppercase mb-3">Infos</h3>
+                                    <div className="space-y-3 text-[12px]">
+                                        <div className="flex gap-2">
+                                            <span className="font-semibold text-[#1b2331]">Entreprise:</span>
+                                            <span className="text-[#7f8796]">{jobDetails.company}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="font-semibold text-[#1b2331]">Secteur:</span>
+                                            <span className="text-[#7f8796]">Technologie</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="border-t border-[#e8eef6] pt-6">
+                                    <h3 className="text-[11px] font-bold text-[#7f8796] uppercase mb-3">Type</h3>
+                                    <div className="text-[12px] font-semibold text-[#1b2331]">CDI Temps pleins</div>
+                                </div>
+
+                                <div className="border-t border-[#e8eef6] pt-6">
+                                    <h3 className="text-[11px] font-bold text-[#7f8796] uppercase mb-3">Lieu détaillé</h3>
+                                    <div className="text-[12px] text-[#7f8796]">Abidjan, Côte d'ivoire</div>
+                                </div>
+
+                                <div className="border-t border-[#e8eef6] pt-6">
+                                    <h3 className="text-[11px] font-bold text-[#7f8796] uppercase mb-3">Salaire</h3>
+                                    <div className="text-[14px] font-extrabold text-[#2f6de6]">{jobDetails.salary}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-8 pt-8 border-t border-[#e8eef6]">
+                        <img src={jobDetails.image} alt={jobDetails.title} className="w-full h-64 rounded-xl object-cover mb-6" />
+                        
+                        <div className="bg-gradient-to-r from-[#2b7cf0] to-[#1e5ed4] text-white rounded-xl p-6 text-center">
+                            <h3 className="text-[18px] font-bold mb-2">Découvrez l'entreprise</h3>
+                            <p className="text-[12px] text-[#c8e0ff] mb-4">Apprenez à connaître la culture, les valeurs et l'équipe derrière cette offre</p>
+                            <Button className="bg-white text-[#2b7cf0] hover:bg-[#f0f3fb] rounded-full text-[12px] font-semibold">
+                                Découvrir
+                            </Button>
+                            <Button variant="outline" className="ml-2 border-white text-white hover:bg-white/10 rounded-full text-[12px]">
+                                Candidatures
                             </Button>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <div className="container mx-auto px-6 py-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Main Content */}
-                        <div className="lg:col-span-2 space-y-8">
-                            {/* Job Details */}
-                            <div className="flex items-center gap-4 mb-6">
-                                <Badge variant="secondary">{job.type}</Badge>
-                                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                    <span>Compétences et expérience</span>
-                                    <ChevronDown className="w-4 h-4" />
-                                </div>
+                <section className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-2 space-y-8">
+                        <div className="bg-white rounded-xl p-6 border border-[#e8eef6]">
+                            <h2 className="text-[24px] font-extrabold text-[#1b2331] mb-4">Le poste</h2>
+                            <div className="prose prose-sm max-w-none">
+                                <p className="text-[13px] leading-6 text-[#7f8796] whitespace-pre-wrap">{jobDetails.description}</p>
                             </div>
+                        </div>
 
-                            {/* Skills */}
-                            <div className="flex flex-wrap gap-2 mb-8">
-                                {job.skills.map((skill: any, index: number) => (
-                                    <Badge key={index} variant="outline" className="px-3 py-1">
-                                        {skill}
-                                    </Badge>
-                                ))}
-                            </div>
-
-                            {/* Job Description */}
-                            <div className="space-y-6">
+                        <div className="bg-white rounded-xl p-6 border border-[#e8eef6]">
+                            <h2 className="text-[24px] font-extrabold text-[#1b2331] mb-4">Profil recherché</h2>
+                            <div className="space-y-4">
                                 <div>
-                                    <h2 className="text-2xl font-bold text-foreground mb-4">Le poste</h2>
-                                    <div className="space-y-4">
-                                        <h3 className="text-lg font-semibold text-foreground">Descriptif du poste</h3>
-                                        <p className="text-muted-foreground leading-relaxed">{job.description.role}</p>
-                                        {job.description.details.map((detail: any, index: number) => (
-                                            <p key={index} className="text-muted-foreground leading-relaxed">
-                                                {detail}
-                                            </p>
-                                        ))}
-                                        <p className="text-muted-foreground leading-relaxed">{job.description.yourRole}</p>
-                                        <ul className="space-y-3">
-                                            {job.description.responsibilities.map((responsibility: any, index: number) => (
-                                                <li key={index} className="flex items-start gap-3">
-                                                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0" />
-                                                    <span className="text-muted-foreground leading-relaxed">{responsibility}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
+                                    <h3 className="font-bold text-[#1b2331] mb-2">Background</h3>
+                                    <p className="text-[13px] leading-6 text-[#7f8796]">{jobDetails.background.split('\n')[0]}</p>
                                 </div>
-
-                                {/* Profile Requirements */}
                                 <div>
-                                    <h3 className="text-lg font-semibold text-foreground mb-4">Profil recherché</h3>
-                                    <h4 className="font-medium text-foreground mb-3">Background</h4>
-                                    <ul className="space-y-3">
-                                        {job.profile.background.map((requirement: any, index: number) => (
-                                            <li key={index} className="flex items-start gap-3">
-                                                <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0" />
-                                                <span className="text-muted-foreground leading-relaxed">{requirement}</span>
-                                            </li>
+                                    <h3 className="font-bold text-[#1b2331] mb-2">Formation</h3>
+                                    <ul className="text-[13px] leading-6 text-[#7f8796] space-y-1">
+                                        {jobDetails.background.split('\n').slice(1).map((line, i) => (
+                                            <li key={i}>{line.trim()}</li>
                                         ))}
                                     </ul>
                                 </div>
-
-                                {/* Interview Process */}
-                                <div>
-                                    <h3 className="text-lg font-semibold text-foreground mb-4">Déroulement des entretiens</h3>
-                                    <div className="space-y-4">
-                                        {job.interviews.map((interview: any, index: number) => (
-                                            <div key={index} className="border-l-2 border-blue-600 pl-4">
-                                                <h4 className="font-medium text-foreground mb-2">{interview.type}</h4>
-                                                <p className="text-muted-foreground text-sm leading-relaxed">{interview.description}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* FAQ */}
-                                <div>
-                                    <h3 className="text-lg font-semibold text-foreground mb-4">Prêt(e) à nous rejoindre ?</h3>
-                                    <p className="text-muted-foreground mb-4">
-                                        Si vous vous reconnaissez dans cette description et que vous êtes prêt à relever le défi, évaluez
-                                        des compétences ! ✨
-                                    </p>
-                                    <p className="text-muted-foreground mb-6">Nous avons hâte de découvrir votre candidature.</p>
-
-                                    <h3 className="text-xl font-bold text-foreground mb-6">Questions et réponses sur l'offre</h3>
-                                    <Accordion type="single" collapsible className="space-y-2">
-                                        {job.questions.map((question: any, index: number) => (
-                                            <AccordionItem key={index} value={`item-${index}`} className="border rounded-lg px-4">
-                                                <AccordionTrigger className="text-left hover:no-underline">
-                                                    <span className="text-sm font-medium">{question}</span>
-                                                </AccordionTrigger>
-                                                <AccordionContent className="text-sm text-muted-foreground">
-                                                    Réponse à venir...
-                                                </AccordionContent>
-                                            </AccordionItem>
-                                        ))}
-                                    </Accordion>
-                                </div>
                             </div>
                         </div>
 
-                        {/* Sidebar */}
-                        <div className="space-y-6">
-                            {/* Salary Info */}
-                            <Card>
-                                <CardContent className="p-6">
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                                            <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                                        </div>
-                                        <div>
-                                            <p className="font-semibold text-foreground">{job.salary}</p>
-                                            <p className="text-sm text-muted-foreground">Salaire</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                                            <Award className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                                        </div>
-                                        <div>
-                                            <p className="font-semibold text-foreground">Temps plein</p>
-                                            <p className="text-sm text-muted-foreground">Type</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                                            <Building2 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                                        </div>
-                                        <div>
-                                            <p className="font-semibold text-foreground">Sur site</p>
-                                            <p className="text-sm text-muted-foreground">Lieu de travail</p>
-                                        </div>
-                                    </div>
+                        <div className="bg-white rounded-xl p-6 border border-[#e8eef6]">
+                            <h2 className="text-[24px] font-extrabold text-[#1b2331] mb-6">Décroulement des entretiens</h2>
+                            <p className="text-[13px] leading-6 text-[#7f8796] whitespace-pre-wrap">{jobDetails.interviewProcess}</p>
+                        </div>
 
-                                    <div className="space-y-3">
-                                        <Button
-                                            className="w-full bg-blue-600 hover:bg-blue-700"
-                                            onClick={() => setIsBookmarked(!isBookmarked)}
-                                        >
-                                            <Bookmark className={`w-4 h-4 mr-2 ${isBookmarked ? "fill-current" : ""}`} />
-                                            Sauvegarder
-                                        </Button>
-                                        <Button variant="outline" className="w-full bg-transparent">
-                                            <Share2 className="w-4 h-4 mr-2" />
-                                            Partager
-                                        </Button>
-                                        <Button className="w-full bg-blue-600 hover:bg-blue-700">Postuler</Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                        <div className="bg-white rounded-xl p-6 border border-[#e8eef6]">
+                            <h2 className="text-[24px] font-extrabold text-[#1b2331] mb-6">Questions et réponses sur l'offre</h2>
+                            <div className="space-y-3">
+                                {jobDetails.faqs.map((faq, index) => (
+                                    <details key={index} className="border border-[#e8eef6] rounded-lg">
+                                        <summary className="cursor-pointer px-4 py-3 flex items-center justify-between font-semibold text-[#1b2331] text-[12px]">
+                                            <span>{faq.q}</span>
+                                            <ChevronDown className="w-4 h-4" />
+                                        </summary>
+                                        <div className="px-4 py-3 border-t border-[#e8eef6] text-[12px] text-[#7f8796]">
+                                            {faq.a}
+                                        </div>
+                                    </details>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
 
-                            {/* Company Discovery */}
-                            <Card className="bg-blue-600 text-white">
-                                <CardContent className="p-6">
-                                    <h3 className="font-semibold mb-2">Découvrez l'entreprise</h3>
-                                    <p className="text-sm mb-4 text-blue-100">
-                                        Apprenez-en plus sur l'entreprise et son équipe pour mieux vous préparer à votre entretien.
-                                    </p>
-                                    <div className="flex gap-2">
-                                        <Button size="sm" variant="secondary" className="bg-white text-blue-600 hover:bg-blue-50">
-                                            Voir le
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            variant="outline"
-                                            className="border-white text-white hover:bg-white/10 bg-transparent"
-                                        >
-                                            Voir l'entreprise
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                    <div className="lg:col-span-1">
+                        <div className="bg-white rounded-xl p-6 border border-[#e8eef6] sticky top-4">
+                            <h3 className="text-[18px] font-extrabold text-[#1b2331] mb-2">Votre profil correspond à cette offre</h3>
+                            <p className="text-[12px] text-[#7f8796] mb-4">Chat IA compatible avec assistance 24/24 et 24/7. Merci de me relancer si vous n'êtes pas à l'aisé !</p>
+                            
+                            <div className="bg-[#2f6de6] rounded-full w-32 h-32 flex items-center justify-center mx-auto mb-4 relative">
+                                <div className="text-center">
+                                    <div className="text-[32px] font-extrabold text-white">{jobDetails.scoreDetails.score}%</div>
+                                </div>
+                            </div>
 
-                            {/* Profile Match */}
-                            <Card>
-                                <CardContent className="p-6">
-                                    <h3 className="font-semibold text-foreground mb-4">Votre profil correspond à cette offre</h3>
-                                    <div className="text-center mb-4">
-                                        <div className="relative w-24 h-24 mx-auto mb-2">
-                                            <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 36 36">
-                                                <path
-                                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth="2"
-                                                    strokeDasharray={`${job.companyProfile.match}, 100`}
-                                                    className="text-blue-600"
-                                                />
-                                            </svg>
-                                            <div className="absolute inset-0 flex items-center justify-center">
-                                                <span className="text-2xl font-bold text-blue-600">{job.companyProfile.match}</span>
-                                            </div>
+                            <div className="space-y-3 mb-6">
+                                {jobDetails.scoreDetails.items.map((item, i) => (
+                                    <div key={i} className="text-[11px]">
+                                        <div className="flex justify-between text-[#7f8796] mb-1">
+                                            <span>{item.label}</span>
+                                            <span className="font-semibold">{item.value}%</span>
+                                        </div>
+                                        <div className="h-2 bg-[#e8eef6] rounded-full overflow-hidden">
+                                            <div className="h-full bg-[#2f6de6]" style={{ width: `${item.value}%` }} />
                                         </div>
                                     </div>
+                                ))}
+                            </div>
 
-                                    <div className="space-y-3">
-                                        {job.companyProfile.metrics.map((metric: any, index: number) => (
-                                            <div key={index}>
-                                                <div className="flex justify-between text-sm mb-1">
-                                                    <span className="text-muted-foreground text-xs leading-tight">{metric.label}</span>
-                                                    <span className="font-medium text-xs">{metric.value}</span>
-                                                </div>
-                                                <Progress value={Number.parseInt(metric.value)} className="h-2" />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </CardContent>
-                            </Card>
+                            <Button className="w-full rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-10 text-[12px] font-semibold">
+                                Postuler
+                            </Button>
+                        </div>
+                    </div>
+                </section>
+            </main>
 
-                            {/* Related Jobs */}
-                            <Card className="bg-blue-600 text-white">
-                                <CardContent className="p-6">
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <div className="flex -space-x-2">
-                                            {[1, 2, 3, 4].map((i) => (
-                                                <div key={i} className="w-8 h-8 bg-white rounded-full border-2 border-blue-600" />
-                                            ))}
-                                        </div>
-                                    </div>
-                                    <h3 className="font-semibold mb-2">
-                                        Obtenez plus de privilège aux offres d'emploi pour lesquelles vous seriez un bon candidat et plus
-                                        encore
-                                    </h3>
-                                    <p className="text-sm mb-4 text-blue-100">
-                                        Faites grandir vos l'envoi gratuit avec assistance 24h/24 et 7j/7. Nous vous enverrons un rappel 3
-                                        jours avant qu'il ne soit expiré.
-                                    </p>
-                                    <Button size="sm" variant="secondary" className="bg-white text-blue-600 hover:bg-blue-50">
-                                        Essayez dès maintenant
-                                    </Button>
-                                </CardContent>
-                            </Card>
+            <footer className="bg-[#06080d] text-white pt-10 sm:pt-14 pb-8 mt-16">
+                <div className="mx-auto max-w-[1180px] px-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-10">
+                        <div>
+                            <img src="/images/logo.png" alt="Goriya" className="h-10 sm:h-12 w-auto brightness-0 invert mb-4" />
+                            <p className="text-sm text-[#9098a7]">
+                                Goriya est une plateforme web intelligente qui permet aux utilisateurs d'uploader leur CV, lettre de motivation ou tout autre document professionnel afin d'obtenir une analyse intelligente par IA.
+                            </p>
+                        </div>
+                        <div>
+                            <h4 className="font-bold text-white mb-4">Concept</h4>
+                            <ul className="space-y-2 text-[#9098a7] text-sm">
+                                <li><Link href="/emplois">Trouve un emploi</Link></li>
+                                <li><Link href="/offres">Tarification</Link></li>
+                                <li><Link href="/auth/settings">Politique de confidentialité</Link></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-bold text-white mb-3">Recevoir les notifications d'emploi</h4>
+                            <p className="text-sm text-[#9098a7] mb-4">Les dernières nouvelles sur l'emploi, les articles, envoyés dans votre boîte de réception chaque semaine.</p>
+                            <div className="flex gap-2">
+                                <Input className="h-10 rounded-full border-[#2a2f3a] bg-[#0f121a] text-white text-[12px]" placeholder="Adresse e-mail" />
+                                <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] px-4">S'abonner</Button>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="mt-8 pt-6 border-t border-[#1c202a] flex flex-col md:flex-row items-center justify-between gap-3">
+                        <p className="text-xs sm:text-sm text-[#6f7887]">2026 © Goriya. Tous droits réservés.</p>
+                        <div className="flex items-center gap-2">
+                            <Link href="/auth/signin"><Button variant="outline" className="h-8 rounded-full border-[#374153] text-[#d9e5ff] bg-transparent text-[12px]">Connexion</Button></Link>
+                            <Button className="h-8 rounded-full bg-[#2f6de6] hover:bg-[#2458ba] text-[12px]">Espace entreprise</Button>
                         </div>
                     </div>
                 </div>
-            </main>
-
-            <Footer />
+            </footer>
         </div>
     )
 }
