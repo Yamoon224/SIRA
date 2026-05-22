@@ -4,10 +4,22 @@ import { IUser } from "@/lib/@types/entities"
 
 export const userService = {
     getProfile: async () => {
-        return apiRequest<ApiResponse<IUser>>({
-            endpoint: "/auth/profile",
-            method: "GET",
-        })
+        try {
+            return await apiRequest<ApiResponse<IUser>>({
+                endpoint: "/user/profile",
+                method: "GET",
+                silent: true,
+            })
+        } catch (error: any) {
+            if (error?.statusCode && error.statusCode !== 404) {
+                throw error
+            }
+
+            return apiRequest<ApiResponse<IUser>>({
+                endpoint: "/auth/profile",
+                method: "GET",
+            })
+        }
     },
 
     updateProfile: async (profileData: Partial<IUser>) => {

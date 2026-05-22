@@ -8,23 +8,11 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Search, MapPin, Building2, Clock, ChevronLeft, ChevronRight } from "lucide-react"
 import { jobService } from "@/lib/api/job.service"
+import { IJobOffer } from "@/lib/@types/entities"
 import { useState, useEffect } from "react"
 
-interface JobOffer {
-    id: string
-    title: string
-    company: string
-    location: string
-    type: string
-    salary: string
-    description: string
-    postedDate: string
-    logo: string
-    featured: boolean
-}
-
 export default function Page() {
-    const [jobs, setJobs] = useState<JobOffer[]>([])
+    const [jobs, setJobs] = useState<IJobOffer[]>([])
     const [filters, setFilters] = useState({
         search: "",
         location: "",
@@ -42,11 +30,34 @@ export default function Page() {
     const fetchJobs = async () => {
         try {
             const response = await jobService.getJobs({ ...filters, page: currentPage })
-            setJobs((response.data as unknown as JobOffer[]) ?? [])
+            setJobs(Array.isArray(response.data) ? response.data : [])
         } catch (error) {
             console.error("Erreur lors du chargement des offres:", error)
             setJobs([])
         }
+    }
+
+    const toDisplayText = (value: unknown, fallback = ""): string => {
+        if (value === null || value === undefined) return fallback
+        if (typeof value === "string" || typeof value === "number") return String(value)
+        if (typeof value === "object") {
+            const record = value as Record<string, unknown>
+            if (typeof record.name === "string") return record.name
+            if (typeof record.title === "string") return record.title
+        }
+        return fallback
+    }
+
+    const getPublishedDateLabel = (job: IJobOffer): string => {
+        const rawDate = (job as any).postedDate ?? job.publishDate
+        if (!rawDate) return "récemment"
+
+        const parsedDate = new Date(rawDate)
+        if (Number.isNaN(parsedDate.getTime())) {
+            return toDisplayText(rawDate, "récemment")
+        }
+
+        return parsedDate.toLocaleDateString("fr-FR")
     }
 
     const handleFilterChange = (filterType: string, value: string, checked: boolean) => {
@@ -178,10 +189,12 @@ export default function Page() {
                                                 </div>
                                                 <div className="min-w-0 flex-1">
                                                     <h3 className="font-semibold text-card-foreground truncate">{job.title}</h3>
-                                                    <p className="text-sm text-muted-foreground truncate">{job.company}</p>
+                                                    <p className="text-sm text-muted-foreground truncate">
+                                                        {toDisplayText(job.company, "Entreprise")}
+                                                    </p>
                                                 </div>
                                             </div>
-                                            {job.featured && (
+                                            {(job as any).featured && (
                                                 <Badge className="bg-primary/10 text-primary border-primary/20 text-xs">Recommandé</Badge>
                                             )}
                                         </div>
@@ -189,22 +202,22 @@ export default function Page() {
                                         <div className="space-y-2 mb-4">
                                             <div className="flex items-center text-sm text-muted-foreground">
                                                 <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
-                                                <span className="truncate">{job.location}</span>
+                                                <span className="truncate">{toDisplayText(job.location, "Lieu non précisé")}</span>
                                             </div>
                                             <div className="flex items-center text-sm text-muted-foreground">
                                                 <Clock className="w-4 h-4 mr-2 flex-shrink-0" />
-                                                <span>Publié {job.postedDate}</span>
+                                                <span>Publié {getPublishedDateLabel(job)}</span>
                                             </div>
                                         </div>
 
                                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-3 sm:space-y-0">
                                             <div className="flex flex-wrap gap-2">
-                                                <Badge variant="outline">{job.type}</Badge>
+                                                <Badge variant="outline">{toDisplayText(job.type, "Type non précisé")}</Badge>
                                                 <Badge
                                                     variant="outline"
                                                     className="text-green-600 dark:text-green-400 border-green-200 dark:border-green-800"
                                                 >
-                                                    {job.salary}
+                                                    {toDisplayText(job.salary, "Salaire à discuter")}
                                                 </Badge>
                                             </div>
                                             <div className="flex space-x-2 w-full sm:w-auto">

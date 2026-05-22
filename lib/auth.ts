@@ -3,6 +3,8 @@ import { authService } from "./api/auth.service";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { DefaultUser, DefaultSession, User, Session } from "next-auth";
 
+const authSecret = process.env.NEXTAUTH_SECRET ?? process.env.NEXT_AUTH_SECRET;
+
 // 🔹 Étendre les types NextAuth
 declare module "next-auth" {
     interface Session {
@@ -68,7 +70,7 @@ export const authOptions = {
         }),
     ],
     session: { strategy: "jwt" as const },
-    secret: process.env.NEXT_AUTH_SECRET,
+    secret: authSecret,
     // ✅ ICI tu ajoutes les callbacks
     callbacks: {
         async jwt({

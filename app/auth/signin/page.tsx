@@ -85,7 +85,8 @@ export default function Page() {
                     user: session.user,
                 }
 
-                localStorage.setItem("auth", JSON.stringify(authData))
+                // Keep auth context in sync immediately to avoid guard redirect loop.
+                login({ ...(session.user as any), avatar: (session.user as any).avatar ?? null }, authData.token)
 
                 setCookie("auth", JSON.stringify(authData), {
                     maxAge: 60 * 60,
@@ -99,7 +100,8 @@ export default function Page() {
             }
 
             toast.success("Connexion réussie")
-            router.push("/dashboard")
+            router.replace("/dashboard")
+            router.refresh()
         } catch (err: any) {
             toast.error(err.message)
             setError(err.message)

@@ -24,4 +24,5 @@ export interface RequestOptions {
     method?: Method; // GET, POST, PUT, PATCH, DELETE
     data?: any;      // body data pour POST/PUT/PATCH
     params?: any;    // query params pour GET
+    silent?: boolean; // désactive les logs d'erreur pour les tentatives de fallback
 }

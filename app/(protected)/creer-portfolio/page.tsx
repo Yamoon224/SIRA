@@ -18,6 +18,11 @@ export default function Page() {
         email: "",
         skills: "",
     })
+    const [socialLinks, setSocialLinks] = useState([
+        { label: "LinkedIn", value: "" },
+        { label: "GitHub", value: "" },
+        { label: "Twitter", value: "" },
+    ])
 
     const themes = [
         { name: "Light", value: "light", colors: ["bg-white", "bg-gray-100"] },
@@ -30,12 +35,6 @@ export default function Page() {
         { title: "Alloc-image", link: "Voir le projet" },
         { title: "Link Github", link: "Voir Github" },
         { title: "Consulter", link: "Consulter" },
-    ]
-
-    const socialLinks = [
-        { label: "LinkedIn", value: "" },
-        { label: "GitHub", value: "" },
-        { label: "Twitter", value: "" },
     ]
 
     return (
@@ -144,6 +143,11 @@ export default function Page() {
                                         <Input
                                             placeholder={`Votre lien ${link.label.toLowerCase()}`}
                                             value={link.value}
+                                            onChange={(e) => {
+                                                const next = [...socialLinks]
+                                                next[i] = { ...next[i], value: e.target.value }
+                                                setSocialLinks(next)
+                                            }}
                                             className="mt-1 h-9 text-[13px] border-[#e8edf6]"
                                         />
                                     </div>

@@ -61,7 +61,19 @@ export const getAuth = (): { token: string; user: IUser } | null => {
 export async function resolveToken(): Promise<string | undefined> {
     // Côté client → localStorage
     if (typeof window !== 'undefined') {
-        return getAuth()?.token ?? undefined;
+        const localToken = getAuth()?.token;
+        if (localToken) {
+            return localToken;
+        }
+
+        // Fallback NextAuth session si le stockage local n'est pas encore hydraté.
+        try {
+            const { getSession } = await import('next-auth/react');
+            const session = await getSession();
+            return (session?.user as any)?.access_token ?? undefined;
+        } catch {}
+
+        return undefined;
     }
 
     // Côté serveur → cookie "auth" (import dynamique pour éviter next/headers côté client)

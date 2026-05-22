@@ -4,7 +4,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://goriya-api.lunion-lab.com';
 
-export async function apiRequest<T>({ endpoint, method = 'GET', data, params }: RequestOptions): Promise<T> {
+export async function apiRequest<T>({ endpoint, method = 'GET', data, params, silent = false }: RequestOptions): Promise<T> {
     try {
         const resolvedToken = await resolveToken();
 
@@ -26,7 +26,9 @@ export async function apiRequest<T>({ endpoint, method = 'GET', data, params }: 
         const response = await axios(config);
         return response.data as T;
     } catch (error: any) {
-        console.error(`[API ${method}] error on ${API_BASE_URL}${endpoint}:`, error.response?.data || error.message);
+        if (!silent) {
+            console.error(`[API ${method}] error on ${API_BASE_URL}${endpoint}:`, error.response?.data || error.message);
+        }
         throw error.response?.data || error;
     }
 }

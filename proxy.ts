@@ -2,6 +2,8 @@ import { getToken } from 'next-auth/jwt';
 import { NextResponse, NextRequest } from 'next/server';
 import { isPublicRoute, redirectToLogin } from '@/lib/utils';
 
+const authSecret = process.env.NEXTAUTH_SECRET ?? process.env.NEXT_AUTH_SECRET;
+
 export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
@@ -13,7 +15,7 @@ export async function proxy(request: NextRequest) {
     // ✅ récupérer le token JWT côté middleware
     const token = await getToken({
         req: request,
-        secret: process.env.NEXT_AUTH_SECRET,  
+        secret: authSecret,
     });
 
     // ✅ si pas de token, redirige vers /auth/signin
