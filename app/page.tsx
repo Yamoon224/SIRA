@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { Card, CardContent } from "@/components/ui/card"
-import { MapPin, Clock, Building2, Search, Heart, Bookmark, Upload, Mail, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
+import { MapPin, Clock, Building2, Search, Heart, Bookmark, Upload, Mail, ChevronLeft, ChevronRight, Loader2, LogIn, BriefcaseBusiness } from "lucide-react"
 import { jobService } from "@/lib/api/job.service"
 import { IJobOffer } from "@/lib/@types/entities"
 import { formatAmount } from "@/lib/utils"
@@ -159,12 +159,22 @@ export default function Page() {
                             <Link href="/offres" className="hover:text-[#2f6de6]">Tarifs d'abonnement</Link>
                         </nav>
                         <div className="flex items-center gap-2">
-                            <Link href="/auth/signin">
-                                <Button variant="outline" className="h-8 px-4 rounded-full text-[12px] border-[#b9c8ec] text-[#2f6de6] bg-white">
-                                    Connexion
+                            <Link href="/auth/signin" aria-label="Connexion" className="inline-flex">
+                                <Button
+                                    variant="outline"
+                                    className="h-8 w-8 sm:h-8 sm:w-auto sm:px-4 rounded-full border-[#b9c8ec] text-[#2f6de6] bg-white p-0 sm:p-2"
+                                >
+                                    <LogIn className="h-4 w-4 sm:mr-2" />
+                                    <span className="hidden sm:inline text-[12px]">Connexion</span>
                                 </Button>
                             </Link>
-                            <Button className="h-8 px-4 rounded-full text-[12px] bg-[#2157d3] hover:bg-[#1d4cb9]">Espace entreprise</Button>
+                            <Button
+                                className="h-8 w-8 sm:h-8 sm:w-auto sm:px-4 rounded-full text-[12px] bg-[#2157d3] hover:bg-[#1d4cb9] p-0 sm:p-2"
+                                aria-label="Espace entreprise"
+                            >
+                                <BriefcaseBusiness className="h-4 w-4 sm:mr-2" />
+                                <span className="hidden sm:inline">Espace entreprise</span>
+                            </Button>
                         </div>
                     </div>
                 </header>
