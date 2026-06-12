@@ -88,7 +88,7 @@ export default function ExploreCompaniesPage() {
                 <section className="mt-10 sm:mt-14">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-[22px] sm:text-[26px] font-extrabold text-[#1b2331]">Secteur d'activité</h2>
-                        <Link href="#" className="flex items-center text-[10px] text-[#1b2331] font-semibold">
+                        <Link href="/explorer-entreprises/secteurs" className="flex items-center text-[10px] text-[#1b2331] font-semibold">
                             Découvrir
                             <ChevronRight className="w-3 h-3 ml-1" />
                         </Link>
@@ -114,7 +114,7 @@ export default function ExploreCompaniesPage() {
                 <section className="mt-10 sm:mt-12">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-[18px] sm:text-[26px] font-extrabold text-[#1b2331]">Nouvelles entreprises à explorer</h2>
-                        <Link href="#" className="flex items-center text-[10px] text-[#1b2331] font-semibold">
+                        <Link href="/explorer-entreprises/nouvelles-entreprises" className="flex items-center text-[10px] text-[#1b2331] font-semibold">
                             Découvrir
                             <ChevronRight className="w-3 h-3 ml-1" />
                         </Link>
@@ -127,7 +127,7 @@ export default function ExploreCompaniesPage() {
                 <section className="mt-10 sm:mt-12">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-[18px] sm:text-[26px] font-extrabold text-[#1b2331]">Les entreprises qui recrutent le plus souvent</h2>
-                        <Link href="#" className="flex items-center text-[10px] text-[#1b2331] font-semibold">
+                        <Link href="/explorer-entreprises/recrutent-le-plus" className="flex items-center text-[10px] text-[#1b2331] font-semibold">
                             Découvrir
                             <ChevronRight className="w-3 h-3 ml-1" />
                         </Link>
