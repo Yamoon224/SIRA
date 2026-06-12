@@ -140,11 +140,11 @@ export function SearchBar() {
 
   return (
     <div ref={searchRef} className="relative">
-      <div className="relative">
+      <div className="relative w-full min-w-0 sm:w-80">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
         <Input
           placeholder="Rechercher emplois, entreprises, lieux..."
-          className="pl-10 w-80"
+          className="pl-10 w-full min-w-0"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -162,7 +162,7 @@ export function SearchBar() {
       </div>
 
       {isOpen && filteredSuggestions.length > 0 && (
-        <Card className="absolute top-full left-0 right-0 mt-2 z-50 max-h-96 overflow-y-auto">
+        <Card className="absolute top-full left-0 right-0 mt-2 z-50 max-h-96 w-[calc(100vw-1rem)] max-w-sm overflow-y-auto shadow-xl sm:w-full">
           <CardContent className="p-0">
             {filteredSuggestions.map((suggestion) => (
               <div

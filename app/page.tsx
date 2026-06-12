@@ -13,7 +13,6 @@ import { MapPin, Clock, Building2, Search, Heart, Bookmark, Upload, Mail, Chevro
 import { jobService } from "@/lib/api/job.service"
 import { IJobOffer } from "@/lib/@types/entities"
 import { formatAmount } from "@/lib/utils"
-import { extractTextFromFile } from "@/lib/openai-cv-analyzer"
 import type { CVAnalysis } from "@/lib/@types/openai"
 
 // Mock user state - in real app this would come from auth context
@@ -55,6 +54,7 @@ export default function Page() {
             "image/png",
             "image/jpeg",
             "image/jpg",
+            "image/webp",
         ]
 
         if (!allowedTypes.includes(file.type)) {
@@ -73,11 +73,12 @@ export default function Page() {
         setIsAnalyzingCV(true)
 
         try {
-            const cvText = await extractTextFromFile(file)
+            const formData = new FormData()
+            formData.append("file", file)
+
             const response = await fetch("/api/analyse-cv", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ cvText }),
+                body: formData,
             })
 
             const payload = (await response.json()) as { analysis?: CVAnalysis; error?: string }
@@ -191,7 +192,7 @@ export default function Page() {
                             <input
                                 ref={cvInputRef}
                                 type="file"
-                                accept=".pdf,.doc,.docx,.png,.jpeg,.jpg"
+                                accept=".pdf,.doc,.docx,.png,.jpeg,.jpg,.webp"
                                 onChange={handleCVUpload}
                                 className="hidden"
                             />
@@ -202,7 +203,7 @@ export default function Page() {
                 </section>
 
                 <section className="py-8 sm:py-12 md:py-16 bg-white">
-                    <div className="mx-auto max-w-[1180px] px-2 sm:px-4">
+                    <div className="mx-auto max-w-[1180px] px-3 sm:px-4">
                         <h2 className="text-center text-2xl xs:text-3xl sm:text-4xl md:text-[38px] lg:text-[46px] leading-none font-extrabold text-[#111827]">Explorer les entreprises.</h2>
                         <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-8 sm:mt-10">
                             {companyCards.map((card, index) => (
@@ -239,7 +240,7 @@ export default function Page() {
                 </section>
 
                 <section className="bg-[#f2f4f8] py-10 sm:py-16">
-                    <div className="mx-auto max-w-[960px] px-2 sm:px-4 text-center">
+                    <div className="mx-auto max-w-[960px] px-3 sm:px-4 text-center">
                         <h2 className="text-xl xs:text-2xl sm:text-3xl md:text-[38px] lg:text-[58px] leading-none font-extrabold text-[#2a62d7] uppercase">TROUVEZ UN EMPLOI</h2>
                         <p className="text-xs sm:text-[14px] text-[#7d8798] mt-2 sm:mt-4">Des milliers d'opportunités d'emploi vous attendent. Etes-vous prêt(e) a décrocher le poste parfait ?</p>
                         <div className="mt-6 sm:mt-8 flex justify-center">
@@ -263,7 +264,7 @@ export default function Page() {
                 </section>
 
                 <section className="bg-white py-10 sm:py-16">
-                    <div className="mx-auto max-w-[1180px] px-2 sm:px-4">
+                    <div className="mx-auto max-w-[1180px] px-3 sm:px-4">
                         <h2 className="text-center text-xl xs:text-2xl sm:text-3xl md:text-[38px] lg:text-[44px] leading-none font-extrabold">Comment fonctionne Goriya?</h2>
                         <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-5 sm:gap-7 mt-8 sm:mt-12 text-center">
                             <div>
@@ -305,7 +306,7 @@ export default function Page() {
 
                 <section className="bg-gradient-to-r from-[#2058d6] to-[#1f4fc5] text-white py-10 sm:py-16 relative overflow-hidden">
                     <div className="absolute left-0 bottom-0 w-28 h-28 sm:w-52 sm:h-52 rounded-full border-[10px] sm:border-[20px] border-[#7cb0ff] opacity-40 -translate-x-5 sm:-translate-x-10 translate-y-5 sm:translate-y-10" />
-                    <div className="mx-auto max-w-[1180px] px-2 sm:px-4 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center relative z-10">
+                    <div className="mx-auto max-w-[1180px] px-3 sm:px-4 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center relative z-10">
                         <div>
                             <h3 className="text-xl xs:text-2xl sm:text-3xl md:text-[38px] lg:text-[52px] leading-none font-extrabold">Debloquer tout le potentiel de notre application</h3>
                             <div className="mt-6 sm:mt-8 flex flex-wrap gap-3 justify-center md:justify-start">
@@ -320,7 +321,7 @@ export default function Page() {
                 </section>
 
                 <section className="py-8 sm:py-14 bg-white">
-                    <div className="mx-auto max-w-[1180px] px-2 sm:px-4">
+                    <div className="mx-auto max-w-[1180px] px-3 sm:px-4">
                         <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
                             <h3 className="text-lg xs:text-xl sm:text-2xl font-bold">Prenez votre carriere en main</h3>
                             <div className="flex gap-2">
@@ -352,7 +353,7 @@ export default function Page() {
                 </section>
 
                 <footer className="bg-[#06080d] text-white pt-10 sm:pt-14 pb-8">
-                    <div className="mx-auto max-w-[1180px] px-2 sm:px-4">
+                    <div className="mx-auto max-w-[1180px] px-3 sm:px-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-10">
                             <div>
                                 <img src="/images/logo.png" alt="Goriya" className="h-10 sm:h-12 w-auto brightness-0 invert" />
@@ -393,7 +394,7 @@ export default function Page() {
         <div className="min-h-screen bg-background">
             <Header />
 
-            <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+            <main className="container mx-auto px-3 sm:px-6 py-5 sm:py-8">
                 {/* Welcome Section */}
                 <div className="mb-6 sm:mb-8">
                     <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Bonjour, John!</h1>
@@ -412,7 +413,7 @@ export default function Page() {
                 </div>
 
                 {/* Quick Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mb-8">
                     <Card>
                         <CardContent className="p-6 text-center">
                             <div className="text-2xl font-bold text-blue-600 mb-1">12</div>
@@ -448,7 +449,7 @@ export default function Page() {
                         </Link>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
                         {popularJobs.slice(0, 4).map((job) => (
                             <Card key={job.id} className="hover:shadow-lg transition-shadow">
                                 <CardContent className="p-6">
@@ -494,9 +495,9 @@ export default function Page() {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                         <span className="font-semibold text-blue-600 truncate mr-2">{formatAmount(job.salary)}</span>
-                                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700 flex-shrink-0">
+                                        <Button size="sm" className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 flex-shrink-0">
                                             Postuler
                                         </Button>
                                     </div>

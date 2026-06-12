@@ -26,10 +26,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <Sidebar />
             </div>
 
-            <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
                 <Header onToggleSidebar={toggleSidebar} showMobileMenuButton={true} showLogo={false} />
-                <main className="flex-1 overflow-auto p-4 sm:p-6 bg-background">
-                    <div className="max-w-7xl mx-auto">{children}</div>
+                <main className="flex-1 overflow-y-auto overflow-x-hidden bg-background p-3 sm:p-6">
+                    <div className="mx-auto w-full max-w-7xl">{children}</div>
                 </main>
             </div>
         </div>

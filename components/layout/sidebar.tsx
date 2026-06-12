@@ -93,14 +93,14 @@ export function Sidebar() {
     const pathname = usePathname()
 
     return (
-        <div className="w-64 bg-background border-r border-border h-screen flex flex-col overflow-hidden">
+        <div className="w-72 max-w-[85vw] bg-background border-r border-border h-screen flex flex-col overflow-hidden md:w-64">
             <div className="px-6 py-4 border-b border-border flex items-center justify-center">
                 <Link href="/">
                     <AppLogo width={100} />
                 </Link>
             </div>
 
-            <nav className="flex-1 px-3 sm:px-4 py-4 space-y-1 overflow-y-auto">
+            <nav className="flex-1 px-2 sm:px-4 py-4 space-y-1 overflow-y-auto scrollbar-thin">
                 {sidebarItems.map((item) => {
                     const Icon = item.icon
                     return (
@@ -121,7 +121,7 @@ export function Sidebar() {
                 })}
             </nav>
 
-            <div className="px-3 sm:px-4 pb-4 border-t border-border pt-4">
+            <div className="px-2 sm:px-4 pb-4 border-t border-border pt-4">
                 <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-3">Paramètres</div>
                 <div className="space-y-1">
                     {parameterItems.map((item) => {

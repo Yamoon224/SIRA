@@ -37,9 +37,9 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
     }
 
     return (
-        <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border px-4 sm:px-6 py-3">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4 sm:space-x-8">
+        <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border px-3 sm:px-6 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3 sm:gap-6">
                     {showMobileMenuButton && (
                         <Button variant="ghost" size="sm" className="lg:hidden" onClick={onToggleSidebar}>
                             <Menu className="w-5 h-5" />
@@ -51,7 +51,7 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                             <AppLogo />
                         </Link>
                     )}
-                    <nav className="hidden lg:flex items-center space-x-6">
+                    <nav className="hidden lg:flex items-center gap-4 xl:gap-6">
                         <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
                             Accueil
                         </Link>
@@ -69,8 +69,8 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                     </nav>
                 </div>
 
-                <div className="flex items-center space-x-2 sm:space-x-4">
-                    <div className="hidden sm:block">
+                <div className="flex items-center gap-2 sm:gap-3 ml-auto">
+                    <div className="hidden md:block min-w-[220px] lg:min-w-[280px]">
                         <SearchBar />
                     </div>
 
@@ -123,7 +123,7 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                     )}
 
                     {mounted && !isAuthenticated && (
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center gap-2">
                             <ThemeToggle />
                             <Link href="/auth/signin">
                                 <Button variant="outline" size="sm" className="text-xs sm:text-sm bg-transparent">

@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { extractTextFromFile } from "@/lib/openai-cv-analyzer"
 import type { CVAnalysis } from "@/lib/@types/openai"
 import { Upload, FileText, CheckCircle, AlertCircle, TrendingUp, Target, Lightbulb, Eye } from "lucide-react"
 
@@ -28,6 +27,7 @@ export default function Page() {
                 "image/png",
                 "image/jpeg",
                 "image/jpg",
+                "image/webp",
             ]
 
             if (!allowedTypes.includes(file.type)) {
@@ -57,11 +57,12 @@ export default function Page() {
         setError(null)
 
         try {
-            const cvText = await extractTextFromFile(cvFile)
+            const formData = new FormData()
+            formData.append("file", cvFile)
+
             const response = await fetch("/api/analyse-cv", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ cvText }),
+                body: formData,
             })
 
             const payload = (await response.json()) as { analysis?: CVAnalysis; error?: string }
@@ -127,7 +128,7 @@ export default function Page() {
                             <input
                                 id="cv-upload"
                                 type="file"
-                                accept=".pdf,.doc,.docx,.png,.jpeg,.jpg"
+                                accept=".pdf,.doc,.docx,.png,.jpeg,.jpg,.webp"
                                 onChange={handleFileUpload}
                                 className="hidden"
                             />
