@@ -27,7 +27,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
 
             <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-                <Header onToggleSidebar={toggleSidebar} showMobileMenuButton={true} showLogo={false} showTopBar={false} />
+                <Header onToggleSidebar={toggleSidebar} showMobileMenuButton={true} showLogo={false} />
                 <main className="flex-1 overflow-y-auto overflow-x-hidden bg-background p-3 sm:p-6">
                     <div className="mx-auto w-full max-w-7xl">{children}</div>
                 </main>

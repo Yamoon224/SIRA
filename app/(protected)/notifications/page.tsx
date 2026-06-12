@@ -3,7 +3,6 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Header } from "@/components/layout/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -119,8 +118,6 @@ export default function NotificationsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header showTopBar={false} />
-
       <div className="container mx-auto px-4 sm:px-6 py-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
           <div>

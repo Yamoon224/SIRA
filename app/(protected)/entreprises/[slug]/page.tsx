@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -109,8 +108,6 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
 
   return (
     <div className="min-h-screen bg-background">
-      <Header showTopBar={false} />
-
       <main>
         {/* Hero Section */}
         <div className="relative h-80 overflow-hidden">

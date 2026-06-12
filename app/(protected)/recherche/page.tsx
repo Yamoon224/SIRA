@@ -2,7 +2,6 @@
 
 import { Suspense } from "react"
 import { useSearchParams } from "next/navigation"
-import { Header } from "@/components/layout/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -50,8 +49,6 @@ function SearchResults() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header showTopBar={false} />
-
       <div className="container mx-auto px-4 sm:px-6 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">Résultats de recherche pour "{query}"</h1>

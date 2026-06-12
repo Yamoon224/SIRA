@@ -22,10 +22,9 @@ interface HeaderProps {
     onToggleSidebar?: () => void
     showMobileMenuButton?: boolean
     showLogo?: boolean
-    showTopBar?: boolean
 }
 
-export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo = true, showTopBar = true }: HeaderProps) {
+export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo = true }: HeaderProps) {
     const [mounted, setMounted] = useState(false)
     const { user, logout, isAuthenticated } = useAuth()
 
@@ -35,10 +34,6 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
 
     const handleLogout = () => {
         logout()
-    }
-
-    if (!showTopBar) {
-        return null
     }
 
     return (
