@@ -109,7 +109,7 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header showTopBar={false} />
 
       <main>
         {/* Hero Section */}

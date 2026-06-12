@@ -99,7 +99,7 @@ export default function OffresPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header showTopBar={false} />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-12 sm:py-16">
