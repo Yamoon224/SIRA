@@ -4,6 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import { Header } from "@/components/layout/header"
 import { Sidebar } from "@/components/layout/sidebar"
+import { ProtectedRoute } from "@/components/auth/protected-route"
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -13,6 +14,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     }
 
     return (
+        <ProtectedRoute>
         <div className="flex h-screen bg-background">
             {sidebarOpen && (
                 <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={() => setSidebarOpen(false)} />
@@ -33,6 +35,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </main>
             </div>
         </div>
+        </ProtectedRoute>
     )
 }
 

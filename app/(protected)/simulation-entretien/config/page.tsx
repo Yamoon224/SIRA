@@ -6,11 +6,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
+import { SubscriptionGate } from "@/components/subscription-gate"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { MessageSquare, Video, X } from "lucide-react"
 import { useRouter } from "next/navigation"
 
-export default function SimulationConfigPage() {
+function SimulationConfigContent() {
     const router = useRouter()
     const [formData, setFormData] = useState({
         jobType: "",
@@ -133,5 +134,13 @@ export default function SimulationConfigPage() {
                 </Card>
             </div>
         </div>
+    )
+}
+
+export default function SimulationConfigPage() {
+    return (
+        <SubscriptionGate featureLabel="la configuration d'entretien IA">
+            <SimulationConfigContent />
+        </SubscriptionGate>
     )
 }

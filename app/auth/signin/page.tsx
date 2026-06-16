@@ -4,7 +4,7 @@ import Link from "next/link"
 import type React from "react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { signIn, getSession } from "next-auth/react"
+import { signIn, signOut, getSession } from "next-auth/react"
 import { setCookie } from "cookies-next"
 import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
@@ -58,48 +58,56 @@ export default function Page() {
         setError("")
 
         try {
-            var res: any = null
+            // ── INSCRIPTION ──────────────────────────────────────────────
             if (activeTab === "signup") {
-                res = await authService.signup(formData)
-                // setShowOTPModal(true)
-            } else {
-                res = await signIn("credentials", {
-                    email: loginData.email,
-                    password: loginData.password,
-                    redirect: false,
-                })                
-            }
+                const res = await authService.signup(formData)
+                const payload = (res as any)?.data ?? res
+                const userData = payload?.user
+                const token = payload?.accessToken ?? payload?.access_token
 
-            const session = await getSession()
+                if (!userData || !token) throw new Error("Erreur lors de l'inscription")
 
-            if (session?.user) {
-                const role = (session.user as any).role
-
-                if (role !== "USER") {
-                    toast.error("Vous n'êtes pas autorisé")
-                    return
-                }
-
-                const authData = {
-                    token: (session.user as any).access_token,
-                    user: session.user,
-                }
-
-                // Keep auth context in sync immediately to avoid guard redirect loop.
-                login({ ...(session.user as any), avatar: (session.user as any).avatar ?? null }, authData.token)
-
-                setCookie("auth", JSON.stringify(authData), {
+                login({ ...userData, avatar: userData.avatar ?? null }, token)
+                setCookie("auth", JSON.stringify({ token, user: userData }), {
                     maxAge: 60 * 60,
                     path: "/",
                     sameSite: "lax",
                 })
+                toast.success("Inscription réussie !")
+                router.push("/auth/plan")
+                return
             }
 
-            if (res?.error) {
-                throw new Error("Email ou mot de passe incorrect")
+            // ── CONNEXION ─────────────────────────────────────────────────
+            const result = await signIn("credentials", {
+                email: loginData.email,
+                password: loginData.password,
+                redirect: false,
+            })
+
+            if (result?.error) throw new Error("Email ou mot de passe incorrect")
+
+            const session = await getSession()
+            if (!session?.user) throw new Error("Erreur lors de la connexion")
+
+            const role = (session.user as any).role
+            if (role !== "USER") {
+                signOut({ redirect: false }).catch(() => {})
+                toast.error("Votre compte n'est pas autorisé ici. Cette interface est réservée aux candidats.")
+                return
             }
 
-            toast.success("Connexion réussie")
+            const authData = {
+                token: (session.user as any).access_token,
+                user: session.user,
+            }
+            login({ ...(session.user as any), avatar: (session.user as any).avatar ?? null }, authData.token)
+            setCookie("auth", JSON.stringify(authData), {
+                maxAge: 60 * 60,
+                path: "/",
+                sameSite: "lax",
+            })
+            toast.success("Connexion réussie !")
             router.replace("/dashboard")
             router.refresh()
         } catch (err: any) {
@@ -139,9 +147,27 @@ export default function Page() {
                 lastName: googleUser.family_name,
                 picture: googleUser.picture,
             })
-            const user = response.data.user
-            login({ ...user, avatar: user.avatar ?? null }, response.data.token)
-            router.push("/dashboard")
+            const payload = (response as any)?.data ?? response
+            const userData = payload?.user
+            const token = payload?.access_token ?? payload?.accessToken
+            const isNewUser = payload?.isNewUser === true
+
+            if (!userData || !token) throw new Error("Réponse invalide du serveur")
+
+            login({ ...userData, avatar: userData.avatar ?? null }, token)
+            setCookie("auth", JSON.stringify({ token, user: userData }), {
+                maxAge: 60 * 60,
+                path: "/",
+                sameSite: "lax",
+            })
+
+            if (isNewUser) {
+                toast.success("Compte créé avec succès !")
+                router.push("/auth/complete-profile")
+            } else {
+                toast.success("Connexion réussie !")
+                router.push("/dashboard")
+            }
         } catch (error: any) {
             if (!error.message?.includes("cancelled")) {
                 toast.error("Erreur lors de la connexion avec Google. Veuillez réessayer.")

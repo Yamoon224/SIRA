@@ -10,8 +10,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { CVAnalysis } from "@/lib/@types/openai"
 import { Upload, FileText, CheckCircle, AlertCircle, TrendingUp, Target, Lightbulb, Eye } from "lucide-react"
+import { SubscriptionGate } from "@/components/subscription-gate"
 
-export default function Page() {
+function AnalyserCVContent() {
     const [cvFile, setCvFile] = useState<File | null>(null)
     const [isAnalyzing, setIsAnalyzing] = useState(false)
     const [analysis, setAnalysis] = useState<CVAnalysis | null>(null)
@@ -288,5 +289,13 @@ export default function Page() {
                 </div>
             )}
         </div>
+    )
+}
+
+export default function Page() {
+    return (
+        <SubscriptionGate featureLabel="l'analyse IA de CV">
+            <AnalyserCVContent />
+        </SubscriptionGate>
     )
 }

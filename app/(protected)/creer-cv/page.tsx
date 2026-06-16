@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Progress } from "@/components/ui/progress"
 import { FileBadge2, Download, Save, Sparkles } from "lucide-react"
 import { generatePDF } from "@/lib/document-generator"
+import { SubscriptionGate } from "@/components/subscription-gate"
 
 interface CVData {
     nom: string
@@ -21,7 +22,7 @@ interface CVData {
     langues: string
 }
 
-export default function Page() {
+function CreerCVContent() {
     const [analysisProgress, setAnalysisProgress] = useState(0)
     const [formData, setFormData] = useState<CVData>({
         nom: "",
@@ -208,5 +209,13 @@ export default function Page() {
                 </div>
             </div>
         </div>
+    )
+}
+
+export default function Page() {
+    return (
+        <SubscriptionGate featureLabel="la création de CV assistée par IA">
+            <CreerCVContent />
+        </SubscriptionGate>
     )
 }

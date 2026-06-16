@@ -2,13 +2,14 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Bell, Briefcase, MessageSquare, Settings, Check, Trash2 } from "lucide-react"
+import { notificationService } from "@/lib/api/notification.service"
 
 interface Notification {
   id: string
@@ -19,84 +20,71 @@ interface Notification {
   isRead: boolean
 }
 
-const mockNotifications: Notification[] = [
-  {
-    id: "1",
-    type: "job",
-    title: "Nouvelle offre correspondant à votre profil",
-    description: "Développeur Full Stack chez TechCorp - Paris",
-    timestamp: "Il y a 2 heures",
-    isRead: false,
-  },
-  {
-    id: "2",
-    type: "message",
-    title: "Message de Marie Dubois",
-    description: "Votre candidature a retenu notre attention...",
-    timestamp: "Il y a 4 heures",
-    isRead: false,
-  },
-  {
-    id: "3",
-    type: "system",
-    title: "Profil mis à jour avec succès",
-    description: "Vos informations ont été sauvegardées",
-    timestamp: "Hier",
-    isRead: true,
-  },
-  {
-    id: "4",
-    type: "job",
-    title: "Alerte emploi: 5 nouvelles offres",
-    description: "Designer UX/UI - Plusieurs entreprises",
-    timestamp: "Il y a 1 jour",
-    isRead: true,
-  },
-  {
-    id: "5",
-    type: "message",
-    title: "Invitation à un entretien",
-    description: "StartupXYZ souhaite vous rencontrer",
-    timestamp: "Il y a 2 jours",
-    isRead: false,
-  },
-]
+function mapType(t: string): "job" | "message" | "system" {
+  const lower = (t ?? "").toLowerCase()
+  if (lower.includes("job") || lower.includes("offer") || lower.includes("emploi") || lower.includes("application")) return "job"
+  if (lower.includes("message") || lower.includes("chat") || lower.includes("conversation")) return "message"
+  return "system"
+}
+
+function mapNotification(raw: any): Notification {
+  return {
+    id: String(raw.id ?? raw._id ?? ""),
+    type: mapType(raw.type ?? ""),
+    title: raw.title ?? raw.subject ?? "",
+    description: raw.description ?? raw.message ?? raw.body ?? "",
+    timestamp: raw.createdAt
+      ? new Date(raw.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })
+      : raw.timestamp ?? "",
+    isRead: raw.isRead ?? raw.read ?? false,
+  }
+}
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications)
+  const [notifications, setNotifications] = useState<Notification[]>([])
   const [selectedNotifications, setSelectedNotifications] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await notificationService.getNotifications()
+        const items = (res as any)?.data ?? res ?? []
+        setNotifications(Array.isArray(items) ? items.map(mapNotification) : [])
+      } catch (err) {
+        console.error("[notifications] load error:", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [])
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case "job":
-        return <Briefcase className="w-5 h-5 text-blue-600" />
-      case "message":
-        return <MessageSquare className="w-5 h-5 text-green-600" />
-      case "system":
-        return <Settings className="w-5 h-5 text-purple-600" />
-      default:
-        return <Bell className="w-5 h-5 text-gray-600" />
+      case "job": return <Briefcase className="w-5 h-5 text-blue-600" />
+      case "message": return <MessageSquare className="w-5 h-5 text-green-600" />
+      case "system": return <Settings className="w-5 h-5 text-purple-600" />
+      default: return <Bell className="w-5 h-5 text-gray-600" />
     }
   }
 
   const getNotificationTypeLabel = (type: string) => {
     switch (type) {
-      case "job":
-        return "Offre d'emploi"
-      case "message":
-        return "Message"
-      case "system":
-        return "Système"
-      default:
-        return "Notification"
+      case "job": return "Offre d'emploi"
+      case "message": return "Message"
+      case "system": return "Système"
+      default: return "Notification"
     }
   }
 
   const markAsRead = (id: string) => {
+    notificationService.markAsRead(id).catch(() => {})
     setNotifications((prev) => prev.map((notif) => (notif.id === id ? { ...notif, isRead: true } : notif)))
   }
 
   const markAllAsRead = () => {
+    notificationService.markAllAsRead().catch(() => {})
     setNotifications((prev) => prev.map((notif) => ({ ...notif, isRead: true })))
   }
 
@@ -115,6 +103,14 @@ export default function NotificationsPage() {
   }
 
   const unreadCount = notifications.filter((n) => !n.isRead).length
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-16">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#2f6de6] border-t-transparent" />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">
