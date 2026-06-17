@@ -183,7 +183,7 @@ export default function ExploreJobsPage() {
                         <Link href="/auth/signin">
                             <Button variant="outline" className="h-8 px-4 rounded-full text-[11px] border-[#b9c8ec] text-[#2f6de6] bg-white">Connexion</Button>
                         </Link>
-                        <Link href="//entreprise">
+                        <Link href="https://goriya-entreprise.vercel.app">
                             <Button className="h-8 px-4 rounded-full text-[11px] bg-[#2157d3] hover:bg-[#1d4cb9]">Espace entreprise</Button>
                         </Link>
                     </div>
@@ -430,7 +430,7 @@ export default function ExploreJobsPage() {
                         <p className="text-xs sm:text-sm text-[#6f7887]">2026 © Goriya. Tous droits réservés.</p>
                         <div className="flex items-center gap-2">
                             <Link href="/auth/signin"><Button variant="outline" className="h-8 rounded-full border-[#374153] text-[#d9e5ff] bg-transparent">Connexion</Button></Link>
-                            <Link href="//entreprise"><Button className="h-8 rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">Espace entreprise</Button></Link>
+                            <Link href="https://goriya-entreprise.vercel.app"><Button className="h-8 rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">Espace entreprise</Button></Link>
                         </div>
                     </div>
                 </div>

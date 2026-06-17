@@ -410,7 +410,7 @@ export default function Page() {
                                 <span className="hidden sm:inline text-[12px]">Connexion</span>
                             </Button>
                         </Link>
-                        <Link href="//entreprise">
+                        <Link href="https://goriya-entreprise.vercel.app">
                             <Button className="h-8 w-8 sm:h-8 sm:w-auto sm:px-4 rounded-full text-[12px] bg-[#2157d3] hover:bg-[#1d4cb9] p-0 sm:p-2" aria-label="Espace entreprise">
                                 <BriefcaseBusiness className="h-4 w-4 sm:mr-2" />
                                 <span className="hidden sm:inline">Espace entreprise</span>
@@ -696,7 +696,7 @@ export default function Page() {
                         <p className="text-xs sm:text-sm text-[#6f7887]">2026 © Goriya. Tous droits reserves.</p>
                         <div className="flex items-center gap-2">
                             <Link href="/auth/signin"><Button variant="outline" className="h-8 rounded-full border-[#374153] text-[#d9e5ff] bg-transparent">Connexion</Button></Link>
-                            <Link href="//entreprise"><Button className="h-8 rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">Espace entreprise</Button></Link>
+                            <Link href="https://goriya-entreprise.vercel.app"><Button className="h-8 rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">Espace entreprise</Button></Link>
                         </div>
                     </div>
                 </div>

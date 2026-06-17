@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -98,6 +99,28 @@ export default function OffresPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Public header */}
+      <header className="bg-white border-b border-[#e8edf6]">
+        <div className="mx-auto max-w-[1180px] px-4 h-[56px] sm:h-[64px] flex items-center justify-between">
+          <Link href="/" className="flex items-center">
+            <img src="/images/logo.png" alt="Goriya" className="h-8 w-auto" />
+          </Link>
+          <nav className="hidden md:flex items-center gap-6 lg:gap-10 text-[12px] text-[#7a8495] font-medium">
+            <Link href="/" className="hover:text-[#2f6de6]">Accueil</Link>
+            <Link href="/explorer-emplois" className="hover:text-[#2f6de6]">Trouve un emploi</Link>
+            <Link href="/offres" className="font-semibold text-[#2f6de6]">Tarifs d'abonnement</Link>
+          </nav>
+          <div className="flex items-center gap-2">
+            <Link href="/auth/signin">
+              <Button variant="outline" className="h-8 px-4 rounded-full text-[11px] border-[#b9c8ec] text-[#2f6de6] bg-white">Connexion</Button>
+            </Link>
+            <Link href="https://goriya-entreprise.vercel.app">
+              <Button className="h-8 px-4 rounded-full text-[11px] bg-[#2157d3] hover:bg-[#1d4cb9]">Espace entreprise</Button>
+            </Link>
+          </div>
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-12 sm:py-16">
         <div className="container mx-auto px-6 text-center">
@@ -323,17 +346,14 @@ export default function OffresPage() {
             Rejoignez des milliers de professionnels qui font confiance à Goriya pour leur carrière
           </p>
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-              Commencer maintenant
-            </Button>
-            <Button size="lg" variant="outline">
-              Nous contacter
-            </Button>
+            <Link href="/auth/signin">
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">Commencer maintenant</Button>
+            </Link>
+            <Button size="lg" variant="outline">Nous contacter</Button>
           </div>
         </section>
       </div>
 
-      {/* Footer Component */}
       <Footer />
     </div>
   )

@@ -76,7 +76,7 @@ export default function EntrepriseDetailPage() {
                                 Connexion
                             </button>
                         </Link>
-                        <Link href="//entreprise">
+                        <Link href="https://goriya-entreprise.vercel.app">
                             <button className="h-8 px-4 rounded-full text-[12px] bg-[#2157d3] hover:bg-[#1d4cb9] text-white">
                                 Espace entreprise
                             </button>
@@ -311,7 +311,7 @@ export default function EntrepriseDetailPage() {
                             <Link href="/auth/signin">
                                 <button className="h-8 px-4 rounded-full border border-[#374153] text-[#d9e5ff] text-[12px] bg-transparent hover:bg-[#1c2030]">Connexion</button>
                             </Link>
-                            <Link href="//entreprise">
+                            <Link href="https://goriya-entreprise.vercel.app">
                                 <button className="h-8 px-4 rounded-full bg-[#2f6de6] hover:bg-[#2458ba] text-white text-[12px]">Espace entreprise</button>
                             </Link>
                         </div>
