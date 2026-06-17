@@ -89,7 +89,7 @@ export default function EntrepriseDetailPage() {
             <div className="relative">
                 <div className="h-[220px] sm:h-[260px] overflow-hidden bg-gradient-to-r from-[#1539be] to-[#2f81f1]">
                     {company.coverImage && (
-                        <img src={company.coverImage} alt="cover" className="w-full h-full object-cover" />
+                        <img src={company.coverImage} alt="cover" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                     )}
                 </div>
 
@@ -97,7 +97,7 @@ export default function EntrepriseDetailPage() {
                     <div className="relative -mt-10 flex items-end gap-4 pb-4 border-b border-[#e8edf6]">
                         <div className="w-[72px] h-[72px] rounded-full bg-white flex items-center justify-center flex-shrink-0 border-4 border-white shadow overflow-hidden">
                             {company.logo
-                                ? <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
+                                ? <img src={company.logo} alt={company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                 : <Building2 className="w-8 h-8 text-[#2f6de6]" />
                             }
                         </div>

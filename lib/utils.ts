@@ -22,6 +22,7 @@ export function isPublicRoute(pathname: string) {
         '/auth',
         '/explorer-emplois',
         '/explorer-entreprises',
+        '/offres',
         '/images',
         '/icon',
     ];

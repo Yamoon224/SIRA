@@ -228,7 +228,7 @@ export default function ProfilePage() {
                                 key={item.id}
                                 className="border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow"
                             >
-                                <img src={item.image || "/placeholder.svg"} alt={item.title} className="w-full h-32 object-cover" />
+                                <img src={item.image || "/placeholder.svg"} alt={item.title} className="w-full h-32 object-cover" onError={(e) => { e.currentTarget.src = "/placeholder.svg" }} />
                                 <div className="p-4">
                                     <h4 className="font-semibold text-foreground mb-2">{item.title}</h4>
                                     <p className="text-sm text-muted-foreground mb-3">{item.description}</p>

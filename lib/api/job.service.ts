@@ -7,9 +7,12 @@ export const jobService = {
         filters?: {
             search?: string
             location?: string
-            jobType?: string[]
+            jobType?: string | string[]
             experience?: string[]
             salary?: string[]
+            remote?: boolean
+            hasSalary?: boolean
+            companySize?: string
             page?: number
             limit?: number
         },

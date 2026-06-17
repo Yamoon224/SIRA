@@ -62,7 +62,7 @@ export default function TopRecruitingPage() {
                                             <div className="flex items-center gap-3">
                                                 <div className="w-8 h-8 rounded-full bg-[#eff4ff] flex items-center justify-center overflow-hidden flex-shrink-0">
                                                     {company.logo
-                                                        ? <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
+                                                        ? <img src={company.logo} alt={company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                         : <Building2 className="w-4 h-4 text-[#2f6de6]" />
                                                     }
                                                 </div>

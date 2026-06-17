@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -20,6 +20,14 @@ import { getDeviceId } from "@/lib/device"
 import type { CVAnalysis } from "@/lib/@types/openai"
 
 type GateState = "idle" | "requires_auth" | "requires_subscription"
+
+const HOME_CAREER_TAB_PARAMS: Record<string, Record<string, string | string[]>> = {
+    "Candidats":     {},
+    "Étudiants":     { jobType: "STAGE" },
+    "Fonctionnaire": { search: "public" },
+}
+
+const HOME_CAREER_LIMIT = 3
 
 const featureBlocks = [
     {
@@ -80,6 +88,13 @@ export default function Page() {
     const [dashboardStats, setDashboardStats] = useState<{ totalApplications: number; interviews: number; profileViews: number; savedJobs: number } | null>(null)
     const [recentApplications, setRecentApplications] = useState<ICandidature[]>([])
 
+    // Career section state
+    const [homeCareerTab, setHomeCareerTab] = useState("Candidats")
+    const [homeCareerJobs, setHomeCareerJobs] = useState<IJobOffer[]>([])
+    const [homeCareerLoading, setHomeCareerLoading] = useState(false)
+    const [homeCareerPage, setHomeCareerPage] = useState(1)
+    const [homeCareerTotalPages, setHomeCareerTotalPages] = useState(1)
+
     // Load popular jobs
     useEffect(() => {
         jobService.getJobs({ limit: 6 })
@@ -128,6 +143,27 @@ export default function Page() {
             .then(data => setFreeUsage(data))
             .catch(() => {})
     }, [authLoading, isLoggedIn])
+
+    const fetchHomeCareerJobs = useCallback(async (p: number) => {
+        setHomeCareerLoading(true)
+        try {
+            const params = HOME_CAREER_TAB_PARAMS[homeCareerTab] ?? {}
+            const res = await jobService.getJobs({ ...params, page: p, limit: HOME_CAREER_LIMIT }) as any
+            const data: IJobOffer[] = res?.data?.data ?? res?.data ?? []
+            const meta = res?.data?.meta ?? res?.meta
+            setHomeCareerJobs(Array.isArray(data) ? data : [])
+            setHomeCareerPage(p)
+            setHomeCareerTotalPages(meta?.totalPages ?? 1)
+        } catch {
+            setHomeCareerJobs([])
+        } finally {
+            setHomeCareerLoading(false)
+        }
+    }, [homeCareerTab])
+
+    useEffect(() => {
+        fetchHomeCareerJobs(1)
+    }, [fetchHomeCareerJobs])
 
     const toggleSaveJob = (jobId: string) => {
         setSavedJobs((prev) => (prev.includes(jobId) ? prev.filter((id) => id !== jobId) : [...prev, jobId]))
@@ -271,7 +307,7 @@ export default function Page() {
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex items-center justify-center flex-shrink-0">
                                                         {job.company?.logo ? (
-                                                            <img src={job.company.logo} alt={`${job.company.name} logo`} className="w-full h-full object-cover" />
+                                                            <img src={job.company.logo} alt={`${job.company.name} logo`} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                         ) : (
                                                             <Building2 className="w-6 h-6 text-muted-foreground" />
                                                         )}
@@ -452,7 +488,7 @@ export default function Page() {
                                         <div className="flex items-center justify-between mb-2 sm:mb-3">
                                             <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-[#f3f5fa] flex items-center justify-center overflow-hidden">
                                                 {company.logo ? (
-                                                    <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
+                                                    <img src={company.logo} alt={company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                 ) : (
                                                     <Building2 className="w-4 h-4 text-[#9aa3b2]" />
                                                 )}
@@ -575,32 +611,58 @@ export default function Page() {
             <section className="py-8 sm:py-14 bg-white">
                 <div className="mx-auto max-w-[1180px] px-3 sm:px-4">
                     <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
-                        <h3 className="text-lg xs:text-xl sm:text-2xl font-bold">Prenez votre carriere en main</h3>
+                        <h3 className="text-lg xs:text-xl sm:text-2xl font-bold">Prenez votre carrière en main</h3>
                         <div className="flex gap-2">
-                            <button className="w-8 h-8 rounded-full border border-[#e2e8f5] flex items-center justify-center text-[#7d8cab]"><ChevronLeft className="w-4 h-4" /></button>
-                            <button className="w-8 h-8 rounded-full border border-[#e2e8f5] flex items-center justify-center text-[#7d8cab]"><ChevronRight className="w-4 h-4" /></button>
+                            <button type="button"
+                                disabled={homeCareerPage <= 1 || homeCareerLoading}
+                                onClick={() => fetchHomeCareerJobs(homeCareerPage - 1)}
+                                className="w-8 h-8 rounded-full border border-[#e2e8f5] flex items-center justify-center text-[#7d8cab] disabled:opacity-40 disabled:cursor-not-allowed hover:border-[#2f6de6]">
+                                <ChevronLeft className="w-4 h-4" />
+                            </button>
+                            <button type="button"
+                                disabled={homeCareerPage >= homeCareerTotalPages || homeCareerLoading}
+                                onClick={() => fetchHomeCareerJobs(homeCareerPage + 1)}
+                                className="w-8 h-8 rounded-full border border-[#e2e8f5] flex items-center justify-center text-[#7d8cab] disabled:opacity-40 disabled:cursor-not-allowed hover:border-[#2f6de6]">
+                                <ChevronRight className="w-4 h-4" />
+                            </button>
                         </div>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5">
-                        <article className="rounded-xl border border-[#e9eef8] p-3">
-                            <img src="/ux-presentation-meeting.jpg" alt="visio" className="h-32 xs:h-36 sm:h-40 w-full object-cover rounded-md" />
-                            <h4 className="mt-3 font-semibold">Presentations des revisions UX</h4>
-                            <p className="text-sm text-[#8a95a8] mt-2">Comment creer des presentations convaincantes pour impressionner vos collegues et vos managers ?</p>
-                        </article>
-                        <article className="rounded-xl border border-[#e9eef8] p-3">
-                            <img src="/team-migration-software.jpg" alt="migration" className="h-32 xs:h-36 sm:h-40 w-full object-cover rounded-md" />
-                            <h4 className="mt-3 font-semibold">Migration vers linear 101</h4>
-                            <p className="text-sm text-[#8a95a8] mt-2">Lancer simple: les projets, les sprints, les tickets et le suivi des bugs. Voici comment commencer.</p>
-                        </article>
-                        <article className="rounded-xl border border-[#e9eef8] p-3">
-                            <img src="/api-development-workspace.jpg" alt="api" className="h-32 xs:h-36 sm:h-40 w-full object-cover rounded-md" />
-                            <h4 className="mt-3 font-semibold">Construisez votre pile d'API.</h4>
-                            <p className="text-sm text-[#8a95a8] mt-2">La proliferation des API RESTful et le container runtime ont une croissance enorme a securiser.</p>
-                        </article>
+                    <div className="inline-flex rounded-full border border-[#e2e8f5] overflow-hidden mb-5 bg-white">
+                        {Object.keys(HOME_CAREER_TAB_PARAMS).map((tab) => (
+                            <button key={tab} type="button" onClick={() => setHomeCareerTab(tab)}
+                                className={`px-4 h-8 text-[11px] font-semibold transition-colors ${homeCareerTab === tab ? "text-[#2f6de6] bg-[#edf4ff]" : "text-[#7f8796] hover:text-[#2f6de6]"}`}>
+                                {tab}
+                            </button>
+                        ))}
                     </div>
+                    {homeCareerLoading ? (
+                        <div className="flex justify-center py-10"><Loader2 className="w-5 h-5 animate-spin text-[#2f6de6]" /></div>
+                    ) : homeCareerJobs.length === 0 ? (
+                        <p className="text-center text-sm text-[#9aa3b2] py-8">Aucune offre disponible pour cette catégorie.</p>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5">
+                            {homeCareerJobs.map((job) => (
+                                <Link key={job.id} href={`/explorer-emplois/${job.id}`}>
+                                    <article className="rounded-xl border border-[#e9eef8] p-3 hover:shadow-md transition-shadow h-full">
+                                        <div className="h-32 sm:h-40 w-full rounded-md overflow-hidden bg-gradient-to-br from-[#2f6de6] to-[#1539be] flex items-center justify-center">
+                                            {job.company?.coverImage
+                                                ? <img src={job.company.coverImage} alt={job.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                                : job.company?.logo
+                                                    ? <img src={job.company.logo} alt={job.company.name} className="w-16 h-16 object-contain brightness-0 invert" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                                    : <Building2 className="w-10 h-10 text-white opacity-60" />
+                                            }
+                                        </div>
+                                        <h4 className="mt-3 font-semibold text-[#1b2331] line-clamp-2">{job.title}</h4>
+                                        {job.company?.name && <p className="text-xs text-[#2f6de6] mt-1">{job.company.name}</p>}
+                                        <p className="text-sm text-[#8a95a8] mt-2 line-clamp-2">{job.description}</p>
+                                    </article>
+                                </Link>
+                            ))}
+                        </div>
+                    )}
                     <div className="text-center mt-6 sm:mt-8">
-                        <Link href="/explorer-emplois">
-                            <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-10 sm:h-11 px-6 sm:px-8">+ Decouvrir plus</Button>
+                        <Link href={homeCareerTab === "Étudiants" ? "/explorer-emplois?jobType=STAGE" : "/explorer-emplois"}>
+                            <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-10 sm:h-11 px-6 sm:px-8">+ Découvrir plus</Button>
                         </Link>
                     </div>
                 </div>

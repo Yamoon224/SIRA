@@ -17,6 +17,14 @@ const filterChips = [
     { label: "Entreprise établie" },
 ]
 
+const FILTER_CHIP_PARAMS: Record<string, Record<string, any>> = {
+    "Salaire affiché":    { hasSalary: true },
+    "Télétravail possible": { remote: true },
+    "Poste salarié":      { jobType: "CDI" },
+    "Entreprise émergente": { companySize: "startup" },
+    "Entreprise établie": { companySize: "large" },
+}
+
 const popularSearches = [
     "Tous", "Communication", "Commercial", "Marketing", "Graphisme",
     "Data", "Product manager", "Développeur", "Finance", "Juridique",
@@ -97,7 +105,12 @@ export default function ExploreJobsPage() {
             else setLoading(true)
 
             const keyword = activeCategory !== "Tous" ? activeCategory : searchTerm || undefined
-            const res = await jobService.getJobs({ search: keyword, page: p, limit: 8 }) as any
+            const chipParams: Record<string, any> = {}
+            selectedFilters.forEach(label => {
+                const params = FILTER_CHIP_PARAMS[label]
+                if (params) Object.assign(chipParams, params)
+            })
+            const res = await jobService.getJobs({ search: keyword, page: p, limit: 8, ...chipParams }) as any
             const newJobs: IJobOffer[] = res?.data?.data ?? res?.data ?? []
             const meta = res?.data?.meta ?? res?.meta
 
@@ -114,7 +127,7 @@ export default function ExploreJobsPage() {
             setLoading(false)
             setLoadingMore(false)
         }
-    }, [searchTerm, activeCategory])
+    }, [searchTerm, activeCategory, selectedFilters])
 
     useEffect(() => {
         setPage(1)
@@ -245,7 +258,7 @@ export default function ExploreJobsPage() {
                                             <div className="mt-3 flex items-center gap-3">
                                                 <div className="w-6 h-6 rounded-full overflow-hidden bg-[#f0f3fb] flex items-center justify-center">
                                                     {job.company?.logo
-                                                        ? <img src={job.company.logo} alt={job.company.name} className="w-full h-full object-cover" />
+                                                        ? <img src={job.company.logo} alt={job.company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                         : <Building2 className="w-3 h-3 text-[#9aa3b2]" />
                                                     }
                                                 </div>
@@ -258,7 +271,7 @@ export default function ExploreJobsPage() {
                                         </div>
                                         {job.company?.coverImage && (
                                             <div className="w-full md:w-[230px] h-[95px] rounded-xl overflow-hidden bg-[#f0f3fb]">
-                                                <img src={job.company.coverImage} alt={job.title} className="w-full h-full object-cover" />
+                                                <img src={job.company.coverImage} alt={job.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                             </div>
                                         )}
                                     </div>
@@ -294,7 +307,7 @@ export default function ExploreJobsPage() {
                                         <div className="flex items-center justify-between">
                                             <div className="w-6 h-6 rounded-full overflow-hidden bg-[#f0f3fb] flex items-center justify-center">
                                                 {company.logo
-                                                    ? <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
+                                                    ? <img src={company.logo} alt={company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                     : <Building2 className="w-3 h-3 text-[#9aa3b2]" />
                                                 }
                                             </div>
@@ -360,9 +373,9 @@ export default function ExploreJobsPage() {
                                     <article className="rounded-xl border border-[#d8deeb] bg-white p-3 hover:shadow-md transition-shadow h-full">
                                         <div className="h-36 w-full rounded-md overflow-hidden bg-gradient-to-br from-[#2f6de6] to-[#1539be] flex items-center justify-center">
                                             {job.company?.coverImage
-                                                ? <img src={job.company.coverImage} alt={job.title} className="w-full h-full object-cover" />
+                                                ? <img src={job.company.coverImage} alt={job.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                 : job.company?.logo
-                                                    ? <img src={job.company.logo} alt={job.company.name} className="w-16 h-16 object-contain brightness-0 invert" />
+                                                    ? <img src={job.company.logo} alt={job.company.name} className="w-16 h-16 object-contain brightness-0 invert" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                     : <Building2 className="w-10 h-10 text-white opacity-60" />
                                             }
                                         </div>

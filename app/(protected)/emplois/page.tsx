@@ -236,7 +236,7 @@ export default function EmploisPage() {
                                         </div>
                                         <div className="w-8 h-8 rounded-full bg-[#eff4ff] flex items-center justify-center mb-2 overflow-hidden">
                                             {job.company?.logo
-                                                ? <img src={job.company.logo} alt={job.company.name} className="w-full h-full object-cover" />
+                                                ? <img src={job.company.logo} alt={job.company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                 : <Building2 className="w-4 h-4 text-[#2f6de6]" />
                                             }
                                         </div>

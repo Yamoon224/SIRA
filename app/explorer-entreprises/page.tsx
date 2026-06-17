@@ -24,7 +24,7 @@ function CompanyCard({ company }: { company: ICompany }) {
                 <div className="flex items-center justify-between">
                     <div className="w-6 h-6 rounded-full overflow-hidden bg-[#f3f5fa] flex items-center justify-center flex-shrink-0">
                         {company.logo
-                            ? <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
+                            ? <img src={company.logo} alt={company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                             : <Building2 className="w-3 h-3 text-[#9aa3b2]" />
                         }
                     </div>

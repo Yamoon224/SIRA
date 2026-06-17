@@ -114,7 +114,7 @@ export default function JobDetailPage() {
                                     <div className="flex items-start gap-3 mb-4">
                                         <div className="w-8 h-8 rounded-full overflow-hidden bg-[#f0f3fb] flex items-center justify-center flex-shrink-0">
                                             {job.company?.logo
-                                                ? <img src={job.company.logo} alt={job.company.name} className="w-full h-full object-cover" />
+                                                ? <img src={job.company.logo} alt={job.company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                 : <Building2 className="w-4 h-4 text-[#9aa3b2]" />
                                             }
                                         </div>
@@ -205,7 +205,7 @@ export default function JobDetailPage() {
 
                             <div className="mt-8 pt-8 border-t border-[#e8eef6]">
                                 {job.company?.coverImage && (
-                                    <img src={job.company.coverImage} alt={job.title} className="w-full h-64 rounded-xl object-cover mb-6" />
+                                    <img src={job.company.coverImage} alt={job.title} className="w-full h-64 rounded-xl object-cover mb-6" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                 )}
                                 {job.company && (
                                     <div className="bg-gradient-to-r from-[#2b7cf0] to-[#1e5ed4] text-white rounded-xl p-6 text-center">
