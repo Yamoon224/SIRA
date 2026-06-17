@@ -162,6 +162,7 @@ export default function Page() {
                 <Input
                   value={formData[field.id] || ""}
                   onChange={(e) => handleInputChange(field.id, e.target.value)}
+                  placeholder={field.label}
                   className={`h-8 rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0 ${
                     errors[field.id] ? "ring-1 ring-red-400" : ""
                   }`}
@@ -177,6 +178,7 @@ export default function Page() {
                 <Input
                   value={formData[field.id] || ""}
                   onChange={(e) => handleInputChange(field.id, e.target.value)}
+                  placeholder={field.label}
                   className={`h-8 rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0 ${
                     errors[field.id] ? "ring-1 ring-red-400" : ""
                   }`}

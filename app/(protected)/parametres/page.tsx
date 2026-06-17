@@ -65,6 +65,7 @@ export default function ParametresPage() {
                     <Input
                       id="firstName"
                       value={profile.firstName}
+                      placeholder="Votre prénom"
                       onChange={(e) => setProfile((prev) => ({ ...prev, firstName: e.target.value }))}
                     />
                   </div>
@@ -73,6 +74,7 @@ export default function ParametresPage() {
                     <Input
                       id="lastName"
                       value={profile.lastName}
+                      placeholder="Votre nom"
                       onChange={(e) => setProfile((prev) => ({ ...prev, lastName: e.target.value }))}
                     />
                   </div>
@@ -84,6 +86,7 @@ export default function ParametresPage() {
                     id="email"
                     type="email"
                     value={profile.email}
+                    placeholder="Adresse e-mail"
                     onChange={(e) => setProfile((prev) => ({ ...prev, email: e.target.value }))}
                   />
                 </div>
@@ -93,6 +96,7 @@ export default function ParametresPage() {
                   <Input
                     id="phone"
                     value={profile.phone}
+                    placeholder="+33 6 00 00 00 00"
                     onChange={(e) => setProfile((prev) => ({ ...prev, phone: e.target.value }))}
                   />
                 </div>
@@ -160,15 +164,15 @@ export default function ParametresPage() {
               <CardContent className="space-y-4">
                 <div>
                   <Label htmlFor="currentPassword">Mot de passe actuel</Label>
-                  <Input id="currentPassword" type="password" />
+                  <Input id="currentPassword" type="password" placeholder="Mot de passe actuel" />
                 </div>
                 <div>
                   <Label htmlFor="newPassword">Nouveau mot de passe</Label>
-                  <Input id="newPassword" type="password" />
+                  <Input id="newPassword" type="password" placeholder="Nouveau mot de passe" />
                 </div>
                 <div>
                   <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-                  <Input id="confirmPassword" type="password" />
+                  <Input id="confirmPassword" type="password" placeholder="Confirmer le mot de passe" />
                 </div>
                 <Button>Changer le mot de passe</Button>
               </CardContent>

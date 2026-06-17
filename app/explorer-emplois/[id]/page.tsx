@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Bookmark, Share2, ChevronDown, Loader2, Building2, MapPin, Calendar, AlertCircle } from "lucide-react"
+import { Bookmark, Share2, ChevronDown, Loader2, Building2, MapPin, Calendar, AlertCircle, Lock, Sparkles } from "lucide-react"
 import { jobService } from "@/lib/api/job.service"
 import { IJobOffer } from "@/lib/@types/entities"
 
@@ -28,6 +28,72 @@ const faqs = [
     { q: "Quel est le délai de réponse après candidature ?", a: "Les recruteurs répondent généralement sous 2 à 4 semaines après la clôture de l'offre." },
 ]
 
+function MatchingScoreWidget() {
+    const score = 85
+    const radius = 42
+    const circumference = 2 * Math.PI * radius
+    const offset = circumference - (score / 100) * circumference
+
+    return (
+        <div className="bg-white rounded-xl border border-[#e8eef6] p-5">
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[13px] font-extrabold text-[#1b2331]">Votre profil correspond à cette offre</h3>
+                <Lock className="w-4 h-4 text-[#9aa3b2]" />
+            </div>
+
+            <div className="flex items-center gap-4 mb-4">
+                <div className="relative w-[90px] h-[90px] flex-shrink-0">
+                    <svg width="90" height="90" viewBox="0 0 90 90">
+                        <circle cx="45" cy="45" r={radius} fill="none" stroke="#f0f3fb" strokeWidth="8" />
+                        <circle
+                            cx="45" cy="45" r={radius}
+                            fill="none"
+                            stroke="#2f6de6"
+                            strokeWidth="8"
+                            strokeDasharray={circumference}
+                            strokeDashoffset={offset}
+                            strokeLinecap="round"
+                            transform="rotate(-90 45 45)"
+                        />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="text-[22px] font-extrabold text-[#1b2331] leading-none">
+                            {score}
+                            <span className="text-[11px] font-semibold text-[#9aa3b2]">/100</span>
+                        </span>
+                    </div>
+                </div>
+                <div className="space-y-2 flex-1">
+                    {[
+                        { label: "Expérience", value: 90 },
+                        { label: "Compétences", value: 80 },
+                        { label: "Localisation", value: 85 },
+                    ].map(({ label, value }) => (
+                        <div key={label}>
+                            <div className="flex justify-between text-[10px] mb-0.5">
+                                <span className="text-[#7f8796]">{label}</span>
+                                <span className="font-semibold text-[#1b2331]">{value}%</span>
+                            </div>
+                            <div className="h-1.5 rounded-full bg-[#f0f3fb] overflow-hidden">
+                                <div className="h-full bg-[#2f6de6] rounded-full" style={{ width: `${value}%` }} />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="rounded-lg bg-[#f4f7ff] border border-[#dce8ff] p-3 text-center">
+                <p className="text-[11px] text-[#4e5a6e] mb-2">Créez un compte gratuit pour voir si ce poste vous correspond vraiment.</p>
+                <Link href="/auth/signin">
+                    <Button size="sm" className="w-full rounded-full bg-[#2f6de6] hover:bg-[#2458ba] text-[11px] h-8">
+                        Voir mon score de compatibilité
+                    </Button>
+                </Link>
+            </div>
+        </div>
+    )
+}
+
 export default function JobDetailPage() {
     const params = useParams()
     const router = useRouter()
@@ -38,6 +104,7 @@ export default function JobDetailPage() {
     const [error, setError] = useState<string | null>(null)
     const [bookmarked, setBookmarked] = useState(false)
     const [applying, setApplying] = useState(false)
+    const [openFaq, setOpenFaq] = useState<number | null>(null)
 
     useEffect(() => {
         if (!jobId) return
@@ -80,6 +147,7 @@ export default function JobDetailPage() {
                     <nav className="hidden md:flex items-center gap-6 lg:gap-10 text-[12px] text-[#7a8495] font-medium">
                         <Link href="/" className="text-[#2f6de6]">Accueil</Link>
                         <Link href="/explorer-emplois" className="hover:text-[#2f6de6]">Trouve un emploi</Link>
+                        <Link href="/offres" className="hover:text-[#2f6de6]">Tarifs d'abonnement</Link>
                     </nav>
                     <div className="flex items-center gap-2">
                         <Link href="/auth/signin">
@@ -106,187 +174,218 @@ export default function JobDetailPage() {
                         </Link>
                     </div>
                 ) : (
-                    <>
-                        <section className="bg-white rounded-xl p-6 sm:p-8 border border-[#e8eef6]">
-                            <div className="flex flex-col lg:flex-row gap-8">
-                                <div className="flex-1">
-                                    <div className="flex items-start gap-3 mb-4">
-                                        <div className="w-8 h-8 rounded-full overflow-hidden bg-[#f0f3fb] flex items-center justify-center flex-shrink-0">
-                                            {job.company?.logo
-                                                ? <img src={job.company.logo} alt={job.company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
-                                                : <Building2 className="w-4 h-4 text-[#9aa3b2]" />
-                                            }
-                                        </div>
-                                        <span className="text-[10px] font-semibold text-[#1b2331]">{job.company?.name ?? "Entreprise"}</span>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* LEFT — main content */}
+                        <div className="lg:col-span-2 space-y-5">
+                            {/* Job header card */}
+                            <div className="bg-white rounded-xl border border-[#e8eef6] p-6">
+                                {/* Company breadcrumb */}
+                                <div className="flex items-center gap-2 mb-4">
+                                    <div className="w-7 h-7 rounded-full overflow-hidden bg-[#f0f3fb] flex items-center justify-center flex-shrink-0">
+                                        {job.company?.logo
+                                            ? <img src={job.company.logo} alt={job.company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                            : <Building2 className="w-4 h-4 text-[#9aa3b2]" />
+                                        }
                                     </div>
-
-                                    <h1 className="text-[28px] sm:text-[36px] leading-tight font-extrabold text-[#1b2331] mb-4">{job.title}</h1>
-
-                                    <div className="space-y-2 mb-6 text-[12px]">
-                                        <div className="flex flex-wrap gap-4 text-[#7f8796]">
-                                            {job.company?.sector && <span>📍 {job.company.sector}</span>}
-                                            {job.type && <span>📋 {job.type}</span>}
-                                            {job.experience && <span>⏱ {job.experience}</span>}
-                                        </div>
-                                        <div className="flex flex-wrap gap-4 text-[#7f8796]">
-                                            {job.salary && <span>💰 {job.salary}</span>}
-                                            {job.location && <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3" />{job.location}</span>}
-                                            <span className="inline-flex items-center gap-1"><Calendar className="w-3 h-3" />{formatPosted(job.publishDate)}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex gap-3 flex-wrap">
-                                        <Button onClick={handleApply} disabled={applying} className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-10 px-6 text-[12px] font-semibold">
-                                            {applying ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                                            Postuler
-                                        </Button>
-                                        <Button variant="outline" onClick={() => setBookmarked(b => !b)} className={`rounded-full border-[#d8deeb] h-10 px-4 ${bookmarked ? "text-[#2f6de6]" : ""}`}>
-                                            <Bookmark className={`w-4 h-4 ${bookmarked ? "fill-current" : ""}`} />
-                                        </Button>
-                                        <Button variant="outline" onClick={handleShare} className="rounded-full border-[#d8deeb] h-10 px-4">
-                                            <Share2 className="w-4 h-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-
-                                <div className="lg:w-[280px]">
-                                    <div className="space-y-6">
-                                        <div>
-                                            <h3 className="text-[11px] font-bold text-[#7f8796] uppercase mb-3">Infos</h3>
-                                            <div className="space-y-3 text-[12px]">
-                                                {job.company?.name && (
-                                                    <div className="flex gap-2">
-                                                        <span className="font-semibold text-[#1b2331]">Entreprise:</span>
-                                                        <span className="text-[#7f8796]">{job.company.name}</span>
-                                                    </div>
-                                                )}
-                                                {job.company?.sector && (
-                                                    <div className="flex gap-2">
-                                                        <span className="font-semibold text-[#1b2331]">Secteur:</span>
-                                                        <span className="text-[#7f8796]">{job.company.sector}</span>
-                                                    </div>
-                                                )}
-                                                {job.applicants != null && (
-                                                    <div className="flex gap-2">
-                                                        <span className="font-semibold text-[#1b2331]">Candidats:</span>
-                                                        <span className="text-[#7f8796]">{job.applicants}</span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                        {job.type && (
-                                            <div className="border-t border-[#e8eef6] pt-6">
-                                                <h3 className="text-[11px] font-bold text-[#7f8796] uppercase mb-3">Type</h3>
-                                                <div className="text-[12px] font-semibold text-[#1b2331]">{job.type}</div>
-                                            </div>
-                                        )}
-                                        {job.location && (
-                                            <div className="border-t border-[#e8eef6] pt-6">
-                                                <h3 className="text-[11px] font-bold text-[#7f8796] uppercase mb-3">Lieu</h3>
-                                                <div className="text-[12px] text-[#7f8796]">{job.location}</div>
-                                            </div>
-                                        )}
-                                        {job.salary && (
-                                            <div className="border-t border-[#e8eef6] pt-6">
-                                                <h3 className="text-[11px] font-bold text-[#7f8796] uppercase mb-3">Salaire</h3>
-                                                <div className="text-[14px] font-extrabold text-[#2f6de6]">{job.salary}</div>
-                                            </div>
-                                        )}
-                                        {job.endDate && (
-                                            <div className="border-t border-[#e8eef6] pt-6">
-                                                <h3 className="text-[11px] font-bold text-[#7f8796] uppercase mb-3">Date limite</h3>
-                                                <div className="text-[12px] text-[#7f8796]">{new Date(job.endDate).toLocaleDateString("fr-FR")}</div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-8 pt-8 border-t border-[#e8eef6]">
-                                {job.company?.coverImage && (
-                                    <img src={job.company.coverImage} alt={job.title} className="w-full h-64 rounded-xl object-cover mb-6" onError={(e) => { e.currentTarget.style.display = "none" }} />
-                                )}
-                                {job.company && (
-                                    <div className="bg-gradient-to-r from-[#2b7cf0] to-[#1e5ed4] text-white rounded-xl p-6 text-center">
-                                        <h3 className="text-[18px] font-bold mb-2">Découvrez {job.company.name}</h3>
-                                        <p className="text-[12px] text-[#c8e0ff] mb-4">Apprenez à connaître la culture, les valeurs et l'équipe derrière cette offre</p>
-                                        <div className="flex gap-2 justify-center">
-                                            <Link href={`/entreprises/${job.company.id}`}>
-                                                <Button className="bg-white text-[#2b7cf0] hover:bg-[#f0f3fb] rounded-full text-[12px] font-semibold">Découvrir</Button>
-                                            </Link>
-                                            <Button onClick={handleApply} variant="outline" className="border-white text-white hover:bg-white/10 rounded-full text-[12px]">Postuler</Button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </section>
-
-                        <section className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-                            <div className="lg:col-span-2 space-y-8">
-                                {job.description && (
-                                    <div className="bg-white rounded-xl p-6 border border-[#e8eef6]">
-                                        <h2 className="text-[24px] font-extrabold text-[#1b2331] mb-4">Le poste</h2>
-                                        <p className="text-[13px] leading-6 text-[#7f8796] whitespace-pre-wrap">{job.description}</p>
-                                    </div>
-                                )}
-
-                                {job.requirements?.length > 0 && (
-                                    <div className="bg-white rounded-xl p-6 border border-[#e8eef6]">
-                                        <h2 className="text-[24px] font-extrabold text-[#1b2331] mb-4">Profil recherché</h2>
-                                        <ul className="space-y-2">
-                                            {job.requirements.map((req, i) => (
-                                                <li key={i} className="text-[13px] leading-6 text-[#7f8796] flex items-start gap-2">
-                                                    <span className="text-[#2f6de6] mt-1 flex-shrink-0">•</span>
-                                                    {req}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-
-                                {job.benefits && (
-                                    <div className="bg-white rounded-xl p-6 border border-[#e8eef6]">
-                                        <h2 className="text-[24px] font-extrabold text-[#1b2331] mb-4">Avantages</h2>
-                                        <p className="text-[13px] leading-6 text-[#7f8796] whitespace-pre-wrap">{job.benefits}</p>
-                                    </div>
-                                )}
-
-                                <div className="bg-white rounded-xl p-6 border border-[#e8eef6]">
-                                    <h2 className="text-[24px] font-extrabold text-[#1b2331] mb-6">Questions fréquentes</h2>
-                                    <div className="space-y-3">
-                                        {faqs.map((faq, index) => (
-                                            <details key={index} className="border border-[#e8eef6] rounded-lg">
-                                                <summary className="cursor-pointer px-4 py-3 flex items-center justify-between font-semibold text-[#1b2331] text-[12px]">
-                                                    <span>{faq.q}</span>
-                                                    <ChevronDown className="w-4 h-4 flex-shrink-0" />
-                                                </summary>
-                                                <div className="px-4 py-3 border-t border-[#e8eef6] text-[12px] text-[#7f8796]">{faq.a}</div>
-                                            </details>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="lg:col-span-1">
-                                <div className="bg-white rounded-xl p-6 border border-[#e8eef6] sticky top-4">
-                                    <h3 className="text-[18px] font-extrabold text-[#1b2331] mb-2">Postulez dès maintenant</h3>
-                                    <p className="text-[12px] text-[#7f8796] mb-4">Rejoignez les {job.applicants ?? 0} candidat{(job.applicants ?? 0) !== 1 ? "s" : ""} qui ont déjà postulé.</p>
-                                    <Button onClick={handleApply} disabled={applying} className="w-full rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-10 text-[12px] font-semibold mb-3">
-                                        {applying ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}Postuler
-                                    </Button>
-                                    <Link href="/simulation-entretien/config">
-                                        <Button variant="outline" className="w-full rounded-full border-[#d8deeb] h-10 text-[12px]">
-                                            Préparer mon entretien
-                                        </Button>
+                                    <span className="text-[11px] text-[#7f8796]">/</span>
+                                    <Link href={job.company?.id ? `/explorer-entreprises/${job.company.id}` : "/explorer-entreprises"} className="text-[11px] text-[#2f6de6] font-semibold hover:underline">
+                                        {job.company?.name ?? "Entreprise"}
                                     </Link>
-                                    <div className="mt-4 pt-4 border-t border-[#e8eef6]">
-                                        <p className="text-[10px] text-[#9aa3b2] text-center">Offre publiée {formatPosted(job.publishDate)}</p>
-                                        {job.endDate && <p className="text-[10px] text-[#9aa3b2] text-center mt-1">Clôture le {new Date(job.endDate).toLocaleDateString("fr-FR")}</p>}
-                                    </div>
+                                    <span className="text-[11px] text-[#7f8796]">/</span>
+                                    <span className="text-[11px] text-[#9aa3b2] truncate max-w-[180px]">{job.title}</span>
+                                </div>
+
+                                <h1 className="text-[24px] sm:text-[30px] leading-tight font-extrabold text-[#1b2331] mb-4">{job.title}</h1>
+
+                                {/* Tags */}
+                                <div className="flex flex-wrap gap-2 mb-5">
+                                    {job.experience && (
+                                        <span className="text-[11px] px-3 py-1 rounded-full bg-[#f0f3fb] text-[#4e5a6e] border border-[#e8eef6]">
+                                            {job.experience}
+                                        </span>
+                                    )}
+                                    {job.type && (
+                                        <span className="text-[11px] px-3 py-1 rounded-full bg-[#eff4ff] text-[#2f6de6] border border-[#dce8ff] font-semibold">
+                                            {job.type}
+                                        </span>
+                                    )}
+                                    {job.salary && (
+                                        <span className="text-[11px] px-3 py-1 rounded-full bg-[#f0fbf5] text-[#22a05b] border border-[#d0f0e0] font-semibold">
+                                            {job.salary}
+                                        </span>
+                                    )}
+                                    {job.location && (
+                                        <span className="text-[11px] px-3 py-1 rounded-full bg-[#f4f5f7] text-[#7f8796] border border-[#e8eef6] flex items-center gap-1">
+                                            <MapPin className="w-3 h-3" />{job.location}
+                                        </span>
+                                    )}
+                                    {job.publishDate && (
+                                        <span className="text-[11px] text-[#9aa3b2] flex items-center gap-1 px-1">
+                                            <Calendar className="w-3 h-3" />Il y a {Math.floor((Date.now() - new Date(job.publishDate).getTime()) / 86400000)} jours
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* Action buttons */}
+                                <div className="flex gap-3 flex-wrap">
+                                    <Button
+                                        onClick={handleApply}
+                                        disabled={applying}
+                                        className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-9 px-6 text-[12px] font-semibold"
+                                    >
+                                        {applying ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                                        Postuler
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setBookmarked(b => !b)}
+                                        className={`rounded-full border-[#d8deeb] h-9 px-4 text-[12px] gap-1.5 ${bookmarked ? "text-[#2f6de6] border-[#2f6de6]" : ""}`}
+                                    >
+                                        <Bookmark className={`w-4 h-4 ${bookmarked ? "fill-current" : ""}`} />
+                                        Sauvegarder
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleShare}
+                                        className="rounded-full border-[#d8deeb] h-9 px-4 text-[12px] gap-1.5"
+                                    >
+                                        <Share2 className="w-4 h-4" />
+                                        Partager
+                                    </Button>
                                 </div>
                             </div>
-                        </section>
-                    </>
+
+                            {/* Description */}
+                            {job.description && (
+                                <div className="bg-white rounded-xl border border-[#e8eef6] p-6">
+                                    <h2 className="text-[20px] font-extrabold text-[#1b2331] mb-4">Le poste</h2>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <h3 className="text-[13px] font-bold text-[#1b2331] mb-2">Descriptif du poste</h3>
+                                            <p className="text-[13px] leading-[1.8] text-[#7f8796] whitespace-pre-wrap">{job.description}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Requirements */}
+                            {job.requirements?.length > 0 && (
+                                <div className="bg-white rounded-xl border border-[#e8eef6] p-6">
+                                    <h2 className="text-[20px] font-extrabold text-[#1b2331] mb-4">Profil recherché</h2>
+                                    <ul className="space-y-2">
+                                        {job.requirements.map((req, i) => (
+                                            <li key={i} className="text-[13px] leading-6 text-[#7f8796] flex items-start gap-2">
+                                                <span className="text-[#2f6de6] mt-1 flex-shrink-0">•</span>
+                                                {req}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            {/* Benefits */}
+                            {job.benefits && (
+                                <div className="bg-white rounded-xl border border-[#e8eef6] p-6">
+                                    <h2 className="text-[20px] font-extrabold text-[#1b2331] mb-4">Avantages</h2>
+                                    <p className="text-[13px] leading-6 text-[#7f8796] whitespace-pre-wrap">{job.benefits}</p>
+                                </div>
+                            )}
+
+                            {/* FAQ */}
+                            <div className="bg-white rounded-xl border border-[#e8eef6] p-6">
+                                <h2 className="text-[20px] font-extrabold text-[#1b2331] mb-5">Questions et réponses sur l'offre</h2>
+                                <div className="space-y-2">
+                                    {faqs.map((faq, index) => (
+                                        <div key={index} className="border border-[#e8eef6] rounded-xl overflow-hidden">
+                                            <button
+                                                onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                                                className="w-full px-5 py-4 flex items-center justify-between text-left"
+                                            >
+                                                <span className="text-[13px] font-semibold text-[#1b2331]">{faq.q}</span>
+                                                <ChevronDown className={`w-4 h-4 flex-shrink-0 text-[#9aa3b2] transition-transform ${openFaq === index ? "rotate-180" : ""}`} />
+                                            </button>
+                                            {openFaq === index && (
+                                                <div className="px-5 pb-4 border-t border-[#e8eef6] pt-3">
+                                                    <p className="text-[13px] text-[#7f8796]">{faq.a}</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* RIGHT — sidebar */}
+                        <div className="space-y-4">
+                            {/* Company card */}
+                            {job.company && (
+                                <div className="bg-white rounded-xl border border-[#e8eef6] overflow-hidden">
+                                    {job.company.coverImage && (
+                                        <img
+                                            src={job.company.coverImage}
+                                            alt={job.company.name}
+                                            className="w-full h-28 object-cover"
+                                            onError={(e) => { e.currentTarget.style.display = "none" }}
+                                        />
+                                    )}
+                                    <div className="p-4">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#f0f3fb] flex items-center justify-center flex-shrink-0 border border-[#e8eef6]">
+                                                {job.company.logo
+                                                    ? <img src={job.company.logo} alt={job.company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                                    : <Building2 className="w-5 h-5 text-[#9aa3b2]" />
+                                                }
+                                            </div>
+                                            <div>
+                                                <p className="text-[13px] font-bold text-[#1b2331]">{job.company.name}</p>
+                                                {job.company.sector && <p className="text-[11px] text-[#7f8796]">{job.company.sector}</p>}
+                                            </div>
+                                        </div>
+                                        <p className="text-[12px] font-semibold text-[#1b2331] mb-3">Cette offre vous intéresse ?</p>
+                                        <Link href={job.company.id ? `/explorer-entreprises/${job.company.id}` : "/explorer-entreprises"}>
+                                            <Button variant="outline" className="w-full rounded-full border-[#d8deeb] h-8 text-[11px] text-[#2f6de6]">
+                                                Découvrir l'entreprise
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Matching score */}
+                            <MatchingScoreWidget />
+
+                            {/* Premium CTA */}
+                            <div className="bg-gradient-to-br from-[#1539be] to-[#2f81f1] rounded-xl p-5 text-white text-center">
+                                <Sparkles className="w-6 h-6 mx-auto mb-3 text-yellow-300" />
+                                <p className="text-[14px] font-extrabold mb-1">Essayer dès maintenant</p>
+                                <p className="text-[11px] text-blue-200 mb-4">Accédez à toutes les fonctionnalités premium et boostez votre recherche d'emploi.</p>
+                                <Link href="/offres">
+                                    <Button className="w-full rounded-full bg-white text-[#2f6de6] hover:bg-[#f0f3fb] text-[11px] h-8 font-semibold">
+                                        Voir les offres premium
+                                    </Button>
+                                </Link>
+                            </div>
+
+                            {/* Apply sticky */}
+                            <div className="bg-white rounded-xl border border-[#e8eef6] p-5">
+                                <p className="text-[13px] font-bold text-[#1b2331] mb-1">Postulez dès maintenant</p>
+                                <p className="text-[11px] text-[#7f8796] mb-4">
+                                    Rejoignez les {job.applicants ?? 0} candidat{(job.applicants ?? 0) !== 1 ? "s" : ""} qui ont déjà postulé.
+                                </p>
+                                <Button
+                                    onClick={handleApply}
+                                    disabled={applying}
+                                    className="w-full rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-9 text-[12px] font-semibold mb-2"
+                                >
+                                    {applying ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}Postuler
+                                </Button>
+                                <div className="text-[10px] text-[#9aa3b2] text-center">
+                                    Offre publiée {formatPosted(job.publishDate)}
+                                    {job.endDate && <span className="ml-2">· Clôture le {new Date(job.endDate).toLocaleDateString("fr-FR")}</span>}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 )}
             </main>
 

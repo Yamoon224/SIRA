@@ -177,6 +177,7 @@ export default function ExploreJobsPage() {
                     <nav className="hidden md:flex items-center gap-6 lg:gap-10 text-[12px] text-[#7a8495] font-medium">
                         <Link href="/" className="text-[#2f6de6]">Accueil</Link>
                         <Link href="/explorer-emplois" className="font-semibold text-[#1b2331]">Trouve un emploi</Link>
+                        <Link href="/offres" className="hover:text-[#2f6de6]">Tarifs d'abonnement</Link>
                     </nav>
                     <div className="flex items-center gap-2">
                         <Link href="/auth/signin">
