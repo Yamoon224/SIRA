@@ -30,11 +30,11 @@ const jobCategories = [
     "Publicité", "Conseil", "Administratif", "Relations publiques",
 ]
 
-const careerCards = [
-    { title: "Présentations des révisions UX", text: "Comment créer des présentations convaincantes qui impressionnent vos collègues et vos managers ?", image: "/ux-presentation-meeting.jpg" },
-    { title: "Migration vers Linear 101", text: "Lancer simplifie les projets logiciels, les sprints, les tickets et le suivi des bugs. Voici comment commencer.", image: "/team-migration-software.jpg" },
-    { title: "Construisez votre pile d'API.", text: "La prolifération des API RESTful a été conjointement soutenue par une croissance des ressources disponibles.", image: "/api-development-workspace.jpg" },
-]
+const CAREER_TAB_PARAMS: Record<string, Record<string, string | string[]>> = {
+    "Candidats":    {},
+    "Étudiants":    { jobType: ["INTERNSHIP"] },
+    "Fonctionnaire": { search: "public" },
+}
 
 function formatPosted(date: Date | string) {
     const d = new Date(date)
@@ -63,6 +63,33 @@ export default function ExploreJobsPage() {
     const [page, setPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
     const [total, setTotal] = useState(0)
+
+    const [careerJobs, setCareerJobs] = useState<IJobOffer[]>([])
+    const [careerLoading, setCareerLoading] = useState(false)
+    const [careerPage, setCareerPage] = useState(1)
+    const [careerTotalPages, setCareerTotalPages] = useState(1)
+    const CAREER_LIMIT = 3
+
+    const fetchCareerJobs = useCallback(async (p: number) => {
+        setCareerLoading(true)
+        try {
+            const params = CAREER_TAB_PARAMS[activeTab] ?? {}
+            const res = await jobService.getJobs({ ...params, page: p, limit: CAREER_LIMIT }) as any
+            const data: IJobOffer[] = res?.data?.data ?? res?.data ?? []
+            const meta = res?.data?.meta ?? res?.meta
+            setCareerJobs(Array.isArray(data) ? data : [])
+            setCareerPage(p)
+            setCareerTotalPages(meta?.totalPages ?? 1)
+        } catch {
+            setCareerJobs([])
+        } finally {
+            setCareerLoading(false)
+        }
+    }, [activeTab])
+
+    useEffect(() => {
+        fetchCareerJobs(1)
+    }, [fetchCareerJobs])
 
     const fetchJobs = useCallback(async (p: number, append = false) => {
         try {
@@ -301,31 +328,63 @@ export default function ExploreJobsPage() {
                     <div className="flex items-center justify-between mb-5">
                         <h2 className="text-[24px] sm:text-[36px] leading-none font-extrabold text-[#1b2331]">Prenez votre carrière en main</h2>
                         <div className="hidden sm:flex gap-2">
-                            <button type="button" className="w-7 h-7 rounded-full border border-[#d8deeb] text-[#9aa3b2] inline-flex items-center justify-center hover:border-[#2f6de6]"><ChevronLeft className="w-3 h-3" /></button>
-                            <button type="button" className="w-7 h-7 rounded-full border border-[#d8deeb] text-[#9aa3b2] inline-flex items-center justify-center hover:border-[#2f6de6]"><ChevronRight className="w-3 h-3" /></button>
+                            <button type="button" disabled={careerPage <= 1 || careerLoading}
+                                onClick={() => fetchCareerJobs(careerPage - 1)}
+                                className="w-7 h-7 rounded-full border border-[#d8deeb] text-[#9aa3b2] inline-flex items-center justify-center hover:border-[#2f6de6] disabled:opacity-40 disabled:cursor-not-allowed">
+                                <ChevronLeft className="w-3 h-3" />
+                            </button>
+                            <button type="button" disabled={careerPage >= careerTotalPages || careerLoading}
+                                onClick={() => fetchCareerJobs(careerPage + 1)}
+                                className="w-7 h-7 rounded-full border border-[#d8deeb] text-[#9aa3b2] inline-flex items-center justify-center hover:border-[#2f6de6] disabled:opacity-40 disabled:cursor-not-allowed">
+                                <ChevronRight className="w-3 h-3" />
+                            </button>
                         </div>
                     </div>
                     <div className="inline-flex rounded-full border border-[#d8deeb] overflow-hidden mb-5 bg-white">
-                        {["Candidats", "Étudiants", "Fonctionnaire"].map((tab) => (
+                        {Object.keys(CAREER_TAB_PARAMS).map((tab) => (
                             <button key={tab} type="button" onClick={() => setActiveTab(tab)}
                                 className={`px-4 h-8 text-[10px] font-semibold transition-colors ${activeTab === tab ? "text-[#2f6de6] bg-[#edf4ff]" : "text-[#7f8796] hover:text-[#2f6de6]"}`}>
                                 {tab}
                             </button>
                         ))}
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {careerCards.map((card) => (
-                            <article key={card.title} className="rounded-xl border border-[#d8deeb] bg-white p-3 hover:shadow-md transition-shadow">
-                                <img src={card.image} alt={card.title} className="h-36 w-full rounded-md object-cover" />
-                                <h3 className="mt-3 text-[18px] leading-none font-extrabold text-[#1b2331]">{card.title}</h3>
-                                <p className="mt-2 text-[11px] leading-4 text-[#8a95a8]">{card.text}</p>
-                            </article>
-                        ))}
-                    </div>
+
+                    {careerLoading ? (
+                        <div className="flex justify-center py-10"><Loader2 className="w-5 h-5 animate-spin text-[#2f6de6]" /></div>
+                    ) : careerJobs.length === 0 ? (
+                        <p className="text-center text-[11px] text-[#9aa3b2] py-8">Aucune offre disponible pour cette catégorie.</p>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {careerJobs.map((job) => (
+                                <Link key={job.id} href={`/explorer-emplois/${job.id}`}>
+                                    <article className="rounded-xl border border-[#d8deeb] bg-white p-3 hover:shadow-md transition-shadow h-full">
+                                        <div className="h-36 w-full rounded-md overflow-hidden bg-gradient-to-br from-[#2f6de6] to-[#1539be] flex items-center justify-center">
+                                            {job.company?.coverImage
+                                                ? <img src={job.company.coverImage} alt={job.title} className="w-full h-full object-cover" />
+                                                : job.company?.logo
+                                                    ? <img src={job.company.logo} alt={job.company.name} className="w-16 h-16 object-contain brightness-0 invert" />
+                                                    : <Building2 className="w-10 h-10 text-white opacity-60" />
+                                            }
+                                        </div>
+                                        <div className="mt-2 flex flex-wrap items-center gap-1">
+                                            <span className="text-[9px] border border-[#d8deeb] rounded-full px-2 py-0.5 text-[#7d8798]">{job.type}</span>
+                                            {job.location && <span className="text-[9px] text-[#9aa3b2] inline-flex items-center gap-0.5"><MapPin className="w-2.5 h-2.5" />{job.location}</span>}
+                                        </div>
+                                        <h3 className="mt-2 text-[14px] leading-tight font-extrabold text-[#1b2331] line-clamp-2">{job.title}</h3>
+                                        <p className="mt-1 text-[10px] leading-4 text-[#8a95a8] line-clamp-2">{job.description}</p>
+                                        <p className="mt-2 text-[9px] font-semibold text-[#2f6de6]">{job.company?.name ?? "—"}</p>
+                                    </article>
+                                </Link>
+                            ))}
+                        </div>
+                    )}
+
                     <div className="text-center mt-6">
-                        <Button onClick={() => handleCategoryClick("Tous")} className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] px-8 h-10 text-[12px]">
-                            <Plus className="w-4 h-4 mr-1" /> Découvrir plus
-                        </Button>
+                        <Link href={activeTab === "Étudiants" ? "/explorer-emplois?type=INTERNSHIP" : "/explorer-emplois"}>
+                            <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] px-8 h-10 text-[12px]">
+                                <Plus className="w-4 h-4 mr-1" /> Découvrir plus
+                            </Button>
+                        </Link>
                     </div>
                 </section>
             </main>
