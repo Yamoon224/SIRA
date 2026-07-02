@@ -4,9 +4,11 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Globe, Factory, ShoppingCart, Utensils, BriefcaseBusiness, Cpu, ChevronRight, Building2, Loader2 } from "lucide-react"
+import { Globe, Factory, ShoppingCart, Utensils, BriefcaseBusiness, Cpu, ChevronRight, Loader2 } from "lucide-react"
 import { companyService } from "@/lib/api/company.service"
 import { ICompany } from "@/lib/@types/entities"
+import { CompanyLogo } from "@/components/company-logo"
+import { capitalizeFirst, dedupeByName } from "@/lib/utils"
 
 const sectors = [
     { name: "Santé / Social / Environnement", icon: Globe, query: "Santé" },
@@ -22,20 +24,15 @@ function CompanyCard({ company }: { company: ICompany }) {
         <Link href={`/entreprises/${company.id}`}>
             <article className="rounded-[14px] border border-[#d8deeb] bg-white p-3 hover:border-[#2f6de6] hover:shadow-md transition-all">
                 <div className="flex items-center justify-between">
-                    <div className="w-6 h-6 rounded-full overflow-hidden bg-[#f3f5fa] flex items-center justify-center flex-shrink-0">
-                        {company.logo
-                            ? <img src={company.logo} alt={company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
-                            : <Building2 className="w-3 h-3 text-[#9aa3b2]" />
-                        }
-                    </div>
+                    <CompanyLogo name={company.name} logo={company.logo} className="w-6 h-6 text-[9px] flex-shrink-0" />
                     {company.companySize && (
                         <span className="text-[9px] border border-[#c7d5f4] text-[#5c74af] rounded-full px-2 py-0.5">{company.companySize}</span>
                     )}
                 </div>
                 <h3 className="mt-2 text-[12px] font-bold text-[#1d2432] truncate">{company.name}</h3>
                 <p className="text-[9px] text-[#7e889c]">{company.sector || "Entreprise"}</p>
-                <p className="text-[9px] text-[#a2acbd] mt-0.5">{company.location || company.headquarters || "—"}</p>
-                {company.about && <p className="mt-2 text-[9px] leading-4 text-[#8a95a8] line-clamp-2">{company.about}</p>}
+                <p className="text-[9px] text-[#a2acbd] mt-0.5">{capitalizeFirst(company.location || company.headquarters) || "—"}</p>
+                {company.about && <p className="mt-2 text-[9px] leading-4 text-[#8a95a8] line-clamp-2">{capitalizeFirst(company.about)}</p>}
             </article>
         </Link>
     )
@@ -70,10 +67,12 @@ export default function ExploreCompaniesPage() {
             companyService.getCompanies({ limit: 4, page: 2 }),
         ])
             .then(([res1, res2]: any[]) => {
-                const d1 = res1?.data?.data ?? res1?.data ?? []
-                const d2 = res2?.data?.data ?? res2?.data ?? []
-                setNewCompanies(Array.isArray(d1) ? d1 : [])
-                setTopCompanies(Array.isArray(d2) ? d2 : d1.slice(0, 4))
+                const d1raw: ICompany[] = res1?.data?.data ?? res1?.data ?? []
+                const d2raw: ICompany[] = res2?.data?.data ?? res2?.data ?? []
+                const d1 = dedupeByName(Array.isArray(d1raw) ? d1raw : [])
+                const d2 = dedupeByName(Array.isArray(d2raw) ? d2raw : d1.slice(0, 4))
+                setNewCompanies(d1)
+                setTopCompanies(d2)
             })
             .catch(() => {})
             .finally(() => setLoading(false))
@@ -90,7 +89,7 @@ export default function ExploreCompaniesPage() {
         try {
             const res = await companyService.getCompanies({ search: sector.query, limit: 10 }) as any
             const data = res?.data?.data ?? res?.data ?? []
-            setSectorCompanies(Array.isArray(data) ? data : [])
+            setSectorCompanies(dedupeByName(Array.isArray(data) ? data : []))
         } catch {
             setSectorCompanies([])
         } finally {

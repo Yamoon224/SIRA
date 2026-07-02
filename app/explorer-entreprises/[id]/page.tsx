@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Globe, Phone, Mail, Users, MapPin, Clock, Building2, Loader2, AlertCircle, Search, X, SlidersHorizontal, Heart } from "lucide-react"
 import { companyService } from "@/lib/api/company.service"
 import { ICompany, IJobOffer } from "@/lib/@types/entities"
+import { CompanyLogo } from "@/components/company-logo"
+import { capitalizeFirst } from "@/lib/utils"
 
 const JOB_TYPES = ["CDI", "CDD", "STAGE", "FREELANCE"]
 const DURATIONS = ["1-3 mois", "4-6 mois", "7-12 mois", "13-24 mois", "25-36 mois"]
@@ -18,7 +20,7 @@ function formatPosted(date: Date | string) {
     const diff = Date.now() - d.getTime()
     const days = Math.floor(diff / 86400000)
     if (days === 0) return "Aujourd'hui"
-    if (days === 1) return "Il y a 1 jour"
+    if (days <= 3) return "Récent"
     if (days < 7) return `Il y a ${days} jours`
     const weeks = Math.floor(days / 7)
     if (weeks < 5) return `Il y a ${weeks} semaine${weeks > 1 ? "s" : ""}`
@@ -258,12 +260,7 @@ export default function EntrepriseDetailPage() {
 
                 <div className="mx-auto max-w-[1000px] px-4">
                     <div className="relative -mt-10 flex items-end gap-4 pb-4 border-b border-[#e8edf6]">
-                        <div className="w-[72px] h-[72px] rounded-2xl bg-white flex items-center justify-center flex-shrink-0 border-2 border-white shadow-lg overflow-hidden">
-                            {company.logo
-                                ? <img src={company.logo} alt={company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
-                                : <Building2 className="w-8 h-8 text-[#2f6de6]" />
-                            }
-                        </div>
+                        <CompanyLogo name={company.name} logo={company.logo} className="w-[72px] h-[72px] rounded-2xl text-[22px] border-2 border-white shadow-lg" />
 
                         <div className="flex-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-1">
                             <div>
@@ -273,7 +270,7 @@ export default function EntrepriseDetailPage() {
                                     {(company.location || company.headquarters) && (
                                         <span className="flex items-center gap-1">
                                             <MapPin className="w-3 h-3" />
-                                            {company.location || company.headquarters}
+                                            {capitalizeFirst(company.location || company.headquarters)}
                                         </span>
                                     )}
                                 </div>
@@ -317,7 +314,7 @@ export default function EntrepriseDetailPage() {
                         {company.about && (
                             <div className="bg-white rounded-xl border border-[#e8edf6] p-6">
                                 <h2 className="text-[18px] font-extrabold text-[#1b2331] mb-4">Présentation</h2>
-                                <p className="text-[13px] text-[#4e5a6e] leading-[1.8] whitespace-pre-line">{company.about}</p>
+                                <p className="text-[13px] text-[#4e5a6e] leading-[1.8] whitespace-pre-line">{capitalizeFirst(company.about)}</p>
                             </div>
                         )}
 
@@ -387,7 +384,7 @@ export default function EntrepriseDetailPage() {
                                             <MapPin className="w-4 h-4 text-[#9aa3b2] flex-shrink-0 mt-0.5" />
                                             <div>
                                                 <p className="text-[10px] text-[#9aa3b2] mb-0.5">Localisation</p>
-                                                <p className="text-[12px] font-semibold text-[#1b2331]">{company.location || company.headquarters}</p>
+                                                <p className="text-[12px] font-semibold text-[#1b2331]">{capitalizeFirst(company.location || company.headquarters)}</p>
                                             </div>
                                         </div>
                                     )}
@@ -439,12 +436,7 @@ export default function EntrepriseDetailPage() {
                                     {similarCompanies.map(sim => (
                                         <Link key={sim.id} href={`/explorer-entreprises/${sim.id}`} className="flex-shrink-0">
                                             <div className="w-[140px] rounded-xl border border-[#e8edf6] p-3 hover:border-[#2f6de6] hover:shadow-sm transition-all">
-                                                <div className="w-9 h-9 rounded-lg bg-[#f0f3fb] flex items-center justify-center mb-2 overflow-hidden">
-                                                    {sim.logo
-                                                        ? <img src={sim.logo} alt={sim.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
-                                                        : <Building2 className="w-5 h-5 text-[#9aa3b2]" />
-                                                    }
-                                                </div>
+                                                <CompanyLogo name={sim.name} logo={sim.logo} className="w-9 h-9 rounded-lg text-[11px] mb-2" />
                                                 <p className="text-[11px] font-bold text-[#1b2331] truncate">{sim.name}</p>
                                                 <p className="text-[10px] text-[#9aa3b2] truncate">{sim.sector}</p>
                                             </div>
@@ -526,7 +518,7 @@ export default function EntrepriseDetailPage() {
                                                     <div className="flex-1">
                                                         <h3 className="font-bold text-[15px] text-[#1b2331] mb-2">{job.title}</h3>
                                                         <div className="flex flex-wrap gap-3 text-[11px] text-[#7f8796] mb-2">
-                                                            {job.location && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{job.location}</span>}
+                                                            {job.location && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{capitalizeFirst(job.location)}</span>}
                                                             {job.type && <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{job.type}</span>}
                                                             {job.salary && <span className="text-[#22a05b] font-semibold">{job.salary}</span>}
                                                         </div>

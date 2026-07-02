@@ -4,9 +4,11 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ArrowLeft, Building2, Loader2 } from "lucide-react"
+import { ArrowLeft, Loader2 } from "lucide-react"
 import { companyService } from "@/lib/api/company.service"
 import { ICompany } from "@/lib/@types/entities"
+import { CompanyLogo } from "@/components/company-logo"
+import { capitalizeFirst, dedupeByName } from "@/lib/utils"
 
 export default function TopRecruitingPage() {
     const [companies, setCompanies] = useState<ICompany[]>([])
@@ -16,7 +18,7 @@ export default function TopRecruitingPage() {
         companyService.getRecruitingCompanies()
             .then((res: any) => {
                 const data = res?.data?.data ?? res?.data ?? []
-                setCompanies(Array.isArray(data) ? data : [])
+                setCompanies(dedupeByName(Array.isArray(data) ? data : []))
             })
             .catch(() => {})
             .finally(() => setLoading(false))
@@ -60,15 +62,10 @@ export default function TopRecruitingPage() {
                                     <article className="rounded-xl border border-[#dbe3ef] bg-[#f8fbff] p-5 hover:border-[#2f6de6] hover:shadow-sm transition-all">
                                         <div className="flex items-center justify-between gap-3">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-[#eff4ff] flex items-center justify-center overflow-hidden flex-shrink-0">
-                                                    {company.logo
-                                                        ? <img src={company.logo} alt={company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
-                                                        : <Building2 className="w-4 h-4 text-[#2f6de6]" />
-                                                    }
-                                                </div>
+                                                <CompanyLogo name={company.name} logo={company.logo} className="w-8 h-8 text-[10px] flex-shrink-0" />
                                                 <div>
                                                     <h2 className="text-sm font-semibold text-[#1d2432]">{company.name}</h2>
-                                                    <p className="text-xs text-[#667085] mt-0.5">{company.location || company.headquarters || "—"}</p>
+                                                    <p className="text-xs text-[#667085] mt-0.5">{capitalizeFirst(company.location || company.headquarters) || "—"}</p>
                                                 </div>
                                             </div>
                                             {company.sector && (
@@ -76,7 +73,7 @@ export default function TopRecruitingPage() {
                                             )}
                                         </div>
                                         {company.about && (
-                                            <p className="mt-3 text-xs text-[#667085] line-clamp-2">{company.about}</p>
+                                            <p className="mt-3 text-xs text-[#667085] line-clamp-2">{capitalizeFirst(company.about)}</p>
                                         )}
                                     </article>
                                 </Link>

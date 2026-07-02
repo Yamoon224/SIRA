@@ -5,16 +5,18 @@ import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Bookmark, Share2, ChevronDown, Loader2, Building2, MapPin, Calendar, AlertCircle, Lock, Sparkles } from "lucide-react"
+import { Bookmark, Share2, ChevronDown, Loader2, MapPin, Calendar, AlertCircle, Lock, Sparkles } from "lucide-react"
 import { jobService } from "@/lib/api/job.service"
 import { IJobOffer } from "@/lib/@types/entities"
+import { CompanyLogo } from "@/components/company-logo"
+import { capitalizeFirst } from "@/lib/utils"
 
 function formatPosted(date: Date | string) {
     const d = new Date(date)
     const diff = Date.now() - d.getTime()
     const days = Math.floor(diff / 86400000)
     if (days === 0) return "Aujourd'hui"
-    if (days === 1) return "Il y a 1 jour"
+    if (days <= 3) return "Récent"
     if (days < 7) return `Il y a ${days} jours`
     const weeks = Math.floor(days / 7)
     if (weeks < 5) return `Il y a ${weeks} semaine${weeks > 1 ? "s" : ""}`
@@ -181,12 +183,7 @@ export default function JobDetailPage() {
                             <div className="bg-white rounded-xl border border-[#e8eef6] p-6">
                                 {/* Company breadcrumb */}
                                 <div className="flex items-center gap-2 mb-4">
-                                    <div className="w-7 h-7 rounded-full overflow-hidden bg-[#f0f3fb] flex items-center justify-center flex-shrink-0">
-                                        {job.company?.logo
-                                            ? <img src={job.company.logo} alt={job.company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
-                                            : <Building2 className="w-4 h-4 text-[#9aa3b2]" />
-                                        }
-                                    </div>
+                                    <CompanyLogo name={job.company?.name ?? "?"} logo={job.company?.logo} className="w-7 h-7 text-[10px] flex-shrink-0" />
                                     <span className="text-[11px] text-[#7f8796]">/</span>
                                     <Link href={job.company?.id ? `/explorer-entreprises/${job.company.id}` : "/explorer-entreprises"} className="text-[11px] text-[#2f6de6] font-semibold hover:underline">
                                         {job.company?.name ?? "Entreprise"}
@@ -216,12 +213,12 @@ export default function JobDetailPage() {
                                     )}
                                     {job.location && (
                                         <span className="text-[11px] px-3 py-1 rounded-full bg-[#f4f5f7] text-[#7f8796] border border-[#e8eef6] flex items-center gap-1">
-                                            <MapPin className="w-3 h-3" />{job.location}
+                                            <MapPin className="w-3 h-3" />{capitalizeFirst(job.location)}
                                         </span>
                                     )}
                                     {job.publishDate && (
                                         <span className="text-[11px] text-[#9aa3b2] flex items-center gap-1 px-1">
-                                            <Calendar className="w-3 h-3" />Il y a {Math.floor((Date.now() - new Date(job.publishDate).getTime()) / 86400000)} jours
+                                            <Calendar className="w-3 h-3" />{formatPosted(job.publishDate)}
                                         </span>
                                     )}
                                 </div>
@@ -330,12 +327,7 @@ export default function JobDetailPage() {
                                     )}
                                     <div className="p-4">
                                         <div className="flex items-center gap-3 mb-3">
-                                            <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#f0f3fb] flex items-center justify-center flex-shrink-0 border border-[#e8eef6]">
-                                                {job.company.logo
-                                                    ? <img src={job.company.logo} alt={job.company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
-                                                    : <Building2 className="w-5 h-5 text-[#9aa3b2]" />
-                                                }
-                                            </div>
+                                            <CompanyLogo name={job.company.name} logo={job.company.logo} className="w-10 h-10 rounded-xl text-[13px] flex-shrink-0 border border-[#e8eef6]" />
                                             <div>
                                                 <p className="text-[13px] font-bold text-[#1b2331]">{job.company.name}</p>
                                                 {job.company.sector && <p className="text-[11px] text-[#7f8796]">{job.company.sector}</p>}
