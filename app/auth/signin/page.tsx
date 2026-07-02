@@ -5,13 +5,11 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { signIn, signOut, getSession } from "next-auth/react"
-import { setCookie } from "cookies-next"
 import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { AppLogo } from "@/components/app-logo"
-import { useAuth } from "@/contexts/auth-context"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ChevronLeft, Eye, EyeOff, Loader2 } from "lucide-react"
 import { OTPVerificationModal } from "@/components/modals/otp-verification-modal"
@@ -20,7 +18,6 @@ import { authService } from "@/lib/api/auth.service"
 
 export default function Page() {
     const router = useRouter()
-    const { login } = useAuth()
     const [activeTab, setActiveTab] = useState<"login" | "signup">("login")
     const [formData, setFormData] = useState({
         name: "",
@@ -67,12 +64,10 @@ export default function Page() {
 
                 if (!userData || !token) throw new Error("Erreur lors de l'inscription")
 
-                login({ ...userData, avatar: userData.avatar ?? null }, token)
-                setCookie("auth", JSON.stringify({ token, user: userData }), {
-                    maxAge: 60 * 60,
-                    path: "/",
-                    sameSite: "lax",
-                })
+                // Établit la session NextAuth (httpOnly) à partir du token backend déjà obtenu.
+                const tokenResult = await signIn("token", { token, redirect: false })
+                if (tokenResult?.error) throw new Error("Erreur lors de l'inscription")
+
                 toast.success("Inscription réussie !")
                 router.push("/auth/plan")
                 return
@@ -97,16 +92,6 @@ export default function Page() {
                 return
             }
 
-            const authData = {
-                token: (session.user as any).access_token,
-                user: session.user,
-            }
-            login({ ...(session.user as any), avatar: (session.user as any).avatar ?? null }, authData.token)
-            setCookie("auth", JSON.stringify(authData), {
-                maxAge: 60 * 60,
-                path: "/",
-                sameSite: "lax",
-            })
             toast.success("Connexion réussie !")
             router.replace("/dashboard")
             router.refresh()
@@ -121,12 +106,17 @@ export default function Page() {
     const handleOTPVerification = async (otpCode: string) => {
         try {
             const response = await authService.verifyOtp(formData.email, otpCode)
-            const user = response.data.user
-            login({ ...user, avatar: user.avatar ?? null }, response.data.token)
+            const token = response.data.token
+
+            const tokenResult = await signIn("token", { token, redirect: false })
+            if (tokenResult?.error) throw new Error("Code de vérification invalide")
+
             setShowOTPModal(false)
+            toast.success("Compte vérifié avec succès !")
             router.push("/dashboard")
-        } catch (error) {
+        } catch (error: any) {
             console.error("Erreur lors de la vérification OTP:", error)
+            toast.error(error?.message || "Code de vérification invalide. Veuillez réessayer.")
         }
     }
 
@@ -154,12 +144,8 @@ export default function Page() {
 
             if (!userData || !token) throw new Error("Réponse invalide du serveur")
 
-            login({ ...userData, avatar: userData.avatar ?? null }, token)
-            setCookie("auth", JSON.stringify({ token, user: userData }), {
-                maxAge: 60 * 60,
-                path: "/",
-                sameSite: "lax",
-            })
+            const tokenResult = await signIn("token", { token, redirect: false })
+            if (tokenResult?.error) throw new Error("Erreur lors de la connexion avec Google")
 
             if (isNewUser) {
                 toast.success("Compte créé avec succès !")

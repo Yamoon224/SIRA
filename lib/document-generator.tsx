@@ -4,6 +4,18 @@ export interface DocumentData {
   [key: string]: string
 }
 
+const escapeHtml = (value: unknown): string =>
+  String(value ?? "").replace(/[&<>"']/g, (char) => {
+    switch (char) {
+      case "&": return "&amp;"
+      case "<": return "&lt;"
+      case ">": return "&gt;"
+      case '"': return "&quot;"
+      case "'": return "&#39;"
+      default: return char
+    }
+  })
+
 export const generatePDF = (content: string, filename = "document.pdf"): void => {
   const pdf = new jsPDF()
 
@@ -157,6 +169,9 @@ Signature`
 export const previewDocument = (content: string): void => {
   const previewWindow = window.open("", "_blank")
   if (previewWindow) {
+    // `content` est composé à partir de champs utilisateur (nom, entreprise, poste, etc.) :
+    // on l'échappe avant de l'injecter dans le HTML pour éviter toute XSS via document.write.
+    const safeContent = escapeHtml(content)
     previewWindow.document.write(`
       <!DOCTYPE html>
       <html>
@@ -207,7 +222,7 @@ export const previewDocument = (content: string): void => {
         <body>
           <button class="print-button" onclick="window.print()">Imprimer</button>
           <div class="document">
-            <div class="content">${content}</div>
+            <div class="content">${safeContent}</div>
           </div>
         </body>
       </html>

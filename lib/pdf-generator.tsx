@@ -1,6 +1,18 @@
 import jsPDF from "jspdf"
 import { CVData } from "@/lib/@types/pdf"
 
+const escapeHtml = (value: unknown): string =>
+    String(value ?? "").replace(/[&<>"']/g, (char) => {
+        switch (char) {
+            case "&": return "&amp;"
+            case "<": return "&lt;"
+            case ">": return "&gt;"
+            case '"': return "&quot;"
+            case "'": return "&#39;"
+            default: return char
+        }
+    })
+
 export const generateCVPDF = async (data: CVData, format: "pdf" | "word" = "pdf") => {
     if (format === "pdf") {
         const pdf = new jsPDF()
@@ -84,7 +96,7 @@ export const generateCVPDF = async (data: CVData, format: "pdf" | "word" = "pdf"
         <html>
             <head>
                 <meta charset="utf-8">
-                <title>CV - ${data.personalInfo.firstName} ${data.personalInfo.lastName}</title>
+                <title>CV - ${escapeHtml(data.personalInfo.firstName)} ${escapeHtml(data.personalInfo.lastName)}</title>
                 <style>
                 body { font-family: Arial, sans-serif; margin: 40px; }
                 .header { text-align: center; margin-bottom: 30px; }
@@ -103,26 +115,26 @@ export const generateCVPDF = async (data: CVData, format: "pdf" | "word" = "pdf"
             </head>
             <body>
                 <div class="header">
-                <div class="name">${data.personalInfo.firstName} ${data.personalInfo.lastName}</div>
-                <div class="title">${data.personalInfo.title}</div>
+                <div class="name">${escapeHtml(data.personalInfo.firstName)} ${escapeHtml(data.personalInfo.lastName)}</div>
+                <div class="title">${escapeHtml(data.personalInfo.title)}</div>
                 </div>
-                
+
                 <div class="contact">
-                <p><strong>Email:</strong> ${data.personalInfo.email}</p>
-                <p><strong>Téléphone:</strong> ${data.personalInfo.phone}</p>
-                <p><strong>Adresse:</strong> ${data.personalInfo.address}</p>
+                <p><strong>Email:</strong> ${escapeHtml(data.personalInfo.email)}</p>
+                <p><strong>Téléphone:</strong> ${escapeHtml(data.personalInfo.phone)}</p>
+                <p><strong>Adresse:</strong> ${escapeHtml(data.personalInfo.address)}</p>
                 </div>
-                
+
                 ${data.personalInfo.summary
                         ? `
                 <div class="section">
                     <div class="section-title">Résumé Professionnel</div>
-                    <p>${data.personalInfo.summary}</p>
+                    <p>${escapeHtml(data.personalInfo.summary)}</p>
                 </div>
                 `
                         : ""
                     }
-                
+
                 ${data.experience.length > 0
                         ? `
                 <div class="section">
@@ -131,10 +143,10 @@ export const generateCVPDF = async (data: CVData, format: "pdf" | "word" = "pdf"
                             .map(
                                 (exp) => `
                     <div class="experience-item">
-                        <div class="job-title">${exp.position}</div>
-                        <div class="company">${exp.company}</div>
-                        <div class="date">${exp.startDate} - ${exp.endDate}</div>
-                        <p>${exp.description}</p>
+                        <div class="job-title">${escapeHtml(exp.position)}</div>
+                        <div class="company">${escapeHtml(exp.company)}</div>
+                        <div class="date">${escapeHtml(exp.startDate)} - ${escapeHtml(exp.endDate)}</div>
+                        <p>${escapeHtml(exp.description)}</p>
                     </div>
                     `,
                             )
@@ -143,7 +155,7 @@ export const generateCVPDF = async (data: CVData, format: "pdf" | "word" = "pdf"
                 `
                         : ""
                     }
-                
+
                 ${data.education.length > 0
                         ? `
                 <div class="section">
@@ -152,9 +164,9 @@ export const generateCVPDF = async (data: CVData, format: "pdf" | "word" = "pdf"
                             .map(
                                 (edu) => `
                     <div class="education-item">
-                        <div class="job-title">${edu.degree}</div>
-                        <div class="company">${edu.institution}</div>
-                        <div class="date">${edu.startDate} - ${edu.endDate}</div>
+                        <div class="job-title">${escapeHtml(edu.degree)}</div>
+                        <div class="company">${escapeHtml(edu.institution)}</div>
+                        <div class="date">${escapeHtml(edu.startDate)} - ${escapeHtml(edu.endDate)}</div>
                     </div>
                     `,
                             )
@@ -163,13 +175,13 @@ export const generateCVPDF = async (data: CVData, format: "pdf" | "word" = "pdf"
                 `
                         : ""
                     }
-                
+
                 ${data.skills.length > 0
                         ? `
                 <div class="section">
                     <div class="section-title">Compétences</div>
                     <div class="skills">
-                    ${data.skills.map((skill) => `<span class="skill">${skill}</span>`).join("")}
+                    ${data.skills.map((skill) => `<span class="skill">${escapeHtml(skill)}</span>`).join("")}
                     </div>
                 </div>
                 `

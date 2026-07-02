@@ -4,6 +4,7 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import { Poppins } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { SessionProvider } from "@/components/session-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/contexts/auth-context"
 import { Toaster } from "sonner"
@@ -51,11 +52,13 @@ export default function RootLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <AuthProvider>
-                        <Suspense fallback={null}>
-                            {children}
-                        </Suspense>
-                    </AuthProvider>
+                    <SessionProvider>
+                        <AuthProvider>
+                            <Suspense fallback={null}>
+                                {children}
+                            </Suspense>
+                        </AuthProvider>
+                    </SessionProvider>
                 </ThemeProvider>
                 <Analytics />
                 <Toaster

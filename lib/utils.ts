@@ -1,5 +1,4 @@
 import { twMerge } from 'tailwind-merge'
-import { IUser } from '@/lib/@types/entities'
 import { clsx, type ClassValue } from 'clsx'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -45,49 +44,38 @@ export function isPublicRoute(pathname: string) {
 export function redirectToLogin(request: NextRequest) {
     const response = NextResponse.redirect(new URL('/auth/signin', request.url))
 
-    // ❌ Supprime le cookie invalide
-    response.cookies.delete('access_token')
+    // ❌ Supprime le cookie de session NextAuth invalide/expiré
+    response.cookies.delete('next-auth.session-token')
+    response.cookies.delete('__Secure-next-auth.session-token')
 
     return response
 }
 
-export const getAuth = (): { token: string; user: IUser } | null => {
-    const stored = localStorage.getItem("auth")
-    if (!stored) return null
-    return JSON.parse(stored)
-}
-
-/** Résout le token JWT : priorité au token explicite, sinon localStorage (client) ou cookie (server). */
+/**
+ * Résout le token JWT à partir de l'unique source de vérité : la session NextAuth (httpOnly).
+ * Plus aucune dépendance à localStorage ou à un cookie "auth" custom (voir contexts/auth-context.tsx).
+ */
 export async function resolveToken(): Promise<string | undefined> {
-    // Côté client → localStorage
+    // Côté client → session NextAuth (requête vers /api/auth/session)
     if (typeof window !== 'undefined') {
-        const localToken = getAuth()?.token;
-        if (localToken) {
-            return localToken;
-        }
-
-        // Fallback NextAuth session si le stockage local n'est pas encore hydraté.
         try {
             const { getSession } = await import('next-auth/react');
             const session = await getSession();
             return (session?.user as any)?.access_token ?? undefined;
-        } catch {}
-
-        return undefined;
+        } catch {
+            return undefined;
+        }
     }
 
-    // Côté serveur → cookie "auth" (import dynamique pour éviter next/headers côté client)
+    // Côté serveur → session NextAuth (import dynamique pour éviter de charger next-auth côté client)
     try {
-        const { cookies } = await import('next/headers');
-        const cookieStore = await cookies();
-        const authCookie = cookieStore.get('auth')?.value;
-        if (authCookie) {
-            const auth = JSON.parse(authCookie);
-            return auth.token ?? undefined;
-        }
-    } catch {}
-
-    return undefined;
+        const { getServerSession } = await import('next-auth');
+        const { authOptions } = await import('@/lib/auth');
+        const session = await getServerSession(authOptions);
+        return (session?.user as any)?.access_token ?? undefined;
+    } catch {
+        return undefined;
+    }
 }
 
 export function formatDate(
@@ -130,6 +118,23 @@ export function formatFileUrl(file: string | null | undefined): string {
     if (!file) return ''
     if (file.startsWith('http://') || file.startsWith('https://')) return file
     return `${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://goriya-backend-production.up.railway.app'}/storage/${file}`
+}
+
+/** Met en majuscule la première lettre d'un texte, sans toucher au reste (pas de title case). */
+export function capitalizeFirst(value: string | null | undefined): string {
+    if (!value) return ''
+    return value.charAt(0).toUpperCase() + value.slice(1)
+}
+
+/** Retire les doublons d'une liste en comparant un nom (insensible à la casse/aux espaces). */
+export function dedupeByName<T extends { name: string }>(list: T[]): T[] {
+    const seen = new Set<string>()
+    return list.filter((item) => {
+        const key = item.name.trim().toLowerCase()
+        if (seen.has(key)) return false
+        seen.add(key)
+        return true
+    })
 }
 
 export function formatAmount(

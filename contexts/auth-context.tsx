@@ -2,58 +2,39 @@
 
 import type React from "react"
 
-import { createContext, useContext, useState, useEffect } from "react"
+import { createContext, useContext } from "react"
+import { useSession, signOut as nextAuthSignOut } from "next-auth/react"
 import { IUser } from "@/lib/@types/entities"
 import { authService } from "@/lib/api/auth.service"
 
 interface AuthContextType {
     user: IUser | null
     isLoading: boolean
-    login: (userData: IUser, token: string) => void
     logout: () => void
     isAuthenticated: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+// La session NextAuth (httpOnly, gérée côté serveur) est l'unique source de vérité pour
+// l'authentification. Plus aucune duplication du JWT en localStorage ou cookie JS-readable.
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState<IUser | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
+    const { data: session, status } = useSession()
 
-    useEffect(() => {
-        const stored = localStorage.getItem("auth")
-        if (stored) {
-            try {
-                const { user: savedUser } = JSON.parse(stored)
-                setUser(savedUser)
-            } catch {
-                localStorage.removeItem("auth")
-            }
-        }
-        setIsLoading(false)
-    }, [])
-
-    const login = (userData: IUser, token: string) => {
-        setUser(userData)
-        const auth = { token, user: userData }
-        localStorage.setItem("auth", JSON.stringify(auth))
-        document.cookie = `auth=${JSON.stringify(auth)}; path=/`
-    }
+    const user = (session?.user as unknown as IUser) ?? null
+    const isLoading = status === "loading"
 
     const logout = async () => {
         try {
             await authService.logout()
         } catch {}
-        setUser(null)
-        localStorage.removeItem("auth")
-        document.cookie = "auth=; path=/; max-age=0"
+        await nextAuthSignOut({ redirect: false })
         window.location.href = "/auth/signin"
     }
 
-    const value = {
+    const value: AuthContextType = {
         user,
         isLoading,
-        login,
         logout,
         isAuthenticated: !!user,
     }

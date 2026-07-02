@@ -4,6 +4,9 @@ import { isPublicRoute, redirectToLogin } from '@/lib/utils';
 
 const authSecret = process.env.NEXTAUTH_SECRET ?? process.env.NEXT_AUTH_SECRET;
 
+// Next.js 16 a renommé la convention "middleware" en "proxy" (le nom de fichier "middleware.ts"
+// est désormais déprécié — voir https://nextjs.org/docs/messages/middleware-to-proxy). Ce fichier
+// doit donc s'appeler proxy.ts et exporter une fonction nommée "proxy" pour être exécuté.
 export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
@@ -12,7 +15,7 @@ export async function proxy(request: NextRequest) {
         return NextResponse.next();
     }
 
-    // ✅ récupérer le token JWT côté middleware
+    // ✅ récupérer le token JWT côté proxy (session NextAuth, source unique de vérité)
     const token = await getToken({
         req: request,
         secret: authSecret,
@@ -26,9 +29,10 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
 }
 
-// ✅ Config matcher pour exclure les fichiers statiques et routes auth
+// ✅ Config matcher pour exclure les fichiers statiques, les routes auth et TOUTES les routes API
+// (les routes /api/* gèrent elles-mêmes leur authentification en interne, via getServerSession)
 export const config = {
     matcher: [
-        '/((?!_next/static|_next/image|favicon.ico|manifest.json|service-worker.js|icon|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|auth|api/auth|auth/signout).*)',
+        '/((?!_next/static|_next/image|favicon.ico|manifest.json|service-worker.js|icon|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|auth|auth/signout).*)',
     ],
 };

@@ -1,9 +1,11 @@
 import { JWT } from "next-auth/jwt"
 import { authService } from "./api/auth.service";
 import CredentialsProvider from "next-auth/providers/credentials";
+import type { NextAuthOptions } from "next-auth";
 import { DefaultUser, DefaultSession, User, Session } from "next-auth";
 
 const authSecret = process.env.NEXTAUTH_SECRET ?? process.env.NEXT_AUTH_SECRET;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://goriya-backend-production.up.railway.app";
 
 // 🔹 Étendre les types NextAuth
 declare module "next-auth" {
@@ -27,7 +29,7 @@ declare module "next-auth" {
 }
 
 // 🔹 NextAuth options (tu peux aussi les mettre dans un fichier séparé `auth.ts`)
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
             id: "credentials",
@@ -64,6 +66,45 @@ export const authOptions = {
                     };
                 } catch (error: any) {
                     console.error("[authorize] Login failed:", error?.message ?? error);
+                    return null;
+                }
+            },
+        }),
+        // 🔹 Provider "token" : permet d'établir une session NextAuth (httpOnly) pour les flux
+        // qui obtiennent un access_token directement du backend sans passer par le formulaire
+        // email/mot de passe (inscription, connexion Google, vérification OTP).
+        // Le token est revalidé auprès du backend (jamais l'utilisateur fourni par le client) :
+        // on ne fait jamais confiance à des données utilisateur envoyées telles quelles par le client.
+        CredentialsProvider({
+            id: "token",
+            name: "Token",
+            credentials: {
+                token: { label: "Token", type: "text" },
+            },
+            async authorize(credentials) {
+                const token = credentials?.token as string | undefined;
+                if (!token) return null;
+
+                try {
+                    const res = await fetch(`${BACKEND_URL}/user/profile`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    if (!res.ok) return null;
+
+                    const data = await res.json();
+                    const userPayload = (data as any)?.data ?? data;
+
+                    if (!userPayload?.id) return null;
+
+                    return {
+                        id: userPayload.id,
+                        name: userPayload.name,
+                        email: userPayload.email,
+                        role: userPayload.role,
+                        access_token: token,
+                    };
+                } catch (error: any) {
+                    console.error("[authorize:token] Token validation failed:", error?.message ?? error);
                     return null;
                 }
             },

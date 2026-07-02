@@ -14,7 +14,8 @@ import { jobService } from "@/lib/api/job.service"
 import { companyService } from "@/lib/api/company.service"
 import { dashboardService } from "@/lib/api/dashboard.service"
 import { IJobOffer, ICompany, ICandidature } from "@/lib/@types/entities"
-import { formatAmount } from "@/lib/utils"
+import { formatAmount, capitalizeFirst, dedupeByName } from "@/lib/utils"
+import { CompanyLogo } from "@/components/company-logo"
 import { useAuth } from "@/contexts/auth-context"
 import { getDeviceId } from "@/lib/device"
 import type { CVAnalysis } from "@/lib/@types/openai"
@@ -112,7 +113,7 @@ export default function Page() {
         companyService.getCompanies({ limit: 10 })
             .then((res) => {
                 const data = (res as any)?.data ?? res
-                setCompanies(Array.isArray(data) ? data : (data?.data ?? []))
+                setCompanies(dedupeByName(Array.isArray(data) ? data : (data?.data ?? [])))
             })
             .catch(() => {})
     }, [isLoggedIn])
@@ -305,16 +306,10 @@ export default function Page() {
                                         <CardContent className="p-6">
                                             <div className="flex justify-between items-start mb-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex items-center justify-center flex-shrink-0">
-                                                        {job.company?.logo ? (
-                                                            <img src={job.company.logo} alt={`${job.company.name} logo`} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
-                                                        ) : (
-                                                            <Building2 className="w-6 h-6 text-muted-foreground" />
-                                                        )}
-                                                    </div>
+                                                    <CompanyLogo name={job.company?.name ?? "?"} logo={job.company?.logo} className="w-12 h-12 rounded-lg text-[14px] flex-shrink-0" />
                                                     <div className="min-w-0">
                                                         <h3 className="font-semibold text-foreground truncate">{job.company?.name ?? "—"}</h3>
-                                                        <p className="text-sm text-muted-foreground truncate">{job.location}</p>
+                                                        <p className="text-sm text-muted-foreground truncate">{capitalizeFirst(job.location)}</p>
                                                     </div>
                                                 </div>
                                                 <div className="flex gap-2 flex-shrink-0">
@@ -358,7 +353,7 @@ export default function Page() {
                                     <div className="space-y-4">
                                         {recentApplications.map((app) => (
                                             <div key={app.id} className="flex items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-muted/50 rounded-lg">
-                                                <div className={`w-2 h-2 mt-2 sm:mt-0 flex-shrink-0 rounded-full ${app.status === "APPROUVEE" || app.status === "ACCEPTEE" ? "bg-green-500" : app.status === "REJETEE" || app.status === "REFUSEE" ? "bg-red-500" : "bg-blue-500"}`} />
+                                                <div className={`w-2 h-2 mt-2 sm:mt-0 flex-shrink-0 rounded-full ${app.status === "APPROUVEE" ? "bg-green-500" : app.status === "REJETEE" ? "bg-red-500" : "bg-blue-500"}`} />
                                                 <div className="flex-1 min-w-0">
                                                     <p className="font-medium text-foreground">Candidature — {app.jobOffer?.title ?? "Poste"}</p>
                                                     <p className="text-sm text-muted-foreground">{app.jobOffer?.company?.name ?? ""}</p>
@@ -485,18 +480,12 @@ export default function Page() {
                                 <Link key={company.id} href={`/entreprises/${company.id}`}>
                                     <article className="rounded-2xl border border-[#e8edf6] bg-white p-4 min-h-[140px] xs:min-h-[166px] hover:shadow-md transition-shadow">
                                         <div className="flex items-center justify-between mb-2 sm:mb-3">
-                                            <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-[#f3f5fa] flex items-center justify-center overflow-hidden">
-                                                {company.logo ? (
-                                                    <img src={company.logo} alt={company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
-                                                ) : (
-                                                    <Building2 className="w-4 h-4 text-[#9aa3b2]" />
-                                                )}
-                                            </div>
+                                            <CompanyLogo name={company.name} logo={company.logo} className="w-7 h-7 sm:w-9 sm:h-9 text-[10px]" />
                                             <span className="text-[10px] border border-[#cfe0ff] text-[#7a8db8] rounded-full px-2 py-0.5">{company.sector || "Entreprise"}</span>
                                         </div>
                                         <h3 className="text-[13px] font-semibold text-[#1a2232] truncate">{company.name}</h3>
-                                        <p className="text-[11px] text-[#8a95a8] mt-0.5">{company.location || company.headquarters || "—"}</p>
-                                        {company.about && <p className="text-[10px] text-[#9aa5b8] mt-2 leading-4 line-clamp-2">{company.about}</p>}
+                                        <p className="text-[11px] text-[#8a95a8] mt-0.5">{capitalizeFirst(company.location || company.headquarters) || "—"}</p>
+                                        {company.about && <p className="text-[10px] text-[#9aa5b8] mt-2 leading-4 line-clamp-2">{capitalizeFirst(company.about)}</p>}
                                     </article>
                                 </Link>
                             ))}

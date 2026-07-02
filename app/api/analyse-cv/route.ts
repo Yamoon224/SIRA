@@ -1,6 +1,7 @@
 import OpenAI from "openai"
 import { NextResponse } from "next/server"
-import { cookies } from "next/headers"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
 import type { CVAnalysis } from "@/lib/@types/openai"
 
 export const runtime = "nodejs"
@@ -22,13 +23,11 @@ async function extractTextFromPDF(file: File): Promise<string> {
     return fullText.trim()
 }
 
-function toBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onload = () => resolve(String(reader.result)?.split(",")[1] || "")
-        reader.onerror = () => reject(new Error("Impossible de lire le fichier"))
-        reader.readAsDataURL(file)
-    })
+async function toBase64(file: File): Promise<string> {
+    // Route serveur (runtime "nodejs") : FileReader n'est pas garanti disponible côté Node,
+    // on utilise Buffer qui est fiable dans cet environnement.
+    const buffer = Buffer.from(await file.arrayBuffer())
+    return buffer.toString("base64")
 }
 
 function sanitizeAnalysis(payload: any): CVAnalysis {
@@ -43,6 +42,15 @@ function sanitizeAnalysis(payload: any): CVAnalysis {
 }
 
 // ─── Gate helpers ─────────────────────────────────────────────────────────────
+
+async function checkAnonymousStatus(deviceId: string): Promise<{
+    allowed: boolean; used: number; remaining: number; limit: number
+}> {
+    const res = await fetch(
+        `${BACKEND}/anonymous-usage/status?deviceId=${encodeURIComponent(deviceId)}&featureKey=cv_analysis`,
+    )
+    return res.json()
+}
 
 async function consumeAnonymousUse(deviceId: string): Promise<{
     allowed: boolean; used: number; remaining: number; limit: number
@@ -74,35 +82,28 @@ export async function POST(request: Request) {
         }
 
         // ── AUTH CHECK ────────────────────────────────────────────────────────
-        const cookieStore = cookies()
-        const authCookie = cookieStore.get("auth")?.value
-
-        let authedUserId: string | null = null
-        if (authCookie) {
-            try {
-                const parsed = JSON.parse(authCookie)
-                authedUserId = parsed?.user?.id ?? null
-            } catch {}
-        }
+        // Session NextAuth httpOnly = unique source de vérité (plus de cookie "auth" custom).
+        const session = await getServerSession(authOptions)
+        const authedUserId = (session?.user as any)?.id ?? null
 
         // ── GATING ───────────────────────────────────────────────────────────
         if (!authedUserId) {
-            // Anonymous: check free tier
-            const usage = await consumeAnonymousUse(deviceId)
-            if (!usage.allowed) {
+            // Anonymous: check free tier WITHOUT consuming it yet.
+            const status = await checkAnonymousStatus(deviceId)
+            if (!status.allowed) {
                 return NextResponse.json(
                     {
                         error: "Vous avez utilisé vos 3 analyses gratuites. Connectez-vous pour continuer.",
                         requiresAuth: true,
-                        used: usage.used,
+                        used: status.used,
                         remaining: 0,
-                        limit: usage.limit,
+                        limit: status.limit,
                     },
                     { status: 403 },
                 )
             }
-            // Pass through — attach usage metadata to response later
-            return await runAnalysis(file, { used: usage.used, remaining: usage.remaining, limit: usage.limit })
+            // Le quota n'est consommé qu'après le succès de l'analyse (voir runAnalysis).
+            return await runAnalysis(file, { deviceId })
         }
 
         // Authenticated: check subscription
@@ -126,7 +127,7 @@ export async function POST(request: Request) {
 
 async function runAnalysis(
     file: File,
-    usage: { used: number; remaining: number; limit: number } | null,
+    anonymous: { deviceId: string } | null,
 ) {
     const fileType = file.type.toLowerCase()
     let cvText = ""
@@ -185,5 +186,12 @@ async function runAnalysis(
     const parsed = JSON.parse(content)
     const analysis = sanitizeAnalysis(parsed)
 
-    return NextResponse.json({ analysis, ...(usage ? { usage } : {}) })
+    // Le quota gratuit n'est consommé qu'ici, une fois l'analyse effectivement réussie —
+    // un échec (extraction, OpenAI, parsing) ne pénalise plus l'utilisateur anonyme.
+    if (anonymous) {
+        const usage = await consumeAnonymousUse(anonymous.deviceId)
+        return NextResponse.json({ analysis, usage })
+    }
+
+    return NextResponse.json({ analysis })
 }
