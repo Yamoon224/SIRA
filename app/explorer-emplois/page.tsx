@@ -47,9 +47,9 @@ const jobCategories = [
 ]
 
 const CAREER_TAB_PARAMS: Record<string, Record<string, string | string[]>> = {
-    "Candidats":    {},
-    "Étudiants":    { jobType: ["INTERNSHIP"] },
-    "Fonctionnaire": { search: "public" },
+    "Stagiaires":      { jobType: "STAGE" },
+    "Jeunes Diplômés": { experience: ["JUNIOR"] },
+    "Cadres / Pros":   { experience: ["SENIOR", "EXPERT"] },
 }
 
 function formatPosted(date: Date | string) {
@@ -68,7 +68,7 @@ export default function ExploreJobsPage() {
     const [searchInput, setSearchInput] = useState("")
     const [searchTerm, setSearchTerm] = useState("")
     const [selectedFilters, setSelectedFilters] = useState<string[]>([])
-    const [activeTab, setActiveTab] = useState("Candidats")
+    const [activeTab, setActiveTab] = useState("Stagiaires")
     const [activeCategory, setActiveCategory] = useState("Tous")
     const [bookmarkedJobs, setBookmarkedJobs] = useState<string[]>([])
 
@@ -220,7 +220,7 @@ export default function ExploreJobsPage() {
                         <form className="w-full max-w-[690px] relative" onSubmit={handleSearch}>
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2f6de6]" />
                             <Input
-                                className="h-11 rounded-full border-[#b9c8ec] bg-white pl-10 pr-36 text-[12px]"
+                                className="h-11 rounded-full border-[#b9c8ec] bg-white dark:bg-white text-[#111827] dark:text-[#111827] placeholder:text-[#9aa3b2] dark:placeholder:text-[#9aa3b2] pl-10 pr-36 text-[12px]"
                                 placeholder="Quel métier recherches-tu ?"
                                 value={searchInput}
                                 onChange={(e) => setSearchInput(e.target.value)}
@@ -350,20 +350,8 @@ export default function ExploreJobsPage() {
 
                 {/* Career cards */}
                 <section className="mt-14 pb-8">
-                    <div className="flex items-center justify-between mb-5">
-                        <h2 className="text-[24px] sm:text-[36px] leading-none font-extrabold text-[#1b2331]">Prenez votre carrière en main</h2>
-                        <div className="hidden sm:flex gap-2">
-                            <button type="button" disabled={careerPage <= 1 || careerLoading}
-                                onClick={() => fetchCareerJobs(careerPage - 1)}
-                                className="w-7 h-7 rounded-full border border-[#d8deeb] text-[#9aa3b2] inline-flex items-center justify-center hover:border-[#2f6de6] disabled:opacity-40 disabled:cursor-not-allowed">
-                                <ChevronLeft className="w-3 h-3" />
-                            </button>
-                            <button type="button" disabled={careerPage >= careerTotalPages || careerLoading}
-                                onClick={() => fetchCareerJobs(careerPage + 1)}
-                                className="w-7 h-7 rounded-full border border-[#d8deeb] text-[#9aa3b2] inline-flex items-center justify-center hover:border-[#2f6de6] disabled:opacity-40 disabled:cursor-not-allowed">
-                                <ChevronRight className="w-3 h-3" />
-                            </button>
-                        </div>
+                    <div className="mb-5">
+                        <h2 className="text-[24px] sm:text-[36px] leading-none font-extrabold text-[#1b2331]">Prends ta carrière en main</h2>
                     </div>
                     <div className="inline-flex rounded-full border border-[#b9c8ec] overflow-hidden mb-5 bg-white">
                         {Object.keys(CAREER_TAB_PARAMS).map((tab) => (
@@ -404,12 +392,22 @@ export default function ExploreJobsPage() {
                         </div>
                     )}
 
-                    <div className="text-center mt-6">
-                        <Link href={activeTab === "Étudiants" ? "/explorer-emplois?type=INTERNSHIP" : "/explorer-emplois"}>
+                    <div className="flex items-center justify-center gap-3 mt-6">
+                        <button type="button" disabled={careerPage <= 1 || careerLoading}
+                            onClick={() => fetchCareerJobs(careerPage - 1)}
+                            className="w-8 h-8 rounded-full border border-[#b9c8ec] bg-white text-[#2f6de6] inline-flex items-center justify-center hover:bg-[#edf4ff] disabled:opacity-40 disabled:cursor-not-allowed">
+                            <ChevronLeft className="w-3.5 h-3.5" />
+                        </button>
+                        <Link href={activeTab === "Stagiaires" ? "/explorer-emplois?jobType=STAGE" : "/explorer-emplois"}>
                             <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] px-8 h-10 text-[12px]">
                                 <Plus className="w-4 h-4 mr-1" /> Découvrir plus
                             </Button>
                         </Link>
+                        <button type="button" disabled={careerPage >= careerTotalPages || careerLoading}
+                            onClick={() => fetchCareerJobs(careerPage + 1)}
+                            className="w-8 h-8 rounded-full border border-[#b9c8ec] bg-white text-[#2f6de6] inline-flex items-center justify-center hover:bg-[#edf4ff] disabled:opacity-40 disabled:cursor-not-allowed">
+                            <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
                     </div>
                 </section>
             </main>
@@ -426,13 +424,13 @@ export default function ExploreJobsPage() {
                             <ul className="mt-4 space-y-2 text-[#9098a7] text-sm">
                                 <li><Link href="/explorer-emplois">Trouve un emploi</Link></li>
                                 <li><Link href="/offres">Tarification</Link></li>
-                                <li><Link href="#">Politique de confidentialité</Link></li>
+                                <li><Link href="/confidentialite">Politique de confidentialité</Link></li>
                             </ul>
                         </div>
                         <div>
                             <h4 className="font-bold text-white">Recevoir les notifications d'emploi</h4>
                             <p className="text-sm text-[#9098a7] mt-3">Les dernières nouvelles sur l'emploi envoyées dans votre boîte de réception chaque semaine.</p>
-                            <div className="mt-4 flex gap-2">
+                            <div className="mt-4 flex flex-col items-center gap-2 sm:flex-row">
                                 <Input className="h-10 rounded-full border-[#2a2f3a] bg-[#0f121a] text-white" placeholder="Adresse e-mail" />
                                 <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">S'abonner</Button>
                             </div>

@@ -460,7 +460,7 @@ export default function EntrepriseDetailPage() {
                                     value={jobSearch}
                                     onChange={e => setJobSearch(e.target.value)}
                                     placeholder="Recherchez par job, mot-clé ou entreprise"
-                                    className="pl-10 h-11 rounded-xl border-[#d8deeb] bg-white text-[13px]"
+                                    className="pl-10 h-11 rounded-xl border-[#d8deeb] bg-white dark:bg-white text-[#111827] dark:text-[#111827] placeholder:text-[#9aa3b2] dark:placeholder:text-[#9aa3b2] text-[13px]"
                                 />
                             </div>
 
@@ -583,13 +583,14 @@ export default function EntrepriseDetailPage() {
                             <ul className="space-y-2 text-[13px] text-[#9098a7]">
                                 <li><Link href="/explorer-emplois" className="hover:text-white">Trouve un emploi</Link></li>
                                 <li><Link href="/offres" className="hover:text-white">Tarification</Link></li>
+                                <li><Link href="/confidentialite" className="hover:text-white">Politique de confidentialité</Link></li>
                             </ul>
                         </div>
                         <div>
                             <h4 className="font-semibold text-white mb-4">Recevoir les notifications d'emploi</h4>
-                            <p className="text-[13px] text-[#9098a7] mb-4">Les dernières nouvelles sur l'emploi envoyées dans votre boite de réception chaque semaine.</p>
-                            <div className="flex gap-2">
-                                <input type="email" placeholder="Adresse e-mail" className="flex-1 h-9 rounded-full bg-[#0f121a] border border-[#2a2f3a] px-4 text-[12px] text-white placeholder:text-[#5a6070] outline-none" />
+                            <p className="text-[13px] text-[#9098a7] mb-4">Les dernières nouvelles sur l'emploi envoyées dans votre boîte de réception chaque semaine.</p>
+                            <div className="flex flex-col items-center gap-2 sm:flex-row">
+                                <input type="email" placeholder="Adresse e-mail" className="w-full flex-1 h-9 rounded-full bg-[#0f121a] border border-[#2a2f3a] px-4 text-[12px] text-white placeholder:text-[#5a6070] outline-none" />
                                 <button className="h-9 px-4 rounded-full bg-[#2f6de6] hover:bg-[#2458ba] text-white text-[12px]">S'abonner</button>
                             </div>
                         </div>

@@ -73,7 +73,7 @@ export default function SectorsPage() {
                         <div>
                             <h4 className="font-bold text-white">Recevoir les notifications d'emploi</h4>
                             <p className="text-sm text-[#9098a7] mt-3">Les dernières opportunités envoyées dans votre boîte de réception.</p>
-                            <div className="mt-4 flex gap-2">
+                            <div className="mt-4 flex flex-col items-center gap-2 sm:flex-row">
                                 <Input className="h-10 rounded-full border-[#2a2f3a] bg-[#0f121a] text-white" placeholder="Adresse e-mail" />
                                 <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">S'abonner</Button>
                             </div>

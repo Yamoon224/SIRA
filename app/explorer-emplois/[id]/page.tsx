@@ -393,13 +393,13 @@ export default function JobDetailPage() {
                             <ul className="space-y-2 text-[#9098a7] text-sm">
                                 <li><Link href="/explorer-emplois">Trouve un emploi</Link></li>
                                 <li><Link href="/offres">Tarification</Link></li>
-                                <li><Link href="#">Politique de confidentialité</Link></li>
+                                <li><Link href="/confidentialite">Politique de confidentialité</Link></li>
                             </ul>
                         </div>
                         <div>
                             <h4 className="font-bold text-white mb-3">Recevoir les notifications d'emploi</h4>
                             <p className="text-sm text-[#9098a7] mb-4">Les dernières nouvelles sur l'emploi envoyées dans votre boîte de réception chaque semaine.</p>
-                            <div className="flex gap-2">
+                            <div className="flex flex-col items-center gap-2 sm:flex-row">
                                 <Input className="h-10 rounded-full border-[#2a2f3a] bg-[#0f121a] text-white text-[12px]" placeholder="Adresse e-mail" />
                                 <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] px-4">S'abonner</Button>
                             </div>

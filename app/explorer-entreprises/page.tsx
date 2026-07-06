@@ -221,13 +221,13 @@ export default function ExploreCompaniesPage() {
                             <ul className="mt-4 space-y-2 text-[#9098a7] text-sm">
                                 <li><Link href="/explorer-emplois">Trouve un emploi</Link></li>
                                 <li><Link href="/offres">Tarification</Link></li>
-                                <li><Link href="#">Politique de confidentialité</Link></li>
+                                <li><Link href="/confidentialite">Politique de confidentialité</Link></li>
                             </ul>
                         </div>
                         <div>
                             <h4 className="font-bold text-white">Recevoir les notifications d'emploi</h4>
                             <p className="text-sm text-[#9098a7] mt-3">Les dernières nouvelles sur l'emploi envoyées dans votre boîte de réception chaque semaine.</p>
-                            <div className="mt-4 flex gap-2">
+                            <div className="mt-4 flex flex-col items-center gap-2 sm:flex-row">
                                 <Input className="h-10 rounded-full border-[#2a2f3a] bg-[#0f121a] text-white" placeholder="Adresse e-mail" />
                                 <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">S'abonner</Button>
                             </div>

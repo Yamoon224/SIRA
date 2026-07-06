@@ -23,9 +23,9 @@ import type { CVAnalysis } from "@/lib/@types/openai"
 type GateState = "idle" | "requires_auth" | "requires_subscription"
 
 const HOME_CAREER_TAB_PARAMS: Record<string, Record<string, string | string[]>> = {
-    "Candidats":     {},
-    "Étudiants":     { jobType: "STAGE" },
-    "Fonctionnaire": { search: "public" },
+    "Stagiaires":      { jobType: "STAGE" },
+    "Jeunes Diplômés": { experience: ["JUNIOR"] },
+    "Cadres / Pros":   { experience: ["SENIOR", "EXPERT"] },
 }
 
 const HOME_CAREER_LIMIT = 3
@@ -90,7 +90,7 @@ export default function Page() {
     const [recentApplications, setRecentApplications] = useState<ICandidature[]>([])
 
     // Career section state
-    const [homeCareerTab, setHomeCareerTab] = useState("Candidats")
+    const [homeCareerTab, setHomeCareerTab] = useState("Stagiaires")
     const [homeCareerJobs, setHomeCareerJobs] = useState<IJobOffer[]>([])
     const [homeCareerLoading, setHomeCareerLoading] = useState(false)
     const [homeCareerPage, setHomeCareerPage] = useState(1)
@@ -526,7 +526,7 @@ export default function Page() {
                     <p className="text-xs sm:text-[14px] text-[#7d8798] mt-2 sm:mt-4">Des milliers d'opportunités d'emploi vous attendent. Etes-vous prêt(e) a décrocher le poste parfait ?</p>
                     <div className="mt-6 sm:mt-8 flex justify-center">
                         <form className="flex w-full max-w-[720px] relative" onSubmit={(e) => { e.preventDefault(); const q = (e.currentTarget.querySelector("input") as HTMLInputElement)?.value; router.push(`/explorer-emplois${q ? `?q=${encodeURIComponent(q)}` : ""}`) }}>
-                            <Input className="h-10 sm:h-12 rounded-full border-[#dbe4f4] bg-white pr-32 text-sm w-full" placeholder="Je recherche un emploi par industrie, poste, mot-cle ou entreprise..." />
+                            <Input className="h-10 sm:h-12 rounded-full border-[#dbe4f4] bg-white dark:bg-white text-[#111827] dark:text-[#111827] placeholder:text-[#9aa3b2] dark:placeholder:text-[#9aa3b2] pr-32 text-sm w-full" placeholder="Je recherche un emploi par industrie, poste, mot-cle ou entreprise..." />
                             <Button type="submit" className="absolute right-1 top-1/2 -translate-y-1/2 h-8 sm:h-10 rounded-full bg-[#2f6de6] hover:bg-[#2458ba] px-4 sm:px-6 text-xs sm:text-sm font-semibold shadow-md">
                                 Trouver un emploi
                             </Button>
@@ -598,22 +598,8 @@ export default function Page() {
             {/* Career cards */}
             <section className="py-8 sm:py-14 bg-white">
                 <div className="mx-auto max-w-[1180px] px-3 sm:px-4">
-                    <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
-                        <h3 className="text-lg xs:text-xl sm:text-2xl font-bold">Prenez votre carrière en main</h3>
-                        <div className="flex gap-2">
-                            <button type="button"
-                                disabled={homeCareerPage <= 1 || homeCareerLoading}
-                                onClick={() => fetchHomeCareerJobs(homeCareerPage - 1)}
-                                className="w-8 h-8 rounded-full border border-[#e2e8f5] flex items-center justify-center text-[#7d8cab] disabled:opacity-40 disabled:cursor-not-allowed hover:border-[#2f6de6]">
-                                <ChevronLeft className="w-4 h-4" />
-                            </button>
-                            <button type="button"
-                                disabled={homeCareerPage >= homeCareerTotalPages || homeCareerLoading}
-                                onClick={() => fetchHomeCareerJobs(homeCareerPage + 1)}
-                                className="w-8 h-8 rounded-full border border-[#e2e8f5] flex items-center justify-center text-[#7d8cab] disabled:opacity-40 disabled:cursor-not-allowed hover:border-[#2f6de6]">
-                                <ChevronRight className="w-4 h-4" />
-                            </button>
-                        </div>
+                    <div className="mb-4 sm:mb-6">
+                        <h3 className="text-lg xs:text-xl sm:text-2xl font-bold">Prends ta carrière en main</h3>
                     </div>
                     <div className="inline-flex rounded-full border border-[#e2e8f5] overflow-hidden mb-5 bg-white">
                         {Object.keys(HOME_CAREER_TAB_PARAMS).map((tab) => (
@@ -648,10 +634,22 @@ export default function Page() {
                             ))}
                         </div>
                     )}
-                    <div className="text-center mt-6 sm:mt-8">
-                        <Link href={homeCareerTab === "Étudiants" ? "/explorer-emplois?jobType=STAGE" : "/explorer-emplois"}>
+                    <div className="flex items-center justify-center gap-3 mt-6 sm:mt-8">
+                        <button type="button"
+                            disabled={homeCareerPage <= 1 || homeCareerLoading}
+                            onClick={() => fetchHomeCareerJobs(homeCareerPage - 1)}
+                            className="w-9 h-9 rounded-full border border-[#cfe0ff] bg-white flex items-center justify-center text-[#2f6de6] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#edf4ff]">
+                            <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <Link href={homeCareerTab === "Stagiaires" ? "/explorer-emplois?jobType=STAGE" : "/explorer-emplois"}>
                             <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-10 sm:h-11 px-6 sm:px-8">+ Découvrir plus</Button>
                         </Link>
+                        <button type="button"
+                            disabled={homeCareerPage >= homeCareerTotalPages || homeCareerLoading}
+                            onClick={() => fetchHomeCareerJobs(homeCareerPage + 1)}
+                            className="w-9 h-9 rounded-full border border-[#cfe0ff] bg-white flex items-center justify-center text-[#2f6de6] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#edf4ff]">
+                            <ChevronRight className="w-4 h-4" />
+                        </button>
                     </div>
                 </div>
             </section>
@@ -668,20 +666,20 @@ export default function Page() {
                             <ul className="mt-4 space-y-2 text-[#9098a7] text-sm">
                                 <li><Link href="/explorer-emplois">Trouve un emploi</Link></li>
                                 <li><Link href="/offres">Tarification</Link></li>
-                                <li><Link href="#">Politique de confidentialite</Link></li>
+                                <li><Link href="/confidentialite">Politique de confidentialité</Link></li>
                             </ul>
                         </div>
                         <div>
                             <h4 className="font-semibold text-white">Recevoir les notifications d'emploi</h4>
-                            <p className="text-sm text-[#9098a7] mt-3">Les dernieres nouvelles sur l'emploi, les articles, envoyes dans votre boite de reception chaque semaine.</p>
-                            <div className="mt-4 flex gap-2">
+                            <p className="text-sm text-[#9098a7] mt-3">Les dernières nouvelles sur l'emploi, les articles, envoyés dans votre boîte de réception chaque semaine.</p>
+                            <div className="mt-4 flex flex-col items-center gap-2 sm:flex-row">
                                 <Input className="h-10 rounded-full border-[#2a2f3a] bg-[#0f121a] text-white" placeholder="Adresse e-mail" />
                                 <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">S'abonner</Button>
                             </div>
                         </div>
                     </div>
                     <div className="mt-8 sm:mt-10 pt-4 sm:pt-6 border-t border-[#1c202a] flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4">
-                        <p className="text-xs sm:text-sm text-[#6f7887]">2026 © Goriya. Tous droits reserves.</p>
+                        <p className="text-xs sm:text-sm text-[#6f7887]">2026 © Goriya. Tous droits réservés.</p>
                         <div className="flex items-center gap-2">
                             <Link href="/auth/signin"><Button variant="outline" className="h-8 rounded-full border-[#374153] text-[#d9e5ff] bg-transparent">Connexion</Button></Link>
                             <Link href="https://goriya-entreprise.vercel.app"><Button className="h-8 rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">Espace entreprise</Button></Link>
