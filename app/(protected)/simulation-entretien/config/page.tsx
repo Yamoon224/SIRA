@@ -117,11 +117,11 @@ function SimulationConfigContent() {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4 mb-6">
-                            <Card className="p-4 text-center cursor-pointer hover:bg-gray-50 border-2 border-transparent hover:border-blue-200">
+                            <Card className="p-4 text-center cursor-pointer hover:bg-white border-2 border-transparent hover:border-blue-200">
                                 <MessageSquare className="w-8 h-8 mx-auto mb-2 text-blue-500" />
                                 <p className="text-sm font-medium">Chat en direct</p>
                             </Card>
-                            <Card className="p-4 text-center cursor-pointer hover:bg-gray-50 border-2 border-transparent hover:border-blue-200">
+                            <Card className="p-4 text-center cursor-pointer hover:bg-white border-2 border-transparent hover:border-blue-200">
                                 <Video className="w-8 h-8 mx-auto mb-2 text-blue-500" />
                                 <p className="text-sm font-medium">Appel vidéo</p>
                             </Card>

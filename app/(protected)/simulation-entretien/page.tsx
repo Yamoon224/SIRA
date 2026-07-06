@@ -192,7 +192,7 @@ function SimulationEntretienContent() {
                     <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-0 relative">
                         <button
                             onClick={() => setShowFeedback(false)}
-                            className="absolute top-4 right-4 p-1 hover:bg-gray-100 rounded-full"
+                            className="absolute top-4 right-4 p-1 hover:bg-white border border-transparent hover:border-blue-500 rounded-full"
                         >
                             <X className="w-6 h-6 text-[#7f8796]" />
                         </button>

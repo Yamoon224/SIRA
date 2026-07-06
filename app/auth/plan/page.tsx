@@ -138,7 +138,7 @@ export default function PlanPage() {
                                         className={`w-full rounded-full font-semibold ${
                                             isPremium
                                                 ? "bg-[#2f6de6] hover:bg-[#2157d3] text-white"
-                                                : "bg-gray-100 hover:bg-gray-200 text-foreground"
+                                                : "bg-white hover:bg-blue-50 text-foreground border border-blue-500"
                                         }`}
                                     >
                                         {subscribing === plan.id ? (
