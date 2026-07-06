@@ -5,8 +5,7 @@ import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Check, Star, Users, Briefcase } from "lucide-react"
+import { Check, Star } from "lucide-react"
 
 interface PlanFeature {
   name: string
@@ -23,16 +22,6 @@ const jobSeekerFeatures: PlanFeature[] = [
   { name: "Support prioritaire", basic: false, pro: false, premium: true },
   { name: "Analyse de CV par IA", basic: false, pro: true, premium: true },
   { name: "Coaching carrière", basic: false, pro: false, premium: true },
-]
-
-const employerFeatures: PlanFeature[] = [
-  { name: "Offres d'emploi actives", basic: "1", pro: "10", premium: "Illimitées" },
-  { name: "Candidatures reçues", basic: "50", pro: "500", premium: "Illimitées" },
-  { name: "Recherche de candidats", basic: false, pro: true, premium: true },
-  { name: "Outils de tri avancés", basic: false, pro: true, premium: true },
-  { name: "Branding entreprise", basic: false, pro: false, premium: true },
-  { name: "Statistiques détaillées", basic: false, pro: true, premium: true },
-  { name: "Support dédié", basic: false, pro: false, premium: true },
 ]
 
 const jobSeekerPlans = [
@@ -62,33 +51,6 @@ const jobSeekerPlans = [
   },
 ]
 
-const employerPlans = [
-  {
-    name: "Starter",
-    price: "49",
-    period: "/mois",
-    description: "Parfait pour les petites entreprises",
-    popular: false,
-    color: "border-border",
-  },
-  {
-    name: "Business",
-    price: "149",
-    period: "/mois",
-    description: "Idéal pour les entreprises en croissance",
-    popular: true,
-    color: "border-blue-500 ring-2 ring-blue-500",
-  },
-  {
-    name: "Enterprise",
-    price: "299",
-    period: "/mois",
-    description: "Pour les grandes organisations",
-    popular: false,
-    color: "border-border",
-  },
-]
-
 export default function OffresPage() {
   const renderFeatureValue = (value: boolean | string) => {
     if (typeof value === "boolean") {
@@ -112,170 +74,78 @@ export default function OffresPage() {
       </section>
 
       <div className="container mx-auto px-4 sm:px-6 py-10 sm:py-16">
-        <Tabs defaultValue="jobseekers" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8 sm:mb-12">
-            <TabsTrigger value="jobseekers" className="flex items-center space-x-2">
-              <Users className="w-4 h-4" />
-              <span>Candidats</span>
-            </TabsTrigger>
-            <TabsTrigger value="employers" className="flex items-center space-x-2">
-              <Briefcase className="w-4 h-4" />
-              <span>Employeurs</span>
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Job Seekers Plans */}
-          <TabsContent value="jobseekers">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
-              {jobSeekerPlans.map((plan, index) => (
-                <Card key={plan.name} className={`relative ${plan.color} ${plan.popular ? "scale-105" : ""}`}>
-                  {plan.popular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <Badge className="bg-blue-600 text-white px-4 py-1">
-                        <Star className="w-3 h-3 mr-1" />
-                        Populaire
-                      </Badge>
-                    </div>
-                  )}
-                  <CardHeader className="text-center pb-6 sm:pb-8">
-                    <CardTitle className="text-xl sm:text-2xl font-bold">{plan.name}</CardTitle>
-                    <div className="mt-4">
-                      <span className="text-3xl sm:text-4xl font-bold text-blue-600">{plan.price}€</span>
-                      <span className="text-muted-foreground">{plan.period}</span>
-                    </div>
-                    <p className="text-muted-foreground mt-2 text-sm sm:text-base">{plan.description}</p>
-                  </CardHeader>
-                  <CardContent>
-                    <Button
-                      className={`w-full mb-4 sm:mb-6 ${
-                        plan.popular ? "bg-blue-600 hover:bg-blue-700" : "bg-primary hover:bg-primary/90"
-                      }`}
-                    >
-                      {plan.price === "0" ? "Commencer gratuitement" : "Choisir ce plan"}
-                    </Button>
-                    <div className="space-y-3">
-                      {jobSeekerFeatures.slice(0, 4).map((feature) => (
-                        <div key={feature.name} className="flex items-center justify-between">
-                          <span className="text-sm">{feature.name}</span>
-                          {renderFeatureValue(
-                            index === 0 ? feature.basic : index === 1 ? feature.pro : feature.premium,
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* Job Seekers Feature Comparison */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-center">Comparaison détaillée des fonctionnalités</CardTitle>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
+          {jobSeekerPlans.map((plan, index) => (
+            <Card key={plan.name} className={`relative ${plan.color} ${plan.popular ? "scale-105" : ""}`}>
+              {plan.popular && (
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <Badge className="bg-blue-600 text-white px-4 py-1">
+                    <Star className="w-3 h-3 mr-1" />
+                    Populaire
+                  </Badge>
+                </div>
+              )}
+              <CardHeader className="text-center pb-6 sm:pb-8">
+                <CardTitle className="text-xl sm:text-2xl font-bold">{plan.name}</CardTitle>
+                <div className="mt-4">
+                  <span className="text-3xl sm:text-4xl font-bold text-blue-600">{plan.price}€</span>
+                  <span className="text-muted-foreground">{plan.period}</span>
+                </div>
+                <p className="text-muted-foreground mt-2 text-sm sm:text-base">{plan.description}</p>
               </CardHeader>
               <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-3 px-4">Fonctionnalités</th>
-                        <th className="text-center py-3 px-4">Basique</th>
-                        <th className="text-center py-3 px-4">Pro</th>
-                        <th className="text-center py-3 px-4">Premium</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {jobSeekerFeatures.map((feature, index) => (
-                        <tr key={feature.name} className={index % 2 === 0 ? "bg-muted/50" : ""}>
-                          <td className="py-3 px-4 font-medium">{feature.name}</td>
-                          <td className="py-3 px-4 text-center">{renderFeatureValue(feature.basic)}</td>
-                          <td className="py-3 px-4 text-center">{renderFeatureValue(feature.pro)}</td>
-                          <td className="py-3 px-4 text-center">{renderFeatureValue(feature.premium)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <Button
+                  className={`w-full mb-4 sm:mb-6 ${
+                    plan.popular ? "bg-blue-600 hover:bg-blue-700" : "bg-primary hover:bg-primary/90"
+                  }`}
+                >
+                  {plan.price === "0" ? "Commencer gratuitement" : "Choisir ce plan"}
+                </Button>
+                <div className="space-y-3">
+                  {jobSeekerFeatures.slice(0, 4).map((feature) => (
+                    <div key={feature.name} className="flex items-center justify-between">
+                      <span className="text-sm">{feature.name}</span>
+                      {renderFeatureValue(
+                        index === 0 ? feature.basic : index === 1 ? feature.pro : feature.premium,
+                      )}
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          ))}
+        </div>
 
-          {/* Employers Plans */}
-          <TabsContent value="employers">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
-              {employerPlans.map((plan, index) => (
-                <Card key={plan.name} className={`relative ${plan.color} ${plan.popular ? "scale-105" : ""}`}>
-                  {plan.popular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <Badge className="bg-blue-600 text-white px-4 py-1">
-                        <Star className="w-3 h-3 mr-1" />
-                        Populaire
-                      </Badge>
-                    </div>
-                  )}
-                  <CardHeader className="text-center pb-6 sm:pb-8">
-                    <CardTitle className="text-xl sm:text-2xl font-bold">{plan.name}</CardTitle>
-                    <div className="mt-4">
-                      <span className="text-3xl sm:text-4xl font-bold text-blue-600">{plan.price}€</span>
-                      <span className="text-muted-foreground">{plan.period}</span>
-                    </div>
-                    <p className="text-muted-foreground mt-2 text-sm sm:text-base">{plan.description}</p>
-                  </CardHeader>
-                  <CardContent>
-                    <Button
-                      className={`w-full mb-4 sm:mb-6 ${
-                        plan.popular ? "bg-blue-600 hover:bg-blue-700" : "bg-primary hover:bg-primary/90"
-                      }`}
-                    >
-                      Choisir ce plan
-                    </Button>
-                    <div className="space-y-3">
-                      {employerFeatures.slice(0, 4).map((feature) => (
-                        <div key={feature.name} className="flex items-center justify-between">
-                          <span className="text-sm">{feature.name}</span>
-                          {renderFeatureValue(
-                            index === 0 ? feature.basic : index === 1 ? feature.pro : feature.premium,
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+        {/* Feature Comparison */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-center">Comparaison détaillée des fonctionnalités</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-3 px-4">Fonctionnalités</th>
+                    <th className="text-center py-3 px-4">Basique</th>
+                    <th className="text-center py-3 px-4">Pro</th>
+                    <th className="text-center py-3 px-4">Premium</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {jobSeekerFeatures.map((feature, index) => (
+                    <tr key={feature.name} className={index % 2 === 0 ? "bg-muted/50" : ""}>
+                      <td className="py-3 px-4 font-medium">{feature.name}</td>
+                      <td className="py-3 px-4 text-center">{renderFeatureValue(feature.basic)}</td>
+                      <td className="py-3 px-4 text-center">{renderFeatureValue(feature.pro)}</td>
+                      <td className="py-3 px-4 text-center">{renderFeatureValue(feature.premium)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-
-            {/* Employers Feature Comparison */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-center">Comparaison détaillée des fonctionnalités</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-3 px-4">Fonctionnalités</th>
-                        <th className="text-center py-3 px-4">Starter</th>
-                        <th className="text-center py-3 px-4">Business</th>
-                        <th className="text-center py-3 px-4">Enterprise</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {employerFeatures.map((feature, index) => (
-                        <tr key={feature.name} className={index % 2 === 0 ? "bg-muted/50" : ""}>
-                          <td className="py-3 px-4 font-medium">{feature.name}</td>
-                          <td className="py-3 px-4 text-center">{renderFeatureValue(feature.basic)}</td>
-                          <td className="py-3 px-4 text-center">{renderFeatureValue(feature.pro)}</td>
-                          <td className="py-3 px-4 text-center">{renderFeatureValue(feature.premium)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+          </CardContent>
+        </Card>
 
         {/* FAQ Section */}
         <section className="mt-20">
