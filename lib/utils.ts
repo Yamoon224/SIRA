@@ -15,6 +15,8 @@ export function isPublicRoute(pathname: string) {
         '/manifest.json',
         '/service-worker.js',
         '/favicon.ico',
+        '/offres',
+        '/confidentialite',
     ];
 
     const publicPrefixes = [
