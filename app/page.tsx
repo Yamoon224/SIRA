@@ -32,26 +32,26 @@ const HOME_CAREER_LIMIT = 3
 
 const featureBlocks = [
     {
-        title: "Analysez votre document",
-        desc: "Téléchargez votre CV, lettre de motivation ou tout autre document et obtenez une analyse intelligente de l'IA qui identifie les points forts et les zones à améliorer en fonction d'un score d'efficacité de 100%.",
+        title: "Analyse ton document",
+        desc: "Télécharge ton CV, lettre de motivation ou tout autre document et obtiens une analyse intelligente de l'IA qui identifie les points forts et les zones à améliorer en fonction d'un score d'efficacité de 100%.",
         image: "/images/thesis-illustration.png",
         reverse: false,
     },
     {
         title: "Simulation d'entretien",
-        desc: "Préparez-vous pour votre prochain entretien d'embauche avec Goriya, en utilisant un chatbot dynamique basé sur un modèle d'intelligence artificielle ou en prenant rendez-vous avec un professionnel des ressources humaines.",
+        desc: "Prépare-toi pour ton prochain entretien d'embauche avec Goriya, en utilisant un chatbot dynamique basé sur un modèle d'intelligence artificielle ou en prenant rendez-vous avec un professionnel des ressources humaines.",
         image: "/images/lettre-recommandation.png",
         reverse: true,
     },
     {
         title: "UNE CONNEXION PLUS FACILE AVEC LES RECRUTEURS",
-        desc: "Décrivez votre disponibilité et mettez en valeur votre expérience grâce à un profil complet. Les recruteurs intéressés vous contacteront directement avec des opportunités adaptées.",
+        desc: "Décris ta disponibilité et mets en valeur ton expérience grâce à un profil complet. Les recruteurs intéressés te contacteront directement avec des opportunités adaptées.",
         image: "/images/remote-collab.png",
         reverse: false,
     },
     {
         title: "TRANSPARENCE TOTALE SUR LES ENTREPRISES",
-        desc: "Découvrez des profils détaillés d'entreprises incluant leur mission, valeurs, environnement de travail, et équipes. Postulez en toute confiance.",
+        desc: "Découvre des profils détaillés d'entreprises incluant leur mission, valeurs, environnement de travail, et équipes. Postule en toute confiance.",
         image: "/images/search-illustration.png",
         reverse: true,
     },
@@ -188,7 +188,7 @@ export default function Page() {
         ]
 
         if (!allowedTypes.includes(file.type)) {
-            setUploadError("Format non supporté. Utilisez PDF, Word ou image.")
+            setUploadError("Format non supporté. Utilise PDF, Word ou image.")
             event.target.value = ""
             return
         }
@@ -220,7 +220,7 @@ export default function Page() {
 
             if (response.status === 403 && payload.requiresAuth) {
                 setGateState("requires_auth")
-                setUploadError(payload.error ?? "Connectez-vous pour continuer.")
+                setUploadError(payload.error ?? "Connecte-toi pour continuer.")
                 return
             }
             if (response.status === 402 && payload.requiresSubscription) {
@@ -245,21 +245,21 @@ export default function Page() {
 
     // ─── Connected state ───────────────────────────────────────────────
     if (isLoggedIn) {
-        const firstName = user?.name?.split(" ")[0] ?? "vous"
+        const firstName = user?.name?.split(" ")[0] ?? "toi"
         return (
             <div className="min-h-screen bg-background">
                 <Header />
                 <main className="container mx-auto px-3 sm:px-6 py-5 sm:py-8">
                     <div className="mb-6 sm:mb-8">
                         <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Bonjour, {firstName}!</h1>
-                        <p className="text-muted-foreground">Voici les dernières opportunités pour vous</p>
+                        <p className="text-muted-foreground">Voici les dernières opportunités pour toi</p>
                     </div>
 
                     {/* Search Bar */}
                     <form className="mb-8" onSubmit={(e) => { e.preventDefault(); const q = (e.currentTarget.querySelector("input") as HTMLInputElement)?.value; if (q) router.push(`/chercher-emploi?q=${encodeURIComponent(q)}`) }}>
                         <div className="relative max-w-2xl">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                            <Input placeholder="Recherchez un emploi par intitulé, poste, mot clé ou entreprise..." className="pl-12 h-12 text-base" />
+                            <Input placeholder="Recherche un emploi par intitulé, poste, mot clé ou entreprise..." className="pl-12 h-12 text-base" />
                         </div>
                     </form>
 
@@ -294,7 +294,7 @@ export default function Page() {
                     {/* Recommended Jobs */}
                     <div className="mb-6 sm:mb-8">
                         <div className="flex items-center justify-between mb-4 sm:mb-6">
-                            <h2 className="text-xl sm:text-2xl font-bold text-foreground">Recommandé pour vous</h2>
+                            <h2 className="text-xl sm:text-2xl font-bold text-foreground">Recommandé pour toi</h2>
                             <Link href="/chercher-emploi" className="text-blue-600 hover:text-blue-700 font-medium">Voir tout</Link>
                         </div>
                         {jobsLoading ? (
@@ -368,7 +368,7 @@ export default function Page() {
                                             <div className="w-2 h-2 mt-2 sm:mt-0 flex-shrink-0 bg-blue-500 rounded-full" />
                                             <div className="flex-1 min-w-0">
                                                 <p className="font-medium text-foreground">Bienvenue sur Goriya</p>
-                                                <p className="text-sm text-muted-foreground">Commencez par explorer les offres d'emploi disponibles</p>
+                                                <p className="text-sm text-muted-foreground">Commence par explorer les offres d'emploi disponibles</p>
                                             </div>
                                             <Link href="/explorer-emplois" className="flex-shrink-0">
                                                 <Button size="sm" variant="outline">Explorer</Button>
@@ -424,7 +424,7 @@ export default function Page() {
                 </div>
                 <div className="mx-auto max-w-[1180px] px-4 text-center relative z-10">
                     <h1 className="font-extrabold leading-tight text-2xl xs:text-3xl sm:text-4xl md:text-[40px] lg:text-[56px] max-w-[920px] mx-auto">
-                        Analysez votre CV. Ameliorez-le pour augmenter vos chances.
+                        Analyse ton CV. Améliore-le pour augmenter tes chances.
                     </h1>
                     <div className="mt-6 sm:mt-9 flex flex-col items-center gap-3">
                         {gateState === "requires_subscription" ? (
@@ -437,8 +437,8 @@ export default function Page() {
                         ) : gateState === "requires_auth" ? (
                             <div className="flex flex-col items-center gap-3 max-w-[420px] mx-auto bg-white/15 backdrop-blur-sm rounded-2xl p-5">
                                 <Lock className="w-8 h-8 text-white" />
-                                <p className="text-sm text-white font-semibold text-center">Vous avez utilisé vos 3 analyses gratuites</p>
-                                <p className="text-xs text-[#b9d8ff] text-center">Connectez-vous pour continuer avec un abonnement.</p>
+                                <p className="text-sm text-white font-semibold text-center">Tu as utilisé tes 3 analyses gratuites</p>
+                                <p className="text-xs text-[#b9d8ff] text-center">Connecte-toi pour continuer avec un abonnement.</p>
                                 <div className="flex gap-2 w-full">
                                     <Button onClick={() => router.push("/auth/signin")} className="flex-1 h-10 rounded-full bg-white text-[#20429b] hover:bg-[#f4f7ff] font-semibold text-sm">
                                         <LogIn className="w-4 h-4 mr-1.5" />Se connecter
@@ -452,13 +452,13 @@ export default function Page() {
                             <>
                                 <Button onClick={handlePickCV} disabled={isAnalyzingCV} className="h-11 sm:h-12 rounded-full bg-white text-[#20429b] hover:bg-[#f4f7ff] px-5 sm:px-8 font-semibold w-full max-w-[420px] mx-auto">
                                     {isAnalyzingCV ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
-                                    {isAnalyzingCV ? "Analyse IA en cours..." : "Telechargez votre Curriculum Vitae ici"}
+                                    {isAnalyzingCV ? "Analyse IA en cours..." : "Télécharge ton Curriculum Vitae ici"}
                                 </Button>
                                 {!isLoggedIn && freeUsage && (
                                     <p className="text-xs text-[#b9d8ff]">
                                         {freeUsage.remaining > 0
                                             ? `${freeUsage.remaining} analyse${freeUsage.remaining > 1 ? "s" : ""} gratuite${freeUsage.remaining > 1 ? "s" : ""} restante${freeUsage.remaining > 1 ? "s" : ""} (${freeUsage.used}/${freeUsage.limit})`
-                                            : "Limite gratuite atteinte — connectez-vous pour continuer"}
+                                            : "Limite gratuite atteinte — connecte-toi pour continuer"}
                                     </p>
                                 )}
                                 {uploadError && <p className="text-[12px] text-[#ffd4d4]">{uploadError}</p>}
@@ -466,7 +466,7 @@ export default function Page() {
                         )}
                         <input ref={cvInputRef} type="file" accept=".pdf,.doc,.docx,.png,.jpeg,.jpg,.webp" onChange={handleCVUpload} className="hidden" />
                     </div>
-                    <p className="mt-4 sm:mt-6 text-xs sm:text-[13px] text-[#b9d8ff]">Importer votre CV, lettre de motivation ou tout autre document et obtenir un score d'analyse.</p>
+                    <p className="mt-4 sm:mt-6 text-xs sm:text-[13px] text-[#b9d8ff]">Importer ton CV, lettre de motivation ou tout autre document et obtenir un score d'analyse.</p>
                 </div>
             </section>
 
@@ -523,7 +523,7 @@ export default function Page() {
             <section className="bg-[#f2f4f8] py-10 sm:py-16">
                 <div className="mx-auto max-w-[960px] px-3 sm:px-4 text-center">
                     <h2 className="text-xl xs:text-2xl sm:text-3xl md:text-[38px] lg:text-[58px] leading-none font-extrabold text-[#2a62d7] uppercase">TROUVEZ UN EMPLOI</h2>
-                    <p className="text-xs sm:text-[14px] text-[#7d8798] mt-2 sm:mt-4">Des milliers d'opportunités d'emploi vous attendent. Etes-vous prêt(e) a décrocher le poste parfait ?</p>
+                    <p className="text-xs sm:text-[14px] text-[#7d8798] mt-2 sm:mt-4">Des milliers d'opportunités d'emploi t'attendent. Es-tu prêt(e) à décrocher le poste parfait ?</p>
                     <div className="mt-6 sm:mt-8 flex justify-center">
                         <form className="flex w-full max-w-[720px] relative" onSubmit={(e) => { e.preventDefault(); const q = (e.currentTarget.querySelector("input") as HTMLInputElement)?.value; router.push(`/explorer-emplois${q ? `?q=${encodeURIComponent(q)}` : ""}`) }}>
                             <Input className="h-10 sm:h-12 rounded-full border-[#dbe4f4] bg-white dark:bg-white text-[#111827] dark:text-[#111827] placeholder:text-[#9aa3b2] dark:placeholder:text-[#9aa3b2] pr-32 text-sm w-full" placeholder="Je recherche un emploi par industrie, poste, mot-cle ou entreprise..." />
@@ -546,10 +546,10 @@ export default function Page() {
                     <h2 className="text-center text-xl xs:text-2xl sm:text-3xl md:text-[38px] lg:text-[44px] leading-none font-extrabold">Comment fonctionne Goriya?</h2>
                     <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-5 sm:gap-7 mt-8 sm:mt-12 text-center">
                         {[
-                            { n: 1, title: "Creer un compte", desc: "La porte d'entree est votre profil. Remplissez-le et laissez l'opportunite vous trouver." },
-                            { n: 2, title: "Telecharger un CV", desc: "Goriya met en valeur les competences qui feront ressortir votre candidature." },
-                            { n: 3, title: "Faire valider votre CV par l'IA", desc: "Prochaine etape: l'entretien. Une simulation claire et rapide pour se preparer." },
-                            { n: 4, title: "Postuler pour un emploi", desc: "Cliquez et envoyez votre candidature en quelques secondes." },
+                            { n: 1, title: "Creer un compte", desc: "La porte d'entree est ton profil. Remplis-le et laisse l'opportunite te trouver." },
+                            { n: 2, title: "Telecharger un CV", desc: "Goriya met en valeur les competences qui feront ressortir ta candidature." },
+                            { n: 3, title: "Faire valider ton CV par l'IA", desc: "Prochaine etape: l'entretien. Une simulation claire et rapide pour se preparer." },
+                            { n: 4, title: "Postuler pour un emploi", desc: "Clique et envoie ta candidature en quelques secondes." },
                         ].map(({ n, title, desc }) => (
                             <div key={n}>
                                 <div className="mx-auto w-8 h-8 rounded-full border border-[#bfd0f5] text-[#2f6de6] text-sm flex items-center justify-center">{n}</div>
@@ -585,7 +585,7 @@ export default function Page() {
                                 <Button variant="outline" className="rounded-full border-white text-white bg-transparent hover:bg-white hover:text-[#1f4fc5] w-full sm:w-auto">Trouver un emploi</Button>
                             </Link>
                             <Link href="/explorer-emplois">
-                                <Button variant="outline" className="rounded-full border-white text-white bg-transparent hover:bg-white hover:text-[#1f4fc5] w-full sm:w-auto">Obtenez plus d'offres</Button>
+                                <Button variant="outline" className="rounded-full border-white text-white bg-transparent hover:bg-white hover:text-[#1f4fc5] w-full sm:w-auto">Obtiens plus d'offres</Button>
                             </Link>
                         </div>
                     </div>
@@ -671,7 +671,7 @@ export default function Page() {
                         </div>
                         <div>
                             <h4 className="font-semibold text-white">Recevoir les notifications d'emploi</h4>
-                            <p className="text-sm text-[#9098a7] mt-3">Les dernières nouvelles sur l'emploi, les articles, envoyés dans votre boîte de réception chaque semaine.</p>
+                            <p className="text-sm text-[#9098a7] mt-3">Les dernières nouvelles sur l'emploi, les articles, envoyés dans ta boîte de réception chaque semaine.</p>
                             <div className="mt-4 flex flex-col items-center gap-2 sm:flex-row">
                                 <Input className="h-10 rounded-full border-[#2a2f3a] bg-[#0f121a] text-white" placeholder="Adresse e-mail" />
                                 <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">S'abonner</Button>

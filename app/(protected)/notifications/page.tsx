@@ -119,7 +119,7 @@ export default function NotificationsPage() {
           <div>
             <h1 className="text-3xl font-bold text-foreground mb-2">Notifications</h1>
             <p className="text-muted-foreground">
-              Vous avez {unreadCount} notification{unreadCount !== 1 ? "s" : ""} non lue{unreadCount !== 1 ? "s" : ""}
+              Tu as {unreadCount} notification{unreadCount !== 1 ? "s" : ""} non lue{unreadCount !== 1 ? "s" : ""}
             </p>
           </div>
 
@@ -216,7 +216,7 @@ function NotificationsList({
       <div className="text-center py-12">
         <Bell className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
         <h3 className="text-lg font-medium text-foreground mb-2">Aucune notification</h3>
-        <p className="text-muted-foreground">Vous n'avez aucune notification dans cette catégorie.</p>
+        <p className="text-muted-foreground">Tu n'as aucune notification dans cette catégorie.</p>
       </div>
     )
   }

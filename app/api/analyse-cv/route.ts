@@ -93,7 +93,7 @@ export async function POST(request: Request) {
             if (!status.allowed) {
                 return NextResponse.json(
                     {
-                        error: "Vous avez utilisé vos 3 analyses gratuites. Connectez-vous pour continuer.",
+                        error: "Tu as utilisé tes 3 analyses gratuites. Connecte-toi pour continuer.",
                         requiresAuth: true,
                         used: status.used,
                         remaining: 0,

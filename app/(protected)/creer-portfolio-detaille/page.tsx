@@ -59,7 +59,7 @@ export default function Page() {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Bio professionnelle</label>
-                                    <Textarea placeholder="Présentez-vous en quelques lignes..." rows={3} />
+                                    <Textarea placeholder="Présente-toi en quelques lignes..." rows={3} />
                                 </div>
                             </CardContent>
                         </Card>
@@ -72,7 +72,7 @@ export default function Page() {
                             <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                    <Input placeholder="votre@email.com" />
+                                    <Input placeholder="ton@email.com" />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
@@ -161,11 +161,11 @@ export default function Page() {
                             <CardContent className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn</label>
-                                    <Input placeholder="https://linkedin.com/in/votre-profil" />
+                                    <Input placeholder="https://linkedin.com/in/ton-profil" />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Portfolio personnel</label>
-                                    <Input placeholder="https://votre-site.com" />
+                                    <Input placeholder="https://ton-site.com" />
                                 </div>
                             </CardContent>
                         </Card>
@@ -222,10 +222,10 @@ export default function Page() {
                                 <CardTitle>Conseils de Goriya</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-3 text-sm text-gray-600">
-                                <p>• Ajoutez des captures d'écran de vos projets</p>
-                                <p>• Décrivez les technologies utilisées</p>
-                                <p>• Incluez des liens vers vos réalisations</p>
-                                <p>• Mettez à jour régulièrement votre portfolio</p>
+                                <p>• Ajoute des captures d'écran de tes projets</p>
+                                <p>• Décris les technologies utilisées</p>
+                                <p>• Inclus des liens vers tes réalisations</p>
+                                <p>• Mets à jour régulièrement ton portfolio</p>
                             </CardContent>
                         </Card>
                     </div>

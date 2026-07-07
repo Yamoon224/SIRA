@@ -61,7 +61,7 @@ export default function PlanPage() {
             sessionStorage.setItem("wave_session_id", data.sessionId)
             window.location.href = data.waveUrl
         } catch {
-            toast.error("Erreur lors de l'initialisation du paiement. Veuillez réessayer.")
+            toast.error("Erreur lors de l'initialisation du paiement. Réessaie.")
             setSubscribing(null)
         }
     }
@@ -80,8 +80,8 @@ export default function PlanPage() {
                     <div className="w-12 h-12 bg-[#2f6de6] rounded-full flex items-center justify-center mx-auto mb-4">
                         <span className="text-white text-xl font-bold">G</span>
                     </div>
-                    <h1 className="text-3xl font-bold text-foreground mb-2">Choisissez votre forfait</h1>
-                    <p className="text-muted-foreground text-sm">Commencez gratuitement, passez au Premium quand vous voulez</p>
+                    <h1 className="text-3xl font-bold text-foreground mb-2">Choisis ton forfait</h1>
+                    <p className="text-muted-foreground text-sm">Commence gratuitement, passe au Premium quand tu veux</p>
                 </div>
 
                 {loading ? (

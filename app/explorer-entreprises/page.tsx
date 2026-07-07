@@ -124,7 +124,7 @@ export default function ExploreCompaniesPage() {
                 <section className="text-center">
                     <h1 className="text-[28px] sm:text-[42px] leading-none font-extrabold text-[#121826]">Explorer les entreprises.</h1>
                     <p className="mt-5 text-[11px] sm:text-[12px] text-[#7f8796] max-w-[760px] mx-auto leading-4">
-                        Ne vous contentez pas de postuler, découvrez l'histoire derrière chaque offre d'emploi. Naviguez à travers notre sélection d'entreprises, lisez les témoignages d'employés et familiarisez-vous avec la culture de chaque organisation.
+                        Ne te contente pas de postuler, découvre l'histoire derrière chaque offre d'emploi. Navigue à travers notre sélection d'entreprises, lis les témoignages d'employés et familiarise-toi avec la culture de chaque organisation.
                     </p>
                 </section>
 
@@ -226,7 +226,7 @@ export default function ExploreCompaniesPage() {
                         </div>
                         <div>
                             <h4 className="font-bold text-white">Recevoir les notifications d'emploi</h4>
-                            <p className="text-sm text-[#9098a7] mt-3">Les dernières nouvelles sur l'emploi envoyées dans votre boîte de réception chaque semaine.</p>
+                            <p className="text-sm text-[#9098a7] mt-3">Les dernières nouvelles sur l'emploi envoyées dans ta boîte de réception chaque semaine.</p>
                             <div className="mt-4 flex flex-col items-center gap-2 sm:flex-row">
                                 <Input className="h-10 rounded-full border-[#2a2f3a] bg-[#0f121a] text-white" placeholder="Adresse e-mail" />
                                 <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">S'abonner</Button>

@@ -34,7 +34,7 @@ export default function Page() {
                     <div className="bg-white border border-[#e8edf6] rounded-xl p-0 sm:p-0">
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 pt-4 sm:pt-6 pb-2">
                             <div>
-                                <h2 className="text-lg font-semibold text-[#1b2331]">Votre portfolio</h2>
+                                <h2 className="text-lg font-semibold text-[#1b2331]">Ton portfolio</h2>
                                 <div className="text-[15px] text-[#7f8796] mt-1">CV</div>
                             </div>
                             <Button className="bg-[#2f6de6] hover:bg-[#2554b8] text-white font-medium rounded-full px-4 py-2 text-sm flex items-center justify-center gap-2 shadow-none w-full sm:w-auto">
@@ -50,7 +50,7 @@ export default function Page() {
                                 </div>
                             ) : portfolios.length === 0 ? (
                                 <p className="text-center text-[13px] text-[#7f8796] py-8">
-                                    Aucun portfolio créé. Cliquez sur "Ajouter" pour commencer.
+                                    Aucun portfolio créé. Clique sur "Ajouter" pour commencer.
                                 </p>
                             ) : (
                                 <div className="space-y-3">

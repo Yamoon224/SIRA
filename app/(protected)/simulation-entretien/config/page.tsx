@@ -45,7 +45,7 @@ function SimulationConfigContent() {
                             </Avatar>
                             <h2 className="text-xl font-semibold mb-2">Simulation d'entretien IA</h2>
                             <p className="text-gray-600 text-sm">
-                                Préparez-vous pour vos entretiens avec notre assistant IA intelligent
+                                Prépare-toi pour tes entretiens avec notre assistant IA intelligent
                             </p>
                         </div>
 

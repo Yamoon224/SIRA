@@ -24,9 +24,9 @@ function formatPosted(date: Date | string) {
 }
 
 const faqs = [
-    { q: "Un CV est-il requis pour postuler à cette offre ?", a: "Oui, un CV à jour est généralement requis. Vous pouvez en créer un directement sur Goriya." },
-    { q: "Le télétravail est-il possible pour ce poste ?", a: "Consultez la description de l'offre pour connaître les modalités de travail proposées par l'entreprise." },
-    { q: "Une lettre de motivation est-elle obligatoire ?", a: "Elle est souvent recommandée pour maximiser vos chances d'être sélectionné(e)." },
+    { q: "Un CV est-il requis pour postuler à cette offre ?", a: "Oui, un CV à jour est généralement requis. Tu peux en créer un directement sur Goriya." },
+    { q: "Le télétravail est-il possible pour ce poste ?", a: "Consulte la description de l'offre pour connaître les modalités de travail proposées par l'entreprise." },
+    { q: "Une lettre de motivation est-elle obligatoire ?", a: "Elle est souvent recommandée pour maximiser tes chances d'être sélectionné(e)." },
     { q: "Quel est le délai de réponse après candidature ?", a: "Les recruteurs répondent généralement sous 2 à 4 semaines après la clôture de l'offre." },
 ]
 
@@ -39,7 +39,7 @@ function MatchingScoreWidget() {
     return (
         <div className="bg-white rounded-xl border border-[#e8eef6] p-5">
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-[13px] font-extrabold text-[#1b2331]">Votre profil correspond à cette offre</h3>
+                <h3 className="text-[13px] font-extrabold text-[#1b2331]">Ton profil correspond à cette offre</h3>
                 <Lock className="w-4 h-4 text-[#9aa3b2]" />
             </div>
 
@@ -85,7 +85,7 @@ function MatchingScoreWidget() {
             </div>
 
             <div className="rounded-lg bg-[#f4f7ff] border border-[#dce8ff] p-3 text-center">
-                <p className="text-[11px] text-[#4e5a6e] mb-2">Créez un compte gratuit pour voir si ce poste vous correspond vraiment.</p>
+                <p className="text-[11px] text-[#4e5a6e] mb-2">Crée un compte gratuit pour voir si ce poste te correspond vraiment.</p>
                 <Link href="/auth/signin">
                     <Button size="sm" className="w-full rounded-full bg-[#2f6de6] hover:bg-[#2458ba] text-[11px] h-8">
                         Voir mon score de compatibilité
@@ -333,7 +333,7 @@ export default function JobDetailPage() {
                                                 {job.company.sector && <p className="text-[11px] text-[#7f8796]">{job.company.sector}</p>}
                                             </div>
                                         </div>
-                                        <p className="text-[12px] font-semibold text-[#1b2331] mb-3">Cette offre vous intéresse ?</p>
+                                        <p className="text-[12px] font-semibold text-[#1b2331] mb-3">Cette offre t'intéresse ?</p>
                                         <Link href={job.company.id ? `/explorer-entreprises/${job.company.id}` : "/explorer-entreprises"}>
                                             <Button variant="outline" className="w-full rounded-full border-[#d8deeb] h-8 text-[11px] text-[#2f6de6]">
                                                 Découvrir l'entreprise
@@ -350,7 +350,7 @@ export default function JobDetailPage() {
                             <div className="bg-gradient-to-br from-[#1539be] to-[#2f81f1] rounded-xl p-5 text-white text-center">
                                 <Sparkles className="w-6 h-6 mx-auto mb-3 text-yellow-300" />
                                 <p className="text-[14px] font-extrabold mb-1">Essayer dès maintenant</p>
-                                <p className="text-[11px] text-blue-200 mb-4">Accédez à toutes les fonctionnalités premium et boostez votre recherche d'emploi.</p>
+                                <p className="text-[11px] text-blue-200 mb-4">Accède à toutes les fonctionnalités premium et booste ta recherche d'emploi.</p>
                                 <Link href="/offres">
                                     <Button className="w-full rounded-full bg-white text-[#2f6de6] hover:bg-[#f0f3fb] text-[11px] h-8 font-semibold">
                                         Voir les offres premium
@@ -360,9 +360,9 @@ export default function JobDetailPage() {
 
                             {/* Apply sticky */}
                             <div className="bg-white rounded-xl border border-[#e8eef6] p-5">
-                                <p className="text-[13px] font-bold text-[#1b2331] mb-1">Postulez dès maintenant</p>
+                                <p className="text-[13px] font-bold text-[#1b2331] mb-1">Postule dès maintenant</p>
                                 <p className="text-[11px] text-[#7f8796] mb-4">
-                                    Rejoignez les {job.applicants ?? 0} candidat{(job.applicants ?? 0) !== 1 ? "s" : ""} qui ont déjà postulé.
+                                    Rejoins les {job.applicants ?? 0} candidat{(job.applicants ?? 0) !== 1 ? "s" : ""} qui ont déjà postulé.
                                 </p>
                                 <Button
                                     onClick={handleApply}
@@ -398,7 +398,7 @@ export default function JobDetailPage() {
                         </div>
                         <div>
                             <h4 className="font-bold text-white mb-3">Recevoir les notifications d'emploi</h4>
-                            <p className="text-sm text-[#9098a7] mb-4">Les dernières nouvelles sur l'emploi envoyées dans votre boîte de réception chaque semaine.</p>
+                            <p className="text-sm text-[#9098a7] mb-4">Les dernières nouvelles sur l'emploi envoyées dans ta boîte de réception chaque semaine.</p>
                             <div className="flex flex-col items-center gap-2 sm:flex-row">
                                 <Input className="h-10 rounded-full border-[#2a2f3a] bg-[#0f121a] text-white text-[12px]" placeholder="Adresse e-mail" />
                                 <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] px-4">S'abonner</Button>

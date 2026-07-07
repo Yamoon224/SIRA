@@ -54,7 +54,7 @@ function CreerCVContent() {
 
     const handleDownloadPDF = () => {
         const filename = `cv-${formData.nom.toLowerCase().replace(/\s+/g, "-") || "document"}.pdf`
-        const content = `${formData.nom || "Votre nom"}\n${formData.email || "email@example.com"}\n${formData.telephone || "Téléphone"}\n${formData.adresse || "Ville, Pays"}\n\n${formData.profil || "Résumé professionnel"}`
+        const content = `${formData.nom || "Ton nom"}\n${formData.email || "email@example.com"}\n${formData.telephone || "Téléphone"}\n${formData.adresse || "Ville, Pays"}\n\n${formData.profil || "Résumé professionnel"}`
         generatePDF(content, filename)
     }
 
@@ -74,7 +74,7 @@ function CreerCVContent() {
                                         <FileBadge2 className="h-6 w-6" />
                                     </div>
                                     <p className="text-[15px] font-semibold text-[#1f4ec2]">Créateur de CV</p>
-                                    <p className="mt-1 text-[11px] text-[#7d86a0]">Construisez votre CV professionnel</p>
+                                    <p className="mt-1 text-[11px] text-[#7d86a0]">Construis ton CV professionnel</p>
                                 </div>
 
                                 <div className="space-y-2">
@@ -106,7 +106,7 @@ function CreerCVContent() {
                                     </div>
                                 </div>
                                 <p className="text-center text-[13px] font-semibold text-[#2e6fe9]">Analyse avec Goriya</p>
-                                <p className="mb-2 text-center text-[11px] text-[#8b94ab]">Score d'optimisation de votre CV</p>
+                                <p className="mb-2 text-center text-[11px] text-[#8b94ab]">Score d'optimisation de ton CV</p>
 
                                 <div className="text-center text-[38px] font-bold leading-none text-[#2e6fe9]">{analysisProgress}%</div>
                                 <Progress value={analysisProgress} className="mt-2 h-1.5 bg-[#e6eaf4]" />
@@ -144,7 +144,7 @@ function CreerCVContent() {
                                     <Input
                                         value={formData.nom}
                                         onChange={(e) => handleInputChange("nom", e.target.value)}
-                                        placeholder="Votre nom complet"
+                                        placeholder="Ton nom complet"
                                         className="h-8 rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0"
                                     />
                                 </div>
@@ -153,7 +153,7 @@ function CreerCVContent() {
                                     <Input
                                         value={formData.email}
                                         onChange={(e) => handleInputChange("email", e.target.value)}
-                                        placeholder="votre.email@exemple.com"
+                                        placeholder="ton.email@exemple.com"
                                         className="h-8 rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0"
                                     />
                                 </div>
@@ -182,7 +182,7 @@ function CreerCVContent() {
                                 <Textarea
                                     value={formData.profil}
                                     onChange={(e) => handleInputChange("profil", e.target.value)}
-                                    placeholder="Décrivez brièvement votre profil professionnel..."
+                                    placeholder="Décris brièvement ton profil professionnel..."
                                     className="min-h-[112px] resize-none rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0"
                                 />
                             </div>

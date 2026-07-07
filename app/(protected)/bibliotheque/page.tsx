@@ -23,13 +23,13 @@ export default function BibliothequePage() {
         {
             icon: FileText,
             title: "Commander une CV",
-            description: "Créer une CV à partir de votre profil",
+            description: "Créer une CV à partir de ton profil",
             action: "Commander notre CV",
         },
         {
             icon: Zap,
             title: "Télécharger une simulation",
-            description: "Préparez-vous pour l'entretien",
+            description: "Prépare-toi pour l'entretien",
             action: "Lancer une simulation",
         },
         {
@@ -41,7 +41,7 @@ export default function BibliothequePage() {
         {
             icon: Download,
             title: "Créer un portfolio",
-            description: "Créer votre portfolio professionnel",
+            description: "Créer ton portfolio professionnel",
             action: "Créer un portfolio",
         },
     ]

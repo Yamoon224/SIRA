@@ -22,7 +22,7 @@ const INITIAL_MESSAGES: Message[] = [
     },
     {
         id: "2",
-        content: "Bonjour, merci pour votre candidature. Votre profil nous intéresse beaucoup. Pouvez-vous me parler de votre expérience avec React?",
+        content: "Bonjour, merci pour ta candidature. Ton profil nous intéresse beaucoup. Peux-tu me parler de ton expérience avec React?",
         sender: "user",
         timestamp: "10:32",
     },
@@ -34,7 +34,7 @@ const INITIAL_MESSAGES: Message[] = [
     },
     {
         id: "4",
-        content: "Merci pour votre retour, je suis très intéressé par cette opportunité. Je suis disponible mercredi après-midi ou vendredi matin. Que préférez-vous ?",
+        content: "Merci pour ton retour, je suis très intéressé par cette opportunité. Je suis disponible mercredi après-midi ou vendredi matin. Que préfères-tu ?",
         sender: "goriya",
         timestamp: "10:35",
     },
@@ -131,7 +131,7 @@ function SimulationEntretienContent() {
         setTimeout(() => {
             const aiResponse: Message = {
                 id: (Date.now() + 1).toString(),
-                content: "Merci pour votre réponse. Pouvez-vous me parler de vos projets les plus significatifs ?",
+                content: "Merci pour ta réponse. Peux-tu me parler de tes projets les plus significatifs ?",
                 sender: "goriya",
                 timestamp: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }),
             }
@@ -201,8 +201,8 @@ function SimulationEntretienContent() {
                                 <div className="w-14 h-14 bg-[#2f6de6] rounded-full flex items-center justify-center mb-2">
                                     <span className="text-white text-2xl font-bold">g</span>
                                 </div>
-                                <h2 className="text-lg font-bold text-[#1b2331] mb-1">Feedback de votre entretien</h2>
-                                <p className="text-[13px] text-[#7f8796] text-center">Analyse de votre performance et conseils d'amélioration</p>
+                                <h2 className="text-lg font-bold text-[#1b2331] mb-1">Feedback de ton entretien</h2>
+                                <p className="text-[13px] text-[#7f8796] text-center">Analyse de ta performance et conseils d'amélioration</p>
                             </div>
                             <div className="flex justify-center gap-4 mb-6">
                                 <div className="flex flex-col items-center">
@@ -242,10 +242,10 @@ function SimulationEntretienContent() {
                             <div className="rounded-xl bg-[#2f2e41] text-white p-4 mb-6">
                                 <div className="font-semibold mb-2">Recommandations</div>
                                 <ul className="text-[13px] list-disc pl-5 space-y-1">
-                                    <li>Utilisez la méthode STAR pour structurer vos réponses</li>
-                                    <li>Pratiquez la respiration profonde avant l'entretien</li>
-                                    <li>Préparez 3-5 questions pertinentes sur l'entreprise</li>
-                                    <li>Entraînez-vous régulièrement avec notre simulateur</li>
+                                    <li>Utilise la méthode STAR pour structurer tes réponses</li>
+                                    <li>Pratique la respiration profonde avant l'entretien</li>
+                                    <li>Prépare 3-5 questions pertinentes sur l'entreprise</li>
+                                    <li>Entraîne-toi régulièrement avec notre simulateur</li>
                                 </ul>
                             </div>
                             <Button

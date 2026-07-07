@@ -66,7 +66,7 @@ export default function PaymentSuccessPage() {
                         <div>
                             <h1 className="text-2xl font-bold text-foreground">Paiement réussi !</h1>
                             <p className="text-muted-foreground text-sm mt-1">
-                                Votre abonnement est maintenant actif. Redirection en cours…
+                                Ton abonnement est maintenant actif. Redirection en cours…
                             </p>
                         </div>
                         <Button

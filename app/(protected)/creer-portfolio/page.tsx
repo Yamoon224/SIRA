@@ -53,7 +53,7 @@ export default function Page() {
                                 <div>
                                     <Label className="text-[12px] font-semibold text-[#1b2331]">Nom complet</Label>
                                     <Input
-                                        placeholder="Votre nom complet"
+                                        placeholder="Ton nom complet"
                                         value={profileData.fullName}
                                         onChange={(e) => setProfileData({ ...profileData, fullName: e.target.value })}
                                         className="mt-1 h-9 text-[13px] border-[#e8edf6]"
@@ -62,7 +62,7 @@ export default function Page() {
                                 <div>
                                     <Label className="text-[12px] font-semibold text-[#1b2331]">Titre professionnel</Label>
                                     <Input
-                                        placeholder="Votre titre professionnel"
+                                        placeholder="Ton titre professionnel"
                                         value={profileData.title}
                                         onChange={(e) => setProfileData({ ...profileData, title: e.target.value })}
                                         className="mt-1 h-9 text-[13px] border-[#e8edf6]"
@@ -71,7 +71,7 @@ export default function Page() {
                                 <div>
                                     <Label className="text-[12px] font-semibold text-[#1b2331]">Bio / Description</Label>
                                     <Textarea
-                                        placeholder="Décrivez-vous en quelques lignes..."
+                                        placeholder="Décris-toi en quelques lignes..."
                                         value={profileData.bio}
                                         onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
                                         className="mt-1 text-[13px] border-[#e8edf6] min-h-[100px]"
@@ -141,7 +141,7 @@ export default function Page() {
                                     <div key={i}>
                                         <Label className="text-[12px] font-semibold text-[#1b2331]">{link.label}</Label>
                                         <Input
-                                            placeholder={`Votre lien ${link.label.toLowerCase()}`}
+                                            placeholder={`Ton lien ${link.label.toLowerCase()}`}
                                             value={link.value}
                                             onChange={(e) => {
                                                 const next = [...socialLinks]
@@ -206,7 +206,7 @@ export default function Page() {
                             <h3 className="font-bold text-[14px] text-[#1b2331] mb-3">Consulte de l'emploi</h3>
                             <div className="bg-gradient-to-br from-[#5b7eff] to-[#2f6de6] rounded-lg p-4 text-white space-y-2">
                                 <p className="text-[12px] font-medium">
-                                    Lien de partage vers votre portfolio candidat. Vous pouvez
+                                    Lien de partage vers ton portfolio candidat. Tu peux
                                 </p>
                                 <a href="#" className="text-[12px] text-blue-200 hover:underline flex items-center gap-1">
                                     Accéder au lien candidat <ChevronRight className="w-3 h-3" />

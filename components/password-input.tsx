@@ -32,7 +32,7 @@ export function PasswordInput({
             <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Saisissez votre mot de passe"
+                placeholder="Saisis ton mot de passe"
                 value={activeTab === "signup" ? formData.password : loginData.password}
                 onChange={handleChange}
                 required

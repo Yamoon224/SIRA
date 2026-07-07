@@ -39,7 +39,7 @@ export default function ResultatAnalyseCVPage() {
       <div className="min-h-screen bg-[#f7f8fb] px-4 py-10">
         <div className="mx-auto max-w-3xl rounded-2xl border border-[#e5e9f2] bg-white p-6 text-center">
           <h1 className="text-2xl font-bold text-[#1b2331]">Aucun résultat trouvé</h1>
-          <p className="mt-2 text-sm text-[#7f8796]">Veuillez téléverser votre CV depuis la page d'accueil pour lancer l'analyse.</p>
+          <p className="mt-2 text-sm text-[#7f8796]">Téléverse ton CV depuis la page d'accueil pour lancer l'analyse.</p>
           <Link href="/">
             <Button className="mt-5 rounded-full bg-[#2f6de6] hover:bg-[#285dcc]">Retour à l'accueil</Button>
           </Link>
@@ -52,7 +52,7 @@ export default function ResultatAnalyseCVPage() {
     <div className="min-h-screen bg-[#f7f8fb]">
       <div className="mx-auto max-w-5xl px-4 py-8">
         <div className="rounded-2xl border border-[#e5e9f2] bg-white p-5 sm:p-8">
-          <h1 className="text-center text-xl sm:text-3xl leading-tight font-extrabold text-[#1b2331]">Super! Etoile, votre score est de {result.analysis.score}%</h1>
+          <h1 className="text-center text-xl sm:text-3xl leading-tight font-extrabold text-[#1b2331]">Super! Etoile, ton score est de {result.analysis.score}%</h1>
 
           <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div className="rounded-xl bg-[#f4f7ff] p-3 text-center">

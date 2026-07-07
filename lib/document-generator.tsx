@@ -65,9 +65,9 @@ export const generateDocumentContent = (type: string, data: DocumentData): strin
 const generateMotivationLetter = (data: DocumentData): string => {
   const today = new Date().toLocaleDateString("fr-FR")
 
-  return `${data.nom || "[Votre nom]"}
-${data.titre || "[Votre titre]"}
-[Votre adresse]
+  return `${data.nom || "[Ton nom]"}
+${data.titre || "[Ton titre]"}
+[Ton adresse]
 [Ville, Code postal]
 [Téléphone]
 [Email]
@@ -92,7 +92,7 @@ Je serais ravi(e) de vous rencontrer pour discuter de ma candidature et vous dé
 
 Dans l'attente de votre retour, je vous prie d'agréer, ${data.destinataire ? `Madame, Monsieur ${data.destinataire}` : "Madame, Monsieur"}, l'expression de mes salutations distinguées.
 
-${data.nom || "[Votre nom]"}
+${data.nom || "[Ton nom]"}
 
 Pièces jointes : CV, diplômes, références`
 }
@@ -100,9 +100,9 @@ Pièces jointes : CV, diplômes, références`
 const generateResignationLetter = (data: DocumentData): string => {
   const today = new Date().toLocaleDateString("fr-FR")
 
-  return `${data.nom || "[Votre nom]"}
-${data.poste || "[Votre poste actuel]"}
-[Votre adresse]
+  return `${data.nom || "[Ton nom]"}
+${data.poste || "[Ton poste actuel]"}
+[Ton adresse]
 [Ville, Code postal]
 
 ${data.date || today}
@@ -111,11 +111,11 @@ ${data.manager || "[Nom du manager]"}
 ${data.entreprise || "[Nom de l'entreprise]"}
 [Adresse de l'entreprise]
 
-Objet : Démission de mon poste de ${data.poste || "[votre poste]"}
+Objet : Démission de mon poste de ${data.poste || "[ton poste]"}
 
 ${data.manager ? `Madame, Monsieur ${data.manager}` : "Madame, Monsieur"},
 
-Par la présente, je vous informe de ma décision de démissionner de mon poste de ${data.poste || "[votre poste]"} au sein de ${data.entreprise || "[entreprise]"}.
+Par la présente, je vous informe de ma décision de démissionner de mon poste de ${data.poste || "[ton poste]"} au sein de ${data.entreprise || "[entreprise]"}.
 
 Conformément aux dispositions de mon contrat de travail et aux conventions collectives en vigueur, je respecterai la période de préavis légale. Mon dernier jour de travail sera donc le ${data.dateFin || "[date de fin]"}.
 
@@ -125,16 +125,16 @@ Je vous remercie pour la confiance que vous m'avez accordée durant ces années 
 
 Je reste à votre disposition pour organiser au mieux cette transition et vous prie d'agréer, ${data.manager ? `Madame, Monsieur ${data.manager}` : "Madame, Monsieur"}, l'expression de mes salutations respectueuses.
 
-${data.nom || "[Votre nom]"}
+${data.nom || "[Ton nom]"}
 Signature`
 }
 
 const generateRecommendationLetter = (data: DocumentData): string => {
   const today = new Date().toLocaleDateString("fr-FR")
 
-  return `${data.nom || "[Votre nom]"}
-${data.poste || "[Votre poste]"}
-[Votre entreprise]
+  return `${data.nom || "[Ton nom]"}
+${data.poste || "[Ton poste]"}
+[Ton entreprise]
 [Adresse]
 [Téléphone]
 [Email]
@@ -143,7 +143,7 @@ ${data.date || today}
 
 LETTRE DE RECOMMANDATION
 
-Je soussigné(e), ${data.nom || "[votre nom]"}, ${data.poste || "[votre poste]"}, certifie avoir eu ${data.candidat || "[nom du candidat]"} sous ma responsabilité en qualité de ${data.posteCandidatActuel || "[poste du candidat]"}.
+Je soussigné(e), ${data.nom || "[ton nom]"}, ${data.poste || "[ton poste]"}, certifie avoir eu ${data.candidat || "[nom du candidat]"} sous ma responsabilité en qualité de ${data.posteCandidatActuel || "[poste du candidat]"}.
 
 Durant cette période de collaboration, ${data.candidat || "[nom du candidat]"} a fait preuve de qualités professionnelles remarquables :
 
@@ -161,8 +161,8 @@ Je reste à votre disposition pour tout complément d'information concernant cet
 
 Cordialement,
 
-${data.nom || "[Votre nom]"}
-${data.poste || "[Votre poste]"}
+${data.nom || "[Ton nom]"}
+${data.poste || "[Ton poste]"}
 Signature`
 }
 

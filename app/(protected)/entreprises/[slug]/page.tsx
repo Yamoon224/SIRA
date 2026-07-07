@@ -282,7 +282,7 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
 
                 {/* Social */}
                 <div>
-                  <h3 className="font-semibold text-foreground mb-4">Suivez-nous sur</h3>
+                  <h3 className="font-semibold text-foreground mb-4">Suis-nous sur</h3>
                   <a
                     href={contact?.linkedin ?? "#"}
                     className="inline-flex items-center justify-center w-9 h-9 bg-[#0a66c2] text-white rounded-lg hover:bg-[#085bb5]"
@@ -318,7 +318,7 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
               {similarCompanies?.length > 0 && (
                 <section>
                   <h2 className="text-2xl font-bold text-foreground text-center mb-6">
-                    Autres entreprises que vous pouvez consulter
+                    Autres entreprises que tu peux consulter
                   </h2>
                   <div className="flex justify-center gap-4 flex-wrap">
                     {similarCompanies.map((sim: any, i: number) => (
@@ -430,7 +430,7 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
 
               <div>
                 <h2 className="text-2xl font-bold text-foreground mb-6">
-                  Autres entreprises que vous pouvez consulter
+                  Autres entreprises que tu peux consulter
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {similarCompanies.map((sim: any, index: number) => (

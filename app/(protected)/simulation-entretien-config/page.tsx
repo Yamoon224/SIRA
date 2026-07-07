@@ -42,7 +42,7 @@ export default function SimulationEntretienConfigPage() {
               </div>
               <h2 className="text-lg sm:text-xl font-semibold mb-2 text-card-foreground">Simulation d'entretien IA</h2>
               <p className="text-muted-foreground text-sm sm:text-base">
-                Préparez-vous pour vos entretiens avec notre assistant IA intelligent
+                Prépare-toi pour tes entretiens avec notre assistant IA intelligent
               </p>
             </div>
 
@@ -75,7 +75,7 @@ export default function SimulationEntretienConfigPage() {
                   onValueChange={(value) => setFormData((prev) => ({ ...prev, niveau: value }))}
                 >
                   <SelectTrigger className="bg-background border-input">
-                    <SelectValue placeholder="Sélectionnez le niveau" />
+                    <SelectValue placeholder="Sélectionne le niveau" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="debutant">Débutant</SelectItem>

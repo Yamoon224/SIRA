@@ -32,7 +32,7 @@ export function SubscriptionGate({ children, featureLabel = "cette fonctionnalit
                 </h2>
                 <p className="text-muted-foreground text-sm max-w-sm mb-6">
                     Un abonnement actif est nécessaire pour accéder à {featureLabel}.
-                    Choisissez un plan pour débloquer toutes les fonctionnalités IA.
+                    Choisis un plan pour débloquer toutes les fonctionnalités IA.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                     <Link href="/auth/plan">

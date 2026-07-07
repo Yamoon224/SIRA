@@ -12,19 +12,19 @@ export default function Page() {
     {
       id: "motivation",
       title: "Lettre de motivation",
-      description: "Créez une lettre de motivation personnalisée pour votre candidature",
+      description: "Crée une lettre de motivation personnalisée pour ta candidature",
       icon: FilePenLine,
     },
     {
       id: "demission",
       title: "Lettre de démission",
-      description: "Rédigez une lettre de démission professionnelle",
+      description: "Rédige une lettre de démission professionnelle",
       icon: FileText,
     },
     {
       id: "recommandation",
       title: "Lettre de recommandation",
-      description: "Demandez ou rédigez une lettre de recommandation",
+      description: "Demande ou rédige une lettre de recommandation",
       icon: FileSignature,
     },
   ]
@@ -47,7 +47,7 @@ export default function Page() {
 
         <h2 className="text-[24px] sm:text-[28px] font-semibold text-[#161d2d] text-center">Créateur de documents</h2>
         <p className="mt-2 text-center text-[14px] text-[#80889a]">
-          Choisissez le type de document que vous souhaitez créer
+          Choisis le type de document que tu souhaites créer
         </p>
 
         <div className="mt-10 grid w-full max-w-[680px] grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">

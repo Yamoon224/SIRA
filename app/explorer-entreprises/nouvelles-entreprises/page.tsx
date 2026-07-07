@@ -49,7 +49,7 @@ export default function NewCompaniesPage() {
                 </Link>
                 <section className="rounded-2xl border border-[#dbe3ef] bg-white p-6 sm:p-8 shadow-sm">
                     <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111827]">Toutes les nouvelles entreprises</h1>
-                    <p className="mt-3 max-w-2xl text-sm text-[#667085]">Découvrez les entreprises récemment visibles sur la plateforme et les opportunités associées.</p>
+                    <p className="mt-3 max-w-2xl text-sm text-[#667085]">Découvre les entreprises récemment visibles sur la plateforme et les opportunités associées.</p>
 
                     {loading ? (
                         <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-[#2f6de6]" /></div>
@@ -99,7 +99,7 @@ export default function NewCompaniesPage() {
                         </div>
                         <div>
                             <h4 className="font-bold text-white">Recevoir les notifications d'emploi</h4>
-                            <p className="text-sm text-[#9098a7] mt-3">Les dernières opportunités envoyées dans votre boîte de réception.</p>
+                            <p className="text-sm text-[#9098a7] mt-3">Les dernières opportunités envoyées dans ta boîte de réception.</p>
                             <div className="mt-4 flex flex-col items-center gap-2 sm:flex-row">
                                 <Input className="h-10 rounded-full border-[#2a2f3a] bg-[#0f121a] text-white" placeholder="Adresse e-mail" />
                                 <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">S'abonner</Button>

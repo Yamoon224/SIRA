@@ -20,7 +20,7 @@ export default function PaymentErrorPage() {
                 <div>
                     <h1 className="text-2xl font-bold text-foreground">Paiement annulé</h1>
                     <p className="text-muted-foreground text-sm mt-1">
-                        Votre paiement n'a pas abouti. Vous pouvez réessayer ou continuer avec le plan gratuit.
+                        Ton paiement n'a pas abouti. Tu peux réessayer ou continuer avec le plan gratuit.
                     </p>
                 </div>
 

@@ -88,7 +88,7 @@ export default function Page() {
             const role = (session.user as any).role
             if (role !== "USER") {
                 signOut({ redirect: false }).catch(() => {})
-                toast.error("Votre compte n'est pas autorisé ici. Cette interface est réservée aux candidats.")
+                toast.error("Ton compte n'est pas autorisé ici. Cette interface est réservée aux candidats.")
                 return
             }
 
@@ -116,7 +116,7 @@ export default function Page() {
             router.push("/dashboard")
         } catch (error: any) {
             console.error("Erreur lors de la vérification OTP:", error)
-            toast.error(error?.message || "Code de vérification invalide. Veuillez réessayer.")
+            toast.error(error?.message || "Code de vérification invalide. Réessaie.")
         }
     }
 
@@ -156,7 +156,7 @@ export default function Page() {
             }
         } catch (error: any) {
             if (!error.message?.includes("cancelled")) {
-                toast.error("Erreur lors de la connexion avec Google. Veuillez réessayer.")
+                toast.error("Erreur lors de la connexion avec Google. Réessaie.")
             }
         } finally {
             setIsGoogleLoading(false)
@@ -165,7 +165,7 @@ export default function Page() {
 
     return (
         <div className="min-h-screen flex">
-            <div className="flex-1 flex flex-col justify-center px-12 py-8 bg-background">
+            <div className="flex-1 flex flex-col justify-center px-6 py-8 sm:px-12 bg-background">
                 <div className="max-w-md mx-auto w-full">
                     <div className="mb-6">
                         <div className="flex items-center gap-4 mb-6">
@@ -258,7 +258,7 @@ export default function Page() {
                                             id="name"
                                             type="text"
                                             value={formData.name}
-                                            placeholder="Saisissez votre nom complet"
+                                            placeholder="Saisis ton nom complet"
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                             required
                                             className="mt-1"
@@ -294,7 +294,7 @@ export default function Page() {
                                     <Input
                                         id="password"
                                         type={showPassword ? "text" : "password"}
-                                        placeholder="Saisissez votre mot de passe"
+                                        placeholder="Saisis ton mot de passe"
                                         value={activeTab === "signup" ? formData.password : loginData.password}
                                         onChange={(e) => {
                                             if (activeTab === "signup") {

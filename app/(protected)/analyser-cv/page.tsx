@@ -50,7 +50,7 @@ function AnalyserCVContent() {
 
     const handleAnalyze = async () => {
         if (!cvFile) {
-            setError("Veuillez sélectionner un fichier CV à analyser.")
+            setError("Sélectionne un fichier CV à analyser.")
             return
         }
 
@@ -94,9 +94,9 @@ function AnalyserCVContent() {
     return (
         <div className="max-w-4xl mx-auto">
             <div className="mb-6">
-                <h1 className="text-2xl font-bold text-foreground mb-2">Analyser votre CV</h1>
+                <h1 className="text-2xl font-bold text-foreground mb-2">Analyser ton CV</h1>
                 <p className="text-muted-foreground">
-                    Téléchargez votre CV pour obtenir une analyse détaillée et des conseils d'amélioration
+                    Télécharge ton CV pour obtenir une analyse détaillée et des conseils d'amélioration
                 </p>
             </div>
 
@@ -105,7 +105,7 @@ function AnalyserCVContent() {
                 <CardHeader>
                     <CardTitle className="flex items-center">
                         <Upload className="w-5 h-5 mr-2" />
-                        Télécharger votre CV
+                        Télécharger ton CV
                     </CardTitle>
                 </CardHeader>
                 <CardContent>

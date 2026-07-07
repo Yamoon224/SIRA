@@ -39,7 +39,7 @@ const sections = [
             "Créer et gérer votre compte et vous authentifier.",
             "Analyser vos documents (CV, lettre de motivation) grâce à l'intelligence artificielle et vous restituer un score et des recommandations.",
             "Vous mettre en relation avec des recruteurs ou des candidats pertinents au regard de vos critères et de votre profil.",
-            "Vous envoyer des notifications relatives à votre candidature, à de nouvelles offres correspondant à votre profil, ou à la newsletter emploi si vous y êtes abonné.",
+            "Vous envoyer des notifications relatives à votre candidature, à de nouvelles offres correspondant à votre profil, ou à la newsletter emploi si vous y êtes abonné(e).",
             "Assurer la sécurité, prévenir la fraude et le mauvais usage de la plateforme.",
             "Améliorer nos services (statistiques d'usage agrégées et anonymisées).",
         ],
@@ -74,7 +74,7 @@ const sections = [
     {
         title: "9. Cookies",
         body: [
-            "Goriya utilise des cookies et technologies similaires pour vous maintenir connecté, mémoriser vos préférences et mesurer l'audience du site. Vous pouvez configurer votre navigateur pour refuser les cookies, sachant que certaines fonctionnalités du site pourraient alors ne plus fonctionner correctement.",
+            "Goriya utilise des cookies et technologies similaires pour vous maintenir connecté(e), mémoriser vos préférences et mesurer l'audience du site. Vous pouvez configurer votre navigateur pour refuser les cookies, sachant que certaines fonctionnalités du site pourraient alors ne plus fonctionner correctement.",
         ],
     },
     {
@@ -174,7 +174,7 @@ export default function ConfidentialitePage() {
                         </div>
                         <div>
                             <h4 className="font-semibold text-white">Recevoir les notifications d'emploi</h4>
-                            <p className="text-sm text-[#9098a7] mt-3">Les dernières nouvelles sur l'emploi, les articles, envoyés dans votre boîte de réception chaque semaine.</p>
+                            <p className="text-sm text-[#9098a7] mt-3">Les dernières nouvelles sur l'emploi, les articles, envoyés dans ta boîte de réception chaque semaine.</p>
                             <div className="mt-4 flex flex-col items-center gap-2 sm:flex-row">
                                 <Input className="h-10 rounded-full border-[#2a2f3a] bg-[#0f121a] text-white" placeholder="Adresse e-mail" />
                                 <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">S'abonner</Button>

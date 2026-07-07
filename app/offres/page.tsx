@@ -29,7 +29,7 @@ const jobSeekerPlans = [
     name: "Basique",
     price: "0",
     period: "Gratuit",
-    description: "Parfait pour commencer votre recherche d'emploi",
+    description: "Parfait pour commencer ta recherche d'emploi",
     popular: false,
     color: "border-border",
   },
@@ -66,9 +66,9 @@ export default function OffresPage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-12 sm:py-16">
         <div className="container mx-auto px-6 text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-balance">Choisissez le plan qui vous convient</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-balance">Choisis le plan qui te convient</h1>
           <p className="text-lg sm:text-xl max-w-2xl mx-auto text-pretty">
-            Trouvez votre match parfait avec les plans d'abonnement sur mesure de Goriya
+            Trouve ton match parfait avec les plans d'abonnement sur mesure de Goriya
           </p>
         </div>
       </section>
@@ -155,7 +155,7 @@ export default function OffresPage() {
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-2">Puis-je changer de plan à tout moment ?</h3>
                 <p className="text-muted-foreground">
-                  Oui, vous pouvez upgrader ou downgrader votre plan à tout moment. Les changements prennent effet
+                  Oui, tu peux upgrader ou downgrader ton plan à tout moment. Les changements prennent effet
                   immédiatement.
                 </p>
               </CardContent>
@@ -173,7 +173,7 @@ export default function OffresPage() {
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-2">Comment fonctionne la facturation ?</h3>
                 <p className="text-muted-foreground">
-                  La facturation est mensuelle et automatique. Vous recevrez une facture par email chaque mois.
+                  La facturation est mensuelle et automatique. Tu recevras une facture par email chaque mois.
                 </p>
               </CardContent>
             </Card>
@@ -181,7 +181,7 @@ export default function OffresPage() {
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-2">Puis-je annuler mon abonnement ?</h3>
                 <p className="text-muted-foreground">
-                  Vous pouvez annuler votre abonnement à tout moment depuis vos paramètres. L'accès reste actif jusqu'à
+                  Tu peux annuler ton abonnement à tout moment depuis tes paramètres. L'accès reste actif jusqu'à
                   la fin de la période payée.
                 </p>
               </CardContent>
@@ -193,7 +193,7 @@ export default function OffresPage() {
         <section className="text-center mt-16 sm:mt-20 py-12 sm:py-16 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/30 rounded-2xl border border-border">
           <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-foreground">Prêt à commencer ?</h2>
           <p className="text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto text-sm sm:text-base">
-            Rejoignez des milliers de professionnels qui font confiance à Goriya pour leur carrière
+            Rejoins des milliers de professionnels qui font confiance à Goriya pour leur carrière
           </p>
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
             <Button size="lg" className="bg-blue-600 hover:bg-blue-700">Commencer maintenant</Button>

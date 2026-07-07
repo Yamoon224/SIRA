@@ -66,7 +66,7 @@ export default function MessagesPage() {
                     participantName: "Mina Moulot",
                     participantAvatar: "/placeholder.svg?height=40&width=40",
                     participantTitle: "Recruteur chez TechCorp",
-                    lastMessage: "Nous aimerions vous inviter pour un entretien",
+                    lastMessage: "Nous aimerions t'inviter pour un entretien",
                     lastMessageTime: "il y a 5 minutes",
                     unreadCount: 1,
                     isOnline: true,
@@ -76,16 +76,16 @@ export default function MessagesPage() {
                             senderId: "user1",
                             senderName: "Mina Moulot",
                             content:
-                                "Bonjour ! J'ai consulté votre profil et je pense que vous pourriez être un excellent candidat pour notre poste de développeur senior.",
+                                "Bonjour ! J'ai consulté ton profil et je pense que tu pourrais être un excellent candidat pour notre poste de développeur senior.",
                             timestamp: "il y a 2 heures",
                             isRead: true,
                         },
                         {
                             id: "2",
                             senderId: "current-user",
-                            senderName: "Vous",
+                            senderName: "Toi",
                             content:
-                                "Bonjour Mina, je vous remercie pour votre message. Je suis très intéressé par cette opportunité. Pourriez-vous me donner plus de détails sur le poste ?",
+                                "Bonjour Mina, je te remercie pour ton message. Je suis très intéressé par cette opportunité. Pourrais-tu me donner plus de détails sur le poste ?",
                             timestamp: "il y a 1 heure",
                             isRead: true,
                         },
@@ -101,7 +101,7 @@ export default function MessagesPage() {
                         {
                             id: "4",
                             senderId: "current-user",
-                            senderName: "Vous",
+                            senderName: "Toi",
                             content:
                                 "Cela correspond parfaitement à mon profil ! J'ai 5 ans d'expérience avec ces technologies. Quand pourrions-nous organiser un entretien ?",
                             timestamp: "il y a 30 minutes",
@@ -112,7 +112,7 @@ export default function MessagesPage() {
                             senderId: "user1",
                             senderName: "Mina Moulot",
                             content:
-                                "Parfait ! Nous aimerions vous inviter pour un entretien la semaine prochaine. Êtes-vous disponible mardi ou mercredi après-midi ?",
+                                "Parfait ! Nous aimerions t'inviter pour un entretien la semaine prochaine. Es-tu disponible mardi ou mercredi après-midi ?",
                             timestamp: "il y a 5 minutes",
                             isRead: false,
                         },
@@ -124,7 +124,7 @@ export default function MessagesPage() {
                     participantName: "Romain Taze",
                     participantAvatar: "/placeholder.svg?height=40&width=40",
                     participantTitle: "RH Manager",
-                    lastMessage: "Merci pour votre interview",
+                    lastMessage: "Merci pour ton interview",
                     lastMessageTime: "il y a 1 heure",
                     unreadCount: 0,
                     isOnline: false,
@@ -133,15 +133,15 @@ export default function MessagesPage() {
                             id: "1",
                             senderId: "user2",
                             senderName: "Romain Taze",
-                            content: "Bonjour, suite à notre entretien d'hier, nous souhaitons vous faire une proposition.",
+                            content: "Bonjour, suite à notre entretien d'hier, nous souhaitons te faire une proposition.",
                             timestamp: "il y a 2 heures",
                             isRead: true,
                         },
                         {
                             id: "2",
                             senderId: "current-user",
-                            senderName: "Vous",
-                            content: "Bonjour Romain, merci pour ce retour rapide. Je suis impatient de connaître votre proposition.",
+                            senderName: "Toi",
+                            content: "Bonjour Romain, merci pour ce retour rapide. Je suis impatient de connaître ta proposition.",
                             timestamp: "il y a 1 heure",
                             isRead: true,
                         },
@@ -161,7 +161,7 @@ export default function MessagesPage() {
             const message: Message = {
                 id: Date.now().toString(),
                 senderId: "current-user",
-                senderName: "Vous",
+                senderName: "Toi",
                 content: newMessage,
                 timestamp: "À l'instant",
                 isRead: true,
@@ -363,9 +363,9 @@ export default function MessagesPage() {
                             <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Search className="w-8 h-8 text-muted-foreground" />
                             </div>
-                            <h3 className="text-lg font-medium text-foreground mb-2">Sélectionnez une conversation</h3>
+                            <h3 className="text-lg font-medium text-foreground mb-2">Sélectionne une conversation</h3>
                             <p className="text-muted-foreground">
-                                Choisissez une conversation dans la liste pour commencer à discuter
+                                Choisis une conversation dans la liste pour commencer à discuter
                             </p>
                         </div>
                     </div>

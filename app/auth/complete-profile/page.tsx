@@ -58,7 +58,7 @@ export default function CompleteProfilePage() {
                         Bienvenue{user?.name ? `, ${user.name.split(" ")[0]}` : ""} !
                     </h1>
                     <p className="text-muted-foreground text-sm">
-                        Complétez votre profil pour une meilleure expérience. Vous pouvez passer cette étape.
+                        Complète ton profil pour une meilleure expérience. Tu peux passer cette étape.
                     </p>
                 </div>
 
@@ -99,7 +99,7 @@ export default function CompleteProfilePage() {
                             id="bio"
                             name="bio"
                             rows={3}
-                            placeholder="Parlez brièvement de vous et de vos objectifs…"
+                            placeholder="Parle brièvement de toi et de tes objectifs…"
                             value={form.bio}
                             onChange={handleChange}
                             className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-[#2f6de6] resize-none"

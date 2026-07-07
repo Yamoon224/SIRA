@@ -77,7 +77,7 @@ export default function Page() {
                         <div className="relative flex-1 max-w-full sm:max-w-md">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                             <Input
-                                placeholder="Recherchez un emploi par intitulé, poste, mot clé ou entreprise..."
+                                placeholder="Recherche un emploi par intitulé, poste, mot clé ou entreprise..."
                                 className="pl-10 bg-background border-border text-foreground placeholder:text-muted-foreground"
                                 value={filters.search}
                                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}

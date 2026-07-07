@@ -17,7 +17,7 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
     title: "Goriya - Plateforme de recrutement",
-    description: "Trouvez votre emploi idéal avec Goriya",
+    description: "Trouve ton emploi idéal avec Goriya",
     // generator: "v0.app",
     icons: {
         icon: [

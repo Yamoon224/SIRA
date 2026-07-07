@@ -7,7 +7,7 @@ const actions = [
         href: "/simulation-entretien-config",
         icon: Bot,
         label: "Simulation d'entretien",
-        description: "Préparez-vous avec l'IA",
+        description: "Prépare-toi avec l'IA",
         color: "bg-primary/10",
         iconColor: "text-primary",
     },
@@ -23,7 +23,7 @@ const actions = [
         href: "/creer-portfolio",
         icon: FolderPlus,
         label: "Portfolio",
-        description: "Créez votre portfolio",
+        description: "Crée ton portfolio",
         color: "bg-purple-500/10",
         iconColor: "text-purple-600 dark:text-purple-400",
     },
@@ -39,7 +39,7 @@ const actions = [
 
 export function DashboardQuickActions() {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {actions.map((action) => {
                 const Icon = action.icon
                 return (

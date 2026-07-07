@@ -409,7 +409,7 @@ export default function EntrepriseDetailPage() {
                                 </div>
 
                                 <div>
-                                    <p className="text-[12px] font-semibold text-[#1b2331] mb-3">Suivez-nous sur</p>
+                                    <p className="text-[12px] font-semibold text-[#1b2331] mb-3">Suis-nous sur</p>
                                     {company.socialLinks?.length > 0 ? (
                                         <div className="flex gap-2">
                                             {company.socialLinks.slice(0, 3).map((link, i) => (
@@ -431,7 +431,7 @@ export default function EntrepriseDetailPage() {
                         {/* Similar companies */}
                         {similarCompanies.length > 0 && (
                             <div className="bg-white rounded-xl border border-[#e8edf6] p-6">
-                                <h2 className="text-[18px] font-extrabold text-[#1b2331] mb-4">Autres entreprises que vous pouvez consulter</h2>
+                                <h2 className="text-[18px] font-extrabold text-[#1b2331] mb-4">Autres entreprises que tu peux consulter</h2>
                                 <div className="flex gap-3 overflow-x-auto pb-2">
                                     {similarCompanies.map(sim => (
                                         <Link key={sim.id} href={`/explorer-entreprises/${sim.id}`} className="flex-shrink-0">
@@ -459,7 +459,7 @@ export default function EntrepriseDetailPage() {
                                     type="search"
                                     value={jobSearch}
                                     onChange={e => setJobSearch(e.target.value)}
-                                    placeholder="Recherchez par job, mot-clé ou entreprise"
+                                    placeholder="Recherche par job, mot-clé ou entreprise"
                                     className="pl-10 h-11 rounded-xl border-[#d8deeb] bg-white dark:bg-white text-[#111827] dark:text-[#111827] placeholder:text-[#9aa3b2] dark:placeholder:text-[#9aa3b2] text-[13px]"
                                 />
                             </div>
@@ -588,7 +588,7 @@ export default function EntrepriseDetailPage() {
                         </div>
                         <div>
                             <h4 className="font-semibold text-white mb-4">Recevoir les notifications d'emploi</h4>
-                            <p className="text-[13px] text-[#9098a7] mb-4">Les dernières nouvelles sur l'emploi envoyées dans votre boîte de réception chaque semaine.</p>
+                            <p className="text-[13px] text-[#9098a7] mb-4">Les dernières nouvelles sur l'emploi envoyées dans ta boîte de réception chaque semaine.</p>
                             <div className="flex flex-col items-center gap-2 sm:flex-row">
                                 <input type="email" placeholder="Adresse e-mail" className="w-full flex-1 h-9 rounded-full bg-[#0f121a] border border-[#2a2f3a] px-4 text-[12px] text-white placeholder:text-[#5a6070] outline-none" />
                                 <button className="h-9 px-4 rounded-full bg-[#2f6de6] hover:bg-[#2458ba] text-white text-[12px]">S'abonner</button>

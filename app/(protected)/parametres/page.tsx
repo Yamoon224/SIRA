@@ -32,7 +32,7 @@ export default function ParametresPage() {
       <div className="p-6 space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Paramètres</h1>
-          <p className="text-gray-600 dark:text-gray-400">Gérez vos préférences et paramètres de compte</p>
+          <p className="text-gray-600 dark:text-gray-400">Gère tes préférences et paramètres de compte</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -65,7 +65,7 @@ export default function ParametresPage() {
                     <Input
                       id="firstName"
                       value={profile.firstName}
-                      placeholder="Votre prénom"
+                      placeholder="Ton prénom"
                       onChange={(e) => setProfile((prev) => ({ ...prev, firstName: e.target.value }))}
                     />
                   </div>
@@ -74,7 +74,7 @@ export default function ParametresPage() {
                     <Input
                       id="lastName"
                       value={profile.lastName}
-                      placeholder="Votre nom"
+                      placeholder="Ton nom"
                       onChange={(e) => setProfile((prev) => ({ ...prev, lastName: e.target.value }))}
                     />
                   </div>
@@ -116,7 +116,7 @@ export default function ParametresPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">Notifications par email</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Recevez des notifications par email</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Reçois des notifications par email</p>
                   </div>
                   <Switch
                     checked={notifications.email}
@@ -130,7 +130,7 @@ export default function ParametresPage() {
                   <div>
                     <p className="font-medium">Notifications push</p>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Recevez des notifications sur votre appareil
+                      Reçois des notifications sur ton appareil
                     </p>
                   </div>
                   <Switch
@@ -144,7 +144,7 @@ export default function ParametresPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">Notifications SMS</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Recevez des notifications par SMS</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Reçois des notifications par SMS</p>
                   </div>
                   <Switch
                     checked={notifications.sms}
@@ -190,7 +190,7 @@ export default function ParametresPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">Thème de l'application</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Choisissez l'apparence de l'interface</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Choisis l'apparence de l'interface</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <ThemeToggle />

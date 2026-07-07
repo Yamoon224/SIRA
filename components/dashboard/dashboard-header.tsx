@@ -18,7 +18,7 @@ export function DashboardHeader() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-foreground">Bonjour, {displayName}</h1>
-                <p className="text-muted-foreground text-sm sm:text-base">Voici un aperçu de vos candidatures et offres d'emploi</p>
+                <p className="text-muted-foreground text-sm sm:text-base">Voici un aperçu de tes candidatures et offres d'emploi</p>
             </div>
             <div className="flex items-center space-x-3 sm:space-x-4">
                 <div className="text-left sm:text-right">

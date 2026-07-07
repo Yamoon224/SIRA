@@ -83,13 +83,13 @@ export default function CreerPortfolioDetailPage() {
                                 </Button>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Nom</label>
                                     <Input
                                         value={formData.nom}
                                         onChange={(e) => handleInputChange("nom", e.target.value)}
-                                        placeholder="Votre nom complet"
+                                        placeholder="Ton nom complet"
                                     />
                                 </div>
                                 <div>
@@ -98,7 +98,7 @@ export default function CreerPortfolioDetailPage() {
                                         type="email"
                                         value={formData.email}
                                         onChange={(e) => handleInputChange("email", e.target.value)}
-                                        placeholder="votre@email.com"
+                                        placeholder="ton@email.com"
                                     />
                                 </div>
                             </div>
@@ -108,7 +108,7 @@ export default function CreerPortfolioDetailPage() {
                                 <Textarea
                                     value={formData.profil}
                                     onChange={(e) => handleInputChange("profil", e.target.value)}
-                                    placeholder="Décrivez votre profil professionnel..."
+                                    placeholder="Décris ton profil professionnel..."
                                     rows={3}
                                 />
                             </div>
@@ -146,7 +146,7 @@ export default function CreerPortfolioDetailPage() {
                                 ))}
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">JavaScript</label>
                                     <div className="flex items-center gap-2">
@@ -229,7 +229,7 @@ export default function CreerPortfolioDetailPage() {
                             <CardTitle>Liens et réseaux</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn</label>
                                     <Input
@@ -316,11 +316,11 @@ export default function CreerPortfolioDetailPage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3 text-sm text-gray-600">
-                            <p className="text-blue-600">• Ajoutez des captures d'écran de vos projets</p>
-                            <p>• Rédigez des descriptions détaillées de vos réalisations</p>
-                            <p>• Mettez à jour régulièrement votre portfolio</p>
-                            <p>• Utilisez des mots-clés pertinents pour votre secteur</p>
-                            <p>• Ajoutez des témoignages de clients ou collègues</p>
+                            <p className="text-blue-600">• Ajoute des captures d'écran de tes projets</p>
+                            <p>• Rédige des descriptions détaillées de tes réalisations</p>
+                            <p>• Mets à jour régulièrement ton portfolio</p>
+                            <p>• Utilise des mots-clés pertinents pour ton secteur</p>
+                            <p>• Ajoute des témoignages de clients ou collègues</p>
                         </CardContent>
                     </Card>
                 </div>

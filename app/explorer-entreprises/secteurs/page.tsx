@@ -36,7 +36,7 @@ export default function SectorsPage() {
                 </Link>
                 <section className="rounded-2xl border border-[#dbe3ef] bg-white p-6 sm:p-8 shadow-sm">
                     <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111827]">Tous les secteurs d'activité</h1>
-                    <p className="mt-3 max-w-2xl text-sm text-[#667085]">Parcourez les grands domaines d’emploi pour repérer les entreprises qui correspondent le mieux à votre profil.</p>
+                    <p className="mt-3 max-w-2xl text-sm text-[#667085]">Parcours les grands domaines d’emploi pour repérer les entreprises qui correspondent le mieux à ton profil.</p>
                     <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {sectors.map((sector) => {
                             const Icon = sector.icon
@@ -48,7 +48,7 @@ export default function SectorsPage() {
                                         </div>
                                         <h2 className="text-sm font-semibold text-[#1d2432]">{sector.name}</h2>
                                     </div>
-                                    <p className="mt-3 text-xs text-[#667085]">Découvrez les entreprises, les offres et la culture propre à ce secteur.</p>
+                                    <p className="mt-3 text-xs text-[#667085]">Découvre les entreprises, les offres et la culture propre à ce secteur.</p>
                                 </article>
                             )
                         })}
@@ -72,7 +72,7 @@ export default function SectorsPage() {
                         </div>
                         <div>
                             <h4 className="font-bold text-white">Recevoir les notifications d'emploi</h4>
-                            <p className="text-sm text-[#9098a7] mt-3">Les dernières opportunités envoyées dans votre boîte de réception.</p>
+                            <p className="text-sm text-[#9098a7] mt-3">Les dernières opportunités envoyées dans ta boîte de réception.</p>
                             <div className="mt-4 flex flex-col items-center gap-2 sm:flex-row">
                                 <Input className="h-10 rounded-full border-[#2a2f3a] bg-[#0f121a] text-white" placeholder="Adresse e-mail" />
                                 <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">S'abonner</Button>

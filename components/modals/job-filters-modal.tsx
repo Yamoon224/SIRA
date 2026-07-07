@@ -38,7 +38,7 @@ export function JobFiltersModal({ open, onOpenChange }: JobFiltersModalProps) {
           <div>
             <h3 className="font-semibold text-lg mb-2">Type de travail</h3>
             <p className="text-muted-foreground text-sm mb-4">
-              Type de contrat ou temps de travail qui vous correspond.
+              Type de contrat ou temps de travail qui te correspond.
             </p>
             <div className="flex gap-2">
               {workTypes.map((type) => (
@@ -59,7 +59,7 @@ export function JobFiltersModal({ open, onOpenChange }: JobFiltersModalProps) {
           <div>
             <h3 className="font-semibold text-lg mb-2">Profession</h3>
             <p className="text-muted-foreground text-sm mb-4">
-              Vos domaines de spécialité pour vous ouvrir à différents postes.
+              Tes domaines de spécialité pour t'ouvrir à différents postes.
             </p>
             <Button variant="outline" className="rounded-full bg-transparent">
               Sélectionner des professions
@@ -88,7 +88,7 @@ export function JobFiltersModal({ open, onOpenChange }: JobFiltersModalProps) {
           {/* Niveau d'expérience */}
           <div>
             <h3 className="font-semibold text-lg mb-2">Niveau d'expérience</h3>
-            <p className="text-muted-foreground text-sm mb-4">Votre expérience en années, à 1 ou 2 ans près.</p>
+            <p className="text-muted-foreground text-sm mb-4">Ton expérience en années, à 1 ou 2 ans près.</p>
             <div className="flex flex-wrap gap-2">
               {experienceLevels.map((level) => (
                 <Button

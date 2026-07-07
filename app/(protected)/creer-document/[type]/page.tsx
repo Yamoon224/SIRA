@@ -23,8 +23,8 @@ const documentTemplates: Record<string, TemplateConfig> = {
   motivation: {
     title: "Lettre de motivation",
     fields: [
-      { id: "nom", label: "Votre nom", required: true, split: true },
-      { id: "titre", label: "Votre titre", required: false, split: true },
+      { id: "nom", label: "Ton nom", required: true, split: true },
+      { id: "titre", label: "Ton titre", required: false, split: true },
       { id: "destinataire", label: "Nom du destinataire", required: false, split: true },
       { id: "titreDestinataire", label: "Titre du destinataire", required: false, split: true },
       { id: "entreprise", label: "Nom de l'entreprise", required: true },
@@ -35,8 +35,8 @@ const documentTemplates: Record<string, TemplateConfig> = {
   demission: {
     title: "Lettre de démission",
     fields: [
-      { id: "nom", label: "Votre nom", required: true, split: true },
-      { id: "poste", label: "Votre poste", required: true, split: true },
+      { id: "nom", label: "Ton nom", required: true, split: true },
+      { id: "poste", label: "Ton poste", required: true, split: true },
       { id: "manager", label: "Nom du destinataire", required: false, split: true },
       { id: "entreprise", label: "Nom de l'entreprise", required: true, split: true },
       { id: "dateFin", label: "Date de fin souhaitée", required: true },
@@ -46,8 +46,8 @@ const documentTemplates: Record<string, TemplateConfig> = {
   recommandation: {
     title: "Lettre de recommandation",
     fields: [
-      { id: "nom", label: "Votre nom", required: true, split: true },
-      { id: "poste", label: "Votre titre", required: true, split: true },
+      { id: "nom", label: "Ton nom", required: true, split: true },
+      { id: "poste", label: "Ton titre", required: true, split: true },
       { id: "candidat", label: "Nom du destinataire", required: true, split: true },
       { id: "posteCandidatActuel", label: "Titre du destinataire", required: false, split: true },
       { id: "posteCandidatVise", label: "Poste visé", required: false },
@@ -136,7 +136,7 @@ export default function Page() {
     return (
       <div className="max-w-4xl mx-auto p-6">
         <Alert variant="destructive">
-          <AlertDescription>Type de document non trouvé. Veuillez sélectionner un type de document valide.</AlertDescription>
+          <AlertDescription>Type de document non trouvé. Sélectionne un type de document valide.</AlertDescription>
         </Alert>
       </div>
     )

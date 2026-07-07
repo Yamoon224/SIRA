@@ -107,7 +107,7 @@ export default function ProgrammerEntretienPage() {
                     <Label htmlFor="prenom">Prénom</Label>
                     <Input
                       id="prenom"
-                      placeholder="Votre prénom"
+                      placeholder="Ton prénom"
                       value={formData.prenom}
                       onChange={(e) => setFormData({ ...formData, prenom: e.target.value })}
                     />
@@ -116,7 +116,7 @@ export default function ProgrammerEntretienPage() {
                     <Label htmlFor="nom">Nom</Label>
                     <Input
                       id="nom"
-                      placeholder="Votre nom"
+                      placeholder="Ton nom"
                       value={formData.nom}
                       onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
                     />
@@ -126,7 +126,7 @@ export default function ProgrammerEntretienPage() {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="votre.email@exemple.com"
+                      placeholder="ton.email@exemple.com"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     />
@@ -172,7 +172,7 @@ export default function ProgrammerEntretienPage() {
           <div className="lg:col-span-1">
             <Card className="bg-blue-500 text-white">
               <CardContent className="p-6">
-                <h2 className="text-lg font-semibold mb-4">Résumé de votre demande</h2>
+                <h2 className="text-lg font-semibold mb-4">Résumé de ta demande</h2>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Calendar className="w-5 h-5" />

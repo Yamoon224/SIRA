@@ -53,7 +53,7 @@ export function OTPVerificationModal({ isOpen, onClose, onVerify }: OTPVerificat
               <Input
                 value={otpCode}
                 onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                placeholder="Entrez le code OTP reçu par mail"
+                placeholder="Entre le code OTP reçu par mail"
                 maxLength={6}
                 className="w-full h-12 text-center text-base border-gray-300 dark:border-border rounded-lg focus:border-blue-500 focus:ring-blue-500 dark:bg-background dark:text-foreground"
               />

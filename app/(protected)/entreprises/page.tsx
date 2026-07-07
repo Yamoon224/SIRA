@@ -122,7 +122,7 @@ export default function CompaniesPage() {
                             <div className="relative w-full sm:max-w-[650px]">
                                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9aa3b2]" />
                                 <Input
-                                    placeholder="Recherchez un emploi par intitulé, poste, mot clé ou entreprise..."
+                                    placeholder="Recherche un emploi par intitulé, poste, mot clé ou entreprise..."
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     className="h-9 rounded-full border-[#dce3ef] pl-10 text-[12px]"

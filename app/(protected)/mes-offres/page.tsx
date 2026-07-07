@@ -40,7 +40,7 @@ export default function MyApplicationsPage() {
       <div className="p-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Mes candidatures</h1>
-          <p className="text-gray-600">Suivez l'état de vos candidatures et gérez vos offres</p>
+          <p className="text-gray-600">Suis l'état de tes candidatures et gère tes offres</p>
         </div>
 
         <Tabs value={selectedStatus} onValueChange={setSelectedStatus} className="space-y-6">
@@ -120,7 +120,7 @@ export default function MyApplicationsPage() {
                   <h3 className="text-lg font-medium text-gray-900 mb-2">Aucune candidature trouvée</h3>
                   <p className="text-gray-600 mb-4">
                     {selectedStatus === "all"
-                      ? "Vous n'avez pas encore postulé à des offres d'emploi."
+                      ? "Tu n'as pas encore postulé à des offres d'emploi."
                       : `Aucune candidature avec le statut "${selectedStatus}".`}
                   </p>
                   <Button>Parcourir les offres</Button>

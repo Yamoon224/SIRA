@@ -77,19 +77,19 @@ export default function Page() {
         {
             icon: MessageCircle,
             title: "Chat en direct",
-            description: "Chatez avec nos experts",
+            description: "Chate avec nos experts",
             color: "bg-blue-50 text-blue-600",
         },
         {
             icon: Mail,
             title: "Envoyer un email",
-            description: "Écrivez-nous votre demande",
+            description: "Écris-nous ta demande",
             color: "bg-green-50 text-green-600",
         },
         {
             icon: Phone,
             title: "Téléphone",
-            description: "Appelez notre équipe",
+            description: "Appelle notre équipe",
             color: "bg-orange-50 text-orange-600",
         },
     ]
@@ -111,12 +111,12 @@ export default function Page() {
     const resources = [
         {
             title: "Guide de démarrage rapide",
-            description: "Apprenez les étapes clés pour bien commencer",
+            description: "Apprends les étapes clés pour bien commencer",
             badge: "Nouveau",
         },
         {
             title: "Optimiser son profil Goriya",
-            description: "Conseils pour améliorer votre visibilité",
+            description: "Conseils pour améliorer ta visibilité",
             badge: "Populaire",
         },
     ]
@@ -152,9 +152,9 @@ export default function Page() {
                         <>
                             {/* Hero */}
                             <div className="bg-gradient-to-r from-[#1d4db8] to-[#2566d9] rounded-2xl p-8 text-white mb-12">
-                                <h2 className="text-3xl font-bold mb-2">Comment pouvons-nous vous aider ?</h2>
+                                <h2 className="text-3xl font-bold mb-2">Comment pouvons-nous t'aider ?</h2>
                                 <p className="text-white/90 mb-6">
-                                    Trouvez rapidement des réponses à vos questions ou consultez nos ressources
+                                    Trouve rapidement des réponses à tes questions ou consulte nos ressources
                                 </p>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     {contactMethods.map((method, i) => {
@@ -248,10 +248,10 @@ export default function Page() {
                     {activeTab === "tarifs" && (
                         <div className="mb-12">
                             <div className="text-center mb-10">
-                                <h2 className="text-3xl font-bold text-[#1b2331] mb-3">Choisissez votre forfait</h2>
+                                <h2 className="text-3xl font-bold text-[#1b2331] mb-3">Choisis ton forfait</h2>
                                 <p className="text-[#7f8796] text-sm max-w-md mx-auto">
-                                    Choisissez le plan qui correspond à vos ambitions professionnelles.
-                                    Commencez gratuitement et évoluez selon vos besoins.
+                                    Choisis le plan qui correspond à tes ambitions professionnelles.
+                                    Commence gratuitement et évolue selon tes besoins.
                                 </p>
                             </div>
 
@@ -341,7 +341,7 @@ export default function Page() {
                     <div className="bg-white border border-[#e8edf6] rounded-2xl p-8 text-center">
                         <h3 className="text-lg font-bold text-[#1b2331] mb-2">Une question ? Besoin d'aide ?</h3>
                         <p className="text-[13px] text-[#7f8796] mb-6">
-                            Notre équipe est là pour vous accompagner dans votre choix et répondre à toutes vos questions.
+                            Notre équipe est là pour t'accompagner dans ton choix et répondre à toutes tes questions.
                         </p>
                         <button className="px-6 h-9 rounded-full bg-[#f4f7ff] border border-[#d8deeb] text-[#2f6de6] text-[12px] font-medium hover:bg-[#e8edf6] transition-colors">
                             Contacter le support

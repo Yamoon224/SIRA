@@ -63,7 +63,7 @@ export default function Page() {
                     <div className="mb-8 flex items-start justify-between">
                         <div>
                             <h2 className="text-[28px] font-bold text-[#1b2331] mb-1">Bonjour, {displayName}</h2>
-                            <p className="text-[13px] text-[#7f8796]">Voici un aperçu de vos candidatures et offres d'emploi</p>
+                            <p className="text-[13px] text-[#7f8796]">Voici un aperçu de tes candidatures et offres d'emploi</p>
                         </div>
                         <div className="text-right hidden md:block">
                             <p className="text-[11px] text-[#9aa3b2] mb-1">Prochaine entrevue</p>

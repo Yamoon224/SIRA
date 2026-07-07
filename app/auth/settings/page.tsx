@@ -21,9 +21,9 @@ export default function Page() {
     }
 
     return (
-        <div className="min-h-screen flex">
+        <div className="min-h-screen flex flex-col md:flex-row">
             {/* Left side - Illustration */}
-            <div className="flex-1 bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 relative overflow-hidden">
+            <div className="hidden md:block flex-1 bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 relative overflow-hidden">
                 <div className="p-6">
                     <Link href="/auth/loading" className="inline-flex items-center text-muted-foreground hover:text-foreground">
                         <ArrowLeft className="w-4 h-4 mr-2" />
@@ -43,11 +43,11 @@ export default function Page() {
             </div>
 
             {/* Right side - Settings */}
-            <div className="flex-1 flex flex-col justify-center px-12 py-8 bg-background">
+            <div className="flex-1 flex flex-col justify-center px-6 py-8 sm:px-12 bg-background">
                 <div className="max-w-md mx-auto w-full">
                     <div className="mb-8">
                         <h1 className="text-2xl font-bold text-foreground mb-2">Notifications</h1>
-                        <p className="text-muted-foreground">Personnalisez vos préférences de notification générales</p>
+                        <p className="text-muted-foreground">Personnalise tes préférences de notification générales</p>
                     </div>
 
                     <div className="space-y-6">
@@ -64,7 +64,7 @@ export default function Page() {
                                         Applications
                                     </Label>
                                     <p className="text-sm text-muted-foreground mt-1">
-                                        Ces notifications sont pour les emplois auxquels vous avez postulé
+                                        Ces notifications sont pour les emplois auxquels tu as postulé
                                     </p>
                                 </div>
                             </div>
@@ -81,7 +81,7 @@ export default function Page() {
                                         Emplois
                                     </Label>
                                     <p className="text-sm text-muted-foreground mt-1">
-                                        Il s'agit de notifications pour des offres d'emploi qui pourraient vous plaire
+                                        Il s'agit de notifications pour des offres d'emploi qui pourraient te plaire
                                     </p>
                                 </div>
                             </div>

@@ -130,7 +130,7 @@ export default function EmploisPage() {
                 </button>
             </form>
 
-            <h1 className="text-[22px] font-extrabold text-[#1b2331]">Trouvez un emploi</h1>
+            <h1 className="text-[22px] font-extrabold text-[#1b2331]">Trouve un emploi</h1>
 
             <div className="flex gap-5 items-start">
                 {/* Filters sidebar */}
@@ -217,7 +217,7 @@ export default function EmploisPage() {
                         <div className="flex flex-col items-center justify-center py-16 text-center">
                             <Briefcase className="w-10 h-10 text-[#c8d0df] mb-3" />
                             <p className="text-[13px] font-semibold text-[#1b2331]">Aucune offre trouvée</p>
-                            <p className="text-[11px] text-[#9aa3b2] mt-1">Essayez de modifier vos filtres ou votre recherche.</p>
+                            <p className="text-[11px] text-[#9aa3b2] mt-1">Essaie de modifier tes filtres ou ta recherche.</p>
                         </div>
                     ) : (
                         <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
