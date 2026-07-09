@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback, useRef, Suspense } from "react"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, SlidersHorizontal, MapPin, BriefcaseBusiness, Clock3, Hourglass, Heart, Plus, Loader2, Building2, Building, GraduationCap } from "lucide-react"
@@ -69,17 +70,21 @@ function formatPosted(date: Date | string) {
     return `Il y a ${Math.floor(days / 30)} mois`
 }
 
-export default function ExploreJobsPage() {
-    const [searchInput, setSearchInput] = useState("")
-    const [searchTerm, setSearchTerm] = useState("")
+function ExploreJobsContent() {
+    const searchParams = useSearchParams()
+    const initialQuery = searchParams.get("q") ?? ""
+    const initialJobType = searchParams.get("jobType") ?? ""
+
+    const [searchInput, setSearchInput] = useState(initialQuery)
+    const [searchTerm, setSearchTerm] = useState(initialQuery)
     const [selectedFilters, setSelectedFilters] = useState<string[]>([])
     const [activeCategory, setActiveCategory] = useState("Tous")
     const [bookmarkedJobs, setBookmarkedJobs] = useState<string[]>([])
     const [jobCategories, setJobCategories] = useState<string[]>([])
 
-    const [showAllFilters, setShowAllFilters] = useState(false)
+    const [showAllFilters, setShowAllFilters] = useState(!!initialJobType)
     const [locationFilter, setLocationFilter] = useState("")
-    const [typeFilter, setTypeFilter] = useState("")
+    const [typeFilter, setTypeFilter] = useState(initialJobType)
     const [experienceFilter, setExperienceFilter] = useState("")
 
     const [jobs, setJobs] = useState<IJobOffer[]>([])
@@ -377,5 +382,13 @@ export default function ExploreJobsPage() {
 
             <Footer />
         </div>
+    )
+}
+
+export default function ExploreJobsPage() {
+    return (
+        <Suspense fallback={null}>
+            <ExploreJobsContent />
+        </Suspense>
     )
 }

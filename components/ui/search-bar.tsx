@@ -93,7 +93,7 @@ export function SearchBar() {
   const handleSearch = (searchQuery?: string) => {
     const searchTerm = searchQuery || query
     if (searchTerm.trim()) {
-      router.push(`/recherche?q=${encodeURIComponent(searchTerm.trim())}`)
+      router.push(`/explorer-emplois?q=${encodeURIComponent(searchTerm.trim())}`)
       setIsOpen(false)
       setQuery("")
     }
@@ -104,7 +104,7 @@ export function SearchBar() {
     setQuery("")
 
     if (suggestion.type === "company") {
-      router.push(`/entreprises/${suggestion.id.replace("company-", "")}`)
+      router.push(`/explorer-entreprises/${suggestion.id.replace("company-", "")}`)
       return
     }
 

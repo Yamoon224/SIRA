@@ -17,12 +17,15 @@ export function isPublicRoute(pathname: string) {
         '/favicon.ico',
         '/offres',
         '/confidentialite',
+        '/resultat-analyse-cv',
     ];
 
     const publicPrefixes = [
         '/auth',
         '/explorer-emplois',
         '/explorer-entreprises',
+        '/blog',
+        '/a-propos',
         '/images',
         '/icon',
     ];
