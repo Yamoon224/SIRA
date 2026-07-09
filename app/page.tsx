@@ -420,7 +420,7 @@ export default function Page() {
                     <div className="absolute top-20 right-28 w-14 h-14 border-[10px] border-[#7ab2ff] rounded-full opacity-40" />
                 </div>
                 <div className="mx-auto max-w-[1180px] px-4 text-center relative z-10">
-                    <h1 className="font-extrabold leading-tight text-2xl xs:text-3xl sm:text-4xl md:text-[40px] lg:text-[56px] max-w-[920px] mx-auto">
+                    <h1 className="font-extrabold leading-tight text-2xl xs:text-3xl sm:text-4xl md:text-[40px] lg:text-[52px] max-w-[920px] mx-auto">
                         Analyse ton CV instantanément. Découvre ton score et booste tes chances.
                     </h1>
                     <div className="mt-6 sm:mt-9 flex flex-col items-center gap-3">
