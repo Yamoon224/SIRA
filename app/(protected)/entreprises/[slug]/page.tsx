@@ -7,86 +7,35 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Link from "next/link"
-import { MapPin, Clock, Heart, Globe, Phone, Mail, Users, UserCheck } from "lucide-react"
+import { MapPin, Clock, Heart, Globe, Phone, Mail, Users } from "lucide-react"
 import { companyService } from "@/lib/api/company.service"
-
-// Fallback mock data (used when API fields are missing)
-const MOCK = {
-  presentation: {
-    description:
-      "Pitch développe des solutions technologiques de nouvelle génération pour digitaliser les administrations publiques et les services financiers en Afrique.\nDepuis plus de 10 ans, nous accompagnons les États dans leur transformation digitale avec des outils concrets, pensés pour simplifier le travail des agents publics.\nDéployés dans plus de 15 administrations, nos logiciels automatisent la collecte des recettes et la gestion des dépenses.\nRejoindre Pitch, c'est intégrer :",
-    points: [
-      "Une structure à taille humaine, portée par des projets à fort impact",
-      "Un cadre stimulant, mêlant innovation technologique et enjeux métiers complexes",
-      "De vraies perspectives d'évolution, avec une montée en compétences rapide",
-    ],
-  },
-  recherche: {
-    description:
-      "Pitch recherche des profils qui veulent mettre leurs talents au service de la croissance de pays émergents avec l'envie de contribuer à des projets utiles et ambitieux.",
-    values: [
-      { key: "Détermination", desc: "aller au bout des sujets, identifier un problème puis trouver LA solution" },
-      { key: "Ownership", desc: "prendre la responsabilité de ses missions et s'impliquer pleinement dans la réussite collective d'Pitch" },
-      { key: "Engagement", desc: "être prêt à se mobiliser pour atteindre nos objectifs, en équipe" },
-    ],
-    note: "Nous aimons les personnes curieuses, rigoureuses, avec une vraie appétence pour la tech et les sujets publics.",
-  },
-  culture: [
-    "Primes de performance",
-    "Épargne salariale avec abondement de 800.000 FCFA par mois",
-    "Couverture CNPS, prise en charge à 100%",
-    "Accès à la salle de GYM du Pass Premium à 50%",
-    "2 jours de télétravail par semaine",
-    "Séminaires et teambuildings réguliers",
-  ],
-  contact: {
-    website: "revolut.com",
-    phone: "+225 01 02 03 04 05",
-    email: "info@revolut.com",
-    location: "Abidjan, Plateau",
-    sector: "Fintech",
-    employees: "240",
-    subscribers: "9 800",
-  },
-  team: [
-    "/placeholder.svg",
-    "/placeholder.svg",
-    "/placeholder.svg",
-    "/placeholder.svg",
-  ],
-  similarCompanies: [
-    {
-      name: "Twitter",
-      logo: "/placeholder.svg",
-      sector: "Développement de logiciels",
-      tag: "zéro",
-      description: "La vie ne consiste pas à travailler, mais à donner un sens, nous croyons que le véritable changement...",
-      tags: ["Marketing", "Conception"],
-    },
-    {
-      name: "Pitch",
-      logo: "/placeholder.svg",
-      sector: "Édition en ligne",
-      tag: "3 offres",
-      description: "Pitch est la plateforme de pitch pour en un. De la création de présentations originales à la conclusion d'affaires...",
-      tags: ["Marketing", "Conception"],
-    },
-  ],
-}
+import { capitalizeFirst } from "@/lib/utils"
 
 export default function CompanyProfilePage({ params }: { params: { slug: string } }) {
   const [activeTab, setActiveTab] = useState("profil")
   const [company, setCompany] = useState<any>(null)
   const [companyJobs, setCompanyJobs] = useState<any[]>([])
+  const [similarCompanies, setSimilarCompanies] = useState<any[]>([])
 
   useEffect(() => {
     companyService.getCompanyById(params.slug)
       .then((res) => {
         const data = res.data as any
         setCompany(data)
-        return companyService.getCompanyJobs(data.id || params.slug)
+
+        companyService.getCompanyJobs(data.id || params.slug)
+          .then((r) => setCompanyJobs((r.data as any[]) || []))
+          .catch(() => {})
+
+        if (data.sector) {
+          companyService.getCompanies({ sector: data.sector, limit: 5 })
+            .then((r: any) => {
+              const list = (r?.data?.data ?? r?.data ?? []).filter((c: any) => c.id !== data.id).slice(0, 4)
+              setSimilarCompanies(list)
+            })
+            .catch(() => {})
+        }
       })
-      .then((res) => setCompanyJobs((res.data as any[]) || []))
       .catch(() => {})
   }, [params.slug])
 
@@ -98,13 +47,18 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
     )
   }
 
-  // Merge API data with fallbacks
-  const presentation = company.presentation ?? MOCK.presentation
-  const recherche = company.recherche ?? MOCK.recherche
-  const culture = company.culture?.values ?? (Array.isArray(company.culture) ? company.culture : null) ?? MOCK.culture
-  const contact = company.contact ?? MOCK.contact
-  const teamPhotos: string[] = company.team ?? MOCK.team
-  const similarCompanies: any[] = company.similarCompanies ?? MOCK.similarCompanies
+  // Uniquement des données réelles renvoyées par le backend — les sections
+  // sans contenu réel (ce que l'entreprise recherche, culture, équipe) sont
+  // masquées plutôt que remplies avec du contenu inventé.
+  const presentation = capitalizeFirst(company.about) || undefined
+  const contact = {
+    website: company.website,
+    phone: company.phone,
+    email: company.email,
+    location: capitalizeFirst(company.location ?? company.headquarters) || undefined,
+    sector: company.sector,
+    employees: company.companySize,
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -134,7 +88,7 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
                 </Badge>
                 <div className="flex items-center gap-1 text-sm">
                   <MapPin className="w-4 h-4" />
-                  {company.location}
+                  {capitalizeFirst(company.location)}
                 </div>
               </div>
             </div>
@@ -163,60 +117,14 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
             <TabsContent value="profil" className="space-y-8">
 
               {/* Présentation */}
-              <section>
-                <h2 className="text-2xl font-bold text-foreground mb-4">Présentation</h2>
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-line mb-4">
-                  {presentation?.description}
-                </p>
-                {presentation?.points && (
-                  <ul className="space-y-2">
-                    {presentation.points.map((point: string, i: number) => (
-                      <li key={i} className="flex items-start gap-3 text-muted-foreground">
-                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-600 flex-shrink-0" />
-                        {point}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </section>
-
-              {/* Ce qu'ils recherchent */}
-              <section>
-                <h2 className="text-2xl font-bold text-foreground mb-4">Ce qu'ils recherchent</h2>
-                <p className="text-muted-foreground leading-relaxed mb-4">{recherche?.description}</p>
-                {recherche?.values && (
-                  <>
-                    <p className="text-muted-foreground mb-3">Nos valeurs clés :</p>
-                    <ul className="space-y-2 mb-4">
-                      {recherche.values.map((v: any, i: number) => (
-                        <li key={i} className="flex items-start gap-3 text-muted-foreground">
-                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-600 flex-shrink-0" />
-                          <span>
-                            <strong>{typeof v === "string" ? v.split(":")?.[0] : v.key}</strong>
-                            {typeof v === "string" ? (v.split(":")?.[1] ? ` : ${v.split(":").slice(1).join(":")}` : "") : (v.desc ? ` : ${v.desc}` : "")}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-                {recherche?.note && (
-                  <p className="text-muted-foreground italic">{recherche.note}</p>
-                )}
-              </section>
-
-              {/* Culture et valeur */}
-              <section>
-                <h2 className="text-2xl font-bold text-foreground mb-4">Culture et valeur</h2>
-                <ul className="space-y-2">
-                  {(Array.isArray(culture) ? culture : []).map((v: string, i: number) => (
-                    <li key={i} className="flex items-start gap-3 text-muted-foreground">
-                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-600 flex-shrink-0" />
-                      {v}
-                    </li>
-                  ))}
-                </ul>
-              </section>
+              {presentation && (
+                <section>
+                  <h2 className="text-2xl font-bold text-foreground mb-4">Présentation</h2>
+                  <p className="text-muted-foreground leading-relaxed whitespace-pre-line mb-4">
+                    {presentation}
+                  </p>
+                </section>
+              )}
 
               {/* Contact + Stats + Social */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6 border-t border-border">
@@ -254,96 +162,70 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
                     <MapPin className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="text-xs text-muted-foreground">Localisation</p>
-                      <p className="text-sm font-semibold">{contact?.location ?? company.location}</p>
+                      <p className="text-sm font-semibold">{contact.location ?? "—"}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="text-muted-foreground mt-0.5 flex-shrink-0 text-sm leading-4">🏢</span>
                     <div>
                       <p className="text-xs text-muted-foreground">Secteur</p>
-                      <p className="text-sm font-semibold">{contact?.sector ?? company.sector}</p>
+                      <p className="text-sm font-semibold">{contact.sector ?? "—"}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <Users className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-xs text-muted-foreground">Employés</p>
-                      <p className="text-sm font-semibold">{contact?.employees ?? company.employees ?? "—"}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <UserCheck className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="text-xs text-muted-foreground">Abonnés</p>
-                      <p className="text-sm font-semibold">{contact?.subscribers ?? company.subscribers ?? "—"}</p>
+                      <p className="text-xs text-muted-foreground">Taille</p>
+                      <p className="text-sm font-semibold">{contact.employees ?? "—"}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Social */}
-                <div>
-                  <h3 className="font-semibold text-foreground mb-4">Suis-nous sur</h3>
-                  <a
-                    href={contact?.linkedin ?? "#"}
-                    className="inline-flex items-center justify-center w-9 h-9 bg-[#0a66c2] text-white rounded-lg hover:bg-[#085bb5]"
-                  >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                    </svg>
-                  </a>
-                </div>
+                {company.socialLinks?.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-4">Suis-nous sur</h3>
+                    <div className="flex gap-2">
+                      {company.socialLinks.map((link: string, i: number) => (
+                        <a
+                          key={i}
+                          href={link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center w-9 h-9 bg-[#0a66c2] text-white rounded-lg hover:bg-[#085bb5]"
+                        >
+                          <Globe className="w-4 h-4" />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Team Photos */}
-              {teamPhotos?.length > 0 && (
-                <section>
-                  <div className="grid grid-cols-3 gap-3 mb-3">
-                    {teamPhotos.slice(0, 3).map((photo: string, i: number) => (
-                      <div key={i} className="aspect-[4/3] rounded-xl overflow-hidden">
-                        <img src={photo || "/placeholder.svg"} alt={`Team ${i + 1}`} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = "/placeholder.svg" }} />
-                      </div>
-                    ))}
-                  </div>
-                  {teamPhotos[3] && (
-                    <div className="flex justify-center">
-                      <div className="w-1/3 aspect-[4/3] rounded-xl overflow-hidden">
-                        <img src={teamPhotos[3]} alt="Team 4" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = "/placeholder.svg" }} />
-                      </div>
-                    </div>
-                  )}
-                </section>
-              )}
-
               {/* Similar Companies */}
-              {similarCompanies?.length > 0 && (
+              {similarCompanies.length > 0 && (
                 <section>
                   <h2 className="text-2xl font-bold text-foreground text-center mb-6">
                     Autres entreprises que tu peux consulter
                   </h2>
                   <div className="flex justify-center gap-4 flex-wrap">
-                    {similarCompanies.map((sim: any, i: number) => (
-                      <Card key={i} className="w-[220px] hover:shadow-lg transition-shadow">
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="w-9 h-9 rounded-full overflow-hidden bg-muted">
-                              <img src={sim.logo || "/placeholder.svg"} alt={sim.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = "/placeholder.svg" }} />
+                    {similarCompanies.map((sim: any) => (
+                      <Link key={sim.id} href={`/entreprises/${sim.id}`}>
+                        <Card className="w-[220px] hover:shadow-lg transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="w-9 h-9 rounded-full overflow-hidden bg-muted">
+                                <img src={sim.logo || "/placeholder.svg"} alt={sim.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = "/placeholder.svg" }} />
+                              </div>
+                              <Badge variant="outline" className="text-xs">{sim.sector}</Badge>
                             </div>
-                            <Badge variant="outline" className="text-xs">{sim.offers ?? sim.tag}</Badge>
-                          </div>
-                          <h3 className="font-bold text-sm text-foreground">{sim.name}</h3>
-                          <p className="text-xs text-muted-foreground">{sim.sector}</p>
-                          {sim.description && (
-                            <p className="mt-2 text-xs text-muted-foreground leading-relaxed line-clamp-3">{sim.description}</p>
-                          )}
-                          {sim.tags?.length > 0 && (
-                            <div className="mt-3 flex gap-1 flex-wrap">
-                              {sim.tags.map((tag: string) => (
-                                <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>
-                              ))}
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
+                            <h3 className="font-bold text-sm text-foreground">{sim.name}</h3>
+                            {sim.about && (
+                              <p className="mt-2 text-xs text-muted-foreground leading-relaxed line-clamp-3">{capitalizeFirst(sim.about)}</p>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </Link>
                     ))}
                   </div>
                 </section>
@@ -369,7 +251,7 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
                               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                 <div className="flex items-center gap-1">
                                   <MapPin className="w-4 h-4" />
-                                  {job.location}
+                                  {capitalizeFirst(job.location)}
                                 </div>
                                 <div className="flex items-center gap-1">
                                   <Clock className="w-4 h-4" />
@@ -399,18 +281,14 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
             <TabsContent value="presentation" className="space-y-8">
               <div>
                 <h2 className="text-2xl font-bold text-foreground mb-6">Présentation</h2>
-                <p className="text-muted-foreground mb-6 leading-relaxed whitespace-pre-line">
-                  {presentation?.description}
-                </p>
-                {presentation?.points && (
-                  <ul className="space-y-3">
-                    {presentation.points.map((point: string, index: number) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0" />
-                        <span className="text-muted-foreground">{point}</span>
-                      </li>
-                    ))}
-                  </ul>
+                {presentation ? (
+                  <p className="text-muted-foreground mb-6 leading-relaxed whitespace-pre-line">
+                    {presentation}
+                  </p>
+                ) : (
+                  <p className="text-muted-foreground text-sm">
+                    {company.name} n'a pas encore ajouté de présentation.
+                  </p>
                 )}
               </div>
             </TabsContent>
@@ -419,13 +297,9 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
             <TabsContent value="team" className="space-y-8">
               <div>
                 <h2 className="text-2xl font-bold text-foreground mb-6">Notre équipe</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {teamPhotos.map((image: string, index: number) => (
-                    <div key={index} className="aspect-video rounded-lg overflow-hidden">
-                      <img src={image || "/placeholder.svg"} alt={`Team ${index + 1}`} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = "/placeholder.svg" }} />
-                    </div>
-                  ))}
-                </div>
+                <p className="text-muted-foreground text-sm">
+                  {company.name} n'a pas encore ajouté de photos d'équipe.
+                </p>
               </div>
 
               <div>
@@ -433,31 +307,25 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
                   Autres entreprises que tu peux consulter
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {similarCompanies.map((sim: any, index: number) => (
-                    <Card key={index} className="hover:shadow-lg transition-shadow">
-                      <CardContent className="p-6">
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="w-12 h-12 rounded-lg overflow-hidden">
-                            <img src={sim.logo || "/placeholder.svg"} alt={`${sim.name} logo`} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = "/placeholder.svg" }} />
+                  {similarCompanies.map((sim: any) => (
+                    <Link key={sim.id} href={`/entreprises/${sim.id}`}>
+                      <Card className="hover:shadow-lg transition-shadow">
+                        <CardContent className="p-6">
+                          <div className="flex items-center gap-3 mb-4">
+                            <div className="w-12 h-12 rounded-lg overflow-hidden">
+                              <img src={sim.logo || "/placeholder.svg"} alt={`${sim.name} logo`} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = "/placeholder.svg" }} />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-foreground">{sim.name}</h3>
+                              <p className="text-sm text-muted-foreground">{sim.sector}</p>
+                            </div>
                           </div>
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-foreground">{sim.name}</h3>
-                            <p className="text-sm text-muted-foreground">{sim.sector}</p>
-                          </div>
-                          <Badge variant="outline" className="text-xs">{sim.offers ?? sim.tag}</Badge>
-                        </div>
-                        {sim.description && (
-                          <p className="text-sm text-muted-foreground mb-4">{sim.description}</p>
-                        )}
-                        {sim.tags?.length > 0 && (
-                          <div className="flex gap-2 flex-wrap">
-                            {sim.tags.map((tag: string, tagIndex: number) => (
-                              <Badge key={tagIndex} variant="secondary" className="text-xs">{tag}</Badge>
-                            ))}
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
+                          {sim.about && (
+                            <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{capitalizeFirst(sim.about)}</p>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </Link>
                   ))}
                 </div>
               </div>

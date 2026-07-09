@@ -19,6 +19,7 @@ import {
 } from "lucide-react"
 import { userService } from "@/lib/api/user.service"
 import { useAuth } from "@/contexts/auth-context"
+import { capitalizeFirst } from "@/lib/utils"
 import { useState, useEffect } from "react"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -98,7 +99,7 @@ export default function ProfilePage() {
                                 <p className="text-base sm:text-lg text-muted-foreground mb-2">{profile.title}</p>
                                 <div className="flex items-center text-muted-foreground mb-2">
                                     <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-                                    {profile.location}
+                                    {capitalizeFirst(profile.location)}
                                 </div>
                                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                                     <div className="flex items-center">

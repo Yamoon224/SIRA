@@ -7,16 +7,16 @@ export const subscriptionService = {
     subscribe: (data: { userId: string; planId: string }) =>
         apiRequest<any>({ endpoint: "/subscriptions/subscribe", method: "POST", data }),
 
-    createCheckout: (data: { userId: string; planId: string; successUrl: string; errorUrl: string }) =>
-        apiRequest<{ waveUrl: string; sessionId: string; clientReference: string; expiresAt: string }>({
+    createCheckout: (data: { userId: string; planId: string }) =>
+        apiRequest<{ amount: number; currency: string; clientReference: string }>({
             endpoint: "/subscriptions/checkout",
             method: "POST",
             data,
         }),
 
-    verifyCheckout: (sessionId: string, userId: string, planId: string) =>
+    verifyCheckout: (transactionId: string, userId: string, planId: string) =>
         apiRequest<any>({
-            endpoint: `/subscriptions/checkout/verify/${sessionId}?userId=${userId}&planId=${planId}`,
+            endpoint: `/subscriptions/checkout/verify/${transactionId}?userId=${userId}&planId=${planId}`,
             method: "GET",
         }),
 

@@ -10,11 +10,13 @@ interface OTPVerificationModalProps {
   isOpen: boolean
   onClose: () => void
   onVerify: (code: string) => void
+  onResend?: () => void | Promise<void>
 }
 
-export function OTPVerificationModal({ isOpen, onClose, onVerify }: OTPVerificationModalProps) {
+export function OTPVerificationModal({ isOpen, onClose, onVerify, onResend }: OTPVerificationModalProps) {
   const [otpCode, setOtpCode] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [isResending, setIsResending] = useState(false)
 
   const handleVerify = async () => {
     if (otpCode.length === 6) {
@@ -27,8 +29,14 @@ export function OTPVerificationModal({ isOpen, onClose, onVerify }: OTPVerificat
     }
   }
 
-  const handleResend = () => {
-    console.log("Resending OTP code...")
+  const handleResend = async () => {
+    if (!onResend || isResending) return
+    setIsResending(true)
+    try {
+      await onResend()
+    } finally {
+      setIsResending(false)
+    }
   }
 
   return (
@@ -72,9 +80,10 @@ export function OTPVerificationModal({ isOpen, onClose, onVerify }: OTPVerificat
                 Code non reçu ?{" "}
                 <button
                   onClick={handleResend}
-                  className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors"
+                  disabled={isResending}
+                  className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors disabled:opacity-50"
                 >
-                  Ressayer
+                  {isResending ? "Envoi..." : "Renvoyer le code"}
                 </button>
               </p>
             </div>

@@ -89,6 +89,7 @@ export default function NotificationsPage() {
   }
 
   const deleteSelected = () => {
+    selectedNotifications.forEach((id) => notificationService.deleteNotification(id).catch(() => {}))
     setNotifications((prev) => prev.filter((notif) => !selectedNotifications.includes(notif.id)))
     setSelectedNotifications([])
   }

@@ -6,33 +6,36 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Search, Send, Paperclip, Star, MoreHorizontal, Bell, ChevronLeft } from "lucide-react"
 import { messageService } from "@/lib/api/message.service"
+import { useAuth } from "@/contexts/auth-context"
 import { useState, useEffect, useRef } from "react"
 
 interface Message {
     id: string
-    senderId: string
-    senderName: string
     content: string
-    timestamp: string
-    isRead: boolean
+    createdAt: string
+    senderId: string
 }
 
 interface Conversation {
     id: string
-    participantId: string
-    participantName: string
-    participantAvatar: string
-    participantTitle: string
-    lastMessage: string
-    lastMessageTime: string
+    name: string
+    role: string
+    lastMessageAt: string | null
     unreadCount: number
-    isOnline: boolean
-    messages: Message[]
+    lastMessage: string
+}
+
+function formatRelative(iso: string | null): string {
+    if (!iso) return ""
+    return new Date(iso).toLocaleString("fr-FR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
 }
 
 export default function MessagesPage() {
+    const { user } = useAuth()
+    const currentUserId = user?.id ?? ""
     const [conversations, setConversations] = useState<Conversation[]>([])
     const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
+    const [messages, setMessages] = useState<Message[]>([])
     const [newMessage, setNewMessage] = useState("")
     const [searchQuery, setSearchQuery] = useState("")
     const [showMobileList, setShowMobileList] = useState(true)
@@ -46,148 +49,67 @@ export default function MessagesPage() {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
         }
-    }, [selectedConversation?.messages])
+    }, [messages])
 
     const fetchConversations = async () => {
         try {
             const response = await messageService.getConversations()
-            setConversations(response.data)
-            if (response.data.length > 0) {
-                setSelectedConversation(response.data[0])
+            const items = (response as any)?.data ?? response ?? []
+            const convs: Conversation[] = Array.isArray(items) ? items : []
+            setConversations(convs)
+            if (convs.length > 0) {
+                selectConversation(convs[0])
             }
         } catch (error) {
             console.error("Erreur lors du chargement des conversations:", error)
+            setConversations([])
+        }
+    }
 
-            // Données de démonstration
-            const mockConversations: Conversation[] = [
-                {
-                    id: "1",
-                    participantId: "user1",
-                    participantName: "Mina Moulot",
-                    participantAvatar: "/placeholder.svg?height=40&width=40",
-                    participantTitle: "Recruteur chez TechCorp",
-                    lastMessage: "Nous aimerions t'inviter pour un entretien",
-                    lastMessageTime: "il y a 5 minutes",
-                    unreadCount: 1,
-                    isOnline: true,
-                    messages: [
-                        {
-                            id: "1",
-                            senderId: "user1",
-                            senderName: "Mina Moulot",
-                            content:
-                                "Bonjour ! J'ai consulté ton profil et je pense que tu pourrais être un excellent candidat pour notre poste de développeur senior.",
-                            timestamp: "il y a 2 heures",
-                            isRead: true,
-                        },
-                        {
-                            id: "2",
-                            senderId: "current-user",
-                            senderName: "Toi",
-                            content:
-                                "Bonjour Mina, je te remercie pour ton message. Je suis très intéressé par cette opportunité. Pourrais-tu me donner plus de détails sur le poste ?",
-                            timestamp: "il y a 1 heure",
-                            isRead: true,
-                        },
-                        {
-                            id: "3",
-                            senderId: "user1",
-                            senderName: "Mina Moulot",
-                            content:
-                                "Bien sûr ! Il s'agit d'un poste de développeur full-stack avec une expertise en React et Node.js. L'équipe travaille sur des projets innovants dans le domaine de la fintech.",
-                            timestamp: "il y a 45 minutes",
-                            isRead: true,
-                        },
-                        {
-                            id: "4",
-                            senderId: "current-user",
-                            senderName: "Toi",
-                            content:
-                                "Cela correspond parfaitement à mon profil ! J'ai 5 ans d'expérience avec ces technologies. Quand pourrions-nous organiser un entretien ?",
-                            timestamp: "il y a 30 minutes",
-                            isRead: true,
-                        },
-                        {
-                            id: "5",
-                            senderId: "user1",
-                            senderName: "Mina Moulot",
-                            content:
-                                "Parfait ! Nous aimerions t'inviter pour un entretien la semaine prochaine. Es-tu disponible mardi ou mercredi après-midi ?",
-                            timestamp: "il y a 5 minutes",
-                            isRead: false,
-                        },
-                    ],
-                },
-                {
-                    id: "2",
-                    participantId: "user2",
-                    participantName: "Romain Taze",
-                    participantAvatar: "/placeholder.svg?height=40&width=40",
-                    participantTitle: "RH Manager",
-                    lastMessage: "Merci pour ton interview",
-                    lastMessageTime: "il y a 1 heure",
-                    unreadCount: 0,
-                    isOnline: false,
-                    messages: [
-                        {
-                            id: "1",
-                            senderId: "user2",
-                            senderName: "Romain Taze",
-                            content: "Bonjour, suite à notre entretien d'hier, nous souhaitons te faire une proposition.",
-                            timestamp: "il y a 2 heures",
-                            isRead: true,
-                        },
-                        {
-                            id: "2",
-                            senderId: "current-user",
-                            senderName: "Toi",
-                            content: "Bonjour Romain, merci pour ce retour rapide. Je suis impatient de connaître ta proposition.",
-                            timestamp: "il y a 1 heure",
-                            isRead: true,
-                        },
-                    ],
-                },
-            ]
-
-            setConversations(mockConversations)
-            setSelectedConversation(mockConversations[0])
+    const selectConversation = async (conversation: Conversation) => {
+        setSelectedConversation(conversation)
+        setShowMobileList(false)
+        setConversations((prev) => prev.map((c) => (c.id === conversation.id ? { ...c, unreadCount: 0 } : c)))
+        try {
+            await messageService.markAsRead(conversation.id)
+            const response = await messageService.getConversationMessages(conversation.id)
+            const items = (response as any)?.data ?? response ?? []
+            setMessages(Array.isArray(items) ? items : [])
+        } catch (error) {
+            console.error("Erreur lors du chargement des messages:", error)
+            setMessages([])
         }
     }
 
     const sendMessage = async () => {
         if (!newMessage.trim() || !selectedConversation) return
 
+        const content = newMessage
+        setNewMessage("")
+
+        const optimistic: Message = {
+            id: `opt-${Date.now()}`,
+            content,
+            createdAt: new Date().toISOString(),
+            senderId: currentUserId,
+        }
+        setMessages((prev) => [...prev, optimistic])
+        setConversations((prev) =>
+            prev.map((c) => (c.id === selectedConversation.id ? { ...c, lastMessage: content, lastMessageAt: optimistic.createdAt } : c)),
+        )
+
         try {
-            const message: Message = {
-                id: Date.now().toString(),
-                senderId: "current-user",
-                senderName: "Toi",
-                content: newMessage,
-                timestamp: "À l'instant",
-                isRead: true,
-            }
-
-            await messageService.sendMessage(selectedConversation.id, newMessage)
-
-            // Mettre à jour localement
-            const updatedConversation = {
-                ...selectedConversation,
-                messages: [...selectedConversation.messages, message],
-                lastMessage: newMessage,
-                lastMessageTime: "À l'instant",
-            }
-
-            setSelectedConversation(updatedConversation)
-            setConversations((prev) => prev.map((conv) => (conv.id === selectedConversation.id ? updatedConversation : conv)))
-            setNewMessage("")
+            await messageService.sendMessage(selectedConversation.id, content)
         } catch (error) {
             console.error("Erreur lors de l'envoi du message:", error)
         }
     }
 
     const filteredConversations = conversations.filter((conv) =>
-        conv.participantName.toLowerCase().includes(searchQuery.toLowerCase()),
+        conv.name.toLowerCase().includes(searchQuery.toLowerCase()),
     )
+
+    const initials = (name: string) => name.split(" ").map((n) => n[0]).join("")
 
     return (
         <div className="h-[calc(100vh-4rem)] sm:h-[calc(100vh-2rem)] flex overflow-hidden">
@@ -214,31 +136,23 @@ export default function MessagesPage() {
 
                 {/* Conversations */}
                 <div className="flex-1 overflow-y-auto">
-                    {filteredConversations.map((conversation) => (
+                    {filteredConversations.length === 0 ? (
+                        <p className="p-4 text-sm text-muted-foreground">Aucune conversation.</p>
+                    ) : filteredConversations.map((conversation) => (
                         <div
                             key={conversation.id}
                             className={`p-4 border-b border-border cursor-pointer hover:bg-muted/50 transition-colors ${selectedConversation?.id === conversation.id ? "bg-primary/10 border-primary/20" : ""
                                 }`}
-                            onClick={() => { setSelectedConversation(conversation); setShowMobileList(false) }}
+                            onClick={() => selectConversation(conversation)}
                         >
                             <div className="flex items-start space-x-3">
-                                <div className="relative">
-                                    <Avatar className="w-12 h-12">
-                                        <AvatarImage src={conversation.participantAvatar || "/placeholder.svg"} />
-                                        <AvatarFallback>
-                                            {conversation.participantName
-                                                .split(" ")
-                                                .map((n) => n[0])
-                                                .join("")}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    {conversation.isOnline && (
-                                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-background rounded-full"></div>
-                                    )}
-                                </div>
+                                <Avatar className="w-12 h-12">
+                                    <AvatarImage src="/placeholder.svg" />
+                                    <AvatarFallback>{initials(conversation.name)}</AvatarFallback>
+                                </Avatar>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between mb-1">
-                                        <h3 className="font-medium text-foreground truncate">{conversation.participantName}</h3>
+                                        <h3 className="font-medium text-foreground truncate">{conversation.name}</h3>
                                         <div className="flex items-center space-x-1">
                                             {conversation.unreadCount > 0 && (
                                                 <Badge className="bg-primary text-primary-foreground text-xs px-2 py-1">
@@ -250,9 +164,9 @@ export default function MessagesPage() {
                                             </Button>
                                         </div>
                                     </div>
-                                    <p className="text-sm text-muted-foreground mb-1">{conversation.participantTitle}</p>
+                                    <p className="text-sm text-muted-foreground mb-1">{conversation.role}</p>
                                     <p className="text-sm text-muted-foreground truncate">{conversation.lastMessage}</p>
-                                    <p className="text-xs text-muted-foreground mt-1">{conversation.lastMessageTime}</p>
+                                    <p className="text-xs text-muted-foreground mt-1">{formatRelative(conversation.lastMessageAt)}</p>
                                 </div>
                             </div>
                         </div>
@@ -277,17 +191,12 @@ export default function MessagesPage() {
                                         <ChevronLeft className="w-5 h-5" />
                                     </Button>
                                     <Avatar className="w-10 h-10">
-                                        <AvatarImage src={selectedConversation.participantAvatar || "/placeholder.svg"} />
-                                        <AvatarFallback>
-                                            {selectedConversation.participantName
-                                                .split(" ")
-                                                .map((n) => n[0])
-                                                .join("")}
-                                        </AvatarFallback>
+                                        <AvatarImage src="/placeholder.svg" />
+                                        <AvatarFallback>{initials(selectedConversation.name)}</AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <h2 className="font-semibold text-foreground">{selectedConversation.participantName}</h2>
-                                        <p className="text-sm text-muted-foreground">{selectedConversation.participantTitle}</p>
+                                        <h2 className="font-semibold text-foreground">{selectedConversation.name}</h2>
+                                        <p className="text-sm text-muted-foreground">{selectedConversation.role}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-2">
@@ -303,23 +212,23 @@ export default function MessagesPage() {
 
                         {/* Messages */}
                         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                            {selectedConversation.messages.map((message) => (
+                            {messages.map((message) => (
                                 <div
                                     key={message.id}
-                                    className={`flex ${message.senderId === "current-user" ? "justify-end" : "justify-start"}`}
+                                    className={`flex ${message.senderId === currentUserId ? "justify-end" : "justify-start"}`}
                                 >
                                     <div
-                                        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${message.senderId === "current-user"
+                                        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${message.senderId === currentUserId
                                                 ? "bg-primary text-primary-foreground"
                                                 : "bg-muted text-foreground"
                                             }`}
                                     >
                                         <p className="text-sm">{message.content}</p>
                                         <p
-                                            className={`text-xs mt-1 ${message.senderId === "current-user" ? "text-primary-foreground/70" : "text-muted-foreground"
+                                            className={`text-xs mt-1 ${message.senderId === currentUserId ? "text-primary-foreground/70" : "text-muted-foreground"
                                                 }`}
                                         >
-                                            {message.timestamp}
+                                            {formatRelative(message.createdAt)}
                                         </p>
                                     </div>
                                 </div>

@@ -69,7 +69,7 @@ export const messageService = {
         )
     },
 
-    createConversation: async (participantId: string) => {
+    createConversation: async (candidatureId: string) => {
         return requestWithFallback<ApiResponse<any>>(
             [
                 "/messages/conversations",
@@ -77,7 +77,7 @@ export const messageService = {
                 "/message/conversations",
             ],
             "POST",
-            { participantId },
+            { candidatureId },
         )
     },
 }

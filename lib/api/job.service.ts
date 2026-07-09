@@ -12,7 +12,8 @@ export const jobService = {
             salary?: string[]
             remote?: boolean
             hasSalary?: boolean
-            companySize?: string
+            companySize?: string | string[]
+            sector?: string
             page?: number
             limit?: number
         },
@@ -21,6 +22,21 @@ export const jobService = {
             endpoint: "/job-offers/paginate",
             method: "GET",
             params: filters,
+        })
+    },
+
+    getCategories: async () => {
+        return apiRequest<ApiResponse<string[]>>({
+            endpoint: "/job-offers/categories",
+            method: "GET",
+        })
+    },
+
+    getMatchScore: async (id: string) => {
+        return apiRequest<{ matchingScore: number; matchReasons: string[] }>({
+            endpoint: `/job-offers/${id}/match`,
+            method: "GET",
+            silent: true,
         })
     },
 
@@ -53,6 +69,13 @@ export const jobService = {
         return apiRequest<ApiResponse<null>>({
             endpoint: `/job-offers/${jobId}/save`,
             method: "DELETE",
+        })
+    },
+
+    getSavedJobIds: async () => {
+        return apiRequest<ApiResponse<{ jobIds: string[] }>>({
+            endpoint: "/me/saved-jobs",
+            method: "GET",
         })
     },
 }

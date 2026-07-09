@@ -159,8 +159,8 @@ export default function BibliothequePage() {
                 </div>
 
                 {/* Applications Table */}
-                <div className="bg-white rounded-lg border border-[#e8edf6] overflow-hidden">
-                    <table className="w-full">
+                <div className="bg-white rounded-lg border border-[#e8edf6] overflow-x-auto">
+                    <table className="w-full min-w-[720px]">
                         <thead>
                             <tr className="border-b border-[#e8edf6]">
                                 <th className="px-4 py-3 text-left text-[12px] font-semibold text-[#7f8796]">#</th>

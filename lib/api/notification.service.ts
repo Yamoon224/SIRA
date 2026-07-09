@@ -23,6 +23,13 @@ export const notificationService = {
         })
     },
 
+    deleteNotification: async (notificationId: string) => {
+        return apiRequest<ApiResponse<null>>({
+            endpoint: `/notifications/${notificationId}`,
+            method: "DELETE",
+        })
+    },
+
     updateSettings: async (
         settings: {
             applications: boolean

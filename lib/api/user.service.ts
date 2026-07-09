@@ -5,8 +5,12 @@ import { IUser } from "@/lib/@types/entities"
 export const userService = {
     getProfile: async () => {
         try {
+            // /admin/auth/profile n'est en réalité restreinte à aucun rôle
+            // particulier (voir AdminAuthController) — c'est la seule route
+            // qui renvoie le User complet (avec company), /auth/profile ne
+            // renvoie que les claims du JWT.
             return await apiRequest<ApiResponse<IUser>>({
-                endpoint: "/user/profile",
+                endpoint: "/admin/auth/profile",
                 method: "GET",
                 silent: true,
             })
@@ -24,7 +28,7 @@ export const userService = {
 
     updateProfile: async (profileData: Partial<IUser>) => {
         return apiRequest<ApiResponse<IUser>>({
-            endpoint: "/user/profile",
+            endpoint: "/admin/user/profile",
             method: "PUT",
             data: profileData,
         })
@@ -34,7 +38,7 @@ export const userService = {
         const formData = new FormData()
         formData.append("avatar", file)
         return apiRequest<ApiResponse<{ avatarUrl: string }>>({
-            endpoint: "/user/avatar",
+            endpoint: "/admin/user/avatar",
             method: "POST",
             data: formData,
         })

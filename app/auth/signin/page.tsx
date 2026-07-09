@@ -60,16 +60,11 @@ export default function Page() {
                 const res = await authService.signup(formData)
                 const payload = (res as any)?.data ?? res
                 const userData = payload?.user
-                const token = payload?.accessToken ?? payload?.access_token
 
-                if (!userData || !token) throw new Error("Erreur lors de l'inscription")
+                if (!userData) throw new Error("Erreur lors de l'inscription")
 
-                // Établit la session NextAuth (httpOnly) à partir du token backend déjà obtenu.
-                const tokenResult = await signIn("token", { token, redirect: false })
-                if (tokenResult?.error) throw new Error("Erreur lors de l'inscription")
-
-                toast.success("Inscription réussie !")
-                router.push("/auth/plan")
+                toast.success("Vérifie ta boîte mail pour le code de vérification")
+                setShowOTPModal(true)
                 return
             }
 
@@ -106,17 +101,29 @@ export default function Page() {
     const handleOTPVerification = async (otpCode: string) => {
         try {
             const response = await authService.verifyOtp(formData.email, otpCode)
-            const token = response.data.token
+            const payload = (response as any)?.data ?? response
+            const token = payload?.access_token
+
+            if (!token) throw new Error("Code de vérification invalide")
 
             const tokenResult = await signIn("token", { token, redirect: false })
             if (tokenResult?.error) throw new Error("Code de vérification invalide")
 
             setShowOTPModal(false)
             toast.success("Compte vérifié avec succès !")
-            router.push("/dashboard")
+            router.push("/auth/plan")
         } catch (error: any) {
             console.error("Erreur lors de la vérification OTP:", error)
             toast.error(error?.message || "Code de vérification invalide. Réessaie.")
+        }
+    }
+
+    const handleResendOTP = async () => {
+        try {
+            await authService.requestOtp(formData.email)
+            toast.success("Un nouveau code a été envoyé")
+        } catch (error: any) {
+            toast.error(error?.message || "Impossible d'envoyer le code pour le moment")
         }
     }
 
@@ -183,12 +190,12 @@ export default function Page() {
                     </div>
 
                     <div className="space-y-6">
-                        <div className="flex bg-gray-100 rounded-full p-1">
+                        <div className="flex bg-muted rounded-full p-1">
                             <button
                                 onClick={() => setActiveTab("login")}
                                 className={`flex-1 py-2 text-sm font-medium rounded-full transition-all ${
                                     activeTab === "login"
-                                        ? "bg-white text-foreground shadow-sm"
+                                        ? "bg-background text-foreground shadow-sm"
                                         : "text-muted-foreground"
                                 }`}
                             >
@@ -198,7 +205,7 @@ export default function Page() {
                                 onClick={() => setActiveTab("signup")}
                                 className={`flex-1 py-2 text-sm font-medium rounded-full transition-all ${
                                     activeTab === "signup"
-                                        ? "bg-white text-foreground shadow-sm"
+                                        ? "bg-background text-foreground shadow-sm"
                                         : "text-muted-foreground"
                                 }`}>
                                 Inscription
@@ -379,6 +386,7 @@ export default function Page() {
                 isOpen={showOTPModal}
                 onClose={() => setShowOTPModal(false)}
                 onVerify={handleOTPVerification}
+                onResend={handleResendOTP}
             />
         </div>
     )

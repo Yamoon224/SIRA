@@ -2,17 +2,16 @@ import "./globals.css"
 import type React from "react"
 import { Suspense } from "react"
 import type { Metadata } from "next"
-import { Poppins } from "next/font/google"
+import { Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { SessionProvider } from "@/components/session-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/contexts/auth-context"
 import { Toaster } from "sonner"
 
-const poppins = Poppins({
+const inter = Inter({
     subsets: ["latin"],
-    weight: ["400", "500", "600", "700", "800", "900"],
-    display: "swap",
+    variable: "--font-inter",
 })
 
 export const metadata: Metadata = {
@@ -45,7 +44,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="fr" suppressHydrationWarning>
-            <body className={poppins.className}>
+            <body className={`${inter.variable} font-sans antialiased`}>
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="system"

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { SearchBar } from "@/components/ui/search-bar"
+import { NotificationBell } from "@/components/notification-bell"
 import { useAuth } from "@/contexts/auth-context"
 import { AppLogo } from "../app-logo"
 
@@ -55,8 +56,11 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                         <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
                             Accueil
                         </Link>
-                        <Link href="/emplois" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
+                        <Link href="/explorer-emplois" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
                             Emplois
+                        </Link>
+                        <Link href="/blog" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
+                            Blog
                         </Link>
                         <Link
                             href="/explorer-entreprises"
@@ -77,6 +81,7 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                     {mounted && isAuthenticated && (
                         <>
                             <ThemeToggle />
+                            <NotificationBell />
 
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -128,6 +133,11 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                             <Link href="/auth/signin">
                                 <Button variant="outline" size="sm" className="text-xs sm:text-sm bg-transparent">
                                     Se connecter
+                                </Button>
+                            </Link>
+                            <Link href="https://goriya-entreprise.vercel.app">
+                                <Button size="sm" className="text-xs sm:text-sm">
+                                    Espace Entreprise
                                 </Button>
                             </Link>
                         </div>

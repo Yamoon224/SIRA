@@ -4,9 +4,12 @@ import { useState, useEffect, useMemo } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Header } from "@/components/layout/header"
+import { Footer } from "@/components/layout/footer"
 import { Input } from "@/components/ui/input"
 import { Globe, Phone, Mail, Users, MapPin, Clock, Building2, Loader2, AlertCircle, Search, X, SlidersHorizontal, Heart } from "lucide-react"
 import { companyService } from "@/lib/api/company.service"
+import { jobService } from "@/lib/api/job.service"
 import { ICompany, IJobOffer } from "@/lib/@types/entities"
 import { CompanyLogo } from "@/components/company-logo"
 import { capitalizeFirst } from "@/lib/utils"
@@ -156,6 +159,8 @@ export default function EntrepriseDetailPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(false)
     const [activeTab, setActiveTab] = useState<"profil" | "jobs">("profil")
+    const [followedIds, setFollowedIds] = useState<string[]>([])
+    const [savedJobIds, setSavedJobIds] = useState<string[]>([])
 
     // Filter state
     const [jobSearch, setJobSearch] = useState("")
@@ -191,6 +196,32 @@ export default function EntrepriseDetailPage() {
             .finally(() => setLoading(false))
     }, [companyId])
 
+    useEffect(() => {
+        companyService.getFollowedCompanyIds()
+            .then((res: any) => setFollowedIds(res?.data?.companyIds ?? res?.companyIds ?? []))
+            .catch(() => {})
+        jobService.getSavedJobIds()
+            .then((res: any) => setSavedJobIds(res?.data?.jobIds ?? res?.jobIds ?? []))
+            .catch(() => {})
+    }, [])
+
+    const isFollowing = followedIds.includes(companyId)
+
+    const handleToggleFollow = () => {
+        setFollowedIds((prev) => (isFollowing ? prev.filter((id) => id !== companyId) : [...prev, companyId]))
+        const action = isFollowing ? companyService.unfollowCompany(companyId) : companyService.followCompany(companyId)
+        action.catch(() => setFollowedIds((prev) => (isFollowing ? [...prev, companyId] : prev.filter((id) => id !== companyId))))
+    }
+
+    const handleToggleSaveJob = (e: React.MouseEvent, jobId: string) => {
+        e.preventDefault()
+        e.stopPropagation()
+        const isSaved = savedJobIds.includes(jobId)
+        setSavedJobIds((prev) => (isSaved ? prev.filter((id) => id !== jobId) : [...prev, jobId]))
+        const action = isSaved ? jobService.unsaveJob(jobId) : jobService.saveJob(jobId)
+        action.catch(() => setSavedJobIds((prev) => (isSaved ? [...prev, jobId] : prev.filter((id) => id !== jobId))))
+    }
+
     const filteredJobs = useMemo(() => {
         return jobs.filter(job => {
             if (jobSearch && !job.title.toLowerCase().includes(jobSearch.toLowerCase())) return false
@@ -204,7 +235,7 @@ export default function EntrepriseDetailPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-white flex items-center justify-center">
+            <div className="min-h-screen bg-background flex items-center justify-center">
                 <Loader2 className="w-8 h-8 animate-spin text-[#2f6de6]" />
             </div>
         )
@@ -212,7 +243,7 @@ export default function EntrepriseDetailPage() {
 
     if (error || !company) {
         return (
-            <div className="min-h-screen bg-white flex flex-col items-center justify-center gap-4 text-center px-4">
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 text-center px-4">
                 <AlertCircle className="w-10 h-10 text-[#e07b10]" />
                 <h2 className="text-lg font-bold text-[#1b2331]">Entreprise introuvable</h2>
                 <p className="text-[13px] text-[#9aa3b2]">Cette entreprise n'existe pas ou n'est plus disponible.</p>
@@ -224,31 +255,8 @@ export default function EntrepriseDetailPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#f4f5f7] text-[#1b2331]">
-            <header className="bg-white border-b border-[#edf1f6]">
-                <div className="mx-auto max-w-[1180px] px-4 h-[64px] flex items-center justify-between">
-                    <Link href="/">
-                        <img src="/images/logo.png" alt="Goriya" className="h-8 w-auto" />
-                    </Link>
-                    <nav className="hidden md:flex items-center gap-8 text-[13px] text-[#7a8495] font-medium">
-                        <Link href="/" className="text-[#2f6de6]">Accueil</Link>
-                        <Link href="/explorer-emplois" className="hover:text-[#2f6de6]">Trouve un emploi</Link>
-                        <Link href="/offres" className="hover:text-[#2f6de6]">Tarifs d'abonnement</Link>
-                    </nav>
-                    <div className="flex items-center gap-2">
-                        <Link href="/auth/signin">
-                            <button className="h-8 px-4 rounded-full text-[12px] border border-[#b9c8ec] text-[#2f6de6] bg-white hover:bg-[#f4f7ff]">
-                                Connexion
-                            </button>
-                        </Link>
-                        <Link href="https://goriya-entreprise.vercel.app">
-                            <button className="h-8 px-4 rounded-full text-[12px] bg-[#2157d3] hover:bg-[#1d4cb9] text-white">
-                                Espace entreprise
-                            </button>
-                        </Link>
-                    </div>
-                </div>
-            </header>
+        <div className="min-h-screen bg-background text-foreground">
+            <Header />
 
             {/* Cover + Profile hero */}
             <div className="bg-white">
@@ -277,8 +285,11 @@ export default function EntrepriseDetailPage() {
                             </div>
 
                             <div className="flex items-center gap-2">
-                                <button className="h-8 px-5 rounded-full border border-[#d8deeb] text-[12px] text-[#1b2331] hover:border-[#2f6de6] bg-white transition-colors flex items-center gap-1.5">
-                                    <Heart className="w-3.5 h-3.5" /> Suivre
+                                <button
+                                    onClick={handleToggleFollow}
+                                    className={`h-8 px-5 rounded-full border text-[12px] bg-white transition-colors flex items-center gap-1.5 ${isFollowing ? "border-[#2f6de6] text-[#2f6de6]" : "border-[#d8deeb] text-[#1b2331] hover:border-[#2f6de6]"}`}
+                                >
+                                    <Heart className={`w-3.5 h-3.5 ${isFollowing ? "fill-current" : ""}`} /> {isFollowing ? "Suivi" : "Suivre"}
                                 </button>
                                 <div className="flex rounded-full border border-[#d8deeb] overflow-hidden bg-white text-[12px]">
                                     <button
@@ -534,8 +545,11 @@ export default function EntrepriseDetailPage() {
                                                             )}
                                                         </div>
                                                     </div>
-                                                    <button className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#f4f5f7] flex-shrink-0">
-                                                        <Heart className="w-4 h-4 text-[#9aa3b2]" />
+                                                    <button
+                                                        onClick={(e) => handleToggleSaveJob(e, job.id)}
+                                                        className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#f4f5f7] flex-shrink-0"
+                                                    >
+                                                        <Heart className={`w-4 h-4 ${savedJobIds.includes(job.id) ? "text-[#2f6de6] fill-current" : "text-[#9aa3b2]"}`} />
                                                     </button>
                                                 </div>
                                                 {job.description && (
@@ -569,45 +583,7 @@ export default function EntrepriseDetailPage() {
                 setSelectedExperiences={setSelectedExperiences}
             />
 
-            <footer className="bg-[#06080d] text-white pt-12 pb-8 mt-12">
-                <div className="mx-auto max-w-[1180px] px-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
-                        <div>
-                            <img src="/images/logo.png" alt="Goriya" className="h-10 w-auto brightness-0 invert mb-4" />
-                            <p className="text-[13px] text-[#9098a7] leading-[1.7]">
-                                Goriya est une plateforme web intelligente qui permet aux utilisateurs d'uploader leur CV afin d'obtenir une analyse intelligente par IA.
-                            </p>
-                        </div>
-                        <div>
-                            <h4 className="font-semibold text-white mb-4">Concept</h4>
-                            <ul className="space-y-2 text-[13px] text-[#9098a7]">
-                                <li><Link href="/explorer-emplois" className="hover:text-white">Trouve un emploi</Link></li>
-                                <li><Link href="/offres" className="hover:text-white">Tarification</Link></li>
-                                <li><Link href="/confidentialite" className="hover:text-white">Politique de confidentialité</Link></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="font-semibold text-white mb-4">Recevoir les notifications d'emploi</h4>
-                            <p className="text-[13px] text-[#9098a7] mb-4">Les dernières nouvelles sur l'emploi envoyées dans ta boîte de réception chaque semaine.</p>
-                            <div className="flex flex-col items-center gap-2 sm:flex-row">
-                                <input type="email" placeholder="Adresse e-mail" className="w-full flex-1 h-9 rounded-full bg-[#0f121a] border border-[#2a2f3a] px-4 text-[12px] text-white placeholder:text-[#5a6070] outline-none" />
-                                <button className="h-9 px-4 rounded-full bg-[#2f6de6] hover:bg-[#2458ba] text-white text-[12px]">S'abonner</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="pt-6 border-t border-[#1c202a] flex flex-col md:flex-row items-center justify-between gap-4">
-                        <p className="text-[12px] text-[#6f7887]">2026 © Goriya. Tous droits réservés.</p>
-                        <div className="flex items-center gap-3">
-                            <Link href="/auth/signin">
-                                <button className="h-8 px-4 rounded-full border border-[#374153] text-[#d9e5ff] text-[12px] bg-transparent hover:bg-[#1c2030]">Connexion</button>
-                            </Link>
-                            <Link href="https://goriya-entreprise.vercel.app">
-                                <button className="h-8 px-4 rounded-full bg-[#2f6de6] hover:bg-[#2458ba] text-white text-[12px]">Espace entreprise</button>
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </footer>
+            <Footer />
         </div>
     )
 }

@@ -39,11 +39,19 @@ export const authService = {
         })
     },
 
-    verifyOtp: async (email: string, code: string) => {
-        return apiRequest<ApiResponse<{ token: string; user: IUser }>>({  
-            endpoint: "/auth/verify-otp",
+    requestOtp: async (email: string, purpose: string = "EMAIL_VERIFICATION") => {
+        return apiRequest<{ message: string }>({
+            endpoint: "/auth/otp/request",
             method: "POST",
-            data: { email, code },
+            data: { email, purpose },
+        })
+    },
+
+    verifyOtp: async (email: string, code: string, purpose: string = "EMAIL_VERIFICATION") => {
+        return apiRequest<{ access_token: string; user: IUser }>({
+            endpoint: "/auth/otp/verify",
+            method: "POST",
+            data: { email, code, purpose },
         })
     },
 

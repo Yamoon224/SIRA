@@ -51,6 +51,8 @@ export interface IJobOffer {
     publishDate: Date;
     endDate: Date;
     applicants: number;
+    image?: string | null;
+    remote?: boolean;
     company?: ICompany | null;
     createdAt: Date;
     updatedAt: Date;

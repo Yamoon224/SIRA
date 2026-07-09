@@ -1,82 +1,47 @@
 import Link from "next/link"
-import { AppLogo } from "../app-logo"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
 export function Footer() {
     return (
-        <footer className="bg-gray-900 dark:bg-gray-950 text-white pt-12">
-            <div className="container mx-auto px-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-2">
+        <footer className="bg-[#06080d] text-white pt-10 sm:pt-14 pb-8">
+            <div className="mx-auto max-w-[1180px] px-3 sm:px-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-10">
                     <div>
-                        <div className="text-2xl font-bold text-blue-400 mb-4">
-                            <AppLogo />
-                        </div>
-                        <p className="text-gray-400 mb-4 text-pretty">
-                            La plateforme de recrutement qui connecte les talents aux opportunités.
+                        <img src="/images/logo.png" alt="Goriya" className="h-10 sm:h-12 w-auto brightness-0 invert" />
+                        <p className="mt-4 text-sm text-[#9098a7]">
+                            GORIYA est la plateforme IA de référence pour optimiser tes documents professionnels,
+                            te préparer à l'emploi et simplifier tes processus RH.
                         </p>
                     </div>
                     <div>
-                        <h4 className="font-semibold mb-4">Candidats</h4>
-                        <ul className="space-y-2 text-gray-400">
-                            <li>
-                                <Link href="/emplois" className="hover:text-white transition-colors">
-                                    Chercher un emploi
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/explorer-entreprises" className="hover:text-white transition-colors">
-                                    Parcourir les entreprises
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/profil" className="hover:text-white transition-colors">
-                                    Mon profil
-                                </Link>
-                            </li>
+                        <h4 className="font-semibold text-white">Concept</h4>
+                        <ul className="mt-4 space-y-2 text-[#9098a7] text-sm">
+                            <li><Link href="/explorer-emplois">Trouve un emploi</Link></li>
+                            <li><Link href="/offres">Tarification</Link></li>
+                            <li><Link href="/a-propos">À propos de Goriya</Link></li>
+                            <li><Link href="/blog">Blog</Link></li>
+                            <li><Link href="/confidentialite">Politique de confidentialité</Link></li>
                         </ul>
                     </div>
                     <div>
-                        <h4 className="font-semibold mb-4">Entreprises</h4>
-                        <ul className="space-y-2 text-gray-400">
-                            <li>
-                                <Link href="/publier-offre" className="hover:text-white transition-colors">
-                                    Publier une offre
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/gestion-candidatures" className="hover:text-white transition-colors">
-                                    Gérer les candidatures
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/offres" className="hover:text-white transition-colors">
-                                    Plans et tarifs
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 className="font-semibold mb-4">Support</h4>
-                        <ul className="space-y-2 text-gray-400">
-                            <li>
-                                <Link href="/aide" className="hover:text-white transition-colors">
-                                    Centre d'aide
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/contact" className="hover:text-white transition-colors">
-                                    Nous contacter
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/confidentialite" className="hover:text-white transition-colors">
-                                    Confidentialité
-                                </Link>
-                            </li>
-                        </ul>
+                        <h4 className="font-semibold text-white">Ne rate aucune opportunité</h4>
+                        <p className="text-sm text-[#9098a7] mt-3">
+                            Reçois chaque semaine les dernières offres de stage, d'emploi et nos meilleurs conseils
+                            de carrière directement dans ta boîte mail.
+                        </p>
+                        <div className="mt-4 flex flex-col items-center gap-2">
+                            <Input className="h-10 w-full rounded-full border-[#2a2f3a] bg-[#0f121a] text-white" placeholder="Adresse e-mail" />
+                            <Button className="w-full rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">S'abonner</Button>
+                        </div>
                     </div>
                 </div>
-                <div className="border-t border-gray-800 dark:border-gray-700 pt-2 text-center text-gray-400">
-                    <p>&copy; {new Date().getFullYear()} Goriya. Tous droits réservés.</p>
+                <div className="mt-8 sm:mt-10 pt-4 sm:pt-6 border-t border-[#1c202a] flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4">
+                    <p className="text-xs sm:text-sm text-[#6f7887]">{new Date().getFullYear()} © Goriya. Tous droits réservés.</p>
+                    <div className="flex items-center gap-2">
+                        <Link href="/auth/signin"><Button variant="outline" className="h-8 rounded-full border-[#374153] text-[#d9e5ff] bg-transparent">Connexion</Button></Link>
+                        <Link href="https://goriya-entreprise.vercel.app"><Button className="h-8 rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">Espace entreprise</Button></Link>
+                    </div>
                 </div>
             </div>
         </footer>

@@ -8,6 +8,7 @@ import { Building2, Calendar, MapPin, Eye, MoreHorizontal } from "lucide-react"
 import { useState } from "react"
 import { candidatureService } from "@/lib/api/candidature.service"
 import { useApi } from "@/lib/hooks/useApi"
+import { capitalizeFirst } from "@/lib/utils"
 
 export default function MyApplicationsPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>("all")
@@ -83,7 +84,7 @@ export default function MyApplicationsPage() {
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500 mb-3">
                             <div className="flex items-center">
                               <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-                              {application.location}
+                              {capitalizeFirst(application.location)}
                             </div>
                             <div className="flex items-center">
                               <Calendar className="w-4 h-4 mr-1 flex-shrink-0" />

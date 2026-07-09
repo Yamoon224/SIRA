@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Building2, Users } from "lucide-react"
 import { ICompany } from "@/lib/@types/entities"
+import { capitalizeFirst } from "@/lib/utils"
 
 interface DashboardCompaniesProps {
     companies: ICompany[]
@@ -43,7 +44,7 @@ export function DashboardCompanies({ companies }: DashboardCompaniesProps) {
                                 {company.location && (
                                     <div className="flex items-center text-sm text-muted-foreground">
                                         <Building2 className="w-4 h-4 mr-2" />
-                                        {company.location}
+                                        {capitalizeFirst(company.location)}
                                     </div>
                                 )}
                             </div>

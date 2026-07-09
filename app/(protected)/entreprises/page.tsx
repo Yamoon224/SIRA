@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Bell, ChevronDown, ChevronLeft, ChevronRight, Search } from "lucide-react"
 import { companyService } from "@/lib/api/company.service"
 import type { ICompany } from "@/lib/@types/entities"
+import { capitalizeFirst } from "@/lib/utils"
 
 const INDUSTRIES = [
     "Publicité (4)",
@@ -164,7 +165,7 @@ export default function CompaniesPage() {
                                             <p className="mt-1 text-[10px] leading-[1.35] text-[#8b93a3]">{company.sector ?? company.about ?? "—"}</p>
 
                                             {company.headquarters && (
-                                                <p className="mt-1 text-[10px] text-[#9aa3b2]">{company.headquarters}</p>
+                                                <p className="mt-1 text-[10px] text-[#9aa3b2]">{capitalizeFirst(company.headquarters)}</p>
                                             )}
                                         </CardContent>
                                     </Card>

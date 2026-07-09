@@ -86,7 +86,10 @@ export const authOptions: NextAuthOptions = {
                 if (!token) return null;
 
                 try {
-                    const res = await fetch(`${BACKEND_URL}/user/profile`, {
+                    // /admin/auth/profile n'est en réalité restreinte à aucun
+                    // rôle particulier (voir AdminAuthController) — /user/profile
+                    // n'existe pas côté backend.
+                    const res = await fetch(`${BACKEND_URL}/admin/auth/profile`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
                     if (!res.ok) return null;

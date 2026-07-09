@@ -4,12 +4,14 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Bookmark, Share2, ChevronDown, Loader2, MapPin, Calendar, AlertCircle, Lock, Sparkles } from "lucide-react"
 import { jobService } from "@/lib/api/job.service"
 import { IJobOffer } from "@/lib/@types/entities"
+import { Header } from "@/components/layout/header"
+import { Footer } from "@/components/layout/footer"
 import { CompanyLogo } from "@/components/company-logo"
 import { capitalizeFirst } from "@/lib/utils"
+import { useAuth } from "@/contexts/auth-context"
 
 function formatPosted(date: Date | string) {
     const d = new Date(date)
@@ -30,68 +32,90 @@ const faqs = [
     { q: "Quel est le délai de réponse après candidature ?", a: "Les recruteurs répondent généralement sous 2 à 4 semaines après la clôture de l'offre." },
 ]
 
-function MatchingScoreWidget() {
-    const score = 85
+function ScoreGauge({ score }: { score: number }) {
     const radius = 42
     const circumference = 2 * Math.PI * radius
-    const offset = circumference - (score / 100) * circumference
+    const offset = circumference - (Math.max(0, Math.min(100, score)) / 100) * circumference
+
+    return (
+        <div className="relative w-[90px] h-[90px] flex-shrink-0">
+            <svg width="90" height="90" viewBox="0 0 90 90">
+                <circle cx="45" cy="45" r={radius} fill="none" stroke="#f0f3fb" strokeWidth="8" />
+                <circle
+                    cx="45" cy="45" r={radius}
+                    fill="none"
+                    stroke="#2f6de6"
+                    strokeWidth="8"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={offset}
+                    strokeLinecap="round"
+                    transform="rotate(-90 45 45)"
+                />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-[22px] font-extrabold text-[#1b2331] leading-none">
+                    {score}
+                    <span className="text-[11px] font-semibold text-[#9aa3b2]">/100</span>
+                </span>
+            </div>
+        </div>
+    )
+}
+
+function MatchingScoreWidget({ jobId }: { jobId: string }) {
+    const { isAuthenticated } = useAuth()
+    const [loading, setLoading] = useState(false)
+    const [result, setResult] = useState<{ matchingScore: number; matchReasons: string[] } | null>(null)
+
+    useEffect(() => {
+        if (!isAuthenticated || !jobId) return
+        setLoading(true)
+        jobService.getMatchScore(jobId)
+            .then((res: any) => setResult(res?.data ?? res))
+            .catch(() => setResult(null))
+            .finally(() => setLoading(false))
+    }, [isAuthenticated, jobId])
+
+    if (!isAuthenticated) {
+        return (
+            <div className="bg-white rounded-xl border border-[#e8eef6] p-5">
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-[13px] font-extrabold text-[#1b2331]">Ton profil correspond à cette offre</h3>
+                    <Lock className="w-4 h-4 text-[#9aa3b2]" />
+                </div>
+                <div className="rounded-lg bg-[#f4f7ff] border border-[#dce8ff] p-3 text-center">
+                    <p className="text-[11px] text-[#4e5a6e] mb-2">Crée un compte gratuit pour voir si ce poste te correspond vraiment.</p>
+                    <Link href="/auth/signin">
+                        <Button size="sm" className="w-full rounded-full bg-[#2f6de6] hover:bg-[#2458ba] text-[11px] h-8">
+                            Voir mon score de compatibilité
+                        </Button>
+                    </Link>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="bg-white rounded-xl border border-[#e8eef6] p-5">
-            <div className="flex items-center justify-between mb-4">
-                <h3 className="text-[13px] font-extrabold text-[#1b2331]">Ton profil correspond à cette offre</h3>
-                <Lock className="w-4 h-4 text-[#9aa3b2]" />
-            </div>
+            <h3 className="text-[13px] font-extrabold text-[#1b2331] mb-4">Ton profil correspond à cette offre</h3>
 
-            <div className="flex items-center gap-4 mb-4">
-                <div className="relative w-[90px] h-[90px] flex-shrink-0">
-                    <svg width="90" height="90" viewBox="0 0 90 90">
-                        <circle cx="45" cy="45" r={radius} fill="none" stroke="#f0f3fb" strokeWidth="8" />
-                        <circle
-                            cx="45" cy="45" r={radius}
-                            fill="none"
-                            stroke="#2f6de6"
-                            strokeWidth="8"
-                            strokeDasharray={circumference}
-                            strokeDashoffset={offset}
-                            strokeLinecap="round"
-                            transform="rotate(-90 45 45)"
-                        />
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className="text-[22px] font-extrabold text-[#1b2331] leading-none">
-                            {score}
-                            <span className="text-[11px] font-semibold text-[#9aa3b2]">/100</span>
-                        </span>
-                    </div>
+            {loading ? (
+                <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 animate-spin text-[#2f6de6]" /></div>
+            ) : result ? (
+                <div className="flex items-center gap-4">
+                    <ScoreGauge score={result.matchingScore} />
+                    <ul className="space-y-1.5 flex-1">
+                        {result.matchReasons.slice(0, 3).map((reason, i) => (
+                            <li key={i} className="text-[10px] text-[#4e5a6e] leading-4 flex items-start gap-1.5">
+                                <span className="mt-1 w-1 h-1 rounded-full bg-[#2f6de6] flex-shrink-0" />
+                                {reason}
+                            </li>
+                        ))}
+                    </ul>
                 </div>
-                <div className="space-y-2 flex-1">
-                    {[
-                        { label: "Expérience", value: 90 },
-                        { label: "Compétences", value: 80 },
-                        { label: "Localisation", value: 85 },
-                    ].map(({ label, value }) => (
-                        <div key={label}>
-                            <div className="flex justify-between text-[10px] mb-0.5">
-                                <span className="text-[#7f8796]">{label}</span>
-                                <span className="font-semibold text-[#1b2331]">{value}%</span>
-                            </div>
-                            <div className="h-1.5 rounded-full bg-[#f0f3fb] overflow-hidden">
-                                <div className="h-full bg-[#2f6de6] rounded-full" style={{ width: `${value}%` }} />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            <div className="rounded-lg bg-[#f4f7ff] border border-[#dce8ff] p-3 text-center">
-                <p className="text-[11px] text-[#4e5a6e] mb-2">Crée un compte gratuit pour voir si ce poste te correspond vraiment.</p>
-                <Link href="/auth/signin">
-                    <Button size="sm" className="w-full rounded-full bg-[#2f6de6] hover:bg-[#2458ba] text-[11px] h-8">
-                        Voir mon score de compatibilité
-                    </Button>
-                </Link>
-            </div>
+            ) : (
+                <p className="text-[11px] text-[#9aa3b2]">Impossible de calculer ton score pour le moment.</p>
+            )}
         </div>
     )
 }
@@ -119,6 +143,20 @@ export default function JobDetailPage() {
             .finally(() => setLoading(false))
     }, [jobId])
 
+    useEffect(() => {
+        if (!jobId) return
+        jobService.getSavedJobIds()
+            .then((res: any) => setBookmarked((res?.data?.jobIds ?? res?.jobIds ?? []).includes(jobId)))
+            .catch(() => {})
+    }, [jobId])
+
+    const handleToggleBookmark = () => {
+        const isSaved = bookmarked
+        setBookmarked(!isSaved)
+        const action = isSaved ? jobService.unsaveJob(jobId) : jobService.saveJob(jobId)
+        action.catch(() => setBookmarked(isSaved))
+    }
+
     const handleApply = async () => {
         setApplying(true)
         try {
@@ -140,27 +178,8 @@ export default function JobDetailPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#f4f5f7]">
-            <header className="bg-white border-b border-[#e8eef6]">
-                <div className="mx-auto max-w-[1180px] px-4 h-[56px] sm:h-[64px] md:h-[72px] flex items-center justify-between">
-                    <Link href="/" className="flex items-center">
-                        <img src="/images/logo.png" alt="Goriya" className="h-8 w-auto" />
-                    </Link>
-                    <nav className="hidden md:flex items-center gap-6 lg:gap-10 text-[12px] text-[#7a8495] font-medium">
-                        <Link href="/" className="text-[#2f6de6]">Accueil</Link>
-                        <Link href="/explorer-emplois" className="hover:text-[#2f6de6]">Trouve un emploi</Link>
-                        <Link href="/offres" className="hover:text-[#2f6de6]">Tarifs d'abonnement</Link>
-                    </nav>
-                    <div className="flex items-center gap-2">
-                        <Link href="/auth/signin">
-                            <Button variant="outline" className="h-8 px-4 rounded-full text-[11px] border-[#b9c8ec] text-[#2f6de6] bg-white">Connexion</Button>
-                        </Link>
-                        <Link href="https://goriya-entreprise.vercel.app">
-                            <Button className="h-8 px-4 rounded-full text-[11px] bg-[#2157d3] hover:bg-[#1d4cb9]">Espace entreprise</Button>
-                        </Link>
-                    </div>
-                </div>
-            </header>
+        <div className="min-h-screen bg-background text-foreground">
+            <Header />
 
             <main className="mx-auto max-w-[1180px] px-4 py-8">
                 {loading ? (
@@ -235,7 +254,7 @@ export default function JobDetailPage() {
                                     </Button>
                                     <Button
                                         variant="outline"
-                                        onClick={() => setBookmarked(b => !b)}
+                                        onClick={handleToggleBookmark}
                                         className={`rounded-full border-[#d8deeb] h-9 px-4 text-[12px] gap-1.5 ${bookmarked ? "text-[#2f6de6] border-[#2f6de6]" : ""}`}
                                     >
                                         <Bookmark className={`w-4 h-4 ${bookmarked ? "fill-current" : ""}`} />
@@ -317,9 +336,9 @@ export default function JobDetailPage() {
                             {/* Company card */}
                             {job.company && (
                                 <div className="bg-white rounded-xl border border-[#e8eef6] overflow-hidden">
-                                    {job.company.coverImage && (
+                                    {(job.image || job.company.coverImage) && (
                                         <img
-                                            src={job.company.coverImage}
+                                            src={job.image || job.company.coverImage || ""}
                                             alt={job.company.name}
                                             className="w-full h-28 object-cover"
                                             onError={(e) => { e.currentTarget.style.display = "none" }}
@@ -344,7 +363,7 @@ export default function JobDetailPage() {
                             )}
 
                             {/* Matching score */}
-                            <MatchingScoreWidget />
+                            <MatchingScoreWidget jobId={jobId} />
 
                             {/* Premium CTA */}
                             <div className="bg-gradient-to-br from-[#1539be] to-[#2f81f1] rounded-xl p-5 text-white text-center">
@@ -381,39 +400,7 @@ export default function JobDetailPage() {
                 )}
             </main>
 
-            <footer className="bg-[#06080d] text-white pt-10 sm:pt-14 pb-8 mt-16">
-                <div className="mx-auto max-w-[1180px] px-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-10">
-                        <div>
-                            <img src="/images/logo.png" alt="Goriya" className="h-10 sm:h-12 w-auto brightness-0 invert mb-4" />
-                            <p className="text-sm text-[#9098a7]">Goriya est une plateforme web intelligente qui permet aux utilisateurs d'uploader leur CV afin d'obtenir une analyse intelligente par IA.</p>
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-white mb-4">Concept</h4>
-                            <ul className="space-y-2 text-[#9098a7] text-sm">
-                                <li><Link href="/explorer-emplois">Trouve un emploi</Link></li>
-                                <li><Link href="/offres">Tarification</Link></li>
-                                <li><Link href="/confidentialite">Politique de confidentialité</Link></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-white mb-3">Recevoir les notifications d'emploi</h4>
-                            <p className="text-sm text-[#9098a7] mb-4">Les dernières nouvelles sur l'emploi envoyées dans ta boîte de réception chaque semaine.</p>
-                            <div className="flex flex-col items-center gap-2 sm:flex-row">
-                                <Input className="h-10 rounded-full border-[#2a2f3a] bg-[#0f121a] text-white text-[12px]" placeholder="Adresse e-mail" />
-                                <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] px-4">S'abonner</Button>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="mt-8 pt-6 border-t border-[#1c202a] flex flex-col md:flex-row items-center justify-between gap-3">
-                        <p className="text-xs sm:text-sm text-[#6f7887]">2026 © Goriya. Tous droits réservés.</p>
-                        <div className="flex items-center gap-2">
-                            <Link href="/auth/signin"><Button variant="outline" className="h-8 rounded-full border-[#374153] text-[#d9e5ff] bg-transparent text-[12px]">Connexion</Button></Link>
-                            <Link href="https://goriya-entreprise.vercel.app"><Button className="h-8 rounded-full bg-[#2f6de6] hover:bg-[#2458ba] text-[12px]">Espace entreprise</Button></Link>
-                        </div>
-                    </div>
-                </div>
-            </footer>
+            <Footer />
         </div>
     )
 }

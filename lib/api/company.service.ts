@@ -6,6 +6,7 @@ export const companyService = {
     getCompanies: async (
         filters?: {
             search?: string
+            sector?: string
             industry?: string[]
             size?: string[]
             location?: string[]
@@ -13,10 +14,14 @@ export const companyService = {
             limit?: number
         },
     ) => {
+        // Le backend n'a pas de param `search` sur /companies/paginate — seul
+        // `name` (ilike) est supporté, on le traduit ici pour garder un
+        // contrat stable côté appelants.
+        const { search, ...rest } = filters ?? {}
         return apiRequest<IPaginatedResponse<ICompany>>({
             endpoint: "/companies/paginate",
             method: "GET",
-            params: filters,
+            params: { ...rest, name: search },
         })
     },
 
@@ -41,6 +46,13 @@ export const companyService = {
         })
     },
 
+    getFollowedCompanyIds: async () => {
+        return apiRequest<ApiResponse<{ companyIds: string[] }>>({
+            endpoint: "/me/followed-companies",
+            method: "GET",
+        })
+    },
+
     getRecruitingCompanies: async () => {
         return apiRequest<ApiResponse<ICompany[]>>({
             endpoint: "/companies/paginate",
@@ -49,9 +61,12 @@ export const companyService = {
     },
 
     getCompanyJobs: async (companyId: string) => {
+        // Pas de route dédiée /companies/{id}/jobs côté backend — le filtre
+        // companyId de /job-offers/paginate (public) couvre le même besoin.
         return apiRequest<ApiResponse<IJobOffer[]>>({
-            endpoint: `/companies/${companyId}/jobs`,
+            endpoint: "/job-offers/paginate",
             method: "GET",
+            params: { companyId },
         })
     },
 }

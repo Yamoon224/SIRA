@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useRouter } from "next/navigation"
+import { jobService } from "@/lib/api/job.service"
+import { companyService } from "@/lib/api/company.service"
 
 interface SearchSuggestion {
   id: string
@@ -18,44 +20,6 @@ interface SearchSuggestion {
   icon: React.ReactNode
 }
 
-const mockSuggestions: SearchSuggestion[] = [
-  {
-    id: "1",
-    type: "job",
-    title: "Développeur Full Stack",
-    subtitle: "15 offres disponibles",
-    icon: <Briefcase className="w-4 h-4" />,
-  },
-  {
-    id: "2",
-    type: "job",
-    title: "Designer UX/UI",
-    subtitle: "8 offres disponibles",
-    icon: <Briefcase className="w-4 h-4" />,
-  },
-  {
-    id: "3",
-    type: "company",
-    title: "TechCorp Solutions",
-    subtitle: "Entreprise technologique",
-    icon: <Building2 className="w-4 h-4" />,
-  },
-  {
-    id: "4",
-    type: "location",
-    title: "Paris, France",
-    subtitle: "120 offres disponibles",
-    icon: <MapPin className="w-4 h-4" />,
-  },
-  {
-    id: "5",
-    type: "location",
-    title: "Lyon, France",
-    subtitle: "45 offres disponibles",
-    icon: <MapPin className="w-4 h-4" />,
-  },
-]
-
 export function SearchBar() {
   const [query, setQuery] = useState("")
   const [isOpen, setIsOpen] = useState(false)
@@ -64,17 +28,54 @@ export function SearchBar() {
   const router = useRouter()
 
   useEffect(() => {
-    if (query.length > 0) {
-      const filtered = mockSuggestions.filter(
-        (suggestion) =>
-          suggestion.title.toLowerCase().includes(query.toLowerCase()) ||
-          suggestion.subtitle?.toLowerCase().includes(query.toLowerCase()),
-      )
-      setFilteredSuggestions(filtered)
-      setIsOpen(true)
-    } else {
+    if (query.trim().length === 0) {
       setFilteredSuggestions([])
       setIsOpen(false)
+      return
+    }
+
+    let cancelled = false
+    const timer = setTimeout(() => {
+      Promise.all([
+        jobService.getJobs({ search: query, limit: 4 }),
+        companyService.getCompanies({ search: query, limit: 3 }),
+      ])
+        .then(([jobsRes, companiesRes]: any) => {
+          if (cancelled) return
+          const jobs = jobsRes?.data?.data ?? jobsRes?.data ?? []
+          const companies = companiesRes?.data?.data ?? companiesRes?.data ?? []
+
+          const suggestions: SearchSuggestion[] = [
+            ...jobs.map((job: any) => ({
+              id: `job-${job.id}`,
+              type: "job" as const,
+              title: job.title,
+              subtitle: job.company?.name,
+              icon: <Briefcase className="w-4 h-4" />,
+            })),
+            ...companies.map((company: any) => ({
+              id: `company-${company.id}`,
+              type: "company" as const,
+              title: company.name,
+              subtitle: company.sector || "Entreprise",
+              icon: <Building2 className="w-4 h-4" />,
+            })),
+          ]
+
+          setFilteredSuggestions(suggestions)
+          setIsOpen(suggestions.length > 0)
+        })
+        .catch(() => {
+          if (!cancelled) {
+            setFilteredSuggestions([])
+            setIsOpen(false)
+          }
+        })
+    }, 300)
+
+    return () => {
+      cancelled = true
+      clearTimeout(timer)
     }
   }, [query])
 
@@ -99,7 +100,14 @@ export function SearchBar() {
   }
 
   const handleSuggestionClick = (suggestion: SearchSuggestion) => {
-    setQuery(suggestion.title)
+    setIsOpen(false)
+    setQuery("")
+
+    if (suggestion.type === "company") {
+      router.push(`/entreprises/${suggestion.id.replace("company-", "")}`)
+      return
+    }
+
     handleSearch(suggestion.title)
   }
 

@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Search, Settings, ChevronDown, ChevronLeft, ChevronRight, Building2, Loader2, MapPin, Briefcase } from "lucide-react"
 import { jobService } from "@/lib/api/job.service"
 import { IJobOffer } from "@/lib/@types/entities"
+import { capitalizeFirst } from "@/lib/utils"
 
 const jobTypeOptions = ["À temps plein", "À temps partiel", "Stage", "Contrat", "Freelance"]
 const categoryOptions = ["Design", "Ventes", "Marketing", "Commerce", "Ressources humaines", "Finance", "Ingénierie", "Technologie"]
@@ -244,7 +245,7 @@ export default function EmploisPage() {
                                         <p className="text-[9px] text-[#9aa3b2] mt-0.5 leading-tight line-clamp-1">{job.company?.name ?? "—"}</p>
                                         <div className="flex items-center gap-1 mt-0.5">
                                             <MapPin className="w-2.5 h-2.5 text-[#9aa3b2] flex-shrink-0" />
-                                            <p className="text-[9px] text-[#9aa3b2] leading-tight line-clamp-1">{job.location}</p>
+                                            <p className="text-[9px] text-[#9aa3b2] leading-tight line-clamp-1">{capitalizeFirst(job.location)}</p>
                                         </div>
                                         {job.description && (
                                             <p className="mt-2 text-[9px] text-[#6b7585] leading-[1.4] line-clamp-3">{job.description}</p>
