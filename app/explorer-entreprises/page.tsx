@@ -5,24 +5,37 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
-import { Globe, Factory, ShoppingCart, Utensils, BriefcaseBusiness, Cpu, ChevronRight, Loader2 } from "lucide-react"
+import { Globe, Factory, ShoppingCart, Utensils, BriefcaseBusiness, Cpu, ChevronRight, Loader2, Building2, Scale, Megaphone, Landmark, GraduationCap, Palette, ShieldCheck, Calculator, Truck, HeartPulse } from "lucide-react"
 import { companyService } from "@/lib/api/company.service"
 import { ICompany } from "@/lib/@types/entities"
 import { CompanyLogo } from "@/components/company-logo"
 import { capitalizeFirst, dedupeByName } from "@/lib/utils"
 
-const sectors = [
-    { name: "Santé / Social / Environnement", icon: Globe, query: "Santé" },
-    { name: "Industrie", icon: Factory, query: "Industrie" },
-    { name: "Distribution", icon: ShoppingCart, query: "Distribution" },
-    { name: "Food et boisson", icon: Utensils, query: "Restauration" },
-    { name: "Conseil / Audit", icon: BriefcaseBusiness, query: "Conseil" },
-    { name: "Tech", icon: Cpu, query: "Tech" },
-]
+const SECTOR_ICONS: Record<string, typeof Globe> = {
+    "Santé": HeartPulse,
+    "Industrie": Factory,
+    "Distribution": ShoppingCart,
+    "Restauration": Utensils,
+    "Conseil": BriefcaseBusiness,
+    "Informatique": Cpu,
+    "Juridique": Scale,
+    "Marketing": Megaphone,
+    "Publicité": Megaphone,
+    "Communication": Megaphone,
+    "Banque": Landmark,
+    "Finance": Landmark,
+    "Assurance": ShieldCheck,
+    "Éducation": GraduationCap,
+    "Graphisme": Palette,
+    "Comptabilité": Calculator,
+    "Audit": Calculator,
+    "Logistique": Truck,
+    "Ressources humaines": Building2,
+}
 
 function CompanyCard({ company }: { company: ICompany }) {
     return (
-        <Link href={`/entreprises/${company.id}`}>
+        <Link href={`/explorer-entreprises/${company.id}`}>
             <article className="rounded-[14px] border border-[#d8deeb] bg-white p-3 hover:border-[#2f6de6] hover:shadow-md transition-all">
                 <div className="flex items-center justify-between">
                     <CompanyLogo name={company.name} logo={company.logo} className="w-6 h-6 text-[9px] flex-shrink-0" />
@@ -58,6 +71,7 @@ export default function ExploreCompaniesPage() {
     const [newCompanies, setNewCompanies] = useState<ICompany[]>([])
     const [topCompanies, setTopCompanies] = useState<ICompany[]>([])
     const [loading, setLoading] = useState(true)
+    const [sectors, setSectors] = useState<{ name: string; count: number }[]>([])
     const [activeSector, setActiveSector] = useState<string | null>(null)
     const [sectorCompanies, setSectorCompanies] = useState<ICompany[]>([])
     const [sectorLoading, setSectorLoading] = useState(false)
@@ -79,7 +93,13 @@ export default function ExploreCompaniesPage() {
             .finally(() => setLoading(false))
     }, [])
 
-    const handleSectorClick = async (sector: typeof sectors[0]) => {
+    useEffect(() => {
+        companyService.getSectors()
+            .then((res: any) => setSectors((res?.data ?? res ?? []).slice(0, 6)))
+            .catch(() => setSectors([]))
+    }, [])
+
+    const handleSectorClick = async (sector: { name: string; count: number }) => {
         if (activeSector === sector.name) {
             setActiveSector(null)
             setSectorCompanies([])
@@ -88,7 +108,7 @@ export default function ExploreCompaniesPage() {
         setActiveSector(sector.name)
         setSectorLoading(true)
         try {
-            const res = await companyService.getCompanies({ search: sector.query, limit: 10 }) as any
+            const res = await companyService.getCompanies({ sector: sector.name, limit: 10 }) as any
             const data = res?.data?.data ?? res?.data ?? []
             setSectorCompanies(dedupeByName(Array.isArray(data) ? data : []))
         } catch {
@@ -117,14 +137,15 @@ export default function ExploreCompaniesPage() {
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         {sectors.map((sector) => {
-                            const Icon = sector.icon
+                            const Icon = SECTOR_ICONS[sector.name] ?? Building2
                             const isActive = activeSector === sector.name
                             return (
                                 <button key={sector.name} type="button" onClick={() => handleSectorClick(sector)}
                                     className={`rounded-xl border overflow-hidden text-left transition-all ${isActive ? "border-[#2f6de6] shadow-md" : "border-[#d7ddea]"} bg-white`}>
                                     <div className="px-4 pt-5 pb-3 text-center">
-                                        <Icon className={`w-4 h-4 mx-auto ${isActive ? "text-[#2f6de6]" : "text-[#2f6de6]"}`} />
+                                        <Icon className="w-4 h-4 mx-auto text-[#2f6de6]" />
                                         <p className="mt-3 text-[10px] font-semibold text-[#2f5099]">{sector.name}</p>
+                                        <p className="text-[9px] text-[#8a95a8]">{sector.count} entreprise{sector.count > 1 ? "s" : ""}</p>
                                     </div>
                                     <div className={`h-7 text-white text-[11px] font-semibold flex items-center justify-center ${isActive ? "bg-[#1539be]" : "bg-gradient-to-r from-[#2f81f1] to-[#1539be]"}`}>
                                         {isActive ? "Masquer ▲" : "Découvrir"}
@@ -154,7 +175,7 @@ export default function ExploreCompaniesPage() {
                 <section className="mt-10 sm:mt-12">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-[18px] sm:text-[26px] font-extrabold text-[#1b2331]">Nouvelles entreprises à explorer</h2>
-                        <Link href="/entreprises" className="flex items-center text-[10px] text-[#1b2331] font-semibold hover:text-[#2f6de6]">
+                        <Link href="/explorer-entreprises/nouvelles-entreprises" className="flex items-center text-[10px] text-[#1b2331] font-semibold hover:text-[#2f6de6]">
                             Voir toutes <ChevronRight className="w-3 h-3 ml-1" />
                         </Link>
                     </div>
@@ -175,7 +196,7 @@ export default function ExploreCompaniesPage() {
                 <section className="mt-10 sm:mt-12">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-[18px] sm:text-[26px] font-extrabold text-[#1b2331]">Les entreprises qui recrutent le plus souvent</h2>
-                        <Link href="/entreprises" className="flex items-center text-[10px] text-[#1b2331] font-semibold hover:text-[#2f6de6]">
+                        <Link href="/explorer-entreprises/recrutent-le-plus" className="flex items-center text-[10px] text-[#1b2331] font-semibold hover:text-[#2f6de6]">
                             Découvrir <ChevronRight className="w-3 h-3 ml-1" />
                         </Link>
                     </div>

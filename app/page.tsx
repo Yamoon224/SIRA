@@ -474,7 +474,7 @@ export default function Page() {
                     {companies.length > 0 ? (
                         <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-8 sm:mt-10">
                             {companies.map((company) => (
-                                <Link key={company.id} href={`/entreprises/${company.id}`}>
+                                <Link key={company.id} href={`/explorer-entreprises/${company.id}`}>
                                     <article className="rounded-2xl border border-[#e8edf6] dark:border-border bg-white dark:bg-card p-4 min-h-[140px] xs:min-h-[166px] hover:shadow-md transition-shadow">
                                         <div className="flex items-center justify-between mb-2 sm:mb-3">
                                             <CompanyLogo name={company.name} logo={company.logo} className="w-7 h-7 sm:w-9 sm:h-9 text-[10px]" />

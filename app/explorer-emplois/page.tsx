@@ -193,7 +193,7 @@ export default function ExploreJobsPage() {
                 {/* Hero search */}
                 <section className="text-center">
                     <h1 className="text-[30px] sm:text-[46px] leading-none font-extrabold text-[#121826] dark:text-foreground">Explorer les offres d'emploi.</h1>
-                    <p className="mt-4 text-[11px] sm:text-[12px] text-[#7f8796] dark:text-muted-foreground max-w-[760px] mx-auto leading-4">
+                    <p className="mt-4 text-[14px] sm:text-[16px] text-[#7f8796] dark:text-muted-foreground max-w-[760px] mx-auto leading-6">
                         Trouve l'opportunité qui correspond à tes compétences et à tes ambitions. Parcours les dernières offres publiées, filtre selon tes critères et postule directement depuis l'application.
                     </p>
                     <div className="mt-6 flex justify-center">
@@ -215,13 +215,13 @@ export default function ExploreJobsPage() {
                             const Icon = chip.icon
                             return (
                                 <button key={chip.label} type="button" onClick={() => toggleFilter(chip.label)}
-                                    className={`h-7 rounded-full border px-3 text-[10px] inline-flex items-center gap-2 transition-colors ${selectedFilters.includes(chip.label) ? "border-[#2f6de6] bg-[#edf4ff] dark:bg-primary/10 text-[#2f6de6] dark:text-primary" : "border-[#b9c8ec] dark:border-border text-[#7d8798] dark:text-muted-foreground bg-white dark:bg-card"}`}>
+                                    className={`h-7 rounded-full border px-3 text-[12px] inline-flex items-center gap-2 transition-colors ${selectedFilters.includes(chip.label) ? "border-[#2f6de6] bg-[#edf4ff] dark:bg-primary/10 text-[#2f6de6] dark:text-primary" : "border-[#b9c8ec] dark:border-border text-[#7d8798] dark:text-muted-foreground bg-white dark:bg-card"}`}>
                                     <Icon className="w-3 h-3" />{chip.label}
                                 </button>
                             )
                         })}
                         <button type="button" onClick={() => setShowAllFilters(v => !v)}
-                            className={`h-7 rounded-full px-3 text-[10px] inline-flex items-center gap-1 transition-colors ${showAllFilters ? "bg-[#1d4cb9] text-white" : "bg-[#2f6de6] text-white hover:bg-[#2458ba]"}`}>
+                            className={`h-7 rounded-full px-3 text-[12px] inline-flex items-center gap-1 transition-colors ${showAllFilters ? "bg-[#1d4cb9] text-white" : "bg-[#2f6de6] text-white hover:bg-[#2458ba]"}`}>
                             <Plus className={`w-3 h-3 transition-transform ${showAllFilters ? "rotate-45" : ""}`} /> Tous les filtres
                         </button>
                     </div>
@@ -267,7 +267,7 @@ export default function ExploreJobsPage() {
                     <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 border-b border-[#d8deeb] dark:border-border pb-3">
                         {popularSearches.map((item) => (
                             <button key={item} type="button" onClick={() => handleCategoryClick(item)}
-                                className={`text-[10px] transition-colors ${activeCategory === item ? "text-[#2f6de6] dark:text-primary font-semibold" : "text-[#8f97a9] dark:text-muted-foreground hover:text-[#2f6de6] dark:hover:text-primary"}`}>
+                                className={`text-[12px] transition-colors ${activeCategory === item ? "text-[#2f6de6] dark:text-primary font-semibold" : "text-[#8f97a9] dark:text-muted-foreground hover:text-[#2f6de6] dark:hover:text-primary"}`}>
                                 {item}
                             </button>
                         ))}
@@ -282,23 +282,31 @@ export default function ExploreJobsPage() {
                                     <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                                         <div className="flex-1 min-w-0">
                                             <Link href={`/explorer-emplois/${job.id}`} className="hover:underline">
-                                                <h3 className="text-[16px] font-extrabold text-[#1b2331] dark:text-foreground">{job.title}</h3>
+                                                <h3 className="text-[17px] font-extrabold text-[#1b2331] dark:text-foreground">{job.title}</h3>
                                             </Link>
-                                            <div className="mt-2 flex flex-wrap items-center gap-2 text-[9px] text-[#7f8796] dark:text-muted-foreground">
+                                            <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-[#7f8796] dark:text-muted-foreground">
                                                 {job.location && <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3" />{capitalizeFirst(job.location)}</span>}
                                                 {job.company?.name && <span className="inline-flex items-center gap-1"><BriefcaseBusiness className="w-3 h-3" />{job.company.name}</span>}
                                                 {job.type && <span className="inline-flex items-center gap-1 rounded-full border border-[#d8deeb] dark:border-border px-2 py-0.5">{job.type}</span>}
                                             </div>
-                                            <p className="mt-1 text-[9px] text-[#9aa3b2] dark:text-muted-foreground inline-flex items-center gap-1">
+                                            <p className="mt-1 text-[11px] text-[#9aa3b2] dark:text-muted-foreground inline-flex items-center gap-1">
                                                 <Clock3 className="w-3 h-3" />{formatPosted(job.publishDate)}
                                             </p>
+                                            {job.description && (
+                                                <p className="mt-2 text-[12px] leading-5 text-[#5b6474] dark:text-muted-foreground line-clamp-2">
+                                                    {job.description}{" "}
+                                                    <Link href={`/explorer-emplois/${job.id}`} className="text-[#2f6de6] dark:text-primary font-semibold hover:underline whitespace-nowrap">
+                                                        Plus de détails
+                                                    </Link>
+                                                </p>
+                                            )}
                                             <div className="mt-3 flex items-center gap-3">
-                                                <CompanyLogo name={job.company?.name ?? "?"} logo={job.company?.logo} className="w-6 h-6 text-[9px]" />
+                                                <CompanyLogo name={job.company?.name ?? "?"} logo={job.company?.logo} className="w-6 h-6 text-[12px]" />
                                                 <button type="button" onClick={() => toggleBookmark(job.id)}
                                                     className={`transition-colors ${bookmarkedJobs.includes(job.id) ? "text-[#2f6de6]" : "text-[#9aa3b2] hover:text-[#2f6de6]"}`}>
                                                     <Heart className={`w-4 h-4 ${bookmarkedJobs.includes(job.id) ? "fill-current" : ""}`} />
                                                 </button>
-                                                {job.salary && <span className="text-[10px] font-semibold text-[#2f6de6] dark:text-primary ml-auto">{job.salary}</span>}
+                                                {job.salary && <span className="text-[11px] font-semibold text-[#2f6de6] dark:text-primary ml-auto">{job.salary}</span>}
                                             </div>
                                         </div>
                                         {(job.image || job.company?.coverImage) && (
@@ -323,7 +331,7 @@ export default function ExploreJobsPage() {
                         </div>
                     )}
                     {total > 0 && (
-                        <p className="text-center text-[10px] text-[#9aa3b2] dark:text-muted-foreground mt-2">{jobs.length} offre{jobs.length > 1 ? "s" : ""} affichée{jobs.length > 1 ? "s" : ""} sur {total}</p>
+                        <p className="text-center text-[12px] text-[#9aa3b2] dark:text-muted-foreground mt-2">{jobs.length} offre{jobs.length > 1 ? "s" : ""} affichée{jobs.length > 1 ? "s" : ""} sur {total}</p>
                     )}
                 </section>
 
@@ -334,15 +342,15 @@ export default function ExploreJobsPage() {
                         <h2 className="text-[18px] sm:text-[26px] font-extrabold mb-5 relative z-10">Entreprises populaires</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 relative z-10">
                             {companies.map((company) => (
-                                <Link key={company.id} href={`/entreprises/${company.id}`}>
+                                <Link key={company.id} href={`/explorer-entreprises/${company.id}`}>
                                     <article className="rounded-[12px] border border-[#c8d7fb] dark:border-border bg-white dark:bg-card text-[#1b2331] dark:text-foreground p-3 hover:shadow-md transition-shadow">
                                         <div className="flex items-center justify-between">
                                             <CompanyLogo name={company.name} logo={company.logo} className="w-9 h-9 text-[12px]" />
                                         </div>
                                         <h3 className="mt-2 text-[12px] font-semibold truncate">{company.name}</h3>
-                                        <p className="text-[9px] text-[#7e889c] dark:text-muted-foreground">{company.sector || "Technologie"}</p>
-                                        <p className="text-[9px] text-[#a2acbd] dark:text-muted-foreground mt-0.5">{capitalizeFirst(company.location || company.headquarters) || "—"}</p>
-                                        {company.about && <p className="mt-2 text-[9px] leading-4 text-[#8a95a8] dark:text-muted-foreground line-clamp-2">{capitalizeFirst(company.about)}</p>}
+                                        <p className="text-[11px] text-[#7e889c] dark:text-muted-foreground">{company.sector || "Technologie"}</p>
+                                        <p className="text-[11px] text-[#a2acbd] dark:text-muted-foreground mt-0.5">{capitalizeFirst(company.location || company.headquarters) || "—"}</p>
+                                        {company.about && <p className="mt-2 text-[11px] leading-4 text-[#8a95a8] dark:text-muted-foreground line-clamp-2">{capitalizeFirst(company.about)}</p>}
                                     </article>
                                 </Link>
                             ))}
@@ -357,7 +365,7 @@ export default function ExploreJobsPage() {
                         <div className="mt-5 flex flex-wrap gap-2">
                             {jobCategories.map((category) => (
                                 <button key={category} type="button" onClick={() => handleCategoryClick(category)}
-                                    className={`h-6 rounded-full border px-3 text-[9px] transition-colors ${activeCategory === category ? "border-[#2f6de6] bg-[#edf4ff] dark:bg-primary/10 text-[#2f6de6] dark:text-primary" : "border-[#b9c8ec] dark:border-border bg-white dark:bg-card text-[#707b90] dark:text-muted-foreground hover:border-[#2f6de6] hover:text-[#2f6de6] dark:hover:text-primary"}`}>
+                                    className={`h-6 rounded-full border px-3 text-[11px] transition-colors ${activeCategory === category ? "border-[#2f6de6] bg-[#edf4ff] dark:bg-primary/10 text-[#2f6de6] dark:text-primary" : "border-[#b9c8ec] dark:border-border bg-white dark:bg-card text-[#707b90] dark:text-muted-foreground hover:border-[#2f6de6] hover:text-[#2f6de6] dark:hover:text-primary"}`}>
                                     {category}
                                 </button>
                             ))}

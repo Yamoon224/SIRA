@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Bell, Settings, User, Menu } from "lucide-react"
+import { Bell, Settings, User, Menu, LogIn, Briefcase } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
     DropdownMenu,
@@ -13,11 +13,19 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { SearchBar } from "@/components/ui/search-bar"
 import { NotificationBell } from "@/components/notification-bell"
 import { useAuth } from "@/contexts/auth-context"
 import { AppLogo } from "../app-logo"
+
+const PUBLIC_NAV_LINKS = [
+    { href: "/", label: "Accueil" },
+    { href: "/explorer-emplois", label: "Emplois" },
+    { href: "/explorer-entreprises", label: "Entreprises" },
+    { href: "/blog", label: "Blog" },
+]
 
 interface HeaderProps {
     onToggleSidebar?: () => void
@@ -41,10 +49,51 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
         <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border px-3 sm:px-6 py-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3 sm:gap-6">
-                    {showMobileMenuButton && (
+                    {showMobileMenuButton ? (
                         <Button variant="ghost" size="sm" className="lg:hidden" onClick={onToggleSidebar}>
                             <Menu className="w-5 h-5" />
                         </Button>
+                    ) : (
+                        <Sheet>
+                            <SheetTrigger asChild>
+                                <Button variant="ghost" size="sm" className="lg:hidden">
+                                    <Menu className="w-5 h-5" />
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side="left" className="w-72">
+                                <SheetHeader>
+                                    <SheetTitle>
+                                        <AppLogo />
+                                    </SheetTitle>
+                                </SheetHeader>
+                                <nav className="flex flex-col gap-1 px-4">
+                                    {PUBLIC_NAV_LINKS.map((link) => (
+                                        <SheetClose asChild key={link.href}>
+                                            <Link
+                                                href={link.href}
+                                                className="rounded-md px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                                            >
+                                                {link.label}
+                                            </Link>
+                                        </SheetClose>
+                                    ))}
+                                </nav>
+                                {mounted && !isAuthenticated && (
+                                    <div className="mt-4 flex flex-col gap-2 px-4">
+                                        <SheetClose asChild>
+                                            <Link href="/auth/signin">
+                                                <Button variant="outline" className="w-full">Se connecter</Button>
+                                            </Link>
+                                        </SheetClose>
+                                        <SheetClose asChild>
+                                            <Link href="https://goriya-entreprise.vercel.app">
+                                                <Button className="w-full">Espace Entreprise</Button>
+                                            </Link>
+                                        </SheetClose>
+                                    </div>
+                                )}
+                            </SheetContent>
+                        </Sheet>
                     )}
 
                     {showLogo && (
@@ -53,23 +102,11 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                         </Link>
                     )}
                     <nav className="hidden lg:flex items-center gap-4 xl:gap-6">
-                        <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                            Accueil
-                        </Link>
-                        <Link href="/explorer-emplois" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                            Emplois
-                        </Link>
-                        <Link href="/blog" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                            Blog
-                        </Link>
-                        <Link
-                            href="/explorer-entreprises"
-                            className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                            Entreprises
-                        </Link>
-                        <Link href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                            Dashboard
-                        </Link>
+                        {PUBLIC_NAV_LINKS.map((link) => (
+                            <Link key={link.href} href={link.href} className="text-muted-foreground hover:text-foreground transition-colors text-sm">
+                                {link.label}
+                            </Link>
+                        ))}
                     </nav>
                 </div>
 
@@ -131,13 +168,15 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                         <div className="flex items-center gap-2">
                             <ThemeToggle />
                             <Link href="/auth/signin">
-                                <Button variant="outline" size="sm" className="text-xs sm:text-sm bg-transparent">
-                                    Se connecter
+                                <Button variant="outline" size="sm" className="sm:text-sm bg-transparent w-9 px-0 sm:w-auto sm:px-3" aria-label="Se connecter">
+                                    <LogIn className="w-4 h-4 sm:hidden" />
+                                    <span className="hidden sm:inline">Se connecter</span>
                                 </Button>
                             </Link>
                             <Link href="https://goriya-entreprise.vercel.app">
-                                <Button size="sm" className="text-xs sm:text-sm">
-                                    Espace Entreprise
+                                <Button size="sm" className="sm:text-sm w-9 px-0 sm:w-auto sm:px-3" aria-label="Espace Entreprise">
+                                    <Briefcase className="w-4 h-4 sm:hidden" />
+                                    <span className="hidden sm:inline">Espace Entreprise</span>
                                 </Button>
                             </Link>
                         </div>

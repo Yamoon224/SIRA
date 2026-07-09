@@ -25,6 +25,13 @@ export const companyService = {
         })
     },
 
+    getSectors: async () => {
+        return apiRequest<ApiResponse<{ name: string; count: number }[]>>({
+            endpoint: "/companies/sectors",
+            method: "GET",
+        })
+    },
+
     getCompanyById: async (id: string) => {
         return apiRequest<ApiResponse<ICompany>>({
             endpoint: `/companies/${id}`,

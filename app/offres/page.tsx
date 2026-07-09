@@ -1,63 +1,42 @@
 "use client"
 
+import { useEffect, useState } from "react"
+import Link from "next/link"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Check, Star } from "lucide-react"
+import { Check, Star, Loader2 } from "lucide-react"
+import { subscriptionService } from "@/lib/api/subscription.service"
 
-interface PlanFeature {
+interface IPlan {
+  id: string
   name: string
-  basic: boolean | string
-  pro: boolean | string
-  premium: boolean | string
+  price: number
+  billingPeriod: "MONTHLY" | "ANNUAL"
+  features: string[]
 }
 
-const jobSeekerFeatures: PlanFeature[] = [
-  { name: "Candidatures par mois", basic: "5", pro: "25", premium: "Illimitées" },
-  { name: "Profil visible par les recruteurs", basic: false, pro: true, premium: true },
-  { name: "Accès aux offres premium", basic: false, pro: true, premium: true },
-  { name: "Alertes emploi personnalisées", basic: "1", pro: "5", premium: "Illimitées" },
-  { name: "Support prioritaire", basic: false, pro: false, premium: true },
-  { name: "Analyse de CV par IA", basic: false, pro: true, premium: true },
-  { name: "Coaching carrière", basic: false, pro: false, premium: true },
-]
-
-const jobSeekerPlans = [
-  {
-    name: "Basique",
-    price: "0",
-    period: "Gratuit",
-    description: "Parfait pour commencer ta recherche d'emploi",
-    popular: false,
-    color: "border-border",
-  },
-  {
-    name: "Pro",
-    price: "19",
-    period: "/mois",
-    description: "Idéal pour une recherche active et ciblée",
-    popular: true,
-    color: "border-blue-500 ring-2 ring-blue-500",
-  },
-  {
-    name: "Premium",
-    price: "39",
-    period: "/mois",
-    description: "Pour les professionnels exigeants",
-    popular: false,
-    color: "border-border",
-  },
-]
+function formatFcfa(price: number) {
+  return price.toLocaleString("fr-FR")
+}
 
 export default function OffresPage() {
-  const renderFeatureValue = (value: boolean | string) => {
-    if (typeof value === "boolean") {
-      return value ? <Check className="w-5 h-5 text-blue-600" /> : <span className="text-muted-foreground">-</span>
-    }
-    return <span className="font-medium">{value}</span>
-  }
+  const [plans, setPlans] = useState<IPlan[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    subscriptionService.getPlans("USER")
+      .then((res: any) => {
+        const data = res?.data ?? res ?? []
+        setPlans(Array.isArray(data) ? [...data].sort((a, b) => a.price - b.price) : [])
+      })
+      .catch(() => setPlans([]))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const popularIndex = plans.length > 1 ? 1 : -1
 
   return (
     <div className="min-h-screen bg-background">
@@ -74,78 +53,51 @@ export default function OffresPage() {
       </section>
 
       <div className="container mx-auto px-4 sm:px-6 py-10 sm:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
-          {jobSeekerPlans.map((plan, index) => (
-            <Card key={plan.name} className={`relative ${plan.color} ${plan.popular ? "scale-105" : ""}`}>
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-blue-600 text-white px-4 py-1">
-                    <Star className="w-3 h-3 mr-1" />
-                    Populaire
-                  </Badge>
-                </div>
-              )}
-              <CardHeader className="text-center pb-6 sm:pb-8">
-                <CardTitle className="text-xl sm:text-2xl font-bold">{plan.name}</CardTitle>
-                <div className="mt-4">
-                  <span className="text-3xl sm:text-4xl font-bold text-blue-600">{plan.price}€</span>
-                  <span className="text-muted-foreground">{plan.period}</span>
-                </div>
-                <p className="text-muted-foreground mt-2 text-sm sm:text-base">{plan.description}</p>
-              </CardHeader>
-              <CardContent>
-                <Button
-                  className={`w-full mb-4 sm:mb-6 ${
-                    plan.popular ? "bg-blue-600 hover:bg-blue-700" : "bg-primary hover:bg-primary/90"
-                  }`}
-                >
-                  {plan.price === "0" ? "Commencer gratuitement" : "Choisir ce plan"}
-                </Button>
-                <div className="space-y-3">
-                  {jobSeekerFeatures.slice(0, 4).map((feature) => (
-                    <div key={feature.name} className="flex items-center justify-between">
-                      <span className="text-sm">{feature.name}</span>
-                      {renderFeatureValue(
-                        index === 0 ? feature.basic : index === 1 ? feature.pro : feature.premium,
-                      )}
+        {loading ? (
+          <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-blue-600" /></div>
+        ) : plans.length === 0 ? (
+          <p className="text-center text-muted-foreground py-16">Les plans ne sont pas disponibles pour le moment.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
+            {plans.map((plan, index) => {
+              const isPopular = index === popularIndex
+              return (
+                <Card key={plan.id} className={`relative ${isPopular ? "border-blue-500 ring-2 ring-blue-500 scale-105" : "border-border"}`}>
+                  {isPopular && (
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                      <Badge className="bg-blue-600 text-white px-4 py-1">
+                        <Star className="w-3 h-3 mr-1" />
+                        Populaire
+                      </Badge>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Feature Comparison */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-center">Comparaison détaillée des fonctionnalités</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-3 px-4">Fonctionnalités</th>
-                    <th className="text-center py-3 px-4">Basique</th>
-                    <th className="text-center py-3 px-4">Pro</th>
-                    <th className="text-center py-3 px-4">Premium</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {jobSeekerFeatures.map((feature, index) => (
-                    <tr key={feature.name} className={index % 2 === 0 ? "bg-muted/50" : ""}>
-                      <td className="py-3 px-4 font-medium">{feature.name}</td>
-                      <td className="py-3 px-4 text-center">{renderFeatureValue(feature.basic)}</td>
-                      <td className="py-3 px-4 text-center">{renderFeatureValue(feature.pro)}</td>
-                      <td className="py-3 px-4 text-center">{renderFeatureValue(feature.premium)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
+                  )}
+                  <CardHeader className="text-center pb-6 sm:pb-8">
+                    <CardTitle className="text-xl sm:text-2xl font-bold">{plan.name}</CardTitle>
+                    <div className="mt-4">
+                      <span className="text-3xl sm:text-4xl font-bold text-blue-600">{formatFcfa(plan.price)}</span>
+                      <span className="text-muted-foreground ml-1">FCFA{plan.price > 0 ? (plan.billingPeriod === "ANNUAL" ? " / an" : " / mois") : ""}</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <Link href="/auth/signin">
+                      <Button className={`w-full mb-4 sm:mb-6 ${isPopular ? "bg-blue-600 hover:bg-blue-700" : "bg-primary hover:bg-primary/90"}`}>
+                        {plan.price === 0 ? "Commencer gratuitement" : "Choisir ce plan"}
+                      </Button>
+                    </Link>
+                    <div className="space-y-3">
+                      {plan.features.map((feature) => (
+                        <div key={feature} className="flex items-start gap-2">
+                          <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                          <span className="text-sm">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        )}
 
         {/* FAQ Section */}
         <section className="mt-20">
@@ -164,8 +116,8 @@ export default function OffresPage() {
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-2">Y a-t-il une période d'essai gratuite ?</h3>
                 <p className="text-muted-foreground">
-                  Tous nos plans payants incluent une période d'essai gratuite de 14 jours. Aucune carte de crédit
-                  requise.
+                  Le plan Grouilleur est gratuit et sans engagement — de quoi tester Goriya avant de passer à un
+                  plan payant.
                 </p>
               </CardContent>
             </Card>
@@ -173,7 +125,8 @@ export default function OffresPage() {
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-2">Comment fonctionne la facturation ?</h3>
                 <p className="text-muted-foreground">
-                  La facturation est mensuelle et automatique. Tu recevras une facture par email chaque mois.
+                  La facturation est automatique selon la période choisie (mensuelle ou annuelle). Tu reçois une
+                  confirmation par email à chaque paiement.
                 </p>
               </CardContent>
             </Card>
@@ -196,8 +149,12 @@ export default function OffresPage() {
             Rejoins des milliers de professionnels qui font confiance à Goriya pour leur carrière
           </p>
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">Commencer maintenant</Button>
-            <Button size="lg" variant="outline">Nous contacter</Button>
+            <Link href="/auth/signin">
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">Commencer maintenant</Button>
+            </Link>
+            <Link href="/a-propos">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto">Nous contacter</Button>
+            </Link>
           </div>
         </section>
       </div>
