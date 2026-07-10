@@ -153,14 +153,14 @@ function ExploreJobsContent() {
     }, [fetchJobs])
 
     useEffect(() => {
-        companyService.getCompanies({ limit: 5 })
+        companyService.getCompanies({ search: searchTerm || undefined, limit: 5 })
             .then((res: any) => {
                 const data = res?.data?.data ?? res?.data ?? []
                 const list: ICompany[] = Array.isArray(data) ? data : []
                 setCompanies(dedupeByName(list))
             })
-            .catch(() => {})
-    }, [])
+            .catch(() => setCompanies([]))
+    }, [searchTerm])
 
     const handleLoadMore = () => {
         const next = page + 1
@@ -340,11 +340,16 @@ function ExploreJobsContent() {
                     )}
                 </section>
 
-                {/* Popular companies */}
-                {companies.length > 0 && (
+                {/* Companies (populaires, ou correspondant à la recherche) */}
+                {(companies.length > 0 || searchTerm) && (
                     <section className="mt-10 rounded-none bg-gradient-to-r from-[#4a8bf2] via-[#3970dd] to-[#2a56bf] px-4 sm:px-6 py-8 text-white relative overflow-hidden">
                         <div className="absolute -left-14 bottom-2 w-36 h-36 rounded-full border-[14px] border-[#82b7ff] opacity-35" />
-                        <h2 className="text-[18px] sm:text-[26px] font-extrabold mb-5 relative z-10">Entreprises populaires</h2>
+                        <h2 className="text-[18px] sm:text-[26px] font-extrabold mb-5 relative z-10">
+                            {searchTerm ? `Entreprises pour « ${searchTerm} »` : "Entreprises populaires"}
+                        </h2>
+                        {companies.length === 0 ? (
+                            <p className="relative z-10 text-[13px] text-white/80">Aucune entreprise trouvée pour cette recherche.</p>
+                        ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 relative z-10">
                             {companies.map((company) => (
                                 <Link key={company.id} href={`/explorer-entreprises/${company.id}`}>
@@ -360,6 +365,7 @@ function ExploreJobsContent() {
                                 </Link>
                             ))}
                         </div>
+                        )}
                     </section>
                 )}
 
