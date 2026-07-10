@@ -520,7 +520,7 @@ export default function EntrepriseDetailPage() {
                                 )}
                             </div>
                         ) : (
-                            <div className="space-y-3">
+                            <div className="space-y-5">
                                 {filteredJobs.map((job) => (
                                     <Link key={job.id} href={`/explorer-emplois/${job.id}`}>
                                         <div className="bg-white rounded-xl border border-[#e8edf6] flex items-stretch overflow-hidden hover:border-[#2f6de6] hover:shadow-sm transition-all">
