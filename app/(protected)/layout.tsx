@@ -1,13 +1,22 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { usePathname } from "next/navigation"
 import { Header } from "@/components/layout/header"
 import { Sidebar } from "@/components/layout/sidebar"
 import { ProtectedRoute } from "@/components/auth/protected-route"
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     const [sidebarOpen, setSidebarOpen] = useState(false)
+    const pathname = usePathname()
+
+    // Sur mobile, la sidebar est un panneau superposé (fixed + overlay) — sans
+    // ceci elle restait ouverte après avoir suivi un lien, masquant la page
+    // nouvellement chargée derrière l'overlay.
+    useEffect(() => {
+        setSidebarOpen(false)
+    }, [pathname])
 
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen)
