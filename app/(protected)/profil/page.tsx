@@ -4,6 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Input } from "@/components/ui/input"
+import { Switch } from "@/components/ui/switch"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
     MapPin,
     Mail,
@@ -16,11 +19,122 @@ import {
     Edit,
     Plus,
     Briefcase,
+    Globe2,
+    Copy,
 } from "lucide-react"
 import { userService } from "@/lib/api/user.service"
+import { publicProfileService, type IPublicProfile, type ProfileTheme } from "@/lib/api/public-profile.service"
 import { useAuth } from "@/contexts/auth-context"
 import { capitalizeFirst } from "@/lib/utils"
 import { useState, useEffect } from "react"
+
+const THEME_LABELS: Record<ProfileTheme, string> = {
+    DEFAULT: "Par défaut",
+    CREATIF: "Créatif",
+    TECHNIQUE: "Technique",
+    COMMERCIAL: "Commercial",
+    ACADEMIQUE: "Académique",
+}
+
+function PublicProfileCard() {
+    const [publicProfile, setPublicProfile] = useState<IPublicProfile | null>(null)
+    const [slugInput, setSlugInput] = useState("")
+    const [saving, setSaving] = useState(false)
+
+    useEffect(() => {
+        publicProfileService.me()
+            .then((res) => {
+                const p = ((res as any)?.data ?? res) as IPublicProfile
+                setPublicProfile(p)
+                setSlugInput(p.slug)
+            })
+            .catch((err) => console.error("[profil] public profile load error:", err))
+    }, [])
+
+    const handleToggle = async (isPublic: boolean) => {
+        setSaving(true)
+        try {
+            const res = await publicProfileService.update({ isPublic })
+            setPublicProfile((res as any)?.data ?? res)
+        } catch (err) {
+            console.error("[profil] public profile toggle error:", err)
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    const handleThemeChange = async (theme: ProfileTheme) => {
+        setSaving(true)
+        try {
+            const res = await publicProfileService.update({ theme })
+            setPublicProfile((res as any)?.data ?? res)
+        } catch (err) {
+            console.error("[profil] public profile theme error:", err)
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    const handleSlugSave = async () => {
+        if (!slugInput.trim() || slugInput === publicProfile?.slug) return
+        setSaving(true)
+        try {
+            const res = await publicProfileService.update({ slug: slugInput.trim() })
+            const updated = (res as any)?.data ?? res
+            setPublicProfile(updated)
+            setSlugInput(updated.slug)
+        } catch (err) {
+            console.error("[profil] public profile slug error:", err)
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    if (!publicProfile) return null
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Globe2 className="w-5 h-5" />
+                    Profil Public GORIYA
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <p className="font-medium">Visible publiquement</p>
+                        <p className="text-sm text-muted-foreground">Votre portfolio et vos pitchs vidéo publics deviennent accessibles via un lien partageable</p>
+                    </div>
+                    <Switch checked={publicProfile.isPublic} disabled={saving} onCheckedChange={handleToggle} />
+                </div>
+
+                <div>
+                    <p className="mb-1 text-sm font-medium">Lien public</p>
+                    <div className="flex items-center gap-2">
+                        <Input value={slugInput} onChange={(e) => setSlugInput(e.target.value)} onBlur={handleSlugSave} className="flex-1" />
+                        <Button variant="outline" size="icon" onClick={() => navigator.clipboard.writeText(`https://${publicProfile.publicUrl}`)}>
+                            <Copy className="w-4 h-4" />
+                        </Button>
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">{publicProfile.publicUrl}</p>
+                </div>
+
+                <div>
+                    <p className="mb-1 text-sm font-medium">Thème</p>
+                    <Select value={publicProfile.theme} onValueChange={(v) => handleThemeChange(v as ProfileTheme)} disabled={saving}>
+                        <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                            {(Object.keys(THEME_LABELS) as ProfileTheme[]).map((t) => (
+                                <SelectItem key={t} value={t}>{THEME_LABELS[t]}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ProfileData = any
@@ -243,6 +357,8 @@ export default function ProfilePage() {
                     </div>
                 </CardContent>
             </Card>
+
+            <PublicProfileCard />
         </div>
     )
 }

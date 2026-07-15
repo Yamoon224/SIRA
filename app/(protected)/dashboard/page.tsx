@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { MoreVertical, Eye, Briefcase } from "lucide-react"
 import { dashboardService } from "@/lib/api/dashboard.service"
 import { companyService } from "@/lib/api/company.service"
+import { careerDashboardService, type ICareerDashboard } from "@/lib/api/career-dashboard.service"
 import type { ICandidature, ICompany } from "@/lib/@types/entities"
 
 const STATUS_LABEL: Record<string, string> = {
@@ -26,22 +27,25 @@ export default function Page() {
     const [dashStats, setDashStats] = useState<{ totalApplications: number; interviews: number; profileViews: number; savedJobs: number } | null>(null)
     const [recentApplications, setRecentApplications] = useState<ICandidature[]>([])
     const [recruitingCompanies, setRecruitingCompanies] = useState<ICompany[]>([])
+    const [career, setCareer] = useState<ICareerDashboard | null>(null)
 
     useEffect(() => {
         setCurrentDate(new Date().toLocaleDateString("fr-FR", { weekday: "long", month: "long", day: "numeric" }))
 
         const load = async () => {
             try {
-                const [statsRes, appsRes, companiesRes] = await Promise.all([
+                const [statsRes, appsRes, companiesRes, careerRes] = await Promise.all([
                     dashboardService.getStats(),
                     dashboardService.getRecentApplications(3),
                     companyService.getRecruitingCompanies(),
+                    careerDashboardService.get(),
                 ])
                 setDashStats((statsRes as any)?.data ?? statsRes)
                 const apps = (appsRes as any)?.data ?? appsRes ?? []
                 setRecentApplications(Array.isArray(apps) ? apps : [])
                 const companies = (companiesRes as any)?.data?.data ?? (companiesRes as any)?.data ?? companiesRes ?? []
                 setRecruitingCompanies(Array.isArray(companies) ? companies.slice(0, 4) : [])
+                setCareer((careerRes as any)?.data ?? careerRes)
             } catch (err) {
                 console.error("[dashboard] load error:", err)
             }
@@ -54,8 +58,8 @@ export default function Page() {
 
     return (
         <ProtectedRoute>
-            <div className="min-h-screen bg-white p-4 md:p-8">
-                <div className="max-w-7xl mx-auto">
+            <div className="bg-white">
+                <div className="mx-auto max-w-7xl">
                     <div className="mb-8">
                         <h1 className="text-[24px] font-bold text-[#1b2331]">Tableau de bord</h1>
                     </div>
@@ -119,6 +123,37 @@ export default function Page() {
                             </div>
                         </div>
                     </div>
+
+                    {/* Progression carrière (Career Dashboard) */}
+                    {career && (
+                        <div className="mb-8 bg-white border border-[#e8edf6] rounded-xl p-5">
+                            <h3 className="text-[16px] font-bold text-[#1b2331] mb-4">Progression carrière</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <div>
+                                    <p className="text-[11px] text-[#9aa3b2] mb-1">Taux de réponse</p>
+                                    <p className="text-[22px] font-bold text-[#1b2331]">{career.applications.responseRate}%</p>
+                                </div>
+                                <div>
+                                    <p className="text-[11px] text-[#9aa3b2] mb-1">Formations en cours</p>
+                                    <p className="text-[22px] font-bold text-[#1b2331]">{career.formations.inProgress}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[11px] text-[#9aa3b2] mb-1">Formations terminées</p>
+                                    <p className="text-[22px] font-bold text-[#1b2331]">{career.formations.completed}</p>
+                                </div>
+                            </div>
+                            {career.recommendations.length > 0 && (
+                                <div className="space-y-2">
+                                    {career.recommendations.map((rec, i) => (
+                                        <div key={i} className="flex items-start gap-2 rounded-lg bg-[#f4f7ff] px-3 py-2">
+                                            <span className="mt-0.5 text-[#2f6de6]">💡</span>
+                                            <p className="text-[12px] text-[#1b2331]">{rec}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     {/* Historique Section */}
                     <div className="mb-8">

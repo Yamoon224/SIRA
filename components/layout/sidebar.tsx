@@ -16,6 +16,14 @@ import {
     Bot,
     FolderPlus,
     HelpCircle,
+    Sparkles,
+    Mic,
+    MessageCircle,
+    Users2,
+    Presentation,
+    GraduationCap,
+    ClipboardList,
+    Video,
 } from "lucide-react"
 
 const sidebarItems = [
@@ -53,6 +61,46 @@ const sidebarItems = [
         title: "Simulation d'entretien",
         href: "/simulation-entretien-config",
         icon: Bot,
+    },
+    {
+        title: "Recherche entreprise IA",
+        href: "/recherche-entreprise",
+        icon: Sparkles,
+    },
+    {
+        title: "Pitch Goriya",
+        href: "/pitch-goriya",
+        icon: Mic,
+    },
+    {
+        title: "GORIYA Chat",
+        href: "/goriya-chat",
+        icon: MessageCircle,
+    },
+    {
+        title: "GORIYA Connect",
+        href: "/connect",
+        icon: Users2,
+    },
+    {
+        title: "Présentations IA",
+        href: "/presentations-ia",
+        icon: Presentation,
+    },
+    {
+        title: "Formations",
+        href: "/formations",
+        icon: GraduationCap,
+    },
+    {
+        title: "Enquêtes internes",
+        href: "/enquetes-employe",
+        icon: ClipboardList,
+    },
+    {
+        title: "Appels vidéo",
+        href: "/appels",
+        icon: Video,
     },
     {
         title: "Créer CV",

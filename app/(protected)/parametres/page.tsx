@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -8,9 +8,13 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { User, Bell, Shield, CreditCard, HelpCircle, LogOut, Palette } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { User, Bell, Shield, CreditCard, HelpCircle, LogOut, Palette, Globe } from "lucide-react"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { useTheme } from "next-themes"
+import { localeService, type Locale } from "@/lib/api/locale.service"
+
+const LOCALE_LABELS: Record<Locale, string> = { fr: "Français", en: "English", pt: "Português", ar: "العربية" }
 
 export default function ParametresPage() {
   const { theme, setTheme } = useTheme()
@@ -20,6 +24,27 @@ export default function ParametresPage() {
     push: false,
     sms: false,
   })
+
+  const [locale, setLocale] = useState<Locale>("fr")
+  const [savingLocale, setSavingLocale] = useState(false)
+
+  useEffect(() => {
+    localeService.get()
+      .then((res) => setLocale(((res as any)?.data ?? res)?.locale ?? "fr"))
+      .catch((err) => console.error("[parametres] locale load error:", err))
+  }, [])
+
+  const handleLocaleChange = async (value: Locale) => {
+    setLocale(value)
+    setSavingLocale(true)
+    try {
+      await localeService.update(value)
+    } catch (err) {
+      console.error("[parametres] locale update error:", err)
+    } finally {
+      setSavingLocale(false)
+    }
+  }
 
   const [profile, setProfile] = useState({
     firstName: "Estelle",
@@ -229,6 +254,32 @@ export default function ParametresPage() {
                     <div className="w-6 h-6 bg-gradient-to-r from-white to-gray-800 border-2 border-gray-400 rounded"></div>
                     <span className="text-xs">Système</span>
                   </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Langue */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Globe className="w-5 h-5" />
+                  Langue
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">Langue de l'interface</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Utilisée pour les emails, messages de validation et réponses de l'assistant IA</p>
+                  </div>
+                  <Select value={locale} onValueChange={(v) => handleLocaleChange(v as Locale)} disabled={savingLocale}>
+                    <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {(Object.keys(LOCALE_LABELS) as Locale[]).map((l) => (
+                        <SelectItem key={l} value={l}>{LOCALE_LABELS[l]}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </CardContent>
             </Card>
