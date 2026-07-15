@@ -27,9 +27,9 @@ export default function Page() {
     }, [])
 
     return (
-        <div className="min-h-screen bg-[#fafbfc] flex">
+        <div className="flex bg-[#fafbfc]">
             <div className="flex-1 flex flex-col items-center w-full">
-                <div className="w-full max-w-4xl mx-auto pt-6 sm:pt-8 px-4 sm:px-0">
+                <div className="w-full max-w-4xl mx-auto">
                     <h1 className="text-xl sm:text-2xl font-bold text-[#1b2331] mb-4 sm:mb-6">Créer un portfolio</h1>
                     <div className="bg-white border border-[#e8edf6] rounded-xl p-0 sm:p-0">
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 pt-4 sm:pt-6 pb-2">

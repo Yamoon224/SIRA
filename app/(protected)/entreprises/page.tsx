@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -30,6 +31,7 @@ const INDUSTRIES = [
 const SIZES = ["1-10 (15)", "11-50 (35)", "51-250 (14)", "251-500 (4)", "500 et 1000 (43)", "1000+ et dessus (33)"]
 
 export default function CompaniesPage() {
+    const router = useRouter()
     const [search, setSearch] = useState("")
     const [debouncedSearch, setDebouncedSearch] = useState("")
     const [page, setPage] = useState(1)
@@ -150,7 +152,11 @@ export default function CompaniesPage() {
                         ) : (
                             <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
                                 {companies.map((company) => (
-                                    <Card key={company.id} className="rounded-[10px] border-[#dfe5f1] shadow-none">
+                                    <Card
+                                        key={company.id}
+                                        onClick={() => router.push(`/entreprises/${company.id}`)}
+                                        className="cursor-pointer rounded-[10px] border-[#dfe5f1] shadow-none transition-colors hover:border-[#2f6de6]"
+                                    >
                                         <CardContent className="p-3">
                                             <div className="mb-2 flex items-start justify-between">
                                                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#2f6de6] text-[9px] font-semibold text-white">

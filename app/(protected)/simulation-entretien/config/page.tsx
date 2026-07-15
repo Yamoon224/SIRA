@@ -25,7 +25,7 @@ function SimulationConfigContent() {
     }
 
     return (
-        <div className="p-6">
+        <div>
             <h1 className="text-2xl font-semibold text-gray-900 mb-6">Simulation d'Entretien avec Goriya</h1>
 
             {/* Modal-like container */}

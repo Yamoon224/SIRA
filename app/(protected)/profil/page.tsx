@@ -11,18 +11,16 @@ import {
     MapPin,
     Mail,
     Phone,
-    Calendar,
-    Building2,
-    GraduationCap,
-    Award,
     ExternalLink,
     Edit,
     Plus,
-    Briefcase,
     Globe2,
     Copy,
 } from "lucide-react"
 import { userService } from "@/lib/api/user.service"
+import { portfolioService } from "@/lib/api/portfolio.service"
+import type { IPortfolio } from "@/lib/@types/entities"
+import { useRouter } from "next/navigation"
 import { publicProfileService, type IPublicProfile, type ProfileTheme } from "@/lib/api/public-profile.service"
 import { useAuth } from "@/contexts/auth-context"
 import { capitalizeFirst } from "@/lib/utils"
@@ -150,22 +148,29 @@ function buildProfile(apiData: any, authUser: { name?: string; email?: string; a
         phone: apiData?.phone || "",
         avatar: apiData?.avatar || authUser?.avatar || "/placeholder.svg",
         bio: apiData?.bio || "",
-        experience: apiData?.experience || [],
-        education: apiData?.education || [],
-        skills: apiData?.skills || [],
-        portfolio: apiData?.portfolio || [],
     }
 }
 
 export default function ProfilePage() {
     const { user } = useAuth()
+    const router = useRouter()
     const [profile, setProfile] = useState<ProfileData>(null)
-    const [isEditing, setIsEditing] = useState(false)
+    const [portfolios, setPortfolios] = useState<IPortfolio[]>([])
 
     useEffect(() => {
         fetchProfile()
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user])
+
+    useEffect(() => {
+        portfolioService.getPortfolios({ page: 1, limit: 3 })
+            .then((res: any) => {
+                const payload = res?.data ?? res
+                const items = Array.isArray(payload) ? payload : payload?.data ?? []
+                setPortfolios(items)
+            })
+            .catch((err) => console.error("[profil] portfolios load error:", err))
+    }, [])
 
     const fetchProfile = async () => {
         try {
@@ -179,7 +184,7 @@ export default function ProfilePage() {
 
     if (!profile) {
         return (
-            <div className="p-6">
+            <div>
                 <div className="animate-pulse">
                     <div className="h-8 bg-muted rounded w-1/4 mb-4"></div>
                     <div className="h-4 bg-muted rounded w-1/2 mb-8"></div>
@@ -193,7 +198,7 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="p-4 sm:p-6 max-w-4xl mx-auto">
+        <div className="mx-auto max-w-4xl">
             {/* Profile Header */}
             <Card className="mb-6">
                 <CardContent className="p-4 sm:p-6">
@@ -227,7 +232,7 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                         </div>
-                        <Button variant="outline" onClick={() => setIsEditing(!isEditing)} className="w-full sm:w-auto">
+                        <Button variant="outline" onClick={() => router.push("/parametres")} className="w-full sm:w-auto">
                             <Edit className="w-4 h-4 mr-2" />
                             Modifier le profil
                         </Button>
@@ -236,125 +241,43 @@ export default function ProfilePage() {
                 </CardContent>
             </Card>
 
-            {/* Experience Section */}
-            <Card className="mb-6">
-                <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                        <span className="flex items-center">
-                            <Briefcase className="w-5 h-5 mr-2" />À propos de moi
-                        </span>
-                        <Button variant="ghost" size="sm">
-                            <Plus className="w-4 h-4" />
-                        </Button>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    {profile.experience.map((exp: any) => (
-                        <div key={exp.id} className="flex items-start space-x-4 pb-6 border-b border-border last:border-b-0">
-                            <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
-                                <Building2 className="w-6 h-6 text-muted-foreground" />
-                            </div>
-                            <div className="flex-1">
-                                <h3 className="font-semibold text-foreground">{exp.position}</h3>
-                                <p className="text-muted-foreground mb-1">{exp.company}</p>
-                                <div className="flex items-center text-sm text-muted-foreground mb-2">
-                                    <Calendar className="w-4 h-4 mr-1" />
-                                    {exp.startDate} - {exp.current ? "Présent" : exp.endDate}
-                                </div>
-                                <p className="text-foreground text-sm">{exp.description}</p>
-                            </div>
-                        </div>
-                    ))}
-                </CardContent>
-            </Card>
-
-            {/* Education Section */}
-            <Card className="mb-6">
-                <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                        <span className="flex items-center">
-                            <GraduationCap className="w-5 h-5 mr-2" />
-                            Formation
-                        </span>
-                        <Button variant="ghost" size="sm">
-                            <Plus className="w-4 h-4" />
-                        </Button>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    {profile.education.map((edu: any) => (
-                        <div key={edu.id} className="flex items-start space-x-4 pb-6 border-b border-border last:border-b-0">
-                            <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
-                                <GraduationCap className="w-6 h-6 text-muted-foreground" />
-                            </div>
-                            <div className="flex-1">
-                                <h3 className="font-semibold text-foreground">
-                                    {edu.degree} en {edu.field}
-                                </h3>
-                                <p className="text-muted-foreground mb-1">{edu.institution}</p>
-                                <div className="flex items-center text-sm text-muted-foreground">
-                                    <Calendar className="w-4 h-4 mr-1" />
-                                    {edu.startDate} - {edu.endDate}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </CardContent>
-            </Card>
-
-            {/* Skills Section */}
-            <Card className="mb-6">
-                <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                        <span className="flex items-center">
-                            <Award className="w-5 h-5 mr-2" />
-                            Compétences
-                        </span>
-                        <Button variant="ghost" size="sm">
-                            <Plus className="w-4 h-4" />
-                        </Button>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                        {profile.skills.map((skill: any) => (
-                            <Badge key={skill} variant="secondary" className="px-3 py-1">
-                                {skill}
-                            </Badge>
-                        ))}
-                    </div>
-                </CardContent>
-            </Card>
-
             {/* Portfolio Section */}
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                         <span>Portfolio</span>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" onClick={() => router.push("/portfolio/creer")}>
                             <Plus className="w-4 h-4" />
                         </Button>
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {profile.portfolio.map((item: any) => (
-                            <div
-                                key={item.id}
-                                className="border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow"
-                            >
-                                <img src={item.image || "/placeholder.svg"} alt={item.title} className="w-full h-32 object-cover" onError={(e) => { e.currentTarget.src = "/placeholder.svg" }} />
-                                <div className="p-4">
+                    {portfolios.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">Aucun portfolio pour le moment.</p>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {portfolios.map((item) => (
+                                <div
+                                    key={item.id}
+                                    className="border border-border rounded-lg p-4 hover:shadow-md transition-shadow"
+                                >
                                     <h4 className="font-semibold text-foreground mb-2">{item.title}</h4>
-                                    <p className="text-sm text-muted-foreground mb-3">{item.description}</p>
-                                    <Button size="sm" variant="outline" className="w-full bg-transparent">
+                                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.description}</p>
+                                    {item.skills?.length > 0 && (
+                                        <div className="mb-3 flex flex-wrap gap-1.5">
+                                            {item.skills.slice(0, 3).map((skill, i) => (
+                                                <Badge key={i} variant="secondary" className="text-[10px]">{skill}</Badge>
+                                            ))}
+                                        </div>
+                                    )}
+                                    <Button size="sm" variant="outline" className="w-full bg-transparent" onClick={() => router.push("/portfolio")}>
                                         <ExternalLink className="w-4 h-4 mr-2" />
-                                        Voir le projet
+                                        Gérer mon portfolio
                                     </Button>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 

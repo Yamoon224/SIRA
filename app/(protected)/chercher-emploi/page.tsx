@@ -7,11 +7,14 @@ import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Search, MapPin, Building2, Clock, ChevronLeft, ChevronRight } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { jobService } from "@/lib/api/job.service"
 import { IJobOffer } from "@/lib/@types/entities"
 import { useState, useEffect } from "react"
 
 export default function Page() {
+    const router = useRouter()
     const [jobs, setJobs] = useState<IJobOffer[]>([])
     const [filters, setFilters] = useState({
         search: "",
@@ -22,10 +25,19 @@ export default function Page() {
     })
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages] = useState(5)
+    const [savedJobIds, setSavedJobIds] = useState<Set<string>>(new Set())
+    const [applyingId, setApplyingId] = useState<string | null>(null)
+    const [appliedIds, setAppliedIds] = useState<Set<string>>(new Set())
 
     useEffect(() => {
         fetchJobs()
     }, [filters, currentPage])
+
+    useEffect(() => {
+        jobService.getSavedJobIds()
+            .then((r: any) => setSavedJobIds(new Set(r?.data?.jobIds ?? r?.jobIds ?? [])))
+            .catch(() => {})
+    }, [])
 
     const fetchJobs = async () => {
         try {
@@ -34,6 +46,39 @@ export default function Page() {
         } catch (error) {
             console.error("Erreur lors du chargement des offres:", error)
             setJobs([])
+        }
+    }
+
+    const handleToggleSaveJob = async (jobId: string) => {
+        const isSaved = savedJobIds.has(jobId)
+        setSavedJobIds((prev) => {
+            const next = new Set(prev)
+            isSaved ? next.delete(jobId) : next.add(jobId)
+            return next
+        })
+        try {
+            await (isSaved ? jobService.unsaveJob(jobId) : jobService.saveJob(jobId))
+        } catch (err) {
+            console.error("[chercher-emploi] save job error:", err)
+            setSavedJobIds((prev) => {
+                const next = new Set(prev)
+                isSaved ? next.add(jobId) : next.delete(jobId)
+                return next
+            })
+        }
+    }
+
+    const handleApply = async (jobId: string) => {
+        setApplyingId(jobId)
+        try {
+            await jobService.applyToJob(jobId, {})
+            setAppliedIds((prev) => new Set(prev).add(jobId))
+            toast.success("Candidature envoyée !")
+        } catch (err) {
+            console.error("[chercher-emploi] apply error:", err)
+            toast.error("Échec de l'envoi de la candidature")
+        } finally {
+            setApplyingId(null)
         }
     }
 
@@ -70,7 +115,7 @@ export default function Page() {
     }
 
     return (
-            <div className="p-4 sm:p-6">
+            <div>
                 <div className="mb-6">
                     <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">Trouver un emploi</h1>
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
@@ -169,9 +214,6 @@ export default function Page() {
                             </p>
                             <div className="flex items-center space-x-2">
                                 <span className="text-sm text-muted-foreground">Trier par pertinence</span>
-                                <Button variant="ghost" size="sm">
-                                    <ChevronLeft className="w-4 h-4" />
-                                </Button>
                             </div>
                         </div>
 
@@ -221,11 +263,21 @@ export default function Page() {
                                                 </Badge>
                                             </div>
                                             <div className="flex space-x-2 w-full sm:w-auto">
-                                                <Button size="sm" variant="outline" className="flex-1 sm:flex-none bg-transparent">
-                                                    Sauvegarder
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="flex-1 sm:flex-none bg-transparent"
+                                                    onClick={() => handleToggleSaveJob(job.id)}
+                                                >
+                                                    {savedJobIds.has(job.id) ? "Sauvegardé" : "Sauvegarder"}
                                                 </Button>
-                                                <Button size="sm" className="bg-primary hover:bg-primary/90 flex-1 sm:flex-none">
-                                                    Postuler
+                                                <Button
+                                                    size="sm"
+                                                    className="bg-primary hover:bg-primary/90 flex-1 sm:flex-none"
+                                                    disabled={applyingId === job.id || appliedIds.has(job.id)}
+                                                    onClick={() => handleApply(job.id)}
+                                                >
+                                                    {appliedIds.has(job.id) ? "Candidature envoyée" : applyingId === job.id ? "Envoi..." : "Postuler"}
                                                 </Button>
                                             </div>
                                         </div>

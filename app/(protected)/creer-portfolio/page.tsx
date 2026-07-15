@@ -38,8 +38,8 @@ export default function Page() {
     ]
 
     return (
-        <div className="min-h-screen bg-white p-4 md:p-8">
-            <div className="max-w-5xl mx-auto">
+        <div className="bg-white">
+            <div className="mx-auto max-w-5xl">
                 {/* Page Title */}
                 <h1 className="text-2xl font-bold text-[#1b2331] mb-8">Créer un portfolio</h1>
 

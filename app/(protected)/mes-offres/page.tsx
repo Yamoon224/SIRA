@@ -1,44 +1,84 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Building2, Calendar, MapPin, Eye, MoreHorizontal } from "lucide-react"
-import { useState } from "react"
+import { Building2, Calendar, MapPin, Eye, XCircle } from "lucide-react"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
 import { candidatureService } from "@/lib/api/candidature.service"
 import { useApi } from "@/lib/hooks/useApi"
 import { capitalizeFirst } from "@/lib/utils"
+import type { ICandidature } from "@/lib/@types/entities"
+
+const STATUS_LABEL: Record<string, { label: string; className: string }> = {
+  EN_ATTENTE: { label: "En attente", className: "bg-yellow-100 text-yellow-800" },
+  EN_COURS: { label: "Entretien", className: "bg-purple-100 text-purple-800" },
+  APPROUVEE: { label: "Accepté", className: "bg-green-100 text-green-800" },
+  ACCEPTEE: { label: "Accepté", className: "bg-green-100 text-green-800" },
+  REJETEE: { label: "Refusé", className: "bg-red-100 text-red-800" },
+  REFUSEE: { label: "Refusé", className: "bg-red-100 text-red-800" },
+}
+
+const TABS = [
+  { value: "all", label: "Toutes" },
+  { value: "EN_ATTENTE", label: "En attente" },
+  { value: "EN_COURS", label: "Entretiens" },
+  { value: "ACCEPTEE", label: "Acceptées" },
+  { value: "REFUSEE", label: "Refusées" },
+]
 
 export default function MyApplicationsPage() {
+  const router = useRouter()
   const [selectedStatus, setSelectedStatus] = useState<string>("all")
+  const [withdrawingId, setWithdrawingId] = useState<string | null>(null)
 
   const {
     data: applications,
     loading,
-    error,
     refetch,
   } = useApi(() => candidatureService.getCandidatures(selectedStatus === "all" ? undefined : selectedStatus), {
     immediate: true,
   })
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      pending: { label: "En attente", className: "bg-yellow-100 text-yellow-800" },
-      reviewed: { label: "Examiné", className: "bg-blue-100 text-blue-800" },
-      interview: { label: "Entretien", className: "bg-purple-100 text-purple-800" },
-      accepted: { label: "Accepté", className: "bg-green-100 text-green-800" },
-      rejected: { label: "Refusé", className: "bg-red-100 text-red-800" },
+  // useApi() ne relance sa requête qu'au montage — on déclenche nous-mêmes le
+  // refetch quand l'onglet de statut change (le premier appel est déjà
+  // couvert par immediate: true, donc on l'ignore ici via un flag de montage).
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    if (!mounted) {
+      setMounted(true)
+      return
     }
+    refetch()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedStatus])
 
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending
+  const getStatusBadge = (status: string) => {
+    const config = STATUS_LABEL[status] ?? STATUS_LABEL.EN_ATTENTE
     return <Badge className={config.className}>{config.label}</Badge>
   }
 
-  const displayApplications = (applications?.data as any[]) || []
+  const handleWithdraw = async (id: string) => {
+    setWithdrawingId(id)
+    try {
+      await candidatureService.withdrawCandidature(id)
+      toast.success("Candidature retirée")
+      refetch()
+    } catch (err) {
+      console.error("[mes-offres] withdraw error:", err)
+      toast.error("Échec du retrait de la candidature")
+    } finally {
+      setWithdrawingId(null)
+    }
+  }
+
+  const displayApplications = ((applications?.data as ICandidature[]) || [])
 
   return (
-      <div className="p-6">
+      <div>
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Mes candidatures</h1>
           <p className="text-gray-600">Suis l'état de tes candidatures et gère tes offres</p>
@@ -46,13 +86,10 @@ export default function MyApplicationsPage() {
 
         <Tabs value={selectedStatus} onValueChange={setSelectedStatus} className="space-y-6">
           <div className="overflow-x-auto pb-1">
-            <TabsList className="flex min-w-max h-auto flex-wrap sm:grid sm:w-full sm:grid-cols-6">
-              <TabsTrigger value="all" className="flex-1 text-xs sm:text-sm">Toutes</TabsTrigger>
-              <TabsTrigger value="pending" className="flex-1 text-xs sm:text-sm">En attente</TabsTrigger>
-              <TabsTrigger value="reviewed" className="flex-1 text-xs sm:text-sm">Examinées</TabsTrigger>
-              <TabsTrigger value="interview" className="flex-1 text-xs sm:text-sm">Entretiens</TabsTrigger>
-              <TabsTrigger value="accepted" className="flex-1 text-xs sm:text-sm">Acceptées</TabsTrigger>
-              <TabsTrigger value="rejected" className="flex-1 text-xs sm:text-sm">Refusées</TabsTrigger>
+            <TabsList className="flex min-w-max h-auto flex-wrap sm:grid sm:w-full sm:grid-cols-5">
+              {TABS.map((tab) => (
+                <TabsTrigger key={tab.value} value={tab.value} className="flex-1 text-xs sm:text-sm">{tab.label}</TabsTrigger>
+              ))}
             </TabsList>
           </div>
 
@@ -70,7 +107,7 @@ export default function MyApplicationsPage() {
                 ))}
               </div>
             ) : displayApplications.length > 0 ? (
-              displayApplications.map((application: any) => (
+              displayApplications.map((application) => (
                 <Card key={application.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-4 sm:p-6">
                     <div className="flex flex-col sm:flex-row items-start gap-4">
@@ -79,33 +116,45 @@ export default function MyApplicationsPage() {
                           <Building2 className="w-6 h-6 text-gray-600" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-gray-900 mb-1">{application.jobTitle}</h3>
-                          <p className="text-gray-600 mb-2">{application.company}</p>
+                          <h3 className="font-semibold text-gray-900 mb-1">{application.jobOffer?.title ?? "Offre"}</h3>
+                          <p className="text-gray-600 mb-2">{application.jobOffer?.company?.name ?? "—"}</p>
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500 mb-3">
-                            <div className="flex items-center">
-                              <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-                              {capitalizeFirst(application.location)}
-                            </div>
+                            {application.jobOffer?.location && (
+                              <div className="flex items-center">
+                                <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
+                                {capitalizeFirst(application.jobOffer.location)}
+                              </div>
+                            )}
                             <div className="flex items-center">
                               <Calendar className="w-4 h-4 mr-1 flex-shrink-0" />
-                              Candidature envoyée le {application.appliedDate}
+                              Candidature envoyée le {new Date(application.appliedDate).toLocaleDateString("fr-FR")}
                             </div>
                           </div>
                           <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant="outline">{application.type}</Badge>
-                            <Badge variant="outline" className="text-green-600 border-green-200">
-                              {application.salary}
-                            </Badge>
+                            {application.jobOffer?.type && <Badge variant="outline">{application.jobOffer.type}</Badge>}
+                            {application.jobOffer?.salary && (
+                              <Badge variant="outline" className="text-green-600 border-green-200">
+                                {application.jobOffer.salary}
+                              </Badge>
+                            )}
                             {getStatusBadge(application.status)}
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2 self-start">
-                        <Button variant="ghost" size="sm">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="w-4 h-4" />
+                        {application.jobOffer?.id && (
+                          <Button variant="ghost" size="sm" onClick={() => router.push(`/explorer-emplois/${application.jobOffer!.id}`)}>
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-600 hover:text-red-700"
+                          disabled={withdrawingId === application.id}
+                          onClick={() => handleWithdraw(application.id)}
+                        >
+                          <XCircle className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
@@ -122,9 +171,9 @@ export default function MyApplicationsPage() {
                   <p className="text-gray-600 mb-4">
                     {selectedStatus === "all"
                       ? "Tu n'as pas encore postulé à des offres d'emploi."
-                      : `Aucune candidature avec le statut "${selectedStatus}".`}
+                      : `Aucune candidature avec ce statut.`}
                   </p>
-                  <Button>Parcourir les offres</Button>
+                  <Button onClick={() => router.push("/chercher-emploi")}>Parcourir les offres</Button>
                 </CardContent>
               </Card>
             )}

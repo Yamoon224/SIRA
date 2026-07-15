@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Link from "next/link"
 import { MapPin, Clock, Heart, Globe, Phone, Mail, Users } from "lucide-react"
 import { companyService } from "@/lib/api/company.service"
+import { jobService } from "@/lib/api/job.service"
 import { capitalizeFirst } from "@/lib/utils"
 
 export default function CompanyProfilePage({ params }: { params: { slug: string } }) {
@@ -16,6 +17,9 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
   const [company, setCompany] = useState<any>(null)
   const [companyJobs, setCompanyJobs] = useState<any[]>([])
   const [similarCompanies, setSimilarCompanies] = useState<any[]>([])
+  const [isFollowing, setIsFollowing] = useState(false)
+  const [followLoading, setFollowLoading] = useState(false)
+  const [savedJobIds, setSavedJobIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     companyService.getCompanyById(params.slug)
@@ -25,6 +29,20 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
 
         companyService.getCompanyJobs(data.id || params.slug)
           .then((r) => setCompanyJobs((r.data as any[]) || []))
+          .catch(() => {})
+
+        companyService.getFollowedCompanyIds()
+          .then((r: any) => {
+            const ids: string[] = r?.data?.companyIds ?? r?.companyIds ?? []
+            setIsFollowing(ids.includes(data.id))
+          })
+          .catch(() => {})
+
+        jobService.getSavedJobIds()
+          .then((r: any) => {
+            const ids: string[] = r?.data?.jobIds ?? r?.jobIds ?? []
+            setSavedJobIds(new Set(ids))
+          })
           .catch(() => {})
 
         if (data.sector) {
@@ -39,9 +57,45 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
       .catch(() => {})
   }, [params.slug])
 
+  const handleToggleSaveJob = async (jobId: string) => {
+    const isSaved = savedJobIds.has(jobId)
+    setSavedJobIds((prev) => {
+      const next = new Set(prev)
+      isSaved ? next.delete(jobId) : next.add(jobId)
+      return next
+    })
+    try {
+      await (isSaved ? jobService.unsaveJob(jobId) : jobService.saveJob(jobId))
+    } catch (err) {
+      console.error("[entreprises/slug] save job error:", err)
+      setSavedJobIds((prev) => {
+        const next = new Set(prev)
+        isSaved ? next.add(jobId) : next.delete(jobId)
+        return next
+      })
+    }
+  }
+
+  const handleToggleFollow = async () => {
+    setFollowLoading(true)
+    try {
+      if (isFollowing) {
+        await companyService.unfollowCompany(company.id)
+        setIsFollowing(false)
+      } else {
+        await companyService.followCompany(company.id)
+        setIsFollowing(true)
+      }
+    } catch (err) {
+      console.error("[entreprises/slug] follow toggle error:", err)
+    } finally {
+      setFollowLoading(false)
+    }
+  }
+
   if (!company) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex items-center justify-center py-24">
         <p className="text-muted-foreground">Chargement...</p>
       </div>
     )
@@ -61,7 +115,7 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background">
       <main>
         {/* Hero Section */}
         <div className="relative h-80 overflow-hidden">
@@ -95,8 +149,13 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
           </div>
 
           <div className="absolute bottom-6 right-6 flex gap-2">
-            <Button variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20 rounded-full">
-              Suivre
+            <Button
+              variant="outline"
+              className="bg-white/10 border-white/30 text-white hover:bg-white/20 rounded-full"
+              disabled={followLoading}
+              onClick={handleToggleFollow}
+            >
+              {isFollowing ? "Suivi" : "Suivre"}
             </Button>
             <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setActiveTab("jobs")}>
               Voir les offres
@@ -245,7 +304,7 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
                         <div className="flex-1">
                           <div className="flex items-start justify-between mb-4">
                             <div>
-                              <Link href={`/emploi/${job.id}`} className="hover:underline">
+                              <Link href={`/explorer-emplois/${job.id}`} className="hover:underline">
                                 <h3 className="font-semibold text-lg text-foreground mb-1">{job.title}</h3>
                               </Link>
                               <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -260,8 +319,8 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
                                 <Badge variant="secondary">{job.type}</Badge>
                               </div>
                             </div>
-                            <Button variant="ghost" size="sm">
-                              <Heart className="w-4 h-4" />
+                            <Button variant="ghost" size="sm" onClick={() => handleToggleSaveJob(job.id)}>
+                              <Heart className={`w-4 h-4 ${savedJobIds.has(job.id) ? "fill-red-500 text-red-500" : ""}`} />
                             </Button>
                           </div>
                         </div>

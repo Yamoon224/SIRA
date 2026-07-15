@@ -2,11 +2,12 @@
 
 import { ProtectedRoute } from "@/components/auth/protected-route"
 import { useAuth } from "@/contexts/auth-context"
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { MoreVertical, Eye, Briefcase } from "lucide-react"
+import { Eye, Briefcase } from "lucide-react"
 import { dashboardService } from "@/lib/api/dashboard.service"
 import { companyService } from "@/lib/api/company.service"
 import { careerDashboardService, type ICareerDashboard } from "@/lib/api/career-dashboard.service"
@@ -23,6 +24,7 @@ const STATUS_LABEL: Record<string, string> = {
 
 export default function Page() {
     const { user } = useAuth()
+    const router = useRouter()
     const [currentDate, setCurrentDate] = useState("")
     const [dashStats, setDashStats] = useState<{ totalApplications: number; interviews: number; profileViews: number; savedJobs: number } | null>(null)
     const [recentApplications, setRecentApplications] = useState<ICandidature[]>([])
@@ -164,7 +166,11 @@ export default function Page() {
                         ) : (
                             <div className="space-y-3">
                                 {recentApplications.map((app) => (
-                                    <div key={app.id} className="bg-white border border-[#e8edf6] rounded-xl p-4 flex items-center justify-between hover:border-[#2f6de6] transition-colors">
+                                    <button
+                                        key={app.id}
+                                        onClick={() => app.jobOffer?.id && router.push(`/explorer-emplois/${app.jobOffer.id}`)}
+                                        className="w-full bg-white border border-[#e8edf6] rounded-xl p-4 flex items-center justify-between hover:border-[#2f6de6] transition-colors text-left"
+                                    >
                                         <div className="flex items-center gap-3 flex-1">
                                             <span className="text-[20px]">📋</span>
                                             <div>
@@ -180,33 +186,34 @@ export default function Page() {
                                             <Badge variant="outline" className="text-[10px] px-2 py-1 border-[#d8deeb] text-[#2f6de6]">
                                                 {STATUS_LABEL[app.status] ?? app.status}
                                             </Badge>
-                                            <button className="p-1 hover:bg-[#f4f5f7] rounded">
-                                                <MoreVertical className="w-4 h-4 text-[#9aa3b2]" />
-                                            </button>
                                         </div>
-                                    </div>
+                                    </button>
                                 ))}
                             </div>
                         )}
 
                         <div className="mt-4 text-center">
-                            <a href="#" className="text-[12px] text-[#2f6de6] font-medium hover:underline">
-                                Voir l'historique en entier de visibilité-utilisation →
-                            </a>
+                            <button onClick={() => router.push("/mes-offres")} className="text-[12px] text-[#2f6de6] font-medium hover:underline">
+                                Voir l'historique en entier de mes candidatures →
+                            </button>
                         </div>
                     </div>
 
                     {/* Quick Actions */}
                     <div className="mb-8 bg-[#f4f5f7] rounded-xl p-6">
-                        <h3 className="text-[16px] font-bold text-[#1b2331] mb-4 text-center">Mes applications les plus récentes</h3>
+                        <h3 className="text-[16px] font-bold text-[#1b2331] mb-4 text-center">Actions rapides</h3>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                             {[
-                                { icon: "📄", label: "Télécharger mon CV" },
-                                { icon: "📄", label: "Modifier mon profil" },
-                                { icon: "📄", label: "Voir mes favoris" },
-                                { icon: "📄", label: "Contacter support" },
-                            ].map((action, i) => (
-                                <button key={i} className="bg-white border border-[#e8edf6] rounded-lg p-4 text-center hover:border-[#2f6de6] hover:bg-[#f4f7ff] transition-colors">
+                                { icon: "📄", label: "Créer mon CV", href: "/creer-cv" },
+                                { icon: "👤", label: "Modifier mon profil", href: "/parametres" },
+                                { icon: "🔍", label: "Chercher un emploi", href: "/chercher-emploi" },
+                                { icon: "💬", label: "Contacter support", href: "/centre-assistance" },
+                            ].map((action) => (
+                                <button
+                                    key={action.href}
+                                    onClick={() => router.push(action.href)}
+                                    className="bg-white border border-[#e8edf6] rounded-lg p-4 text-center hover:border-[#2f6de6] hover:bg-[#f4f7ff] transition-colors"
+                                >
                                     <p className="text-[20px] mb-2">{action.icon}</p>
                                     <p className="text-[12px] font-medium text-[#1b2331]">{action.label}</p>
                                 </button>
@@ -218,7 +225,7 @@ export default function Page() {
                     <div>
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-[16px] font-bold text-[#1b2331]">Les entreprises qui recrutent</h3>
-                            <a href="#" className="text-[12px] text-[#2f6de6] font-medium hover:underline">Voir plus →</a>
+                            <button onClick={() => router.push("/entreprises")} className="text-[12px] text-[#2f6de6] font-medium hover:underline">Voir plus →</button>
                         </div>
 
                         {recruitingCompanies.length === 0 ? (
@@ -232,14 +239,14 @@ export default function Page() {
                                                 <div className="w-10 h-10 bg-[#f0f3fb] rounded-lg flex items-center justify-center text-[18px] font-bold text-[#2f6de6]">
                                                     {company.name.charAt(0).toUpperCase()}
                                                 </div>
-                                                <button className="p-1 hover:bg-[#f4f5f7] rounded">
-                                                    <MoreVertical className="w-4 h-4 text-[#9aa3b2]" />
-                                                </button>
                                             </div>
                                             <h4 className="text-[13px] font-bold text-[#1b2331] mb-1">{company.name}</h4>
                                             <p className="text-[11px] text-[#7f8796] mb-2">{company.sector ?? company.about ?? "—"}</p>
-                                            <button className="w-full h-8 rounded-lg border border-[#d8deeb] text-[11px] font-medium text-[#2f6de6] hover:bg-[#f4f7ff]">
-                                                Voir l'offre d'emploi
+                                            <button
+                                                onClick={() => router.push(`/entreprises/${company.id}`)}
+                                                className="w-full h-8 rounded-lg border border-[#d8deeb] text-[11px] font-medium text-[#2f6de6] hover:bg-[#f4f7ff]"
+                                            >
+                                                Voir l'entreprise
                                             </button>
                                         </CardContent>
                                     </Card>

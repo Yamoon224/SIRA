@@ -144,8 +144,8 @@ export default function Page() {
                 }}
             />
 
-            <div className="min-h-screen bg-white">
-                <div className="max-w-5xl mx-auto px-4 py-8">
+            <div className="bg-white">
+                <div className="mx-auto max-w-5xl">
                     {/* Header */}
                     <h1 className="text-xl font-bold text-[#1b2331] mb-6">Centre d'assistance</h1>
 
@@ -170,7 +170,7 @@ export default function Page() {
                     {activeTab === "assistance" && (
                         <>
                             {/* Hero */}
-                            <div className="bg-gradient-to-r from-[#1d4db8] to-[#2566d9] rounded-2xl p-8 text-white mb-12">
+                            <div className="bg-gradient-to-r from-[#1d4db8] to-[#2566d9] rounded-2xl p-6 text-white mb-8">
                                 <h2 className="text-3xl font-bold mb-2">Comment pouvons-nous t'aider ?</h2>
                                 <p className="text-white/90 mb-6">
                                     Trouve rapidement des réponses à tes questions ou consulte nos ressources
@@ -193,7 +193,7 @@ export default function Page() {
                             </div>
 
                             {/* Categories */}
-                            <div className="mb-12">
+                            <div className="mb-8">
                                 <h3 className="text-lg font-bold text-[#1b2331] mb-4">Parcourir par catégorie</h3>
                                 <div className="flex justify-center gap-6 flex-wrap">
                                     {categories.map((cat, i) => (
@@ -212,7 +212,7 @@ export default function Page() {
                             </div>
 
                             {/* FAQ */}
-                            <div className="mb-12">
+                            <div className="mb-8">
                                 <h3 className="text-lg font-bold text-[#1b2331] mb-4">Réponses aux questions</h3>
                                 <div className="space-y-3">
                                     {faqItems.map((item, i) => (
@@ -241,7 +241,7 @@ export default function Page() {
                             </div>
 
                             {/* Resources */}
-                            <div className="mb-12">
+                            <div className="mb-8">
                                 <h3 className="text-lg font-bold text-[#1b2331] mb-4">Ressources utiles</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {resources.map((resource, i) => (
@@ -265,8 +265,8 @@ export default function Page() {
 
                     {/* ── TAB: Tarifs d'abonnement ── */}
                     {activeTab === "tarifs" && (
-                        <div className="mb-12">
-                            <div className="text-center mb-10">
+                        <div className="mb-8">
+                            <div className="text-center mb-6">
                                 <h2 className="text-3xl font-bold text-[#1b2331] mb-3">Choisis ton forfait</h2>
                                 <p className="text-[#7f8796] text-sm max-w-md mx-auto">
                                     Choisis le plan qui correspond à tes ambitions professionnelles.

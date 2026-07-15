@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { FileText, Zap, Download, MoreVertical, Search, Filter, ChevronLeft, ChevronRight } from "lucide-react"
 
 export default function BibliothequePage() {
+    const router = useRouter()
     const [selectedTab, setSelectedTab] = useState("all")
     const [currentPage, setCurrentPage] = useState(1)
 
@@ -22,27 +24,31 @@ export default function BibliothequePage() {
     const quickActions = [
         {
             icon: FileText,
-            title: "Commander une CV",
-            description: "Créer une CV à partir de ton profil",
-            action: "Commander notre CV",
+            title: "Créer un CV",
+            description: "Créer un CV à partir de ton profil",
+            action: "Créer mon CV",
+            href: "/creer-cv",
         },
         {
             icon: Zap,
-            title: "Télécharger une simulation",
+            title: "Simulation d'entretien",
             description: "Prépare-toi pour l'entretien",
             action: "Lancer une simulation",
+            href: "/simulation-entretien-config",
         },
         {
             icon: FileText,
             title: "Nouveau document",
             description: "Créer un nouveau document",
             action: "Nouveau document",
+            href: "/nouveau-document",
         },
         {
             icon: Download,
             title: "Créer un portfolio",
             description: "Créer ton portfolio professionnel",
             action: "Créer un portfolio",
+            href: "/creer-portfolio",
         },
     ]
 
@@ -95,8 +101,8 @@ export default function BibliothequePage() {
     ]
 
     return (
-        <div className="min-h-screen bg-white p-4 md:p-8">
-            <div className="max-w-6xl mx-auto">
+        <div className="bg-white">
+            <div className="mx-auto max-w-6xl">
                 {/* Page Title */}
                 <div className="mb-8">
                     <h1 className="text-2xl font-bold text-[#1b2331]">Bibliothèque</h1>
@@ -116,7 +122,10 @@ export default function BibliothequePage() {
                                         </div>
                                         <h3 className="font-bold text-[13px] text-[#1b2331] mb-1">{action.title}</h3>
                                         <p className="text-[11px] text-[#7f8796] mb-4">{action.description}</p>
-                                        <button className="h-8 px-4 rounded-full bg-[#1b2331] text-white text-[11px] font-medium hover:bg-[#2d3e4f]">
+                                        <button
+                                            onClick={() => router.push(action.href)}
+                                            className="h-8 px-4 rounded-full bg-[#1b2331] text-white text-[11px] font-medium hover:bg-[#2d3e4f]"
+                                        >
                                             {action.action}
                                         </button>
                                     </CardContent>
