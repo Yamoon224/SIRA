@@ -18,6 +18,9 @@ export function isPublicRoute(pathname: string) {
         '/offres',
         '/confidentialite',
         '/resultat-analyse-cv',
+        '/cgu',
+        '/mentions-legales',
+        '/politique-protection-donnees',
     ];
 
     const publicPrefixes = [
