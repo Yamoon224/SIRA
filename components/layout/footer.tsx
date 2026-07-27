@@ -22,6 +22,8 @@ export function Footer() {
                             <li><Link href="/a-propos">À propos de Goriya</Link></li>
                             <li><Link href="/blog">Blog</Link></li>
                             <li><Link href="/confidentialite">Politique de confidentialité</Link></li>
+                            <li><Link href="/cgu">Conditions d'utilisation</Link></li>
+                            <li><Link href="/mentions-legales">Mentions légales</Link></li>
                         </ul>
                     </div>
                     <div>
