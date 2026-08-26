@@ -86,7 +86,7 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                             </Link>
                                         </SheetClose>
                                         <SheetClose asChild>
-                                            <Link href="https://goriya-entreprise.vercel.app">
+                                            <Link href="https://entreprise.goriya.net">
                                                 <Button className="w-full">Espace Entreprise</Button>
                                             </Link>
                                         </SheetClose>
@@ -173,7 +173,7 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                     <span className="hidden sm:inline">Se connecter</span>
                                 </Button>
                             </Link>
-                            <Link href="https://goriya-entreprise.vercel.app">
+                            <Link href="https://entreprise.goriya.net">
                                 <Button size="sm" className="sm:text-sm w-9 px-0 sm:w-auto sm:px-3" aria-label="Espace Entreprise">
                                     <Briefcase className="w-4 h-4 sm:hidden" />
                                     <span className="hidden sm:inline">Espace Entreprise</span>
