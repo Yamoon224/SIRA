@@ -46,14 +46,14 @@ export function DashboardRecentApplications({ applications }: DashboardRecentApp
                             </div>
                             <div className="min-w-0">
                                 <h4 className="font-medium text-foreground truncate">
-                                    {application.jobOffer?.company?.name ?? "—"}
+                                    {application.jobOffer?.company?.name ?? "-"}
                                 </h4>
                                 <p className="text-sm text-muted-foreground truncate">
-                                    {application.jobOffer?.title ?? "—"}
+                                    {application.jobOffer?.title ?? "-"}
                                 </p>
                                 <div className="flex items-center text-xs text-muted-foreground mt-1">
                                     <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
-                                    {application.jobOffer?.location ?? "—"}
+                                    {application.jobOffer?.location ?? "-"}
                                 </div>
                             </div>
                         </div>

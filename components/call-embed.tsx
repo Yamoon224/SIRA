@@ -20,7 +20,7 @@ interface CallEmbedProps {
  * (https://meet.lunion-lab.com/docs/integration) : le client écoute
  * "lunion:ready" puis on répond avec "lunion:config" (token/url/room/name).
  * NOTE : la forme exacte des messages (string brute vs objet {type}) n'est
- * pas confirmée par un test contre un embed réel — les deux formes sont
+ * pas confirmée par un test contre un embed réel - les deux formes sont
  * gérées défensivement ci-dessous, à revérifier avant mise en production.
  */
 export function CallEmbed({ token, url, room, name, title, onClose }: CallEmbedProps) {
