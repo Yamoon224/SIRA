@@ -355,7 +355,7 @@ function ReseauTab() {
                                     <Briefcase className="h-4 w-4 shrink-0 text-blue-600" />
                                     <div>
                                         <p className="text-sm font-medium text-foreground">{job.title}</p>
-                                        <p className="text-xs text-muted-foreground">{job.company?.name ?? "—"}</p>
+                                        <p className="text-xs text-muted-foreground">{job.company?.name ?? "-"}</p>
                                     </div>
                                 </CardContent>
                             </Card>

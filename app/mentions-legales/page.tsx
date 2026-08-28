@@ -2,7 +2,7 @@ import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 
 export const metadata = {
-    title: "Mentions légales — Goriya",
+    title: "Mentions légales - Goriya",
     description: "Mentions légales de l'application Goriya : autorisations, propriété intellectuelle, protection des données, contact et droit applicable.",
 }
 

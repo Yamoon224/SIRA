@@ -329,7 +329,7 @@ export default function Page() {
                                                 <div className="flex items-center gap-3">
                                                     <CompanyLogo name={job.company?.name ?? "?"} logo={job.company?.logo} className="w-12 h-12 rounded-lg text-[14px] flex-shrink-0" />
                                                     <div className="min-w-0">
-                                                        <h3 className="font-semibold text-foreground truncate">{job.company?.name ?? "—"}</h3>
+                                                        <h3 className="font-semibold text-foreground truncate">{job.company?.name ?? "-"}</h3>
                                                         <p className="text-sm text-muted-foreground truncate">{capitalizeFirst(job.location)}</p>
                                                     </div>
                                                 </div>
@@ -376,7 +376,7 @@ export default function Page() {
                                             <div key={app.id} className="flex items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-muted/50 rounded-lg">
                                                 <div className={`w-2 h-2 mt-2 sm:mt-0 flex-shrink-0 rounded-full ${app.status === "APPROUVEE" ? "bg-green-500" : app.status === "REJETEE" ? "bg-red-500" : "bg-blue-500"}`} />
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="font-medium text-foreground">Candidature — {app.jobOffer?.title ?? "Poste"}</p>
+                                                    <p className="font-medium text-foreground">Candidature - {app.jobOffer?.title ?? "Poste"}</p>
                                                     <p className="text-sm text-muted-foreground">{app.jobOffer?.company?.name ?? ""}</p>
                                                 </div>
                                                 <span className="text-xs sm:text-sm text-muted-foreground flex-shrink-0">{formatRelativeDate(app.appliedDate)}</span>
@@ -455,7 +455,7 @@ export default function Page() {
                                     <p className="text-xs text-[#b9d8ff]">
                                         {freeUsage.remaining > 0
                                             ? `${freeUsage.remaining} analyse${freeUsage.remaining > 1 ? "s" : ""} gratuite${freeUsage.remaining > 1 ? "s" : ""} restante${freeUsage.remaining > 1 ? "s" : ""} (${freeUsage.remaining}/${freeUsage.limit})`
-                                            : "Limite gratuite atteinte — connecte-toi pour continuer"}
+                                            : "Limite gratuite atteinte - connecte-toi pour continuer"}
                                     </p>
                                 )}
                                 {uploadError && <p className="text-[12px] text-[#ffd4d4]">{uploadError}</p>}
@@ -481,7 +481,7 @@ export default function Page() {
                                             <span className="text-[10px] border border-[#cfe0ff] dark:border-border text-[#7a8db8] dark:text-muted-foreground rounded-full px-2 py-0.5">{company.sector || "Entreprise"}</span>
                                         </div>
                                         <h3 className="text-[13px] font-semibold text-[#1a2232] dark:text-foreground truncate">{company.name}</h3>
-                                        <p className="text-[11px] text-[#8a95a8] dark:text-muted-foreground mt-0.5">{capitalizeFirst(company.location || company.headquarters) || "—"}</p>
+                                        <p className="text-[11px] text-[#8a95a8] dark:text-muted-foreground mt-0.5">{capitalizeFirst(company.location || company.headquarters) || "-"}</p>
                                         {company.about && <p className="text-[10px] text-[#9aa5b8] dark:text-muted-foreground mt-2 leading-4 line-clamp-2">{capitalizeFirst(company.about)}</p>}
                                     </article>
                                 </Link>

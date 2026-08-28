@@ -81,7 +81,7 @@ export default function Page() {
         <div className="space-y-4">
             <div>
                 <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">Enquêtes internes</h1>
-                <p className="mt-1 text-sm text-muted-foreground">Vos réponses sont anonymes — jamais associées à votre identité par votre entreprise.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Vos réponses sont anonymes - jamais associées à votre identité par votre entreprise.</p>
             </div>
 
             {surveys.map((survey) => {
@@ -95,7 +95,7 @@ export default function Page() {
                             </div>
 
                             {isSubmitted ? (
-                                <p className="flex items-center gap-1.5 text-sm text-green-600"><CheckCircle2 className="h-4 w-4" />Réponse envoyée — merci !</p>
+                                <p className="flex items-center gap-1.5 text-sm text-green-600"><CheckCircle2 className="h-4 w-4" />Réponse envoyée - merci !</p>
                             ) : (
                                 <>
                                     <div className="space-y-3">

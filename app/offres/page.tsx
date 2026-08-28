@@ -116,7 +116,7 @@ export default function OffresPage() {
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-2">Y a-t-il une période d'essai gratuite ?</h3>
                 <p className="text-muted-foreground">
-                  Le plan Grouilleur est gratuit et sans engagement — de quoi tester Goriya avant de passer à un
+                  Le plan Grouilleur est gratuit et sans engagement - de quoi tester Goriya avant de passer à un
                   plan payant.
                 </p>
               </CardContent>

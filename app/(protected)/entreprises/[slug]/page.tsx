@@ -101,7 +101,7 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
     )
   }
 
-  // Uniquement des données réelles renvoyées par le backend — les sections
+  // Uniquement des données réelles renvoyées par le backend - les sections
   // sans contenu réel (ce que l'entreprise recherche, culture, équipe) sont
   // masquées plutôt que remplies avec du contenu inventé.
   const presentation = capitalizeFirst(company.about) || undefined
@@ -221,21 +221,21 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
                     <MapPin className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="text-xs text-muted-foreground">Localisation</p>
-                      <p className="text-sm font-semibold">{contact.location ?? "—"}</p>
+                      <p className="text-sm font-semibold">{contact.location ?? "-"}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="text-muted-foreground mt-0.5 flex-shrink-0 text-sm leading-4">🏢</span>
                     <div>
                       <p className="text-xs text-muted-foreground">Secteur</p>
-                      <p className="text-sm font-semibold">{contact.sector ?? "—"}</p>
+                      <p className="text-sm font-semibold">{contact.sector ?? "-"}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <Users className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="text-xs text-muted-foreground">Taille</p>
-                      <p className="text-sm font-semibold">{contact.employees ?? "—"}</p>
+                      <p className="text-sm font-semibold">{contact.employees ?? "-"}</p>
                     </div>
                   </div>
                 </div>

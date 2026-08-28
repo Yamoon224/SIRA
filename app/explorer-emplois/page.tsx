@@ -359,7 +359,7 @@ function ExploreJobsContent() {
                                         </div>
                                         <h3 className="mt-2 text-[12px] font-semibold truncate">{company.name}</h3>
                                         <p className="text-[11px] text-[#7e889c] dark:text-muted-foreground">{company.sector || "Technologie"}</p>
-                                        <p className="text-[11px] text-[#a2acbd] dark:text-muted-foreground mt-0.5">{capitalizeFirst(company.location || company.headquarters) || "—"}</p>
+                                        <p className="text-[11px] text-[#a2acbd] dark:text-muted-foreground mt-0.5">{capitalizeFirst(company.location || company.headquarters) || "-"}</p>
                                         {company.about && <p className="mt-2 text-[11px] leading-4 text-[#8a95a8] dark:text-muted-foreground line-clamp-2">{capitalizeFirst(company.about)}</p>}
                                     </article>
                                 </Link>

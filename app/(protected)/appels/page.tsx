@@ -158,7 +158,7 @@ export default function Page() {
                     <div className="space-y-3">
                         <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex : Entretien avec Goriya Corp" />
                         <div>
-                            <label className="mb-1 block text-xs font-medium text-foreground">Date/heure (optionnel — sinon démarrage immédiat)</label>
+                            <label className="mb-1 block text-xs font-medium text-foreground">Date/heure (optionnel - sinon démarrage immédiat)</label>
                             <Input type="datetime-local" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)} />
                         </div>
                         <DialogFooter>

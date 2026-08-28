@@ -11,7 +11,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const pathname = usePathname()
 
-    // Sur mobile, la sidebar est un panneau superposé (fixed + overlay) — sans
+    // Sur mobile, la sidebar est un panneau superposé (fixed + overlay) - sans
     // ceci elle restait ouverte après avoir suivi un lien, masquant la page
     // nouvellement chargée derrière l'overlay.
     useEffect(() => {

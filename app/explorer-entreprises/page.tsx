@@ -45,7 +45,7 @@ function CompanyCard({ company }: { company: ICompany }) {
                 </div>
                 <h3 className="mt-2 text-[12px] font-bold text-[#1d2432] truncate">{company.name}</h3>
                 <p className="text-[9px] text-[#7e889c]">{company.sector || "Entreprise"}</p>
-                <p className="text-[9px] text-[#a2acbd] mt-0.5">{capitalizeFirst(company.location || company.headquarters) || "—"}</p>
+                <p className="text-[9px] text-[#a2acbd] mt-0.5">{capitalizeFirst(company.location || company.headquarters) || "-"}</p>
                 {company.about && <p className="mt-2 text-[9px] leading-4 text-[#8a95a8] line-clamp-2">{capitalizeFirst(company.about)}</p>}
             </article>
         </Link>

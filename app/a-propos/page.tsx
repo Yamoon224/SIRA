@@ -5,7 +5,7 @@ import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 
 export const metadata = {
-    title: "À propos — Goriya",
+    title: "À propos - Goriya",
     description: "Goriya, la plateforme IA qui connecte les talents ivoiriens aux meilleures opportunités de stage et d'emploi.",
 }
 

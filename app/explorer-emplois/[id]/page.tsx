@@ -196,7 +196,7 @@ export default function JobDetailPage() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        {/* LEFT — main content */}
+                        {/* LEFT - main content */}
                         <div className="lg:col-span-2 space-y-5">
                             {/* Job header card */}
                             <div className="bg-white rounded-xl border border-[#e8eef6] p-6">
@@ -331,7 +331,7 @@ export default function JobDetailPage() {
                             </div>
                         </div>
 
-                        {/* RIGHT — sidebar */}
+                        {/* RIGHT - sidebar */}
                         <div className="space-y-4">
                             {/* Company card */}
                             {job.company && (

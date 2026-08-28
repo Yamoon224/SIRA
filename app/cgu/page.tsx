@@ -2,7 +2,7 @@ import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 
 export const metadata = {
-    title: "Conditions générales d'utilisation — Goriya",
+    title: "Conditions générales d'utilisation - Goriya",
     description: "Conditions générales d'utilisation (CGU) de l'application Goriya : accès, compte utilisateur, services, responsabilités et droit applicable.",
 }
 

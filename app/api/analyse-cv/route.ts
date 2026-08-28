@@ -186,7 +186,7 @@ async function runAnalysis(
     const parsed = JSON.parse(content)
     const analysis = sanitizeAnalysis(parsed)
 
-    // Le quota gratuit n'est consommé qu'ici, une fois l'analyse effectivement réussie —
+    // Le quota gratuit n'est consommé qu'ici, une fois l'analyse effectivement réussie -
     // un échec (extraction, OpenAI, parsing) ne pénalise plus l'utilisateur anonyme.
     if (anonymous) {
         const usage = await consumeAnonymousUse(anonymous.deviceId)

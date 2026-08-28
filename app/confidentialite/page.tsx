@@ -2,7 +2,7 @@ import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 
 export const metadata = {
-    title: "Politique de confidentialité — Goriya",
+    title: "Politique de confidentialité - Goriya",
     description:
         "Politique de confidentialité et de protection des données à caractère personnel de l'application GORIYA : données collectées, finalités, sécurité, transferts, conservation et droits des utilisateurs.",
 }
@@ -119,7 +119,7 @@ const sections: Section[] = [
             {
                 heading: "2. Données d'identification, de profil et de parcours",
                 body: [
-                    "Catégories de données collectées — Dans le cadre de l'utilisation de l'application GORIYA, l'Exploitant collecte directement auprès de l'utilisateur les données à caractère personnel nécessaires à la création, à la gestion et à l'utilisation des services proposés. Les données susceptibles d'être collectées comprennent notamment :",
+                    "Catégories de données collectées - Dans le cadre de l'utilisation de l'application GORIYA, l'Exploitant collecte directement auprès de l'utilisateur les données à caractère personnel nécessaires à la création, à la gestion et à l'utilisation des services proposés. Les données susceptibles d'être collectées comprennent notamment :",
                 ],
                 list: [
                     "Le nom et le prénom",
@@ -174,7 +174,7 @@ const sections: Section[] = [
             {
                 heading: "3. Données de connexion et d'utilisation",
                 body: [
-                    "Catégories de données collectées — Dans le cadre de l'utilisation de l'application GORIYA, l'Exploitant collecte certaines données techniques nécessaires au fonctionnement, à la sécurisation et à l'amélioration des services. Les données susceptibles d'être collectées comprennent notamment :",
+                    "Catégories de données collectées - Dans le cadre de l'utilisation de l'application GORIYA, l'Exploitant collecte certaines données techniques nécessaires au fonctionnement, à la sécurisation et à l'amélioration des services. Les données susceptibles d'être collectées comprennent notamment :",
                 ],
                 list: [
                     "Les identifiants des terminaux utilisés pour accéder à l'application",
@@ -218,7 +218,7 @@ const sections: Section[] = [
             {
                 heading: "4. Données de localisation",
                 body: [
-                    "Catégories de données collectées — Lorsque certaines fonctionnalités de l'application GORIYA nécessitent l'utilisation de données de localisation, l'Exploitant peut être amené à collecter des informations relatives à la position géographique de l'utilisateur. Les données susceptibles d'être collectées comprennent notamment :",
+                    "Catégories de données collectées - Lorsque certaines fonctionnalités de l'application GORIYA nécessitent l'utilisation de données de localisation, l'Exploitant peut être amené à collecter des informations relatives à la position géographique de l'utilisateur. Les données susceptibles d'être collectées comprennent notamment :",
                 ],
                 list: [
                     "Les données de localisation obtenues à partir des systèmes de géolocalisation par satellite",
@@ -272,7 +272,7 @@ const sections: Section[] = [
             {
                 heading: "5. Données nécessaires à la vérification d'identité et données particulières",
                 body: [
-                    "Catégories de données collectées — Dans le cadre de la création du compte utilisateur, de la vérification de l'identité ou de l'accès à certaines fonctionnalités de l'application GORIYA, l'Exploitant peut être amené à collecter des données nécessaires à l'identification et à la sécurisation des comptes. Les données susceptibles d'être collectées comprennent notamment :",
+                    "Catégories de données collectées - Dans le cadre de la création du compte utilisateur, de la vérification de l'identité ou de l'accès à certaines fonctionnalités de l'application GORIYA, l'Exploitant peut être amené à collecter des données nécessaires à l'identification et à la sécurisation des comptes. Les données susceptibles d'être collectées comprennent notamment :",
                 ],
                 list: ["Le numéro de téléphone", "La carte nationale d'identité (CNI) ou tout document officiel équivalent", "Le permis de conduire"],
             },
@@ -824,7 +824,7 @@ const sections: Section[] = [
         ],
     },
     {
-        title: "Annexe A — Politique de conservation et de purge des données à caractère personnel",
+        title: "Annexe A - Politique de conservation et de purge des données à caractère personnel",
         subsections: [
             {
                 heading: "1. Principes généraux",
@@ -837,16 +837,16 @@ const sections: Section[] = [
             {
                 heading: "2. Durées applicables selon les catégories de données",
                 body: [
-                    "a) Données relatives aux comptes utilisateurs — Conservées pendant toute la durée d'activité du compte. Lorsqu'un compte demeure inactif pendant une période prolongée, les données peuvent faire l'objet d'une suppression ou d'une anonymisation après un délai de trois (3) ans suivant la dernière connexion, sauf réactivation du compte ou nécessité particulière justifiant une conservation différente.",
-                    "b) Données relatives aux candidatures et aux évaluations — Les données relatives aux candidatures, aux analyses de CV, aux résultats de scoring, aux opérations de matching et aux évaluations sont conservées pendant une durée maximale de deux (02) ans à compter de la dernière candidature ou de la clôture de l'offre concernée. À l'issue de cette période, les données sont supprimées, sauf lorsque l'utilisateur a expressément accepté leur conservation dans une CVthèque ou qu'une autre base légale permet leur conservation.",
-                    "c) Données relatives aux offres d'emploi — Conservées pendant une durée maximale de deux (02) ans à compter de la clôture de l'offre concernée. À l'issue de cette période, elles peuvent être supprimées ou faire l'objet d'une anonymisation à des fins statistiques lorsque cela est nécessaire.",
-                    "d) Données relatives aux entreprises clientes — Conservées pendant toute la durée d'utilisation active du service. En cas de résiliation ou de suppression du compte entreprise, les données sont supprimées après un délai maximal de trois (03) ans, sauf obligation légale ou nécessité liée à la défense des droits de l'Exploitant.",
-                    "e) Données relatives aux échanges et à la messagerie — Conservées pendant la durée d'activité du compte. Elles peuvent être supprimées lors de la suppression du compte utilisateur ou après une période d'inactivité prolongée de trois (03) ans, sauf nécessité particulière liée à la sécurité ou à la preuve.",
-                    "f) Codes de vérification et données temporaires — Conservés uniquement jusqu'à leur expiration ou leur utilisation, puis supprimés après expiration ou consommation.",
-                    "g) Journaux d'audit et données de sécurité — Conservés pendant une durée comprise entre un (01) et trois (03) ans selon leur nature, à des fins de sécurité, de preuve et de contrôle exclusivement.",
-                    "h) Notifications et données techniques associées — Les données relatives aux notifications utilisateurs sont conservées pendant une durée comprise entre six (06) et douze (12) mois. Les données techniques relatives aux terminaux et aux notifications sont conservées uniquement pendant la durée nécessaire au fonctionnement du service.",
-                    "i) Données relatives aux communautés et interactions internes — Conservées pendant la durée d'activité du compte utilisateur. Elles peuvent être supprimées lors de la suppression du compte ou lorsque leur conservation n'est plus nécessaire.",
-                    "j) Données relatives aux enquêtes — Les données issues des enquêtes et questionnaires utilisateurs sont conservées pendant une durée maximale de deux (02) ans après la fin de la campagne concernée. Lorsque cela est possible, les réponses peuvent être anonymisées afin de permettre une exploitation statistique ultérieure.",
+                    "a) Données relatives aux comptes utilisateurs - Conservées pendant toute la durée d'activité du compte. Lorsqu'un compte demeure inactif pendant une période prolongée, les données peuvent faire l'objet d'une suppression ou d'une anonymisation après un délai de trois (3) ans suivant la dernière connexion, sauf réactivation du compte ou nécessité particulière justifiant une conservation différente.",
+                    "b) Données relatives aux candidatures et aux évaluations - Les données relatives aux candidatures, aux analyses de CV, aux résultats de scoring, aux opérations de matching et aux évaluations sont conservées pendant une durée maximale de deux (02) ans à compter de la dernière candidature ou de la clôture de l'offre concernée. À l'issue de cette période, les données sont supprimées, sauf lorsque l'utilisateur a expressément accepté leur conservation dans une CVthèque ou qu'une autre base légale permet leur conservation.",
+                    "c) Données relatives aux offres d'emploi - Conservées pendant une durée maximale de deux (02) ans à compter de la clôture de l'offre concernée. À l'issue de cette période, elles peuvent être supprimées ou faire l'objet d'une anonymisation à des fins statistiques lorsque cela est nécessaire.",
+                    "d) Données relatives aux entreprises clientes - Conservées pendant toute la durée d'utilisation active du service. En cas de résiliation ou de suppression du compte entreprise, les données sont supprimées après un délai maximal de trois (03) ans, sauf obligation légale ou nécessité liée à la défense des droits de l'Exploitant.",
+                    "e) Données relatives aux échanges et à la messagerie - Conservées pendant la durée d'activité du compte. Elles peuvent être supprimées lors de la suppression du compte utilisateur ou après une période d'inactivité prolongée de trois (03) ans, sauf nécessité particulière liée à la sécurité ou à la preuve.",
+                    "f) Codes de vérification et données temporaires - Conservés uniquement jusqu'à leur expiration ou leur utilisation, puis supprimés après expiration ou consommation.",
+                    "g) Journaux d'audit et données de sécurité - Conservés pendant une durée comprise entre un (01) et trois (03) ans selon leur nature, à des fins de sécurité, de preuve et de contrôle exclusivement.",
+                    "h) Notifications et données techniques associées - Les données relatives aux notifications utilisateurs sont conservées pendant une durée comprise entre six (06) et douze (12) mois. Les données techniques relatives aux terminaux et aux notifications sont conservées uniquement pendant la durée nécessaire au fonctionnement du service.",
+                    "i) Données relatives aux communautés et interactions internes - Conservées pendant la durée d'activité du compte utilisateur. Elles peuvent être supprimées lors de la suppression du compte ou lorsque leur conservation n'est plus nécessaire.",
+                    "j) Données relatives aux enquêtes - Les données issues des enquêtes et questionnaires utilisateurs sont conservées pendant une durée maximale de deux (02) ans après la fin de la campagne concernée. Lorsque cela est possible, les réponses peuvent être anonymisées afin de permettre une exploitation statistique ultérieure.",
                 ],
             },
             {
@@ -859,7 +859,7 @@ const sections: Section[] = [
         ],
     },
     {
-        title: "Annexe B — Procédure interne de réaction aux violations de données à caractère personnel",
+        title: "Annexe B - Procédure interne de réaction aux violations de données à caractère personnel",
         subsections: [
             {
                 heading: "1. Objet de la procédure",
@@ -956,7 +956,7 @@ const sections: Section[] = [
         ],
     },
     {
-        title: "Annexe C — Transferts internationaux de données à caractère personnel hors espace CEDEAO",
+        title: "Annexe C - Transferts internationaux de données à caractère personnel hors espace CEDEAO",
         subsections: [
             {
                 heading: "1. Objet de l'annexe",
@@ -1048,7 +1048,7 @@ const sections: Section[] = [
         ],
     },
     {
-        title: "Annexe D — Synthèse des mesures techniques et organisationnelles de protection des données",
+        title: "Annexe D - Synthèse des mesures techniques et organisationnelles de protection des données",
         subsections: [
             {
                 heading: "1. Objet de l'annexe",

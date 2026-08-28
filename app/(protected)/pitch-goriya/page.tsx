@@ -59,7 +59,7 @@ function PitchGoriyaContent() {
         return () => { if (pollRef.current) clearInterval(pollRef.current) }
     }, [])
 
-    // Le rendu (scoring vidéo, avatar) est asynchrone côté backend — on
+    // Le rendu (scoring vidéo, avatar) est asynchrone côté backend - on
     // sonde le statut jusqu'à sortie de PROCESSING, comme le fait déjà
     // l'app entreprise pour le rapport d'évaluation candidat.
     const pollStatus = (id: string) => {
@@ -160,7 +160,7 @@ function PitchGoriyaContent() {
         <div className="space-y-4">
             <div>
                 <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">Pitch Goriya</h1>
-                <p className="mt-1 text-sm text-muted-foreground">Générez et scorez votre pitch — texte, vidéo ou avatar animé.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Générez et scorez votre pitch - texte, vidéo ou avatar animé.</p>
             </div>
 
             <Card className="border border-border">

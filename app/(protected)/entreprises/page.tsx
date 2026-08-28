@@ -163,12 +163,12 @@ export default function CompaniesPage() {
                                                     {company.name.charAt(0).toUpperCase()}
                                                 </div>
                                                 <Badge variant="outline" className="h-5 rounded-full border-[#ced8ee] px-2 text-[10px] text-[#2f6de6]">
-                                                    — offres
+                                                    - offres
                                                 </Badge>
                                             </div>
 
                                             <h3 className="text-[12px] font-semibold text-[#1d2433]">{company.name}</h3>
-                                            <p className="mt-1 text-[10px] leading-[1.35] text-[#8b93a3]">{company.sector ?? company.about ?? "—"}</p>
+                                            <p className="mt-1 text-[10px] leading-[1.35] text-[#8b93a3]">{company.sector ?? company.about ?? "-"}</p>
 
                                             {company.headquarters && (
                                                 <p className="mt-1 text-[10px] text-[#9aa3b2]">{capitalizeFirst(company.headquarters)}</p>

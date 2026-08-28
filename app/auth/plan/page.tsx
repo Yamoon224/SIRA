@@ -44,14 +44,14 @@ export default function PlanPage() {
         setSubscribing(plan.id)
         try {
             if (Number(plan.price) === 0) {
-                // Free plan — activate directly
+                // Free plan - activate directly
                 await subscriptionService.subscribe({ userId: user.id, planId: plan.id })
                 toast.success("Abonnement activé avec succès !")
                 router.push("/dashboard")
                 return
             }
 
-            // Paid plan — ouvre le widget de paiement Kkiapay
+            // Paid plan - ouvre le widget de paiement Kkiapay
             const res = await subscriptionService.createCheckout({ userId: user.id, planId: plan.id })
             const data = (res as any)?.data ?? res
             pendingCheckoutRef.current = { userId: user.id, planId: plan.id }
@@ -62,7 +62,7 @@ export default function PlanPage() {
         }
     }
 
-    // Callbacks du widget Kkiapay, branchés une seule fois via Script.onLoad —
+    // Callbacks du widget Kkiapay, branchés une seule fois via Script.onLoad -
     // pendingCheckoutRef reste à jour même si ce closure n'est pas recréé.
     const handleKkiapaySuccess = (response: { transactionId: string }) => {
         const pending = pendingCheckoutRef.current

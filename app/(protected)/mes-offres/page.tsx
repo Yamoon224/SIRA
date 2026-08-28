@@ -43,7 +43,7 @@ export default function MyApplicationsPage() {
     immediate: true,
   })
 
-  // useApi() ne relance sa requête qu'au montage — on déclenche nous-mêmes le
+  // useApi() ne relance sa requête qu'au montage - on déclenche nous-mêmes le
   // refetch quand l'onglet de statut change (le premier appel est déjà
   // couvert par immediate: true, donc on l'ignore ici via un flag de montage).
   const [mounted, setMounted] = useState(false)
@@ -117,7 +117,7 @@ export default function MyApplicationsPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-gray-900 mb-1">{application.jobOffer?.title ?? "Offre"}</h3>
-                          <p className="text-gray-600 mb-2">{application.jobOffer?.company?.name ?? "—"}</p>
+                          <p className="text-gray-600 mb-2">{application.jobOffer?.company?.name ?? "-"}</p>
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500 mb-3">
                             {application.jobOffer?.location && (
                               <div className="flex items-center">

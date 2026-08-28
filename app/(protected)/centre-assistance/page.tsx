@@ -70,7 +70,7 @@ export default function Page() {
         }
     }
 
-    // Callbacks du widget Kkiapay, branchés une seule fois via Script.onLoad —
+    // Callbacks du widget Kkiapay, branchés une seule fois via Script.onLoad -
     // pendingCheckoutRef reste à jour même si ce closure n'est pas recréé.
     const handleKkiapaySuccess = (response: { transactionId: string }) => {
         const pending = pendingCheckoutRef.current
@@ -356,7 +356,7 @@ export default function Page() {
                         </div>
                     )}
 
-                    {/* CTA — visible sur les deux onglets */}
+                    {/* CTA - visible sur les deux onglets */}
                     <div className="bg-white border border-[#e8edf6] rounded-2xl p-8 text-center">
                         <h3 className="text-lg font-bold text-[#1b2331] mb-2">Une question ? Besoin d'aide ?</h3>
                         <p className="text-[13px] text-[#7f8796] mb-6">

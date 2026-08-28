@@ -152,7 +152,7 @@ function SearchResults() {
                             <Link href={`/explorer-emplois/${job.id}`} className="hover:underline">
                               <h3 className="font-semibold text-lg mb-1">{job.title}</h3>
                             </Link>
-                            <p className="text-muted-foreground mb-2">{job.company?.name ?? "—"}</p>
+                            <p className="text-muted-foreground mb-2">{job.company?.name ?? "-"}</p>
                             <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                               {job.location && (
                                 <div className="flex items-center">
@@ -173,7 +173,7 @@ function SearchResults() {
                       <p className="text-muted-foreground mb-4 line-clamp-2">{job.description}</p>
 
                       <div className="flex items-center justify-between">
-                        <span className="font-semibold text-blue-600 dark:text-primary">{job.salary || "—"}</span>
+                        <span className="font-semibold text-blue-600 dark:text-primary">{job.salary || "-"}</span>
                         <div className="space-x-2">
                           <Button variant="outline" size="sm" onClick={() => toggleBookmark(job.id)}>
                             <Heart className={`w-4 h-4 mr-1 ${bookmarkedJobs.includes(job.id) ? "fill-current text-primary" : ""}`} />

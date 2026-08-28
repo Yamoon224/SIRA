@@ -52,7 +52,7 @@ export default function NewCompaniesPage() {
                                                 <CompanyLogo name={company.name} logo={company.logo} className="w-8 h-8 text-[10px] flex-shrink-0" />
                                                 <div>
                                                     <h2 className="text-sm font-semibold text-[#1d2432]">{company.name}</h2>
-                                                    <p className="text-xs text-[#667085] mt-0.5">{capitalizeFirst(company.location || company.headquarters) || "—"}</p>
+                                                    <p className="text-xs text-[#667085] mt-0.5">{capitalizeFirst(company.location || company.headquarters) || "-"}</p>
                                                 </div>
                                             </div>
                                             {company.sector && (

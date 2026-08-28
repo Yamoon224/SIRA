@@ -87,7 +87,7 @@ export default function Page() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-[11px] text-[#9aa3b2] mb-1">Candidatures soumises</p>
-                                    <p className="text-[28px] font-bold text-[#1b2331]">{dashStats?.totalApplications ?? "—"}</p>
+                                    <p className="text-[28px] font-bold text-[#1b2331]">{dashStats?.totalApplications ?? "-"}</p>
                                 </div>
                                 <Briefcase className="w-10 h-10 text-[#e8edf6]" />
                             </div>
@@ -97,7 +97,7 @@ export default function Page() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-[11px] text-[#9aa3b2] mb-1">Entretiens</p>
-                                    <p className="text-[28px] font-bold text-[#1b2331]">{dashStats?.interviews ?? "—"}</p>
+                                    <p className="text-[28px] font-bold text-[#1b2331]">{dashStats?.interviews ?? "-"}</p>
                                 </div>
                                 <Briefcase className="w-10 h-10 text-[#e8edf6]" />
                             </div>
@@ -107,7 +107,7 @@ export default function Page() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-[11px] text-[#9aa3b2] mb-1">Offres sauvegardées</p>
-                                    <p className="text-[28px] font-bold text-[#1b2331]">{dashStats?.savedJobs ?? "—"}</p>
+                                    <p className="text-[28px] font-bold text-[#1b2331]">{dashStats?.savedJobs ?? "-"}</p>
                                 </div>
                                 <div className="w-10 h-10 bg-[#2f6de6] rounded-full flex items-center justify-center">
                                     <span className="text-white text-[14px] font-bold">★</span>
@@ -119,7 +119,7 @@ export default function Page() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-[11px] text-[#9aa3b2] mb-1">Vues du profil</p>
-                                    <p className="text-[28px] font-bold text-[#1b2331]">{dashStats?.profileViews ?? "—"}</p>
+                                    <p className="text-[28px] font-bold text-[#1b2331]">{dashStats?.profileViews ?? "-"}</p>
                                 </div>
                                 <Eye className="w-10 h-10 text-[#e8edf6]" />
                             </div>
@@ -176,7 +176,7 @@ export default function Page() {
                                             <div>
                                                 <p className="text-[13px] font-semibold text-[#1b2331]">{app.jobOffer?.title ?? "Candidature"}</p>
                                                 <div className="flex items-center gap-2 mt-1">
-                                                    <span className="text-[11px] text-[#7f8796]">{app.jobOffer?.company?.name ?? "—"}</span>
+                                                    <span className="text-[11px] text-[#7f8796]">{app.jobOffer?.company?.name ?? "-"}</span>
                                                     <span className="text-[11px] text-[#9aa3b2]">•</span>
                                                     <span className="text-[11px] text-[#7f8796]">{new Date(app.appliedDate).toLocaleDateString("fr-FR")}</span>
                                                 </div>
@@ -241,7 +241,7 @@ export default function Page() {
                                                 </div>
                                             </div>
                                             <h4 className="text-[13px] font-bold text-[#1b2331] mb-1">{company.name}</h4>
-                                            <p className="text-[11px] text-[#7f8796] mb-2">{company.sector ?? company.about ?? "—"}</p>
+                                            <p className="text-[11px] text-[#7f8796] mb-2">{company.sector ?? company.about ?? "-"}</p>
                                             <button
                                                 onClick={() => router.push(`/entreprises/${company.id}`)}
                                                 className="w-full h-8 rounded-lg border border-[#d8deeb] text-[11px] font-medium text-[#2f6de6] hover:bg-[#f4f7ff]"
