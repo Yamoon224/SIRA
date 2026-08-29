@@ -82,12 +82,12 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                     <div className="mt-4 flex flex-col gap-2 px-4">
                                         <SheetClose asChild>
                                             <Link href="/auth/signin">
-                                                <Button variant="outline" className="w-full">Se connecter</Button>
+                                                <Button variant="outline" className="w-full rounded-full">Se connecter</Button>
                                             </Link>
                                         </SheetClose>
                                         <SheetClose asChild>
                                             <Link href="https://entreprise.goriya.net">
-                                                <Button className="w-full">Espace Entreprise</Button>
+                                                <Button className="w-full rounded-full">Espace Entreprise</Button>
                                             </Link>
                                         </SheetClose>
                                     </div>
@@ -168,13 +168,13 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                         <div className="flex items-center gap-2">
                             <ThemeToggle />
                             <Link href="/auth/signin">
-                                <Button variant="outline" size="sm" className="sm:text-sm bg-transparent w-9 px-0 sm:w-auto sm:px-3" aria-label="Se connecter">
+                                <Button variant="outline" size="sm" className="sm:text-sm bg-transparent w-9 px-0 sm:w-auto sm:px-3 rounded-full" aria-label="Se connecter">
                                     <LogIn className="w-4 h-4 sm:hidden" />
                                     <span className="hidden sm:inline">Se connecter</span>
                                 </Button>
                             </Link>
                             <Link href="https://entreprise.goriya.net">
-                                <Button size="sm" className="sm:text-sm w-9 px-0 sm:w-auto sm:px-3" aria-label="Espace Entreprise">
+                                <Button size="sm" className="sm:text-sm w-9 px-0 sm:w-auto sm:px-3 rounded-full" aria-label="Espace Entreprise">
                                     <Briefcase className="w-4 h-4 sm:hidden" />
                                     <span className="hidden sm:inline">Espace Entreprise</span>
                                 </Button>
