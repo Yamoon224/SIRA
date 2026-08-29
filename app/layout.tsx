@@ -1,9 +1,10 @@
 import "./globals.css"
 import type React from "react"
 import { Suspense } from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { PwaRegister } from "@/components/pwa-register"
 import { SessionProvider } from "@/components/session-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/contexts/auth-context"
@@ -14,10 +15,21 @@ const inter = Inter({
     variable: "--font-inter",
 })
 
+export const viewport: Viewport = {
+    themeColor: "#ffffff",
+}
+
 export const metadata: Metadata = {
     title: "Goriya - Plateforme de recrutement",
     description: "Trouve ton emploi idéal avec Goriya",
     // generator: "v0.app",
+    applicationName: "Goriya",
+    manifest: "/manifest.webmanifest",
+    appleWebApp: {
+        capable: true,
+        title: "Goriya",
+        statusBarStyle: "default",
+    },
     icons: {
         icon: [
             {
@@ -59,6 +71,7 @@ export default function RootLayout({
                         </AuthProvider>
                     </SessionProvider>
                 </ThemeProvider>
+                <PwaRegister />
                 <Analytics />
                 <Toaster
                     position="top-right"
