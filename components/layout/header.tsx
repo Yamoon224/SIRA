@@ -1,7 +1,9 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Bell, Settings, User, Menu, LogIn, Briefcase } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -36,6 +38,12 @@ interface HeaderProps {
 export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo = true }: HeaderProps) {
     const [mounted, setMounted] = useState(false)
     const { user, logout, isAuthenticated } = useAuth()
+    const pathname = usePathname()
+
+    const isActiveLink = (href: string) => {
+        const p = pathname ?? ""
+        return href === "/" ? p === "/" : p === href || p.startsWith(href + "/")
+    }
 
     useEffect(() => {
         setMounted(true)
@@ -71,7 +79,13 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                         <SheetClose asChild key={link.href}>
                                             <Link
                                                 href={link.href}
-                                                className="rounded-md px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                                                aria-current={isActiveLink(link.href) ? "page" : undefined}
+                                                className={cn(
+                                                    "rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
+                                                    isActiveLink(link.href)
+                                                        ? "bg-muted text-foreground"
+                                                        : "text-foreground hover:bg-muted",
+                                                )}
                                             >
                                                 {link.label}
                                             </Link>
@@ -103,7 +117,17 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                     )}
                     <nav className="hidden lg:flex items-center gap-4 xl:gap-6">
                         {PUBLIC_NAV_LINKS.map((link) => (
-                            <Link key={link.href} href={link.href} className="text-muted-foreground hover:text-foreground transition-colors text-sm">
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                aria-current={isActiveLink(link.href) ? "page" : undefined}
+                                className={cn(
+                                    "text-sm transition-colors border-b-2 pb-0.5",
+                                    isActiveLink(link.href)
+                                        ? "border-primary text-foreground font-medium"
+                                        : "border-transparent text-muted-foreground hover:text-foreground",
+                                )}
+                            >
                                 {link.label}
                             </Link>
                         ))}

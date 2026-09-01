@@ -281,7 +281,7 @@ export default function Page() {
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder={activeTab === "signup" ? "user@domaine.com" : "nom.prenom@mail.com"}
+                                    placeholder={activeTab === "signup" ? "Votre adresse email" : "Votre adresse email"}
                                     value={activeTab === "signup" ? formData.email : loginData.email}
                                     onChange={(e) => {
                                         if (activeTab === "signup") {
