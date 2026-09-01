@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { AppLogo } from "@/components/app-logo"
 import { usePathname } from "next/navigation"
@@ -24,6 +25,7 @@ import {
     GraduationCap,
     ClipboardList,
     Video,
+    ChevronDown,
     type LucideIcon,
 } from "lucide-react"
 
@@ -31,7 +33,8 @@ type NavItem = { title: string; href: string; icon: LucideIcon }
 type NavSection = { label?: string; items: NavItem[] }
 
 // Regroupé par thématique plutôt qu'une longue liste plate : la première
-// section (accueil) n'a pas de titre, les suivantes en portent un.
+// section (accueil) reste toujours visible, les suivantes sont des accordéons
+// cliquables (repliés par défaut, sauf celui qui contient la page courante).
 const navSections: NavSection[] = [
     {
         items: [
@@ -86,6 +89,16 @@ const parameterItems: NavItem[] = [
 export function Sidebar() {
     const pathname = usePathname()
 
+    const sectionHasActive = (section: NavSection) => section.items.some((it) => it.href === pathname)
+
+    // Ouvre d'emblée la section qui contient la page courante, les autres repliées.
+    const [openLabels, setOpenLabels] = useState<string[]>(() =>
+        navSections.filter((s) => s.label && sectionHasActive(s)).map((s) => s.label as string),
+    )
+
+    const toggle = (label: string) =>
+        setOpenLabels((prev) => (prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label]))
+
     const renderItem = (item: NavItem) => {
         const Icon = item.icon
         return (
@@ -114,16 +127,38 @@ export function Sidebar() {
             </div>
 
             <nav className="flex-1 px-2 sm:px-4 py-4 overflow-y-auto scrollbar-thin">
-                {navSections.map((section, i) => (
-                    <div key={section.label ?? `section-${i}`} className={cn(i > 0 && "mt-4")}>
-                        {section.label && (
-                            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-3">
-                                {section.label}
+                {navSections.map((section, i) => {
+                    if (!section.label) {
+                        return (
+                            <div key={`section-${i}`} className="space-y-1">
+                                {section.items.map(renderItem)}
                             </div>
-                        )}
-                        <div className="space-y-1">{section.items.map(renderItem)}</div>
-                    </div>
-                ))}
+                        )
+                    }
+
+                    const isOpen = openLabels.includes(section.label)
+                    const hasActive = sectionHasActive(section)
+
+                    return (
+                        <div key={section.label} className="mt-4">
+                            <button
+                                type="button"
+                                onClick={() => toggle(section.label as string)}
+                                aria-expanded={isOpen}
+                                className={cn(
+                                    "flex w-full items-center justify-between px-3 py-2 rounded-sm text-xs font-semibold uppercase tracking-wider transition-colors",
+                                    hasActive ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+                                )}
+                            >
+                                <span className="truncate">{section.label}</span>
+                                <ChevronDown
+                                    className={cn("w-4 h-4 flex-shrink-0 transition-transform", isOpen && "rotate-180")}
+                                />
+                            </button>
+                            {isOpen && <div className="mt-1 space-y-1">{section.items.map(renderItem)}</div>}
+                        </div>
+                    )
+                })}
             </nav>
 
             <div className="px-2 sm:px-4 pb-4 border-t border-border pt-4">
