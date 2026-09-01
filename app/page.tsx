@@ -456,7 +456,7 @@ export default function Page() {
                             <>
                                 <Button onClick={handlePickCV} disabled={isAnalyzingCV} className="h-11 sm:h-12 rounded-full bg-white text-[#20429b] hover:bg-[#f4f7ff] px-5 sm:px-8 font-semibold w-full max-w-[420px] mx-auto">
                                     {isAnalyzingCV ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
-                                    {isAnalyzingCV ? "Analyse IA en cours..." : "Dépose ton CV ici (Gratuit)"}
+                                    {isAnalyzingCV ? "Analyse IA en cours..." : "Télécharger votre CV"}
                                 </Button>
                                 {!isLoggedIn && freeUsage && (
                                     <p className="text-xs text-[#b9d8ff]">
@@ -470,7 +470,7 @@ export default function Page() {
                         )}
                         <input ref={cvInputRef} type="file" accept=".pdf,.doc,.docx,.png,.jpeg,.jpg,.webp" onChange={handleCVUpload} className="hidden" />
                     </div>
-                    <p className="mt-4 sm:mt-6 text-xs sm:text-[13px] text-[#b9d8ff]">Dépose ton document (Word ou PDF) et laisse notre IA calculer ton score d'efficacité en quelques secondes.</p>
+                    <p className="mt-4 sm:mt-6 text-xs sm:text-[13px] text-[#b9d8ff]">Importer votre CV, lettre de motivation ou tout autre document et obtenez un score en quelques secondes.</p>
                 </div>
             </section>
 
@@ -606,7 +606,7 @@ export default function Page() {
             {/* Career cards */}
             <section className="py-8 sm:py-14 bg-white dark:bg-background">
                 <div className="mx-auto max-w-[1180px] px-3 sm:px-4">
-                    <div className="mb-4 sm:mb-6">
+                    {/* <div className="mb-4 sm:mb-6">
                         <h3 className="text-lg xs:text-xl sm:text-2xl font-bold">Prends ta carrière en main</h3>
                     </div>
                     <div className="inline-flex rounded-full border border-[#e2e8f5] dark:border-border overflow-hidden mb-5 bg-white dark:bg-card">
@@ -616,7 +616,7 @@ export default function Page() {
                                 {tab}
                             </button>
                         ))}
-                    </div>
+                    </div> */}
                     {homeCareerLoading ? (
                         <div className="flex justify-center py-10"><Loader2 className="w-5 h-5 animate-spin text-[#2f6de6]" /></div>
                     ) : homeCareerJobs.length === 0 ? (
