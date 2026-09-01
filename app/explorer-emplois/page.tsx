@@ -15,6 +15,7 @@ import { Footer } from "@/components/layout/footer"
 import { CompanyLogo } from "@/components/company-logo"
 import { capitalizeFirst, dedupeByName, formatFileUrl } from "@/lib/utils"
 import { useAuth } from "@/contexts/auth-context"
+import { toast } from "sonner"
 
 const filterChips = [
     { label: "Salaire affiché", icon: SlidersHorizontal },
@@ -188,6 +189,7 @@ function ExploreJobsContent() {
     const toggleBookmark = (e: React.MouseEvent, jobId: string) => {
         e.preventDefault()
         e.stopPropagation()
+        if (!isAuthenticated) { toast.info("Connecte-toi pour sauvegarder une offre.") ; return }
         const isSaved = bookmarkedJobs.includes(jobId)
         setBookmarkedJobs(prev => isSaved ? prev.filter(id => id !== jobId) : [...prev, jobId])
         const action = isSaved ? jobService.unsaveJob(jobId) : jobService.saveJob(jobId)

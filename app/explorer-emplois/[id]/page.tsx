@@ -12,6 +12,7 @@ import { Footer } from "@/components/layout/footer"
 import { CompanyLogo } from "@/components/company-logo"
 import { capitalizeFirst, formatFileUrl } from "@/lib/utils"
 import { useAuth } from "@/contexts/auth-context"
+import { toast } from "sonner"
 
 function formatPosted(date: Date | string) {
     const d = new Date(date)
@@ -152,6 +153,7 @@ export default function JobDetailPage() {
     }, [jobId])
 
     const handleToggleBookmark = () => {
+        if (!isAuthenticated) { toast.info("Connecte-toi pour sauvegarder une offre.") ; return }
         const isSaved = bookmarked
         setBookmarked(!isSaved)
         const action = isSaved ? jobService.unsaveJob(jobId) : jobService.saveJob(jobId)

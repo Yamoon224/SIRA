@@ -14,6 +14,8 @@ import { ICompany, IJobOffer } from "@/lib/@types/entities"
 import { CompanyLogo } from "@/components/company-logo"
 import { capitalizeFirst, formatFileUrl } from "@/lib/utils"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+import { useAuth } from "@/contexts/auth-context"
+import { toast } from "sonner"
 
 const JOB_TYPES = ["CDI", "CDD", "STAGE", "FREELANCE"]
 const DURATIONS = ["1-3 mois", "4-6 mois", "7-12 mois", "13-24 mois", "25-36 mois"]
@@ -159,6 +161,7 @@ export default function EntrepriseDetailPage() {
     const [similarCompanies, setSimilarCompanies] = useState<ICompany[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(false)
+    const { isAuthenticated } = useAuth()
     const [activeTab, setActiveTab] = useState<"profil" | "jobs" | "galerie">("profil")
     const [lightboxSrc, setLightboxSrc] = useState<string | null>(null)
     const [followedIds, setFollowedIds] = useState<string[]>([])
@@ -210,6 +213,7 @@ export default function EntrepriseDetailPage() {
     const isFollowing = followedIds.includes(companyId)
 
     const handleToggleFollow = () => {
+        if (!isAuthenticated) { toast.info("Connecte-toi pour suivre une entreprise.") ; return }
         setFollowedIds((prev) => (isFollowing ? prev.filter((id) => id !== companyId) : [...prev, companyId]))
         const action = isFollowing ? companyService.unfollowCompany(companyId) : companyService.followCompany(companyId)
         action.catch(() => setFollowedIds((prev) => (isFollowing ? [...prev, companyId] : prev.filter((id) => id !== companyId))))
@@ -218,6 +222,7 @@ export default function EntrepriseDetailPage() {
     const handleToggleSaveJob = (e: React.MouseEvent, jobId: string) => {
         e.preventDefault()
         e.stopPropagation()
+        if (!isAuthenticated) { toast.info("Connecte-toi pour sauvegarder une offre.") ; return }
         const isSaved = savedJobIds.includes(jobId)
         setSavedJobIds((prev) => (isSaved ? prev.filter((id) => id !== jobId) : [...prev, jobId]))
         const action = isSaved ? jobService.unsaveJob(jobId) : jobService.saveJob(jobId)
@@ -288,12 +293,14 @@ export default function EntrepriseDetailPage() {
 
                 <div className="mx-auto max-w-[1000px] px-4">
                     <div className="flex flex-wrap items-center justify-end gap-2 py-3 border-b border-[#e8edf6]">
+                                {isAuthenticated && (
                                 <button
                                     onClick={handleToggleFollow}
                                     className={`h-8 px-5 rounded-full border text-[12px] bg-white transition-colors flex items-center gap-1.5 ${isFollowing ? "border-[#2f6de6] text-[#2f6de6]" : "border-[#d8deeb] text-[#1b2331] hover:border-[#2f6de6]"}`}
                                 >
                                     <Heart className={`w-3.5 h-3.5 ${isFollowing ? "fill-current" : ""}`} /> {isFollowing ? "Suivi" : "Suivre"}
                                 </button>
+                                )}
                                 <div className="flex rounded-full border border-[#d8deeb] overflow-hidden bg-white text-[12px]">
                                     <button
                                         onClick={() => setActiveTab("profil")}
@@ -557,12 +564,14 @@ export default function EntrepriseDetailPage() {
                                                             )}
                                                         </div>
                                                     </div>
+                                                    {isAuthenticated && (
                                                     <button
                                                         onClick={(e) => handleToggleSaveJob(e, job.id)}
                                                         className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#f4f5f7] flex-shrink-0"
                                                     >
                                                         <Heart className={`w-4 h-4 ${savedJobIds.includes(job.id) ? "text-[#2f6de6] fill-current" : "text-[#9aa3b2]"}`} />
                                                     </button>
+                                                    )}
                                                 </div>
                                                 {job.description && (
                                                     <p className="mt-2 text-[11px] text-[#9aa3b2] line-clamp-1">{job.description}</p>
