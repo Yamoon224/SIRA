@@ -20,6 +20,9 @@ interface Plan {
     features: string[]
 }
 
+const SUPPORT_EMAIL = "support@goriya.net"
+const SUPPORT_PHONE = "+225 07 58 70 06 92"
+
 const TABS = [
     { id: "assistance", label: "Centre d'assistance" },
     { id: "tarifs", label: "Tarifs d'abonnement" },
@@ -126,18 +129,21 @@ export default function Page() {
             title: "Chat en direct",
             description: "Chate avec nos experts",
             color: "bg-blue-50 text-blue-600",
+            href: `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Assistance GORIYA")}`,
         },
         {
             icon: Mail,
             title: "Envoyer un email",
-            description: "Écris-nous ta demande",
+            description: SUPPORT_EMAIL,
             color: "bg-green-50 text-green-600",
+            href: `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Assistance GORIYA")}`,
         },
         {
             icon: Phone,
             title: "Téléphone",
-            description: "Appelle notre équipe",
+            description: SUPPORT_PHONE,
             color: "bg-orange-50 text-orange-600",
+            href: `tel:${SUPPORT_PHONE.replace(/\s+/g, "")}`,
         },
     ]
 
@@ -215,14 +221,15 @@ export default function Page() {
                                     {contactMethods.map((method, i) => {
                                         const Icon = method.icon
                                         return (
-                                            <button
+                                            <a
                                                 key={i}
-                                                className={`${method.color} rounded-xl p-4 text-left hover:opacity-90 transition-opacity`}
+                                                href={method.href}
+                                                className={`${method.color} rounded-xl p-4 text-left hover:opacity-90 transition-opacity block`}
                                             >
                                                 <Icon className="w-6 h-6 mb-2" />
                                                 <h3 className="font-semibold text-[13px]">{method.title}</h3>
-                                                <p className="text-[11px] opacity-75">{method.description}</p>
-                                            </button>
+                                                <p className="text-[11px] opacity-75 break-all">{method.description}</p>
+                                            </a>
                                         )
                                     })}
                                 </div>
@@ -437,9 +444,12 @@ export default function Page() {
                         <p className="text-[13px] text-[#7f8796] mb-6">
                             Notre équipe est là pour t'accompagner dans ton choix et répondre à toutes tes questions.
                         </p>
-                        <button className="px-6 h-9 rounded-full bg-[#f4f7ff] border border-[#d8deeb] text-[#2f6de6] text-[12px] font-medium hover:bg-[#e8edf6] transition-colors">
+                        <a
+                            href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Assistance GORIYA")}`}
+                            className="inline-flex items-center px-6 h-9 rounded-full bg-[#f4f7ff] border border-[#d8deeb] text-[#2f6de6] text-[12px] font-medium hover:bg-[#e8edf6] transition-colors"
+                        >
                             Contacter le support
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
