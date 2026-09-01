@@ -7,16 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Progress } from "@/components/ui/progress"
-import {
-    FileBadge2,
-    Download,
-    Save,
-    Sparkles,
-    Check,
-    ChevronLeft,
-    ChevronRight,
-    RotateCcw,
-} from "lucide-react"
+import { FileBadge2, Download, Save, Sparkles, ChevronLeft, ChevronRight } from "lucide-react"
 import { generatePDF } from "@/lib/document-generator"
 import { SubscriptionGate } from "@/components/subscription-gate"
 import { useAuth } from "@/contexts/auth-context"
@@ -49,10 +40,10 @@ const EMPTY_CV: CVData = {
 }
 
 const STEPS = [
-    { id: "perso", label: "Informations personnelles", icon: "🧍", fields: ["nom", "email", "telephone", "adresse", "profil"] as (keyof CVData)[] },
-    { id: "experience", label: "Expérience professionnelle", icon: "👨‍💼", fields: ["experience"] as (keyof CVData)[] },
-    { id: "formation", label: "Formation", icon: "📘", fields: ["formation"] as (keyof CVData)[] },
-    { id: "competences", label: "Compétences & langues", icon: "🏅", fields: ["competences", "langues"] as (keyof CVData)[] },
+    { id: "perso", label: "Informations personnelles", icon: "🧍" },
+    { id: "experience", label: "Expériences professionnelle", icon: "👨‍💼" },
+    { id: "formation", label: "Formation", icon: "📘" },
+    { id: "competences", label: "Compétences", icon: "🏅" },
 ]
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
@@ -176,25 +167,6 @@ function CreerCVContent() {
         }
     }
 
-    const handleReset = async () => {
-        if (!window.confirm("Effacer toutes les données saisies ?")) return
-        try {
-            localStorage.removeItem(storageKey)
-        } catch {
-            /* ignore */
-        }
-        cvService.remove().catch(() => {})
-        setFormData(EMPTY_CV)
-        setStep(0)
-        setSavedAt(null)
-        toast.success("Formulaire réinitialisé")
-    }
-
-    const isStepComplete = useCallback(
-        (i: number) => STEPS[i].fields.some((f) => formData[f].trim().length > 0),
-        [formData],
-    )
-
     const handleAnalyze = () => {
         setAnalysisProgress(0)
         let progress = 0
@@ -237,44 +209,26 @@ function CreerCVContent() {
                                         <FileBadge2 className="h-6 w-6" />
                                     </div>
                                     <p className="text-[15px] font-semibold text-[#1f4ec2]">Créateur de CV</p>
-                                    <p className="mt-1 text-[11px] text-[#7d86a0]">Étape {step + 1} sur {STEPS.length}</p>
+                                    <p className="mt-1 text-[11px] text-[#7d86a0]">Construis ton CV professionnel</p>
                                 </div>
 
-                                <div className="space-y-1">
-                                    {STEPS.map((s, i) => {
-                                        const active = i === step
-                                        const done = isStepComplete(i)
-                                        return (
-                                            <button
-                                                key={s.id}
-                                                type="button"
-                                                onClick={() => setStep(i)}
-                                                className={`flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-left text-[12px] transition-colors ${
-                                                    active
-                                                        ? "bg-[#2f6de6] font-medium text-white"
-                                                        : "text-[#8b94ab] hover:bg-white/70"
-                                                }`}
-                                            >
-                                                <span className={`flex h-4 w-4 items-center justify-center rounded-full text-[10px] ${
-                                                    active ? "bg-white/25" : done ? "bg-[#8dc79b] text-white" : "bg-[#d5dae6] text-[#7d86a0]"
-                                                }`}>
-                                                    {done && !active ? <Check className="h-3 w-3" /> : i + 1}
-                                                </span>
-                                                <span className="truncate">{s.label}</span>
-                                            </button>
-                                        )
-                                    })}
+                                <div className="space-y-2">
+                                    {STEPS.map((s, i) => (
+                                        <button
+                                            key={s.id}
+                                            type="button"
+                                            onClick={() => setStep(i)}
+                                            className={`flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-left text-[12px] transition-colors ${
+                                                i === step
+                                                    ? "bg-[#b8bfce] font-medium text-white"
+                                                    : "text-[#8b94ab] hover:bg-white/60"
+                                            }`}
+                                        >
+                                            <span>{s.icon}</span>
+                                            <span>{s.label}</span>
+                                        </button>
+                                    ))}
                                 </div>
-
-                                <Progress
-                                    value={((step + 1) / STEPS.length) * 100}
-                                    className="mt-3 h-1.5 bg-white/60"
-                                />
-                                {savedAt && (
-                                    <p className="mt-2 text-center text-[10px] text-[#7d86a0]">
-                                        Brouillon enregistré à {new Date(savedAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
-                                    </p>
-                                )}
                             </CardContent>
                         </Card>
 
@@ -316,19 +270,7 @@ function CreerCVContent() {
 
                     <Card className="rounded-[12px] border-[#dfe5f1] bg-white">
                         <CardContent className="p-4">
-                            <div className="mb-3 flex items-center justify-between">
-                                <h2 className="text-[15px] font-semibold text-[#2a3242]">
-                                    <span className="mr-1.5">{STEPS[step].icon}</span>
-                                    {STEPS[step].label}
-                                </h2>
-                                <button
-                                    type="button"
-                                    onClick={handleReset}
-                                    className="inline-flex items-center gap-1 text-[11px] text-[#98a1b3] hover:text-[#e0526a]"
-                                >
-                                    <RotateCcw className="h-3 w-3" /> Réinitialiser
-                                </button>
-                            </div>
+                            <h2 className="mb-3 text-[15px] font-semibold text-[#2a3242]">{STEPS[step].label}</h2>
 
                             {step === 0 && (
                                 <>
@@ -398,29 +340,22 @@ function CreerCVContent() {
                             )}
 
                             <div className="mt-4 flex items-center justify-between border-t border-[#eef1f7] pt-3">
-                                <Button
-                                    variant="ghost"
+                                <button
+                                    type="button"
                                     onClick={() => setStep((s) => Math.max(0, s - 1))}
                                     disabled={step === 0}
-                                    className="h-9 rounded-full text-[12px] text-[#5b6474] disabled:opacity-40"
+                                    className="inline-flex items-center gap-1 text-[12px] text-[#8b93a3] transition-colors hover:text-[#2a3242] disabled:opacity-40"
                                 >
-                                    <ChevronLeft className="mr-1 h-3.5 w-3.5" /> Précédent
-                                </Button>
-
-                                {isLast ? (
-                                    <Button
-                                        onClick={handleDownloadPDF}
-                                        className="h-9 rounded-full bg-[#2f6de6] px-5 text-[12px] text-white hover:bg-[#275ec6]"
-                                    >
-                                        <Download className="mr-1.5 h-3.5 w-3.5" /> Télécharger le CV
-                                    </Button>
-                                ) : (
-                                    <Button
+                                    <ChevronLeft className="h-3.5 w-3.5" /> Précédent
+                                </button>
+                                {!isLast && (
+                                    <button
+                                        type="button"
                                         onClick={() => setStep((s) => Math.min(STEPS.length - 1, s + 1))}
-                                        className="h-9 rounded-full bg-[#2f6de6] px-5 text-[12px] text-white hover:bg-[#275ec6]"
+                                        className="inline-flex items-center gap-1 text-[12px] font-medium text-[#2f6de6] transition-colors hover:text-[#275ec6]"
                                     >
-                                        Suivant <ChevronRight className="ml-1 h-3.5 w-3.5" />
-                                    </Button>
+                                        Suivant <ChevronRight className="h-3.5 w-3.5" />
+                                    </button>
                                 )}
                             </div>
                         </CardContent>
@@ -434,7 +369,7 @@ function CreerCVContent() {
                         className="h-9 w-full sm:min-w-[230px] sm:w-auto rounded-full bg-[#f0f2f8] text-[12px] text-[#5b6474] hover:bg-[#e6eaf4]"
                     >
                         <Save className="mr-1.5 h-3.5 w-3.5" />
-                        Sauvegarder le brouillon
+                        Sauvegarder
                     </Button>
                     <Button
                         onClick={handleDownloadPDF}
@@ -444,6 +379,10 @@ function CreerCVContent() {
                         Télécharger
                     </Button>
                 </div>
+
+                {savedAt && (
+                    <p className="mt-2 text-center text-[10px] text-[#aab2c2]">Brouillon enregistré automatiquement</p>
+                )}
             </div>
         </div>
     )
