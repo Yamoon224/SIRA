@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useParams } from "next/navigation"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -12,7 +13,9 @@ import { companyService } from "@/lib/api/company.service"
 import { jobService } from "@/lib/api/job.service"
 import { capitalizeFirst, formatFileUrl } from "@/lib/utils"
 
-export default function CompanyProfilePage({ params }: { params: { slug: string } }) {
+export default function CompanyProfilePage() {
+  const params = useParams()
+  const slug = params?.slug as string
   const [activeTab, setActiveTab] = useState("profil")
   const [company, setCompany] = useState<any>(null)
   const [companyJobs, setCompanyJobs] = useState<any[]>([])
@@ -20,14 +23,17 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
   const [isFollowing, setIsFollowing] = useState(false)
   const [followLoading, setFollowLoading] = useState(false)
   const [savedJobIds, setSavedJobIds] = useState<Set<string>>(new Set())
+  const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
-    companyService.getCompanyById(params.slug)
-      .then((res) => {
-        const data = res.data as any
+    if (!slug) return
+    companyService.getCompanyById(slug)
+      .then((res: any) => {
+        const data = res?.data?.data ?? res?.data ?? res
+        if (!data?.id) { setNotFound(true); return }
         setCompany(data)
 
-        companyService.getCompanyJobs(data.id || params.slug)
+        companyService.getCompanyJobs(data.id || slug)
           .then((r) => setCompanyJobs((r.data as any[]) || []))
           .catch(() => {})
 
@@ -54,8 +60,8 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
             .catch(() => {})
         }
       })
-      .catch(() => {})
-  }, [params.slug])
+      .catch(() => setNotFound(true))
+  }, [slug])
 
   const handleToggleSaveJob = async (jobId: string) => {
     const isSaved = savedJobIds.has(jobId)
@@ -91,6 +97,16 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
     } finally {
       setFollowLoading(false)
     }
+  }
+
+  if (notFound) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
+        <p className="text-lg font-semibold text-foreground">Entreprise introuvable</p>
+        <p className="text-sm text-muted-foreground">Cette entreprise n'existe pas ou n'est plus disponible.</p>
+        <Link href="/entreprises" className="text-sm font-semibold text-[#2f6de6] hover:underline">Retour aux entreprises</Link>
+      </div>
+    )
   }
 
   if (!company) {
