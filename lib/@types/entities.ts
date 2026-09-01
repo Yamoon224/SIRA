@@ -7,6 +7,7 @@ export interface IUser {
     role: UserRole;
     status: UserStatus;
     avatar: string | null;
+    location?: string | null;
     registrationDate: Date;
     company?: { id: string; name: string } | null;
     createdAt: Date;

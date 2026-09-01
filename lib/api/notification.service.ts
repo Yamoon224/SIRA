@@ -30,6 +30,13 @@ export const notificationService = {
         })
     },
 
+    getSettings: async () => {
+        return apiRequest<{ applications: boolean; emplois: boolean; recommandations: boolean }>({
+            endpoint: "/notifications/settings",
+            method: "GET",
+        })
+    },
+
     updateSettings: async (
         settings: {
             applications: boolean

@@ -218,7 +218,16 @@ export default function ProfilePage() {
                                 <p className="text-base sm:text-lg text-muted-foreground mb-2">{profile.title}</p>
                                 <div className="flex items-center text-muted-foreground mb-2">
                                     <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-                                    {capitalizeFirst(profile.location)}
+                                    {profile.location
+                                        ? capitalizeFirst(profile.location)
+                                        : (
+                                            <button
+                                                onClick={() => router.push("/parametres")}
+                                                className="text-sm text-blue-600 hover:underline"
+                                            >
+                                                Ajouter ma localisation
+                                            </button>
+                                        )}
                                 </div>
                                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                                     <div className="flex items-center">

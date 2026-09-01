@@ -41,10 +41,25 @@ export default function ParametresPage() {
 
   const [notifications, setNotifications] = useState({
     applications: true,
-    emplois: false,
-    recommandations: false,
+    emplois: true,
+    recommandations: true,
   })
   const [savingNotifications, setSavingNotifications] = useState(false)
+
+  useEffect(() => {
+    notificationService.getSettings()
+      .then((res: any) => {
+        const data = res?.data ?? res
+        if (data) {
+          setNotifications({
+            applications: !!data.applications,
+            emplois: !!data.emplois,
+            recommandations: !!data.recommandations,
+          })
+        }
+      })
+      .catch((err) => console.error("[parametres] notification settings load error:", err))
+  }, [])
 
   const [locale, setLocale] = useState<Locale>("fr")
   const [savingLocale, setSavingLocale] = useState(false)
@@ -80,7 +95,7 @@ export default function ParametresPage() {
     }
   }
 
-  const [profile, setProfile] = useState({ firstName: "", lastName: "", email: "", avatar: "" as string | null })
+  const [profile, setProfile] = useState({ firstName: "", lastName: "", email: "", location: "", avatar: "" as string | null })
   const [savingProfile, setSavingProfile] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
 
@@ -93,6 +108,7 @@ export default function ParametresPage() {
           firstName: parts[0] ?? "",
           lastName: parts.slice(1).join(" "),
           email: data?.email ?? "",
+          location: data?.location ?? "",
           avatar: data?.avatar ?? null,
         })
       })
@@ -105,7 +121,9 @@ export default function ParametresPage() {
       await userService.updateProfile({
         name: `${profile.firstName} ${profile.lastName}`.trim(),
         email: profile.email,
+        location: profile.location.trim(),
       } as any)
+      refreshProfile()
       toast.success("Profil mis à jour")
     } catch (err) {
       console.error("[parametres] profile save error:", err)
@@ -258,6 +276,16 @@ export default function ParametresPage() {
                     value={profile.email}
                     placeholder="Adresse e-mail"
                     onChange={(e) => setProfile((prev) => ({ ...prev, email: e.target.value }))}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="location">Localisation</Label>
+                  <Input
+                    id="location"
+                    value={profile.location}
+                    placeholder="Ville, pays (ex: Abidjan, Côte d'Ivoire)"
+                    onChange={(e) => setProfile((prev) => ({ ...prev, location: e.target.value }))}
                   />
                 </div>
 
