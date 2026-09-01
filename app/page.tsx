@@ -671,7 +671,7 @@ export default function Page() {
                         <div className="flex items-end justify-between gap-4 mb-6 sm:mb-8">
                             <div>
                                 <h2 className="text-xl xs:text-2xl sm:text-3xl font-extrabold text-[#1c2433] dark:text-foreground flex items-center gap-2">
-                                    <Newspaper className="w-6 h-6 text-[#2f6de6]" /> Conseils & actualités
+                                    Conseils & actualités
                                 </h2>
                                 <p className="text-sm text-[#8a95a8] dark:text-muted-foreground mt-1">Nos derniers articles pour booster ta recherche.</p>
                             </div>
