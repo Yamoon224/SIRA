@@ -4,13 +4,15 @@ import { ProtectedRoute } from "@/components/auth/protected-route"
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
 import { Eye, Briefcase } from "lucide-react"
 import { dashboardService } from "@/lib/api/dashboard.service"
 import { companyService } from "@/lib/api/company.service"
 import { careerDashboardService, type ICareerDashboard } from "@/lib/api/career-dashboard.service"
+import { CompanyLogo } from "@/components/company-logo"
+import { capitalizeFirst } from "@/lib/utils"
 import type { ICandidature, ICompany } from "@/lib/@types/entities"
 
 const STATUS_LABEL: Record<string, string> = {
@@ -231,25 +233,19 @@ export default function Page() {
                         {recruitingCompanies.length === 0 ? (
                             <p className="text-[12px] text-[#9aa3b2] text-center py-4">Aucune entreprise disponible.</p>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                                 {recruitingCompanies.map((company) => (
-                                    <Card key={company.id} className="border border-[#e8edf6] hover:shadow-md transition-shadow">
-                                        <CardContent className="p-4">
-                                            <div className="flex items-start justify-between mb-3">
-                                                <div className="w-10 h-10 bg-[#f0f3fb] rounded-lg flex items-center justify-center text-[18px] font-bold text-[#2f6de6]">
-                                                    {company.name.charAt(0).toUpperCase()}
-                                                </div>
+                                    <Link key={company.id} href={`/entreprises/${company.id}`}>
+                                        <article className="rounded-2xl border border-[#e8edf6] dark:border-border bg-white dark:bg-card p-4 min-h-[140px] xs:min-h-[166px] hover:shadow-md transition-shadow">
+                                            <div className="flex items-center justify-between mb-2 sm:mb-3">
+                                                <CompanyLogo name={company.name} logo={company.logo} className="w-7 h-7 sm:w-9 sm:h-9 text-[10px]" />
+                                                <span className="text-[10px] border border-[#cfe0ff] dark:border-border text-[#7a8db8] dark:text-muted-foreground rounded-full px-2 py-0.5">{company.sector || "Entreprise"}</span>
                                             </div>
-                                            <h4 className="text-[13px] font-bold text-[#1b2331] mb-1">{company.name}</h4>
-                                            <p className="text-[11px] text-[#7f8796] mb-2">{company.sector ?? company.about ?? "-"}</p>
-                                            <button
-                                                onClick={() => router.push(`/entreprises/${company.id}`)}
-                                                className="w-full h-8 rounded-lg border border-[#d8deeb] text-[11px] font-medium text-[#2f6de6] hover:bg-[#f4f7ff]"
-                                            >
-                                                Voir l'entreprise
-                                            </button>
-                                        </CardContent>
-                                    </Card>
+                                            <h3 className="text-[13px] font-semibold text-[#1a2232] dark:text-foreground truncate">{company.name}</h3>
+                                            <p className="text-[11px] text-[#8a95a8] dark:text-muted-foreground mt-0.5">{capitalizeFirst(company.location || company.headquarters) || "-"}</p>
+                                            {company.about && <p className="text-[10px] text-[#9aa5b8] dark:text-muted-foreground mt-2 leading-4 line-clamp-2">{capitalizeFirst(company.about)}</p>}
+                                        </article>
+                                    </Link>
                                 ))}
                             </div>
                         )}
