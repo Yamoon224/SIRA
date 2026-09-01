@@ -185,11 +185,12 @@ export default function Page() {
     }
 
     return (
-        <div className="min-h-screen flex">
-            <div className="flex-1 flex flex-col justify-center px-6 py-8 sm:px-12 bg-background">
+        <div className="h-screen overflow-hidden flex">
+            <div className="flex-1 overflow-y-auto bg-background">
+                <div className="min-h-full flex flex-col justify-center px-6 py-6 sm:px-12">
                 <div className="max-w-md mx-auto w-full">
-                    <div className="mb-6">
-                        <div className="flex items-center gap-4 mb-6">
+                    <div className="mb-5">
+                        <div className="flex items-center gap-4 mb-5">
                             <Link
                                 href="/"
                                 className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors border border-blue-900 rounded-full px-3 py-1 focus:outline-none">
@@ -203,7 +204,7 @@ export default function Page() {
                         </h1>
                     </div>
 
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                         <div className="flex bg-muted rounded-full p-1">
                             <button
                                 onClick={() => setActiveTab("login")}
@@ -389,6 +390,7 @@ export default function Page() {
                             </Button>
                         </form>
                     </div>
+                </div>
                 </div>
             </div>
 

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Bell, Settings, User, Menu, LogIn, Briefcase } from "lucide-react"
+import { Bell, Settings, User, Menu, LogIn, Briefcase, LayoutDashboard } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
     DropdownMenu,
@@ -92,6 +92,18 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                         </SheetClose>
                                     ))}
                                 </nav>
+                                {mounted && isAuthenticated && (
+                                    <div className="mt-4 px-4">
+                                        <SheetClose asChild>
+                                            <Link href="/dashboard">
+                                                <Button className="w-full rounded-full gap-2">
+                                                    <LayoutDashboard className="w-4 h-4" />
+                                                    Tableau de Bord
+                                                </Button>
+                                            </Link>
+                                        </SheetClose>
+                                    </div>
+                                )}
                                 {mounted && !isAuthenticated && (
                                     <div className="mt-4 flex flex-col gap-2 px-4">
                                         <SheetClose asChild>
@@ -141,6 +153,12 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
 
                     {mounted && isAuthenticated && (
                         <>
+                            <Link href="/dashboard">
+                                <Button size="sm" className="rounded-full gap-2">
+                                    <LayoutDashboard className="w-4 h-4" />
+                                    <span className="hidden sm:inline">Tableau de Bord</span>
+                                </Button>
+                            </Link>
                             <ThemeToggle />
                             <NotificationBell />
 
@@ -163,6 +181,12 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                         </div>
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/dashboard" className="flex items-center">
+                                            <LayoutDashboard className="mr-2 h-4 w-4" />
+                                            Tableau de Bord
+                                        </Link>
+                                    </DropdownMenuItem>
                                     <DropdownMenuItem asChild>
                                         <Link href="/notifications" className="flex items-center">
                                             <Bell className="mr-2 h-4 w-4" />
