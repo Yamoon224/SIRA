@@ -2,16 +2,18 @@
 
 import type React from "react"
 
-import { createContext, useContext, useEffect } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 import { useSession, signOut as nextAuthSignOut } from "next-auth/react"
 import { IUser } from "@/lib/@types/entities"
 import { authService } from "@/lib/api/auth.service"
+import { userService } from "@/lib/api/user.service"
 
 interface AuthContextType {
     user: IUser | null
     isLoading: boolean
     logout: () => void
     isAuthenticated: boolean
+    refreshProfile: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -21,8 +23,30 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: session, status } = useSession()
 
-    const user = (session?.user as unknown as IUser) ?? null
+    const sessionUser = (session?.user as unknown as IUser) ?? null
     const isLoading = status === "loading"
+
+    // La session NextAuth ne porte pas l'avatar (voir lib/auth.ts) — on le
+    // récupère via le profil backend et on le fusionne dans `user` pour que le
+    // header et les autres consommateurs l'affichent (et le mettent à jour
+    // après un changement de photo).
+    const [avatar, setAvatar] = useState<string | null>(null)
+
+    const refreshProfile = () => {
+        userService.getProfile()
+            .then((res: any) => setAvatar((res?.data ?? res)?.avatar ?? null))
+            .catch(() => {})
+    }
+
+    useEffect(() => {
+        if (!sessionUser?.id) {
+            setAvatar(null)
+            return
+        }
+        refreshProfile()
+    }, [sessionUser?.id])
+
+    const user = sessionUser ? { ...sessionUser, avatar: avatar ?? sessionUser.avatar ?? null } : null
 
     // Le rafraîchissement du token backend a échoué (session trop ancienne) :
     // on déconnecte proprement plutôt que de laisser l'app enchaîner les 401.
@@ -47,6 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         logout,
         isAuthenticated: !!user,
+        refreshProfile,
     }
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

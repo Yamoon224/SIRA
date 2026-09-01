@@ -35,7 +35,7 @@ function initials(name: string) {
 
 export default function ParametresPage() {
   const { theme, setTheme } = useTheme()
-  const { user, logout } = useAuth()
+  const { user, logout, refreshProfile } = useAuth()
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -129,6 +129,7 @@ export default function ParametresPage() {
       const res: any = await userService.uploadAvatar(file)
       const avatarUrl = res?.data?.avatarUrl ?? res?.avatarUrl
       if (avatarUrl) setProfile((prev) => ({ ...prev, avatar: avatarUrl }))
+      refreshProfile()
       toast.success("Photo de profil mise à jour")
     } catch (err: any) {
       console.error("[parametres] avatar upload error:", err)
