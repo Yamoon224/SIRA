@@ -16,7 +16,7 @@ export interface IArticle {
 }
 
 export const articleService = {
-    getArticles: async (filters?: { page?: number; limit?: number }) => {
+    getArticles: async (filters?: { page?: number; limit?: number; search?: string }) => {
         return apiRequest<IPaginatedResponse<IArticle>>({
             endpoint: "/articles",
             method: "GET",

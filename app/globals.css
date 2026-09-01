@@ -150,6 +150,30 @@
     font: inherit;
   }
 
+  /* Curseur « main » sur tout élément interactif */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  a[href],
+  label[for],
+  summary,
+  select:not(:disabled),
+  .cursor-pointer {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  /* Justification des textes de contenu (surchargée par text-left/center/right) */
+  main p,
+  article p,
+  .prose p {
+    text-align: justify;
+    text-justify: inter-word;
+  }
+
   .dark {
     scrollbar-width: thin;
     scrollbar-color: oklch(0.25 0.02 240) oklch(0.08 0.015 240);

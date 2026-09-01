@@ -54,7 +54,7 @@ export default function ArticlePage() {
                             {formatDate(article.publishedAt)}
                         </p>
                         <h1 className="mt-2 text-2xl sm:text-[34px] leading-tight font-extrabold text-[#121826] dark:text-foreground">{article.title}</h1>
-                        <div className="mt-6 text-[14px] leading-7 text-[#2d3545] dark:text-muted-foreground whitespace-pre-line">
+                        <div className="mt-6 text-[14px] leading-7 text-[#2d3545] dark:text-muted-foreground whitespace-pre-line text-justify">
                             {article.content}
                         </div>
                     </article>

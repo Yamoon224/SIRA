@@ -91,8 +91,13 @@ export default function Page() {
             router.replace("/dashboard")
             router.refresh()
         } catch (err: any) {
-            toast.error(err.message)
-            setError(err.message)
+            const message =
+                err?.message ||
+                err?.error ||
+                (err?.errors && Object.values(err.errors).flat()[0]) ||
+                "Une erreur est survenue. Réessaie."
+            toast.error(message)
+            setError(message)
         } finally {
             setIsLoading(false)
         }
@@ -349,6 +354,12 @@ export default function Page() {
                                         Mot de passe oublié ?
                                     </Link>
                                 </div>
+                            )}
+
+                            {error && (
+                                <p className="text-sm text-destructive text-center" role="alert">
+                                    {error}
+                                </p>
                             )}
 
                             <Button

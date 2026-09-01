@@ -1,6 +1,6 @@
 import Link from "next/link"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { NewsletterForm } from "@/components/layout/newsletter-form"
 
 export function Footer() {
     return (
@@ -32,10 +32,7 @@ export function Footer() {
                             Reçois chaque semaine les dernières offres de stage, d'emploi et nos meilleurs conseils
                             de carrière directement dans ta boîte mail.
                         </p>
-                        <div className="mt-4 flex flex-col items-center gap-2">
-                            <Input className="h-10 w-full rounded-full border-[#2a2f3a] bg-[#0f121a] text-white" placeholder="Adresse e-mail" />
-                            <Button className="w-full rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">S'abonner</Button>
-                        </div>
+                        <NewsletterForm />
                     </div>
                 </div>
                 <div className="mt-8 sm:mt-10 pt-4 sm:pt-6 border-t border-[#1c202a] flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4">
