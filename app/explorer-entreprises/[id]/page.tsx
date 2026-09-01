@@ -12,7 +12,9 @@ import { companyService } from "@/lib/api/company.service"
 import { jobService } from "@/lib/api/job.service"
 import { ICompany, IJobOffer } from "@/lib/@types/entities"
 import { CompanyLogo } from "@/components/company-logo"
-import { capitalizeFirst } from "@/lib/utils"
+import { capitalizeFirst, formatFileUrl } from "@/lib/utils"
+import { useAuth } from "@/contexts/auth-context"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 
 const JOB_TYPES = ["CDI", "CDD", "STAGE", "FREELANCE"]
 const DURATIONS = ["1-3 mois", "4-6 mois", "7-12 mois", "13-24 mois", "25-36 mois"]
@@ -152,8 +154,10 @@ function FilterModal({
 export default function EntrepriseDetailPage() {
     const params = useParams()
     const companyId = params?.id as string
+    const { isAuthenticated } = useAuth()
 
     const [company, setCompany] = useState<ICompany | null>(null)
+    const [lightboxSrc, setLightboxSrc] = useState<string | null>(null)
     const [jobs, setJobs] = useState<IJobOffer[]>([])
     const [similarCompanies, setSimilarCompanies] = useState<ICompany[]>([])
     const [loading, setLoading] = useState(true)
@@ -260,37 +264,40 @@ export default function EntrepriseDetailPage() {
 
             {/* Cover + Profile hero */}
             <div className="bg-white">
-                <div className="h-[200px] sm:h-[250px] overflow-hidden bg-gradient-to-r from-[#1539be] to-[#2f81f1]">
+                <div className="relative h-[200px] sm:h-[250px] overflow-hidden bg-gradient-to-r from-[#1539be] to-[#2f81f1]">
                     {company.coverImage && (
-                        <img src={company.coverImage} alt="cover" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                        <img src={formatFileUrl(company.coverImage)} alt="cover" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                     )}
+                    <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0">
+                        <div className="mx-auto max-w-[1000px] px-4 pb-3 text-white">
+                            <h1 className="text-[22px] sm:text-[28px] font-extrabold drop-shadow-sm">{company.name}</h1>
+                            <div className="flex flex-wrap items-center gap-3 mt-1 text-[11px] text-white/85">
+                                {company.sector && <span className="font-semibold">✦ {company.sector}</span>}
+                                {(company.location || company.headquarters) && (
+                                    <span className="flex items-center gap-1">
+                                        <MapPin className="w-3 h-3" />
+                                        {capitalizeFirst(company.location || company.headquarters)}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="mx-auto max-w-[1000px] px-4">
-                    <div className="relative -mt-10 flex items-end gap-4 pb-4 border-b border-[#e8edf6]">
+                    <div className="relative -mt-8 flex items-end justify-between gap-4 pb-4 border-b border-[#e8edf6]">
                         <CompanyLogo name={company.name} logo={company.logo} className="w-[72px] h-[72px] rounded-2xl text-[22px] border-2 border-white shadow-lg" />
 
-                        <div className="flex-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-1">
-                            <div>
-                                <h1 className="text-[20px] font-extrabold text-[#1b2331]">{company.name}</h1>
-                                <div className="flex items-center gap-3 mt-1 text-[11px] text-[#7f8796]">
-                                    {company.sector && <span className="text-[#2f6de6] font-semibold">✦ {company.sector}</span>}
-                                    {(company.location || company.headquarters) && (
-                                        <span className="flex items-center gap-1">
-                                            <MapPin className="w-3 h-3" />
-                                            {capitalizeFirst(company.location || company.headquarters)}
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 pb-1">
+                                {isAuthenticated && (
                                 <button
                                     onClick={handleToggleFollow}
                                     className={`h-8 px-5 rounded-full border text-[12px] bg-white transition-colors flex items-center gap-1.5 ${isFollowing ? "border-[#2f6de6] text-[#2f6de6]" : "border-[#d8deeb] text-[#1b2331] hover:border-[#2f6de6]"}`}
                                 >
                                     <Heart className={`w-3.5 h-3.5 ${isFollowing ? "fill-current" : ""}`} /> {isFollowing ? "Suivi" : "Suivre"}
                                 </button>
+                                )}
                                 <div className="flex rounded-full border border-[#d8deeb] overflow-hidden bg-white text-[12px]">
                                     <button
                                         onClick={() => setActiveTab("profil")}
@@ -302,7 +309,7 @@ export default function EntrepriseDetailPage() {
                                         onClick={() => setActiveTab("jobs")}
                                         className={`px-5 h-8 font-semibold transition-colors flex items-center gap-1.5 ${activeTab === "jobs" ? "bg-[#2f6de6] text-white" : "text-[#9aa3b2] hover:text-[#1b2331]"}`}
                                     >
-                                        Jobs
+                                        Offres
                                         {jobs.length > 0 && (
                                             <span className={`w-5 h-5 rounded-full text-[10px] flex items-center justify-center font-bold ${activeTab === "jobs" ? "bg-white/20 text-white" : "bg-[#f0f3fb] text-[#2f6de6]"}`}>
                                                 {jobs.length}
@@ -314,7 +321,6 @@ export default function EntrepriseDetailPage() {
                         </div>
                     </div>
                 </div>
-            </div>
 
             {/* Main content */}
             <main className="mx-auto max-w-[1000px] px-4 py-8">
@@ -439,6 +445,25 @@ export default function EntrepriseDetailPage() {
                             </div>
                         </div>
 
+                        {/* Galerie photos */}
+                        {(company.gallery?.length ?? 0) > 0 && (
+                            <div className="bg-white rounded-xl border border-[#e8edf6] p-6">
+                                <h2 className="text-[18px] font-extrabold text-[#1b2331] mb-4">Galerie</h2>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                                    {company.gallery!.map((src, i) => (
+                                        <button
+                                            key={i}
+                                            type="button"
+                                            onClick={() => setLightboxSrc(formatFileUrl(src))}
+                                            className="aspect-video overflow-hidden rounded-lg border border-[#e8edf6] hover:border-[#2f6de6] transition-colors"
+                                        >
+                                            <img src={formatFileUrl(src)} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Similar companies */}
                         {similarCompanies.length > 0 && (
                             <div className="bg-white rounded-xl border border-[#e8edf6] p-6">
@@ -545,12 +570,14 @@ export default function EntrepriseDetailPage() {
                                                             )}
                                                         </div>
                                                     </div>
+                                                    {isAuthenticated && (
                                                     <button
                                                         onClick={(e) => handleToggleSaveJob(e, job.id)}
                                                         className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#f4f5f7] flex-shrink-0"
                                                     >
                                                         <Heart className={`w-4 h-4 ${savedJobIds.includes(job.id) ? "text-[#2f6de6] fill-current" : "text-[#9aa3b2]"}`} />
                                                     </button>
+                                                    )}
                                                 </div>
                                                 {job.description && (
                                                     <p className="mt-2 text-[11px] text-[#9aa3b2] line-clamp-1">{job.description}</p>
@@ -558,7 +585,7 @@ export default function EntrepriseDetailPage() {
                                             </div>
                                             {company.coverImage && (
                                                 <div className="w-[100px] flex-shrink-0 hidden sm:block">
-                                                    <img src={company.coverImage} alt={company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                                    <img src={formatFileUrl(company.coverImage)} alt={company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                 </div>
                                             )}
                                         </div>
@@ -582,6 +609,14 @@ export default function EntrepriseDetailPage() {
                 selectedExperiences={selectedExperiences}
                 setSelectedExperiences={setSelectedExperiences}
             />
+
+            {/* Lightbox galerie */}
+            <Dialog open={!!lightboxSrc} onOpenChange={(open) => !open && setLightboxSrc(null)}>
+                <DialogContent className="max-w-3xl p-0 overflow-hidden bg-black border-0">
+                    <DialogTitle className="sr-only">Photo de la galerie</DialogTitle>
+                    {lightboxSrc && <img src={lightboxSrc} alt="" className="w-full h-full object-contain max-h-[80vh]" />}
+                </DialogContent>
+            </Dialog>
 
             <Footer />
         </div>

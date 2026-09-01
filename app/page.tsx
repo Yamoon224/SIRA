@@ -9,13 +9,14 @@ import { Button } from "@/components/ui/button"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { Card, CardContent } from "@/components/ui/card"
-import { MapPin, Clock, Building2, Search, Heart, Bookmark, Upload, ChevronLeft, ChevronRight, Loader2, LogIn, Lock, Sparkles } from "lucide-react"
+import { MapPin, Clock, Building2, Search, Bookmark, Upload, ChevronLeft, ChevronRight, Loader2, LogIn, Lock, Sparkles, Newspaper } from "lucide-react"
 import { jobService } from "@/lib/api/job.service"
 import { companyService } from "@/lib/api/company.service"
 import { dashboardService } from "@/lib/api/dashboard.service"
 import { IJobOffer, ICompany, ICandidature } from "@/lib/@types/entities"
-import { formatAmount, capitalizeFirst, dedupeByName } from "@/lib/utils"
+import { formatAmount, capitalizeFirst, dedupeByName, formatFileUrl } from "@/lib/utils"
 import { CompanyLogo } from "@/components/company-logo"
+import { articleService, type IArticle } from "@/lib/api/article.service"
 import { useAuth } from "@/contexts/auth-context"
 import { getDeviceId } from "@/lib/device"
 import type { CVAnalysis } from "@/lib/@types/openai"
@@ -97,6 +98,7 @@ export default function Page() {
 
     // Dynamic data states
     const [companies, setCompanies] = useState<ICompany[]>([])
+    const [articles, setArticles] = useState<IArticle[]>([])
     const [dashboardStats, setDashboardStats] = useState<{ totalApplications: number; interviews: number; profileViews: number; savedJobs: number } | null>(null)
     const [recentApplications, setRecentApplications] = useState<ICandidature[]>([])
 
@@ -127,6 +129,14 @@ export default function Page() {
                 setCompanies(dedupeByName(Array.isArray(data) ? data : (data?.data ?? [])))
             })
             .catch(() => {})
+    }, [isLoggedIn])
+
+    // Load latest articles (landing / déconnecté)
+    useEffect(() => {
+        if (isLoggedIn) return
+        articleService.getArticles({ limit: 3 })
+            .then((res: any) => setArticles(res?.data ?? []))
+            .catch(() => setArticles([]))
     }, [isLoggedIn])
 
     // Load dashboard stats + recent activity for connected state
@@ -336,9 +346,6 @@ export default function Page() {
                                                 <div className="flex gap-2 flex-shrink-0">
                                                     <Button variant="ghost" size="sm" onClick={() => toggleSaveJob(job.id)} className="p-2">
                                                         <Bookmark className={`w-4 h-4 ${savedJobs.includes(job.id) ? "fill-current text-blue-600" : "text-muted-foreground"}`} />
-                                                    </Button>
-                                                    <Button variant="ghost" size="sm" className="p-2">
-                                                        <Heart className="w-4 h-4 text-muted-foreground" />
                                                     </Button>
                                                 </div>
                                             </div>
@@ -621,11 +628,11 @@ export default function Page() {
                                     <article className="rounded-xl border border-[#e9eef8] dark:border-border p-3 hover:shadow-md transition-shadow h-full">
                                         <div className="h-32 sm:h-40 w-full rounded-md overflow-hidden bg-gradient-to-br from-[#2f6de6] to-[#1539be] flex items-center justify-center">
                                             {job.image
-                                                ? <img src={job.image} alt={job.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                                ? <img src={formatFileUrl(job.image)} alt={job.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                 : job.company?.coverImage
-                                                    ? <img src={job.company.coverImage} alt={job.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                                    ? <img src={formatFileUrl(job.company.coverImage)} alt={job.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                     : job.company?.logo
-                                                        ? <img src={job.company.logo} alt={job.company.name} className="w-16 h-16 object-contain brightness-0 invert" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                                        ? <img src={formatFileUrl(job.company.logo)} alt={job.company.name} className="w-16 h-16 object-contain brightness-0 invert" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                         : <Building2 className="w-10 h-10 text-white opacity-60" />
                                             }
                                         </div>
@@ -656,6 +663,50 @@ export default function Page() {
                     </div>
                 </div>
             </section>
+
+            {/* Blog / actualités */}
+            {articles.length > 0 && (
+                <section className="py-10 sm:py-16 bg-[#f2f4f8] dark:bg-muted/30">
+                    <div className="mx-auto max-w-[1180px] px-3 sm:px-4">
+                        <div className="flex items-end justify-between gap-4 mb-6 sm:mb-8">
+                            <div>
+                                <h2 className="text-xl xs:text-2xl sm:text-3xl font-extrabold text-[#1c2433] dark:text-foreground flex items-center gap-2">
+                                    <Newspaper className="w-6 h-6 text-[#2f6de6]" /> Conseils & actualités
+                                </h2>
+                                <p className="text-sm text-[#8a95a8] dark:text-muted-foreground mt-1">Nos derniers articles pour booster ta recherche.</p>
+                            </div>
+                            <Link href="/blog" className="hidden sm:block text-sm font-semibold text-[#2f6de6] hover:underline whitespace-nowrap">Voir tous les articles</Link>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {articles.map((article) => (
+                                <Link key={article.id} href={`/blog/${article.slug}`}>
+                                    <article className="rounded-xl border border-[#e9eef8] dark:border-border bg-white dark:bg-card overflow-hidden h-full hover:shadow-md transition-shadow">
+                                        <div className="h-40 w-full bg-gradient-to-br from-[#2f6de6] to-[#1539be]">
+                                            {article.coverImage && (
+                                                <img src={formatFileUrl(article.coverImage)} alt={article.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                            )}
+                                        </div>
+                                        <div className="p-4">
+                                            {article.publishedAt && (
+                                                <p className="text-[10px] text-[#9aa3b2] dark:text-muted-foreground">{formatRelativeDate(article.publishedAt)}</p>
+                                            )}
+                                            <h3 className="mt-1 text-[15px] font-bold text-[#1b2331] dark:text-foreground leading-snug line-clamp-2">{article.title}</h3>
+                                            {article.excerpt && (
+                                                <p className="mt-2 text-[12px] text-[#7f8796] dark:text-muted-foreground leading-5 line-clamp-3">{article.excerpt}</p>
+                                            )}
+                                        </div>
+                                    </article>
+                                </Link>
+                            ))}
+                        </div>
+                        <div className="text-center mt-6 sm:hidden">
+                            <Link href="/blog">
+                                <Button variant="outline" className="rounded-full border-[#97b8f5] text-[#2f6de6] bg-transparent">Voir tous les articles</Button>
+                            </Link>
+                        </div>
+                    </div>
+                </section>
+            )}
 
             <Footer />
         </div>

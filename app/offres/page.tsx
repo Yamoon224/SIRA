@@ -79,8 +79,8 @@ export default function OffresPage() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <Link href="/auth/signin">
-                      <Button className={`w-full mb-4 sm:mb-6 ${isPopular ? "bg-blue-600 hover:bg-blue-700" : "bg-primary hover:bg-primary/90"}`}>
+                    <Link href="/auth/signin">   
+                      <Button className={`w-full rounded-full mb-4 sm:mb-6 ${isPopular ? "bg-blue-600 hover:bg-blue-700" : "bg-primary hover:bg-primary/90"}`}>
                         {plan.price === 0 ? "Commencer gratuitement" : "Choisir ce plan"}
                       </Button>
                     </Link>
@@ -150,10 +150,10 @@ export default function OffresPage() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
             <Link href="/auth/signin">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">Commencer maintenant</Button>
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto rounded-full ">Commencer maintenant</Button>
             </Link>
             <Link href="/a-propos">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto">Nous contacter</Button>
+              <Button size="lg" variant="outline" className="w-full sm:w-auto rounded-full">Nous contacter</Button>
             </Link>
           </div>
         </section>

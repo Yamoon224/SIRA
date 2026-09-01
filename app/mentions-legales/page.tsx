@@ -39,7 +39,7 @@ const sections = [
     {
         title: "5. Contact(s)",
         body: ["Pour toute question concernant le site ou les présentes mentions légales, vous pouvez contacter :"],
-        list: ["Adresse électronique du service : angeaxel06@gmail.com"],
+        list: ["Adresse électronique du service : support@goriya.net"],
     },
     {
         title: "6. Droit applicable",

@@ -20,6 +20,7 @@ export interface ICompany {
     sector: string;
     logo: string | null;
     coverImage: string | null;
+    gallery?: string[];
     about: string | null;
     website: string | null;
     creationDate: Date | null;

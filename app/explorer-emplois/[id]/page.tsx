@@ -4,13 +4,13 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Bookmark, Share2, ChevronDown, Loader2, MapPin, Calendar, AlertCircle, Lock, Sparkles } from "lucide-react"
+import { Bookmark, Share2, ChevronDown, Loader2, MapPin, Calendar, AlertCircle, Lock, Sparkles, Check } from "lucide-react"
 import { jobService } from "@/lib/api/job.service"
 import { IJobOffer } from "@/lib/@types/entities"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { CompanyLogo } from "@/components/company-logo"
-import { capitalizeFirst } from "@/lib/utils"
+import { capitalizeFirst, formatFileUrl } from "@/lib/utils"
 import { useAuth } from "@/contexts/auth-context"
 
 function formatPosted(date: Date | string) {
@@ -123,6 +123,7 @@ function MatchingScoreWidget({ jobId }: { jobId: string }) {
 export default function JobDetailPage() {
     const params = useParams()
     const router = useRouter()
+    const { isAuthenticated } = useAuth()
     const jobId = params?.id as string
 
     const [job, setJob] = useState<IJobOffer | null>(null)
@@ -252,6 +253,7 @@ export default function JobDetailPage() {
                                         {applying ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                                         Postuler
                                     </Button>
+                                    {isAuthenticated && (
                                     <Button
                                         variant="outline"
                                         onClick={handleToggleBookmark}
@@ -260,6 +262,7 @@ export default function JobDetailPage() {
                                         <Bookmark className={`w-4 h-4 ${bookmarked ? "fill-current" : ""}`} />
                                         Sauvegarder
                                     </Button>
+                                    )}
                                     <Button
                                         variant="outline"
                                         onClick={handleShare}
@@ -278,7 +281,7 @@ export default function JobDetailPage() {
                                     <div className="space-y-4">
                                         <div>
                                             <h3 className="text-[13px] font-bold text-[#1b2331] mb-2">Descriptif du poste</h3>
-                                            <p className="text-[13px] leading-[1.8] text-[#7f8796] whitespace-pre-wrap">{job.description}</p>
+                                            <p className="text-[13px] leading-[1.8] text-[#7f8796] whitespace-pre-wrap text-justify">{job.description}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -292,7 +295,7 @@ export default function JobDetailPage() {
                                         {job.requirements.map((req, i) => (
                                             <li key={i} className="text-[13px] leading-6 text-[#7f8796] flex items-start gap-2">
                                                 <span className="text-[#2f6de6] mt-1 flex-shrink-0">•</span>
-                                                {req}
+                                                <span className="text-justify">{req}</span>
                                             </li>
                                         ))}
                                     </ul>
@@ -303,32 +306,23 @@ export default function JobDetailPage() {
                             {job.benefits && (
                                 <div className="bg-white rounded-xl border border-[#e8eef6] p-6">
                                     <h2 className="text-[20px] font-extrabold text-[#1b2331] mb-4">Avantages</h2>
-                                    <p className="text-[13px] leading-6 text-[#7f8796] whitespace-pre-wrap">{job.benefits}</p>
+                                    {(() => {
+                                        const items = job.benefits.split(/\r?\n|;|•|·|- /).map((s) => s.trim()).filter(Boolean)
+                                        return items.length > 1 ? (
+                                            <ul className="space-y-2">
+                                                {items.map((item, i) => (
+                                                    <li key={i} className="text-[13px] leading-6 text-[#7f8796] flex items-start gap-2">
+                                                        <Check className="w-4 h-4 text-[#22a05b] shrink-0 mt-0.5" />
+                                                        <span className="text-justify">{item}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <p className="text-[13px] leading-6 text-[#7f8796] whitespace-pre-wrap text-justify">{job.benefits}</p>
+                                        )
+                                    })()}
                                 </div>
                             )}
-
-                            {/* FAQ */}
-                            <div className="bg-white rounded-xl border border-[#e8eef6] p-6">
-                                <h2 className="text-[20px] font-extrabold text-[#1b2331] mb-5">Questions et réponses sur l'offre</h2>
-                                <div className="space-y-2">
-                                    {faqs.map((faq, index) => (
-                                        <div key={index} className="border border-[#e8eef6] rounded-xl overflow-hidden">
-                                            <button
-                                                onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                                                className="w-full px-5 py-4 flex items-center justify-between text-left"
-                                            >
-                                                <span className="text-[13px] font-semibold text-[#1b2331]">{faq.q}</span>
-                                                <ChevronDown className={`w-4 h-4 flex-shrink-0 text-[#9aa3b2] transition-transform ${openFaq === index ? "rotate-180" : ""}`} />
-                                            </button>
-                                            {openFaq === index && (
-                                                <div className="px-5 pb-4 border-t border-[#e8eef6] pt-3">
-                                                    <p className="text-[13px] text-[#7f8796]">{faq.a}</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
                         </div>
 
                         {/* RIGHT - sidebar */}
@@ -338,7 +332,7 @@ export default function JobDetailPage() {
                                 <div className="bg-white rounded-xl border border-[#e8eef6] overflow-hidden">
                                     {(job.image || job.company.coverImage) && (
                                         <img
-                                            src={job.image || job.company.coverImage || ""}
+                                            src={formatFileUrl(job.image || job.company.coverImage)}
                                             alt={job.company.name}
                                             className="w-full h-28 object-cover"
                                             onError={(e) => { e.currentTarget.style.display = "none" }}
@@ -394,6 +388,29 @@ export default function JobDetailPage() {
                                     Offre publiée {formatPosted(job.publishDate)}
                                     {job.endDate && <span className="ml-2">· Clôture le {new Date(job.endDate).toLocaleDateString("fr-FR")}</span>}
                                 </div>
+                            </div>
+                        </div>
+
+                        {/* FAQ - pleine largeur, en dernier (juste avant le footer sur mobile) */}
+                        <div className="lg:col-span-3 bg-white rounded-xl border border-[#e8eef6] p-6">
+                            <h2 className="text-[20px] font-extrabold text-[#1b2331] mb-5">Questions et réponses sur l'offre</h2>
+                            <div className="space-y-2">
+                                {faqs.map((faq, index) => (
+                                    <div key={index} className="border border-[#e8eef6] rounded-xl overflow-hidden">
+                                        <button
+                                            onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                                            className="w-full px-5 py-4 flex items-center justify-between text-left"
+                                        >
+                                            <span className="text-[13px] font-semibold text-[#1b2331]">{faq.q}</span>
+                                            <ChevronDown className={`w-4 h-4 flex-shrink-0 text-[#9aa3b2] transition-transform ${openFaq === index ? "rotate-180" : ""}`} />
+                                        </button>
+                                        {openFaq === index && (
+                                            <div className="px-5 pb-4 border-t border-[#e8eef6] pt-3">
+                                                <p className="text-[13px] text-[#7f8796]">{faq.a}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>

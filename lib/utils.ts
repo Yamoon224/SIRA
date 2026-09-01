@@ -122,10 +122,20 @@ export function formatDate(
 }
 
 
+/**
+ * Résout un chemin de média renvoyé par l'API en URL absolue.
+ * L'API renvoie désormais des URLs absolues (voir backend App\Support\MediaUrl),
+ * mais ce helper couvre les anciennes réponses / le cache : chemins nus,
+ * `/companies/…` (ancien format en base) et `/storage/…`.
+ */
 export function formatFileUrl(file: string | null | undefined): string {
     if (!file) return ''
     if (file.startsWith('http://') || file.startsWith('https://')) return file
-    return `${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://goriya-backend-production.up.railway.app'}/storage/${file}`
+
+    const base = (process.env.NEXT_PUBLIC_BACKEND_URL || 'https://goriya-api.lunion-lab.com').replace(/\/+$/, '')
+    let path = '/' + file.replace(/^\/+/, '')
+    if (!path.startsWith('/storage/')) path = '/storage' + path
+    return base + path
 }
 
 /** Met en majuscule la première lettre d'un texte, sans toucher au reste (pas de title case). */

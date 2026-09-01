@@ -10,7 +10,7 @@ import Link from "next/link"
 import { MapPin, Clock, Heart, Globe, Phone, Mail, Users } from "lucide-react"
 import { companyService } from "@/lib/api/company.service"
 import { jobService } from "@/lib/api/job.service"
-import { capitalizeFirst } from "@/lib/utils"
+import { capitalizeFirst, formatFileUrl } from "@/lib/utils"
 
 export default function CompanyProfilePage({ params }: { params: { slug: string } }) {
   const [activeTab, setActiveTab] = useState("profil")
@@ -120,7 +120,7 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
         {/* Hero Section */}
         <div className="relative h-80 overflow-hidden">
           <img
-            src={company.coverImage || "/placeholder.svg"}
+            src={formatFileUrl(company.coverImage) || "/placeholder.svg"}
             alt={`${company.name} office`}
             className="w-full h-full object-cover"
           />
@@ -129,7 +129,7 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
           <div className="absolute bottom-6 left-6 flex items-center gap-4">
             <div className="w-20 h-20 bg-black rounded-full flex items-center justify-center border-4 border-white">
               <img
-                src={company.logo || "/placeholder.svg"}
+                src={formatFileUrl(company.logo) || "/placeholder.svg"}
                 alt={`${company.name} logo`}
                 className="w-16 h-16 rounded-full object-cover"
               />
@@ -167,7 +167,7 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
             <TabsList className="grid w-full grid-cols-4 max-w-md mb-8">
               <TabsTrigger value="profil">Profil</TabsTrigger>
-              <TabsTrigger value="jobs">Jobs</TabsTrigger>
+              <TabsTrigger value="jobs">Offres</TabsTrigger>
               <TabsTrigger value="presentation">Présentation</TabsTrigger>
               <TabsTrigger value="team">Équipe</TabsTrigger>
             </TabsList>

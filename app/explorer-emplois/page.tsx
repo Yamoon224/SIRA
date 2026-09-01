@@ -13,7 +13,8 @@ import { JobType, JobExperienceType } from "@/lib/@types/enums"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { CompanyLogo } from "@/components/company-logo"
-import { capitalizeFirst, dedupeByName } from "@/lib/utils"
+import { capitalizeFirst, dedupeByName, formatFileUrl } from "@/lib/utils"
+import { useAuth } from "@/contexts/auth-context"
 
 const filterChips = [
     { label: "Salaire affiché", icon: SlidersHorizontal },
@@ -72,6 +73,7 @@ function formatPosted(date: Date | string) {
 
 function ExploreJobsContent() {
     const searchParams = useSearchParams()
+    const { isAuthenticated } = useAuth()
     const initialQuery = searchParams.get("q") ?? ""
     const initialJobType = searchParams.get("jobType") ?? ""
 
@@ -183,7 +185,9 @@ function ExploreJobsContent() {
     const toggleFilter = (label: string) =>
         setSelectedFilters(prev => prev.includes(label) ? prev.filter(f => f !== label) : [...prev, label])
 
-    const toggleBookmark = (jobId: string) => {
+    const toggleBookmark = (e: React.MouseEvent, jobId: string) => {
+        e.preventDefault()
+        e.stopPropagation()
         const isSaved = bookmarkedJobs.includes(jobId)
         setBookmarkedJobs(prev => isSaved ? prev.filter(id => id !== jobId) : [...prev, jobId])
         const action = isSaved ? jobService.unsaveJob(jobId) : jobService.saveJob(jobId)
@@ -283,12 +287,10 @@ function ExploreJobsContent() {
                     ) : jobs.length > 0 ? (
                         <div className="mt-3 grid grid-cols-1 lg:grid-cols-2 gap-3">
                             {jobs.map((job) => (
-                                <article key={job.id} className="rounded-[14px] border border-[#b9c8ec] dark:border-border bg-white dark:bg-card p-3 sm:p-4 hover:border-[#8eb4ff] transition-colors">
+                                <Link key={job.id} href={`/explorer-emplois/${job.id}`} className="group block rounded-[14px] border border-[#b9c8ec] dark:border-border bg-white dark:bg-card p-3 sm:p-4 hover:border-[#8eb4ff] transition-colors">
                                     <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                                         <div className="flex-1 min-w-0">
-                                            <Link href={`/explorer-emplois/${job.id}`} className="hover:underline">
-                                                <h3 className="text-[17px] font-extrabold text-[#1b2331] dark:text-foreground">{job.title}</h3>
-                                            </Link>
+                                            <h3 className="text-[17px] font-extrabold text-[#1b2331] dark:text-foreground group-hover:underline">{job.title}</h3>
                                             <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-[#7f8796] dark:text-muted-foreground">
                                                 {job.location && <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3" />{capitalizeFirst(job.location)}</span>}
                                                 {job.company?.name && <span className="inline-flex items-center gap-1"><BriefcaseBusiness className="w-3 h-3" />{job.company.name}</span>}
@@ -300,27 +302,29 @@ function ExploreJobsContent() {
                                             {job.description && (
                                                 <p className="mt-2 text-[12px] leading-5 text-[#5b6474] dark:text-muted-foreground line-clamp-2">
                                                     {job.description}{" "}
-                                                    <Link href={`/explorer-emplois/${job.id}`} className="text-[#2f6de6] dark:text-primary font-semibold hover:underline whitespace-nowrap">
+                                                    <span className="text-[#2f6de6] dark:text-primary font-semibold whitespace-nowrap">
                                                         Plus de détails
-                                                    </Link>
+                                                    </span>
                                                 </p>
                                             )}
                                             <div className="mt-3 flex items-center gap-3">
                                                 <CompanyLogo name={job.company?.name ?? "?"} logo={job.company?.logo} className="w-6 h-6 text-[12px]" />
-                                                <button type="button" onClick={() => toggleBookmark(job.id)}
-                                                    className={`transition-colors ${bookmarkedJobs.includes(job.id) ? "text-[#2f6de6]" : "text-[#9aa3b2] hover:text-[#2f6de6]"}`}>
-                                                    <Heart className={`w-4 h-4 ${bookmarkedJobs.includes(job.id) ? "fill-current" : ""}`} />
-                                                </button>
+                                                {isAuthenticated && (
+                                                    <button type="button" onClick={(e) => toggleBookmark(e, job.id)}
+                                                        className={`transition-colors ${bookmarkedJobs.includes(job.id) ? "text-[#2f6de6]" : "text-[#9aa3b2] hover:text-[#2f6de6]"}`}>
+                                                        <Heart className={`w-4 h-4 ${bookmarkedJobs.includes(job.id) ? "fill-current" : ""}`} />
+                                                    </button>
+                                                )}
                                                 {job.salary && <span className="text-[11px] font-semibold text-[#2f6de6] dark:text-primary ml-auto">{job.salary}</span>}
                                             </div>
                                         </div>
                                         {(job.image || job.company?.coverImage) && (
                                             <div className="w-full sm:w-[150px] md:w-[180px] h-[95px] rounded-xl overflow-hidden bg-[#f0f3fb] dark:bg-muted shrink-0">
-                                                <img src={job.image || job.company?.coverImage || ""} alt={job.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                                <img src={formatFileUrl(job.image || job.company?.coverImage)} alt={job.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                             </div>
                                         )}
                                     </div>
-                                </article>
+                                </Link>
                             ))}
                         </div>
                     ) : (
@@ -350,7 +354,7 @@ function ExploreJobsContent() {
                         {companies.length === 0 ? (
                             <p className="relative z-10 text-[13px] text-white/80">Aucune entreprise trouvée pour cette recherche.</p>
                         ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 relative z-10">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-3 relative z-10">
                             {companies.map((company) => (
                                 <Link key={company.id} href={`/explorer-entreprises/${company.id}`}>
                                     <article className="rounded-[12px] border border-[#c8d7fb] dark:border-border bg-white dark:bg-card text-[#1b2331] dark:text-foreground p-3 hover:shadow-md transition-shadow">

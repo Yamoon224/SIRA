@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { cn } from "@/lib/utils"
+import { cn, formatFileUrl } from "@/lib/utils"
 
 const AVATAR_COLORS = [
     "#2f6de6", "#1e5ed4", "#7c3aed", "#0891b2",
@@ -23,11 +23,12 @@ function initialsForName(name: string): string {
 
 export function CompanyLogo({ name, logo, className = "w-6 h-6 text-[10px]" }: { name: string; logo?: string | null; className?: string }) {
     const [failed, setFailed] = useState(false)
+    const resolvedLogo = formatFileUrl(logo)
 
-    if (logo && !failed) {
+    if (resolvedLogo && !failed) {
         return (
             <div className={cn("rounded-full overflow-hidden bg-[#f0f3fb] flex items-center justify-center shrink-0", className)}>
-                <img src={logo} alt={name} className="w-full h-full object-cover" onError={() => setFailed(true)} />
+                <img src={resolvedLogo} alt={name} className="w-full h-full object-cover" onError={() => setFailed(true)} />
             </div>
         )
     }
