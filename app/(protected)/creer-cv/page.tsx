@@ -1,16 +1,30 @@
 "use client"
 
-import { useState } from "react"
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Progress } from "@/components/ui/progress"
-import { FileBadge2, Download, Save, Sparkles } from "lucide-react"
+import {
+    FileBadge2,
+    Download,
+    Save,
+    Sparkles,
+    Check,
+    ChevronLeft,
+    ChevronRight,
+    RotateCcw,
+} from "lucide-react"
 import { generatePDF } from "@/lib/document-generator"
 import { SubscriptionGate } from "@/components/subscription-gate"
+import { useAuth } from "@/contexts/auth-context"
+import { cvService } from "@/lib/api/cv.service"
 
-interface CVData {
+// `type` (et non `interface`) pour rester assignable à Record<string, string>
+// attendu par cvService.save().
+type CVData = {
     nom: string
     email: string
     telephone: string
@@ -22,23 +36,164 @@ interface CVData {
     langues: string
 }
 
+const EMPTY_CV: CVData = {
+    nom: "",
+    email: "",
+    telephone: "",
+    adresse: "",
+    profil: "",
+    competences: "",
+    experience: "",
+    formation: "",
+    langues: "",
+}
+
+const STEPS = [
+    { id: "perso", label: "Informations personnelles", icon: "🧍", fields: ["nom", "email", "telephone", "adresse", "profil"] as (keyof CVData)[] },
+    { id: "experience", label: "Expérience professionnelle", icon: "👨‍💼", fields: ["experience"] as (keyof CVData)[] },
+    { id: "formation", label: "Formation", icon: "📘", fields: ["formation"] as (keyof CVData)[] },
+    { id: "competences", label: "Compétences & langues", icon: "🏅", fields: ["competences", "langues"] as (keyof CVData)[] },
+]
+
+function Field({ label, children }: { label: string; children: ReactNode }) {
+    return (
+        <div>
+            <label className="mb-1 block text-[11px] text-[#8b93a3]">{label}</label>
+            {children}
+        </div>
+    )
+}
+
+const inputCls = "h-8 rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0"
+const areaCls = "resize-none rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0"
+
 function CreerCVContent() {
+    const { user } = useAuth()
+    const storageKey = `goriya:cv-draft:${user?.id ?? "anon"}`
+
     const [analysisProgress, setAnalysisProgress] = useState(0)
-    const [formData, setFormData] = useState<CVData>({
-        nom: "",
-        email: "",
-        telephone: "",
-        adresse: "",
-        profil: "",
-        competences: "",
-        experience: "",
-        formation: "",
-        langues: "",
-    })
+    const [step, setStep] = useState(0)
+    const [formData, setFormData] = useState<CVData>(EMPTY_CV)
+    const [savedAt, setSavedAt] = useState<string | null>(null)
+    const hydrated = useRef(false)
+
+    const writeLocal = useCallback(
+        (data: CVData, s: number, at: string) => {
+            try {
+                localStorage.setItem(storageKey, JSON.stringify({ data, step: s, savedAt: at }))
+            } catch {
+                /* quota / navigation privée : on ignore, le backend reste la source de vérité */
+            }
+        },
+        [storageKey],
+    )
+
+    // ── Restauration du brouillon au montage (backend prioritaire, cache local
+    //    en repli hors-ligne / non authentifié) ───────────────────────────────
+    useEffect(() => {
+        let cancelled = false
+
+        const readLocal = () => {
+            try {
+                const raw = localStorage.getItem(storageKey)
+                if (!raw) return null
+                return JSON.parse(raw) as { data?: Partial<CVData>; step?: number; savedAt?: string }
+            } catch {
+                return null
+            }
+        }
+
+        const apply = (data?: Partial<CVData>, s?: number, at?: string | null) => {
+            setFormData({ ...EMPTY_CV, ...(data ?? {}) })
+            if (typeof s === "number") setStep(Math.min(Math.max(s, 0), STEPS.length - 1))
+            if (at) setSavedAt(at)
+        }
+
+        cvService
+            .get()
+            .then((res) => {
+                if (cancelled) return
+                const draft = res?.data
+                const remote = (draft?.data ?? undefined) as Partial<CVData> | undefined
+                apply(remote, draft?.step, draft?.updatedAt ?? null)
+                if (remote) writeLocal({ ...EMPTY_CV, ...remote }, draft?.step ?? 0, draft?.updatedAt ?? new Date().toISOString())
+            })
+            .catch(() => {
+                if (cancelled) return
+                const local = readLocal()
+                if (local) apply(local.data, local.step, local.savedAt ?? null)
+            })
+            .finally(() => {
+                if (!cancelled) hydrated.current = true
+            })
+
+        return () => {
+            cancelled = true
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [storageKey])
+
+    // ── Sauvegarde automatique (après hydratation) : cache local immédiat +
+    //    persistance backend débouncée ───────────────────────────────────────
+    useEffect(() => {
+        if (!hydrated.current) return
+        const allEmpty = Object.values(formData).every((v) => v.trim() === "")
+        try {
+            if (allEmpty && !localStorage.getItem(storageKey)) return
+        } catch {
+            return
+        }
+
+        const id = setTimeout(() => {
+            const at = new Date().toISOString()
+            writeLocal(formData, step, at)
+            cvService
+                .save({ data: formData, step })
+                .then((res) => setSavedAt(res?.data?.updatedAt ?? at))
+                .catch(() => {
+                    // Hors-ligne : le cache local a déjà été écrit, resync au prochain chargement.
+                    setSavedAt(at)
+                })
+        }, 800)
+        return () => clearTimeout(id)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formData, step, writeLocal])
 
     const handleInputChange = (field: keyof CVData, value: string) => {
         setFormData((prev) => ({ ...prev, [field]: value }))
     }
+
+    const handleManualSave = async () => {
+        const at = new Date().toISOString()
+        writeLocal(formData, step, at)
+        try {
+            const res = await cvService.save({ data: formData, step })
+            setSavedAt(res?.data?.updatedAt ?? at)
+            toast.success("Brouillon enregistré")
+        } catch {
+            setSavedAt(at)
+            toast.error("Enregistré localement — la synchronisation avec le serveur a échoué")
+        }
+    }
+
+    const handleReset = async () => {
+        if (!window.confirm("Effacer toutes les données saisies ?")) return
+        try {
+            localStorage.removeItem(storageKey)
+        } catch {
+            /* ignore */
+        }
+        cvService.remove().catch(() => {})
+        setFormData(EMPTY_CV)
+        setStep(0)
+        setSavedAt(null)
+        toast.success("Formulaire réinitialisé")
+    }
+
+    const isStepComplete = useCallback(
+        (i: number) => STEPS[i].fields.some((f) => formData[f].trim().length > 0),
+        [formData],
+    )
 
     const handleAnalyze = () => {
         setAnalysisProgress(0)
@@ -46,17 +201,25 @@ function CreerCVContent() {
         const timer = setInterval(() => {
             progress += 10
             setAnalysisProgress(progress)
-            if (progress >= 100) {
-                clearInterval(timer)
-            }
+            if (progress >= 100) clearInterval(timer)
         }, 180)
     }
 
     const handleDownloadPDF = () => {
         const filename = `cv-${formData.nom.toLowerCase().replace(/\s+/g, "-") || "document"}.pdf`
-        const content = `${formData.nom || "Ton nom"}\n${formData.email || "email@example.com"}\n${formData.telephone || "Téléphone"}\n${formData.adresse || "Ville, Pays"}\n\n${formData.profil || "Résumé professionnel"}`
+        const section = (title: string, body: string) => (body.trim() ? `\n${title.toUpperCase()}\n${body.trim()}\n` : "")
+        const content =
+            `${formData.nom || "Ton nom"}\n` +
+            `${[formData.email, formData.telephone, formData.adresse].filter(Boolean).join(" · ")}\n` +
+            section("Profil", formData.profil) +
+            section("Expérience professionnelle", formData.experience) +
+            section("Formation", formData.formation) +
+            section("Compétences", formData.competences) +
+            section("Langues", formData.langues)
         generatePDF(content, filename)
     }
+
+    const isLast = step === STEPS.length - 1
 
     return (
         <div className="min-h-[calc(100vh-80px)]">
@@ -74,27 +237,44 @@ function CreerCVContent() {
                                         <FileBadge2 className="h-6 w-6" />
                                     </div>
                                     <p className="text-[15px] font-semibold text-[#1f4ec2]">Créateur de CV</p>
-                                    <p className="mt-1 text-[11px] text-[#7d86a0]">Construis ton CV professionnel</p>
+                                    <p className="mt-1 text-[11px] text-[#7d86a0]">Étape {step + 1} sur {STEPS.length}</p>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <div className="flex items-center gap-2 rounded-md bg-[#b8bfce] px-3 py-1.5 text-[12px] font-medium text-white">
-                                        <span>🧍</span>
-                                        <span>Informations personnelles</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 px-3 py-1.5 text-[12px] text-[#8b94ab]">
-                                        <span>👨‍💼</span>
-                                        <span>Expériences professionnelle</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 px-3 py-1.5 text-[12px] text-[#8b94ab]">
-                                        <span>📘</span>
-                                        <span>Formation</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 px-3 py-1.5 text-[12px] text-[#8b94ab]">
-                                        <span>🏅</span>
-                                        <span>Compétences</span>
-                                    </div>
+                                <div className="space-y-1">
+                                    {STEPS.map((s, i) => {
+                                        const active = i === step
+                                        const done = isStepComplete(i)
+                                        return (
+                                            <button
+                                                key={s.id}
+                                                type="button"
+                                                onClick={() => setStep(i)}
+                                                className={`flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-left text-[12px] transition-colors ${
+                                                    active
+                                                        ? "bg-[#2f6de6] font-medium text-white"
+                                                        : "text-[#8b94ab] hover:bg-white/70"
+                                                }`}
+                                            >
+                                                <span className={`flex h-4 w-4 items-center justify-center rounded-full text-[10px] ${
+                                                    active ? "bg-white/25" : done ? "bg-[#8dc79b] text-white" : "bg-[#d5dae6] text-[#7d86a0]"
+                                                }`}>
+                                                    {done && !active ? <Check className="h-3 w-3" /> : i + 1}
+                                                </span>
+                                                <span className="truncate">{s.label}</span>
+                                            </button>
+                                        )
+                                    })}
                                 </div>
+
+                                <Progress
+                                    value={((step + 1) / STEPS.length) * 100}
+                                    className="mt-3 h-1.5 bg-white/60"
+                                />
+                                {savedAt && (
+                                    <p className="mt-2 text-center text-[10px] text-[#7d86a0]">
+                                        Brouillon enregistré à {new Date(savedAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                                    </p>
+                                )}
                             </CardContent>
                         </Card>
 
@@ -136,55 +316,112 @@ function CreerCVContent() {
 
                     <Card className="rounded-[12px] border-[#dfe5f1] bg-white">
                         <CardContent className="p-4">
-                            <h2 className="mb-3 text-[15px] font-semibold text-[#2a3242]">Informations personnelles</h2>
-
-                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                <div>
-                                    <label className="mb-1 block text-[11px] text-[#8b93a3]">Nom complet</label>
-                                    <Input
-                                        value={formData.nom}
-                                        onChange={(e) => handleInputChange("nom", e.target.value)}
-                                        placeholder="Ton nom complet"
-                                        className="h-8 rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="mb-1 block text-[11px] text-[#8b93a3]">Email</label>
-                                    <Input
-                                        value={formData.email}
-                                        onChange={(e) => handleInputChange("email", e.target.value)}
-                                        placeholder="ton.email@exemple.com"
-                                        className="h-8 rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="mb-1 block text-[11px] text-[#8b93a3]">Téléphone</label>
-                                    <Input
-                                        value={formData.telephone}
-                                        onChange={(e) => handleInputChange("telephone", e.target.value)}
-                                        placeholder="+229 97 39 47 82"
-                                        className="h-8 rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="mb-1 block text-[11px] text-[#8b93a3]">Adresse</label>
-                                    <Input
-                                        value={formData.adresse}
-                                        onChange={(e) => handleInputChange("adresse", e.target.value)}
-                                        placeholder="Ville, Pays"
-                                        className="h-8 rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0"
-                                    />
-                                </div>
+                            <div className="mb-3 flex items-center justify-between">
+                                <h2 className="text-[15px] font-semibold text-[#2a3242]">
+                                    <span className="mr-1.5">{STEPS[step].icon}</span>
+                                    {STEPS[step].label}
+                                </h2>
+                                <button
+                                    type="button"
+                                    onClick={handleReset}
+                                    className="inline-flex items-center gap-1 text-[11px] text-[#98a1b3] hover:text-[#e0526a]"
+                                >
+                                    <RotateCcw className="h-3 w-3" /> Réinitialiser
+                                </button>
                             </div>
 
-                            <div className="mt-3">
-                                <label className="mb-1 block text-[11px] text-[#8b93a3]">Résumé professionnel</label>
-                                <Textarea
-                                    value={formData.profil}
-                                    onChange={(e) => handleInputChange("profil", e.target.value)}
-                                    placeholder="Décris brièvement ton profil professionnel..."
-                                    className="min-h-[112px] resize-none rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0"
-                                />
+                            {step === 0 && (
+                                <>
+                                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                        <Field label="Nom complet">
+                                            <Input value={formData.nom} onChange={(e) => handleInputChange("nom", e.target.value)} placeholder="Ton nom complet" className={inputCls} />
+                                        </Field>
+                                        <Field label="Email">
+                                            <Input value={formData.email} onChange={(e) => handleInputChange("email", e.target.value)} placeholder="ton.email@exemple.com" className={inputCls} />
+                                        </Field>
+                                        <Field label="Téléphone">
+                                            <Input value={formData.telephone} onChange={(e) => handleInputChange("telephone", e.target.value)} placeholder="+229 97 39 47 82" className={inputCls} />
+                                        </Field>
+                                        <Field label="Adresse">
+                                            <Input value={formData.adresse} onChange={(e) => handleInputChange("adresse", e.target.value)} placeholder="Ville, Pays" className={inputCls} />
+                                        </Field>
+                                    </div>
+                                    <div className="mt-3">
+                                        <Field label="Résumé professionnel">
+                                            <Textarea value={formData.profil} onChange={(e) => handleInputChange("profil", e.target.value)} placeholder="Décris brièvement ton profil professionnel..." className={`min-h-[112px] ${areaCls}`} />
+                                        </Field>
+                                    </div>
+                                </>
+                            )}
+
+                            {step === 1 && (
+                                <Field label="Expériences professionnelles">
+                                    <Textarea
+                                        value={formData.experience}
+                                        onChange={(e) => handleInputChange("experience", e.target.value)}
+                                        placeholder={"Poste — Entreprise (dates)\n• Réalisation 1\n• Réalisation 2\n\nPoste précédent — Entreprise (dates)\n• ..."}
+                                        className={`min-h-[280px] ${areaCls}`}
+                                    />
+                                </Field>
+                            )}
+
+                            {step === 2 && (
+                                <Field label="Formation">
+                                    <Textarea
+                                        value={formData.formation}
+                                        onChange={(e) => handleInputChange("formation", e.target.value)}
+                                        placeholder={"Diplôme — Établissement (année)\nDiplôme — Établissement (année)"}
+                                        className={`min-h-[220px] ${areaCls}`}
+                                    />
+                                </Field>
+                            )}
+
+                            {step === 3 && (
+                                <div className="space-y-3">
+                                    <Field label="Compétences">
+                                        <Textarea
+                                            value={formData.competences}
+                                            onChange={(e) => handleInputChange("competences", e.target.value)}
+                                            placeholder="Ex : Gestion de projet, React, Communication, Analyse de données..."
+                                            className={`min-h-[140px] ${areaCls}`}
+                                        />
+                                    </Field>
+                                    <Field label="Langues">
+                                        <Textarea
+                                            value={formData.langues}
+                                            onChange={(e) => handleInputChange("langues", e.target.value)}
+                                            placeholder="Ex : Français (natif), Anglais (courant), Espagnol (notions)"
+                                            className={`min-h-[90px] ${areaCls}`}
+                                        />
+                                    </Field>
+                                </div>
+                            )}
+
+                            <div className="mt-4 flex items-center justify-between border-t border-[#eef1f7] pt-3">
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => setStep((s) => Math.max(0, s - 1))}
+                                    disabled={step === 0}
+                                    className="h-9 rounded-full text-[12px] text-[#5b6474] disabled:opacity-40"
+                                >
+                                    <ChevronLeft className="mr-1 h-3.5 w-3.5" /> Précédent
+                                </Button>
+
+                                {isLast ? (
+                                    <Button
+                                        onClick={handleDownloadPDF}
+                                        className="h-9 rounded-full bg-[#2f6de6] px-5 text-[12px] text-white hover:bg-[#275ec6]"
+                                    >
+                                        <Download className="mr-1.5 h-3.5 w-3.5" /> Télécharger le CV
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        onClick={() => setStep((s) => Math.min(STEPS.length - 1, s + 1))}
+                                        className="h-9 rounded-full bg-[#2f6de6] px-5 text-[12px] text-white hover:bg-[#275ec6]"
+                                    >
+                                        Suivant <ChevronRight className="ml-1 h-3.5 w-3.5" />
+                                    </Button>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
@@ -193,11 +430,11 @@ function CreerCVContent() {
                 <div className="mx-auto mt-6 flex w-full max-w-[720px] flex-col items-center justify-center gap-3 sm:flex-row">
                     <Button
                         variant="ghost"
-                        disabled
-                        className="h-9 w-full sm:min-w-[230px] sm:w-auto rounded-full bg-[#f0f2f8] text-[12px] text-[#a9afbe] hover:bg-[#f0f2f8]"
+                        onClick={handleManualSave}
+                        className="h-9 w-full sm:min-w-[230px] sm:w-auto rounded-full bg-[#f0f2f8] text-[12px] text-[#5b6474] hover:bg-[#e6eaf4]"
                     >
                         <Save className="mr-1.5 h-3.5 w-3.5" />
-                        Sauvegarder
+                        Sauvegarder le brouillon
                     </Button>
                     <Button
                         onClick={handleDownloadPDF}
