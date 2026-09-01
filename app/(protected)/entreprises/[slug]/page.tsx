@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
-import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -241,17 +240,17 @@ export default function CompanyProfilePage() {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <span className="text-muted-foreground mt-0.5 flex-shrink-0 text-sm leading-4">🏢</span>
-                    <div>
-                      <p className="text-xs text-muted-foreground">Secteur</p>
-                      <p className="text-sm font-semibold">{contact.sector ?? "-"}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
                     <Users className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="text-xs text-muted-foreground">Taille</p>
                       <p className="text-sm font-semibold">{contact.employees ?? "-"}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-muted-foreground mt-0.5 flex-shrink-0 text-sm leading-4">🏢</span>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Secteur</p>
+                      <p className="text-sm font-semibold">{contact.sector ?? "-"}</p>
                     </div>
                   </div>
                 </div>
@@ -408,8 +407,6 @@ export default function CompanyProfilePage() {
           </Tabs>
         </div>
       </main>
-
-      <Footer />
     </div>
   )
 }

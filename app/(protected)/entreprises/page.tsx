@@ -2,16 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { ChevronDown, ChevronLeft, ChevronRight, Search } from "lucide-react"
 import { companyService } from "@/lib/api/company.service"
 import type { ICompany } from "@/lib/@types/entities"
 import { capitalizeFirst } from "@/lib/utils"
 import { CompanyLogo } from "@/components/company-logo"
-
-const SIZES = ["1-10 employés", "11-50 employés", "51-200 employés", "201-500 employés", "500+ employés"]
 
 const SORT_OPTIONS = [
     { value: "pertinence", label: "Le plus pertinent" },
@@ -32,7 +28,6 @@ export default function CompaniesPage() {
 
     const [sectors, setSectors] = useState<{ name: string; count: number }[]>([])
     const [activeSector, setActiveSector] = useState<string | null>(null)
-    const [activeSize, setActiveSize] = useState<string | null>(null)
 
     const [sortBy, setSortBy] = useState<SortValue>("pertinence")
     const [sortOpen, setSortOpen] = useState(false)
@@ -59,7 +54,7 @@ export default function CompaniesPage() {
 
     useEffect(() => {
         setPage(1)
-    }, [debouncedSearch, activeSector, activeSize])
+    }, [debouncedSearch, activeSector])
 
     useEffect(() => {
         const load = async () => {
@@ -70,7 +65,6 @@ export default function CompaniesPage() {
                     limit: 12,
                     search: debouncedSearch || undefined,
                     sector: activeSector || undefined,
-                    companySize: activeSize || undefined,
                 } as any)
                 const payload = (res as any)?.data ?? res
                 if (Array.isArray(payload)) {
@@ -87,7 +81,7 @@ export default function CompaniesPage() {
             }
         }
         load()
-    }, [page, debouncedSearch, activeSector, activeSize])
+    }, [page, debouncedSearch, activeSector])
 
     const sortedCompanies = useMemo(() => {
         const list = [...companies]
@@ -98,8 +92,6 @@ export default function CompaniesPage() {
         }
         return list
     }, [companies, sortBy])
-
-    const activeFilters = (activeSector ? 1 : 0) + (activeSize ? 1 : 0)
 
     const pageNumbers = useMemo(() => {
         const pages: number[] = []
@@ -114,56 +106,8 @@ export default function CompaniesPage() {
             </div>
 
             <div className="mx-auto w-full max-w-[1240px] px-4 py-4 sm:px-6">
-                <div className="grid grid-cols-1 gap-4 lg:grid-cols-[250px_1fr]">
-                    <aside className="rounded-[12px] border border-[#dfe5f1] bg-white p-3">
-                        <div className="flex items-center justify-between">
-                            <h2 className="text-[12px] font-semibold text-[#1d2433]">Industrie et services</h2>
-                            {activeFilters > 0 && (
-                                <button
-                                    onClick={() => { setActiveSector(null); setActiveSize(null) }}
-                                    className="text-[10px] text-[#2f6de6] hover:underline"
-                                >
-                                    Réinitialiser
-                                </button>
-                            )}
-                        </div>
-                        <div className="mt-2 space-y-1.5">
-                            {sectors.length === 0 && <p className="text-[11px] text-[#9aa3b2]">Aucun secteur.</p>}
-                            {sectors.map((s) => (
-                                <div key={s.name} className="flex items-center gap-2">
-                                    <Checkbox
-                                        id={`sector-${s.name}`}
-                                        className="h-3.5 w-3.5"
-                                        checked={activeSector === s.name}
-                                        onCheckedChange={(c) => setActiveSector(c ? s.name : null)}
-                                    />
-                                    <Label htmlFor={`sector-${s.name}`} className="text-[11px] font-normal text-[#8b93a3] cursor-pointer">
-                                        {s.name} <span className="text-[#b6bdca]">({s.count})</span>
-                                    </Label>
-                                </div>
-                            ))}
-                        </div>
-
-                        <h3 className="mt-4 text-[12px] font-semibold text-[#1d2433]">Taille de l'entreprise</h3>
-                        <div className="mt-2 space-y-1.5">
-                            {SIZES.map((item) => (
-                                <div key={item} className="flex items-center gap-2">
-                                    <Checkbox
-                                        id={`size-${item}`}
-                                        className="h-3.5 w-3.5"
-                                        checked={activeSize === item}
-                                        onCheckedChange={(c) => setActiveSize(c ? item : null)}
-                                    />
-                                    <Label htmlFor={`size-${item}`} className="text-[11px] font-normal text-[#8b93a3] cursor-pointer">
-                                        {item}
-                                    </Label>
-                                </div>
-                            ))}
-                        </div>
-                    </aside>
-
-                    <main>
-                        <div className="mb-3">
+                <div>
+                    <div className="mb-3">
                             <div className="relative w-full">
                                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9aa3b2]" />
                                 <Input
@@ -175,9 +119,30 @@ export default function CompaniesPage() {
                             </div>
                         </div>
 
+                        {/* Filtres secteur en chips */}
+                        {sectors.length > 0 && (
+                            <div className="mb-3 flex flex-wrap gap-2">
+                                <button
+                                    onClick={() => setActiveSector(null)}
+                                    className={`h-7 rounded-full border px-3 text-[11px] transition-colors ${!activeSector ? "border-[#2f6de6] bg-[#edf4ff] text-[#2f6de6] font-semibold" : "border-[#d8deeb] text-[#7d8798] hover:border-[#2f6de6]"}`}
+                                >
+                                    Tous les secteurs
+                                </button>
+                                {sectors.map((s) => (
+                                    <button
+                                        key={s.name}
+                                        onClick={() => setActiveSector(activeSector === s.name ? null : s.name)}
+                                        className={`h-7 rounded-full border px-3 text-[11px] transition-colors ${activeSector === s.name ? "border-[#2f6de6] bg-[#edf4ff] text-[#2f6de6] font-semibold" : "border-[#d8deeb] text-[#7d8798] hover:border-[#2f6de6]"}`}
+                                    >
+                                        {s.name} <span className="text-[#b6bdca]">({s.count})</span>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
                         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                             <p className="text-[11px] text-[#8b93a3]">
-                                {activeSector || activeSize ? "Entreprises filtrées" : "Toutes les entreprises"}
+                                {activeSector ? `Secteur : ${activeSector}` : "Toutes les entreprises"}
                             </p>
                             <div ref={sortRef} className="relative">
                                 <button
@@ -259,7 +224,6 @@ export default function CompaniesPage() {
                                 </button>
                             </div>
                         )}
-                    </main>
                 </div>
             </div>
         </div>
