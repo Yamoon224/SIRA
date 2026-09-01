@@ -60,20 +60,17 @@ export default function CompaniesPage() {
         const load = async () => {
             setLoading(true)
             try {
-                const res = await companyService.getCompanies({
+                const res: any = await companyService.getCompanies({
                     page,
                     limit: 12,
                     search: debouncedSearch || undefined,
                     sector: activeSector || undefined,
                 } as any)
-                const payload = (res as any)?.data ?? res
-                if (Array.isArray(payload)) {
-                    setCompanies(payload)
-                    setTotalPages(1)
-                } else {
-                    setCompanies(payload?.data ?? [])
-                    setTotalPages(payload?.meta?.totalPages ?? 1)
-                }
+                // L'API paginée renvoie { data: ICompany[], meta: { totalPages, ... } }
+                const list = Array.isArray(res?.data) ? res.data : (res?.data?.data ?? res ?? [])
+                const meta = res?.meta ?? res?.data?.meta
+                setCompanies(Array.isArray(list) ? list : [])
+                setTotalPages(meta?.totalPages ?? 1)
             } catch (err) {
                 console.error("[entreprises] load error:", err)
             } finally {
@@ -94,10 +91,14 @@ export default function CompaniesPage() {
     }, [companies, sortBy])
 
     const pageNumbers = useMemo(() => {
+        const span = 5
+        let start = Math.max(1, page - Math.floor(span / 2))
+        const end = Math.min(totalPages, start + span - 1)
+        start = Math.max(1, end - span + 1)
         const pages: number[] = []
-        for (let i = 1; i <= Math.min(totalPages, 5); i++) pages.push(i)
+        for (let i = start; i <= end; i++) pages.push(i)
         return pages
-    }, [totalPages])
+    }, [totalPages, page])
 
     return (
         <div className="min-h-[calc(100vh-80px)]">
@@ -196,31 +197,44 @@ export default function CompaniesPage() {
                         )}
 
                         {!loading && totalPages > 1 && (
-                            <div className="mt-5 flex items-center justify-center gap-2 text-[11px]">
+                            <div className="mt-6 flex items-center justify-center gap-1.5 text-[12px]">
                                 <button
                                     onClick={() => setPage((prev) => Math.max(1, prev - 1))}
                                     disabled={page === 1}
-                                    className="flex h-6 w-6 items-center justify-center text-[#8b93a3] disabled:opacity-40"
+                                    className="flex h-8 items-center gap-1 rounded-full border border-[#dce3ef] px-3 text-[#4e5a6e] hover:border-[#2f6de6] hover:text-[#2f6de6] disabled:opacity-40 disabled:hover:border-[#dce3ef] disabled:hover:text-[#4e5a6e]"
                                 >
-                                    <ChevronLeft className="h-3.5 w-3.5" />
+                                    <ChevronLeft className="h-3.5 w-3.5" /> Préc.
                                 </button>
                                 {pageNumbers.map((n) => (
                                     <button
                                         key={n}
                                         onClick={() => setPage(n)}
-                                        className={`flex h-6 w-6 items-center justify-center rounded-full ${
-                                            page === n ? "bg-[#2f6de6] text-white" : "text-[#8b93a3]"
+                                        className={`flex h-8 w-8 items-center justify-center rounded-full border transition-colors ${
+                                            page === n
+                                                ? "border-[#2f6de6] bg-[#2f6de6] text-white"
+                                                : "border-[#dce3ef] text-[#4e5a6e] hover:border-[#2f6de6] hover:text-[#2f6de6]"
                                         }`}
                                     >
                                         {n}
                                     </button>
                                 ))}
+                                {pageNumbers[pageNumbers.length - 1] < totalPages && (
+                                    <>
+                                        <span className="px-0.5 text-[#9aa3b2]">…</span>
+                                        <button
+                                            onClick={() => setPage(totalPages)}
+                                            className="flex h-8 w-8 items-center justify-center rounded-full border border-[#dce3ef] text-[#4e5a6e] hover:border-[#2f6de6] hover:text-[#2f6de6]"
+                                        >
+                                            {totalPages}
+                                        </button>
+                                    </>
+                                )}
                                 <button
                                     onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
-                                    disabled={page === totalPages}
-                                    className="flex h-6 w-6 items-center justify-center text-[#8b93a3] disabled:opacity-40"
+                                    disabled={page >= totalPages}
+                                    className="flex h-8 items-center gap-1 rounded-full border border-[#dce3ef] px-3 text-[#4e5a6e] hover:border-[#2f6de6] hover:text-[#2f6de6] disabled:opacity-40 disabled:hover:border-[#dce3ef] disabled:hover:text-[#4e5a6e]"
                                 >
-                                    <ChevronRight className="h-3.5 w-3.5" />
+                                    Suiv. <ChevronRight className="h-3.5 w-3.5" />
                                 </button>
                             </div>
                         )}

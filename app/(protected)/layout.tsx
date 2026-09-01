@@ -24,7 +24,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
     return (
         <ProtectedRoute>
-        <div className="flex h-screen bg-background">
+        <div className="flex h-screen overflow-hidden bg-background">
             {sidebarOpen && (
                 <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={() => setSidebarOpen(false)} />
             )}
@@ -39,7 +39,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
             <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
                 <Header onToggleSidebar={toggleSidebar} showMobileMenuButton={true} showLogo={false} />
-                <main className="flex-1 overflow-y-auto overflow-x-hidden bg-background p-3 sm:p-6">
+                <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden bg-background p-3 sm:p-6">
                     <div className="mx-auto w-full max-w-7xl">{children}</div>
                 </main>
             </div>

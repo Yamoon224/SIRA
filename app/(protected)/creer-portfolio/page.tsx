@@ -1,14 +1,24 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Suspense, useEffect, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { ChevronRight } from "lucide-react"
+import { ChevronRight, Loader2 } from "lucide-react"
+import { portfolioService } from "@/lib/api/portfolio.service"
+import { useAuth } from "@/contexts/auth-context"
 
-export default function Page() {
+function CreerPortfolioContent() {
+    const router = useRouter()
+    const searchParams = useSearchParams()
+    const { user } = useAuth()
+    const editId = searchParams.get("id")
+
+    const [loading, setLoading] = useState(!!editId)
+    const [saving, setSaving] = useState(false)
     const [theme, setTheme] = useState<"light" | "dark">("light")
     const [profileData, setProfileData] = useState({
         fullName: "",
@@ -18,6 +28,60 @@ export default function Page() {
         email: "",
         skills: "",
     })
+
+    useEffect(() => {
+        if (!editId) return
+        portfolioService.getPortfolioById(editId)
+            .then((res: any) => {
+                const p = res?.data?.data ?? res?.data ?? res
+                if (!p?.id) return
+                setProfileData((prev) => ({
+                    ...prev,
+                    title: p.title ?? "",
+                    bio: p.description ?? "",
+                    skills: Array.isArray(p.skills) ? p.skills.join(", ") : "",
+                }))
+            })
+            .catch((err) => {
+                console.error("[creer-portfolio] load error:", err)
+                toast.error("Portfolio introuvable")
+                router.push("/portfolio")
+            })
+            .finally(() => setLoading(false))
+    }, [editId, router])
+
+    const handleSave = async () => {
+        const title = profileData.title.trim() || profileData.fullName.trim()
+        const description = profileData.bio.trim()
+        const skills = profileData.skills.split(",").map((s) => s.trim()).filter(Boolean)
+
+        if (!title) { toast.error("Renseigne un titre professionnel."); return }
+        if (!description) { toast.error("Renseigne une bio / description."); return }
+        if (skills.length === 0) { toast.error("Ajoute au moins une compétence."); return }
+
+        setSaving(true)
+        try {
+            if (editId) {
+                await portfolioService.updatePortfolio(editId, { title, description, skills })
+                toast.success("Portfolio mis à jour")
+            } else {
+                await portfolioService.createPortfolio({
+                    title,
+                    description,
+                    skills,
+                    createdDate: new Date().toISOString().slice(0, 10),
+                    userId: user?.id,
+                })
+                toast.success("Portfolio créé")
+            }
+            router.push("/portfolio")
+        } catch (err: any) {
+            console.error("[creer-portfolio] save error:", err)
+            toast.error(err?.message || "Échec de l'enregistrement")
+        } finally {
+            setSaving(false)
+        }
+    }
     const [socialLinks, setSocialLinks] = useState([
         { label: "LinkedIn", value: "" },
         { label: "GitHub", value: "" },
@@ -37,11 +101,19 @@ export default function Page() {
         { title: "Consulter", link: "Consulter" },
     ]
 
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center py-24">
+                <Loader2 className="h-7 w-7 animate-spin text-[#2f6de6]" />
+            </div>
+        )
+    }
+
     return (
         <div className="bg-white">
             <div className="mx-auto max-w-5xl">
                 {/* Page Title */}
-                <h1 className="text-2xl font-bold text-[#1b2331] mb-8">Créer un portfolio</h1>
+                <h1 className="text-2xl font-bold text-[#1b2331] mb-8">{editId ? "Modifier le portfolio" : "Créer un portfolio"}</h1>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Left Column */}
@@ -224,14 +296,31 @@ export default function Page() {
 
                 {/* Action Buttons */}
                 <div className="flex gap-3 justify-center mt-8">
-                    <Button className="px-8 h-9 rounded-full bg-[#2f6de6] hover:bg-[#2157d3] text-white text-[12px] font-medium">
-                        Modifier
+                    <Button
+                        onClick={handleSave}
+                        disabled={saving}
+                        className="px-8 h-9 rounded-full bg-[#2f6de6] hover:bg-[#2157d3] text-white text-[12px] font-medium"
+                    >
+                        {saving && <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />}
+                        {editId ? "Mettre à jour" : "Enregistrer"}
                     </Button>
-                    <Button variant="outline" className="px-8 h-9 rounded-full border border-[#d8deeb] text-[12px] font-medium">
+                    <Button
+                        variant="outline"
+                        onClick={() => router.push("/portfolio")}
+                        className="px-8 h-9 rounded-full border border-[#d8deeb] text-[12px] font-medium"
+                    >
                         Annuler
                     </Button>
                 </div>
             </div>
         </div>
+    )
+}
+
+export default function CreerPortfolioPage() {
+    return (
+        <Suspense fallback={null}>
+            <CreerPortfolioContent />
+        </Suspense>
     )
 }

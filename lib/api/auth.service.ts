@@ -55,18 +55,11 @@ export const authService = {
         })
     },
 
-    googleAuth: async (googleData: {
-        googleId: string
-        email: string
-        name: string
-        firstName: string
-        lastName: string
-        picture: string
-    }) => {
-        return apiRequest<ApiResponse<{ token: string; user: IUser }>>({  
+    googleAuth: async (credential: string) => {
+        return apiRequest<{ access_token: string; user: IUser; isNewUser: boolean }>({
             endpoint: "/auth/google",
             method: "POST",
-            data: googleData,
+            data: { credential },
         })
     },
 }

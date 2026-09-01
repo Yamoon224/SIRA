@@ -38,7 +38,7 @@ const sidebarItems = [
         icon: MessageSquare,
     },
     {
-        title: "Mes offres",
+        title: "Mes candidatures",
         href: "/mes-offres",
         icon: Briefcase,
     },
@@ -108,8 +108,8 @@ const sidebarItems = [
         icon: FileText,
     },
     {
-        title: "Créer Portfolio",
-        href: "/creer-portfolio",
+        title: "Mon portfolio",
+        href: "/portfolio",
         icon: FolderPlus,
     },
     {

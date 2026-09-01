@@ -13,7 +13,7 @@ import { AppLogo } from "@/components/app-logo"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ChevronLeft, Eye, EyeOff, Loader2 } from "lucide-react"
 import { OTPVerificationModal } from "@/components/modals/otp-verification-modal"
-import { initializeGoogleAuth, signInWithGoogle, type GoogleUser, GOOGLE_CLIENT_ID } from "@/lib/google-auth"
+import { initializeGoogleAuth, signInWithGoogle, GOOGLE_CLIENT_ID } from "@/lib/google-auth"
 import { authService } from "@/lib/api/auth.service"
 
 export default function Page() {
@@ -140,15 +140,8 @@ export default function Page() {
 
         setIsGoogleLoading(true)
         try {
-            const googleUser: GoogleUser = await signInWithGoogle()
-            const response = await authService.googleAuth({
-                googleId: googleUser.id,
-                email: googleUser.email,
-                name: googleUser.name,
-                firstName: googleUser.given_name,
-                lastName: googleUser.family_name,
-                picture: googleUser.picture,
-            })
+            const credential = await signInWithGoogle()
+            const response = await authService.googleAuth(credential)
             const payload = (response as any)?.data ?? response
             const userData = payload?.user
             const token = payload?.access_token ?? payload?.accessToken
@@ -167,8 +160,9 @@ export default function Page() {
                 router.push("/dashboard")
             }
         } catch (error: any) {
-            if (!error.message?.includes("cancelled")) {
-                toast.error("Erreur lors de la connexion avec Google. Réessaie.")
+            const msg = String(error?.message ?? "")
+            if (!msg.includes("cancelled") && !msg.includes("not displayed")) {
+                toast.error(error?.message || "Erreur lors de la connexion avec Google. Réessaie.")
             }
         } finally {
             setIsGoogleLoading(false)

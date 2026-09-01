@@ -1,16 +1,18 @@
 "use client"
 
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Building2, Calendar, MapPin, Eye, XCircle } from "lucide-react"
+import { Building2, Calendar, MapPin, BriefcaseBusiness, XCircle, Loader2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { candidatureService } from "@/lib/api/candidature.service"
 import { useApi } from "@/lib/hooks/useApi"
-import { capitalizeFirst } from "@/lib/utils"
+import { capitalizeFirst, formatFileUrl } from "@/lib/utils"
+import { CompanyLogo } from "@/components/company-logo"
 import type { ICandidature } from "@/lib/@types/entities"
 
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
@@ -107,60 +109,60 @@ export default function MyApplicationsPage() {
                 ))}
               </div>
             ) : displayApplications.length > 0 ? (
-              displayApplications.map((application) => (
-                <Card key={application.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex flex-col sm:flex-row items-start gap-4">
-                      <div className="flex items-start space-x-4 flex-1">
-                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <Building2 className="w-6 h-6 text-gray-600" />
-                        </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                {displayApplications.map((application) => {
+                  const job = application.jobOffer
+                  const cover = formatFileUrl(job?.image || job?.company?.coverImage)
+                  return (
+                    <Link
+                      key={application.id}
+                      href={job?.id ? `/explorer-emplois/${job.id}` : "/mes-offres"}
+                      className="group block rounded-[14px] border border-[#b9c8ec] dark:border-border bg-white dark:bg-card p-3 sm:p-4 hover:border-[#8eb4ff] transition-colors"
+                    >
+                      <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-gray-900 mb-1">{application.jobOffer?.title ?? "Offre"}</h3>
-                          <p className="text-gray-600 mb-2">{application.jobOffer?.company?.name ?? "-"}</p>
-                          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500 mb-3">
-                            {application.jobOffer?.location && (
-                              <div className="flex items-center">
-                                <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-                                {capitalizeFirst(application.jobOffer.location)}
-                              </div>
-                            )}
-                            <div className="flex items-center">
-                              <Calendar className="w-4 h-4 mr-1 flex-shrink-0" />
-                              Candidature envoyée le {new Date(application.appliedDate).toLocaleDateString("fr-FR")}
-                            </div>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            {application.jobOffer?.type && <Badge variant="outline">{application.jobOffer.type}</Badge>}
-                            {application.jobOffer?.salary && (
-                              <Badge variant="outline" className="text-green-600 border-green-200">
-                                {application.jobOffer.salary}
-                              </Badge>
-                            )}
+                          <div className="flex items-start justify-between gap-2">
+                            <h3 className="text-[17px] font-extrabold text-[#1b2331] dark:text-foreground group-hover:underline">{job?.title ?? "Offre"}</h3>
                             {getStatusBadge(application.status)}
                           </div>
+                          <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-[#7f8796] dark:text-muted-foreground">
+                            {job?.location && <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3" />{capitalizeFirst(job.location)}</span>}
+                            {job?.company?.name && <span className="inline-flex items-center gap-1"><BriefcaseBusiness className="w-3 h-3" />{job.company.name}</span>}
+                            {job?.type && <span className="inline-flex items-center gap-1 rounded-full border border-[#d8deeb] dark:border-border px-2 py-0.5">{job.type}</span>}
+                          </div>
+                          <p className="mt-1 text-[11px] text-[#9aa3b2] dark:text-muted-foreground inline-flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />Envoyée le {new Date(application.appliedDate).toLocaleDateString("fr-FR")}
+                          </p>
+                          {job?.description && (
+                            <p className="mt-2 text-[12px] leading-5 text-[#5b6474] dark:text-muted-foreground line-clamp-2">
+                              {job.description}{" "}
+                              <span className="text-[#2f6de6] dark:text-primary font-semibold whitespace-nowrap">Plus de détails</span>
+                            </p>
+                          )}
+                          <div className="mt-3 flex items-center gap-3">
+                            <CompanyLogo name={job?.company?.name ?? "?"} logo={job?.company?.logo} className="w-6 h-6 text-[12px]" />
+                            <button
+                              type="button"
+                              disabled={withdrawingId === application.id}
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleWithdraw(application.id) }}
+                              className="inline-flex items-center gap-1 text-[11px] text-[#e0526a] hover:text-[#c53f56] disabled:opacity-40"
+                            >
+                              {withdrawingId === application.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5" />}
+                              Retirer
+                            </button>
+                            {job?.salary && <span className="text-[11px] font-semibold text-[#2f6de6] dark:text-primary ml-auto">{job.salary}</span>}
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center space-x-2 self-start">
-                        {application.jobOffer?.id && (
-                          <Button variant="ghost" size="sm" onClick={() => router.push(`/explorer-emplois/${application.jobOffer!.id}`)}>
-                            <Eye className="w-4 h-4" />
-                          </Button>
+                        {(job?.image || job?.company?.coverImage) && (
+                          <div className="w-full sm:w-[150px] md:w-[180px] h-[95px] rounded-xl overflow-hidden bg-[#f0f3fb] dark:bg-muted shrink-0">
+                            <img src={cover} alt={job?.title ?? ""} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                          </div>
                         )}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-red-600 hover:text-red-700"
-                          disabled={withdrawingId === application.id}
-                          onClick={() => handleWithdraw(application.id)}
-                        >
-                          <XCircle className="w-4 h-4" />
-                        </Button>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
+                    </Link>
+                  )
+                })}
+              </div>
             ) : (
               <Card>
                 <CardContent className="p-12 text-center">

@@ -32,7 +32,10 @@ export const initializeGoogleAuth = () => {
   })
 }
 
-export const signInWithGoogle = (): Promise<GoogleUser> => {
+// Résout avec le `credential` brut (ID token JWT) renvoyé par Google.
+// Ce jeton est vérifié côté serveur (POST /auth/google) : on ne décode plus
+// l'email côté client pour l'envoyer tel quel — c'était contournable.
+export const signInWithGoogle = (): Promise<string> => {
   return new Promise((resolve, reject) => {
     if (typeof window === "undefined" || !window.google) {
       reject(new Error("Google Identity Services not loaded"))
@@ -43,21 +46,10 @@ export const signInWithGoogle = (): Promise<GoogleUser> => {
       window.google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
         callback: (response: any) => {
-          try {
-            // Decode JWT token to get user info
-            const payload = JSON.parse(atob(response.credential.split(".")[1]))
-            const user: GoogleUser = {
-              id: payload.sub,
-              email: payload.email,
-              name: payload.name,
-              picture: payload.picture,
-              given_name: payload.given_name,
-              family_name: payload.family_name,
-            }
-            resolve(user)
-          } catch (error) {
-            console.error("[v0] Error decoding Google credential:", error)
-            reject(new Error("Failed to decode Google credential"))
+          if (response?.credential) {
+            resolve(response.credential as string)
+          } else {
+            reject(new Error("Aucun identifiant Google reçu"))
           }
         },
         auto_select: false,

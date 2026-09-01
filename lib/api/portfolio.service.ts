@@ -3,7 +3,7 @@ import { ApiResponse, IPaginatedResponse } from "@/lib/@types/api"
 import { IPortfolio } from "@/lib/@types/entities"
 
 export const portfolioService = {
-    getPortfolios: (params?: { page?: number; limit?: number }) =>
+    getPortfolios: (params?: { page?: number; limit?: number; userId?: string }) =>
         apiRequest<IPaginatedResponse<IPortfolio>>({ endpoint: "/portfolios/paginate", method: "GET", params }),
 
     getPortfolioById: (id: string) =>
