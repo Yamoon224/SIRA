@@ -17,6 +17,7 @@ export interface IPitch {
     id: string
     jobOfferId: string | null
     type: PitchType
+    description: string | null
     format: PitchFormat
     content: string
     videoPath: string | null
@@ -33,8 +34,8 @@ export const pitchService = {
         return apiRequest<IPitch[]>({ endpoint: "/pitches", method: "GET" })
     },
 
-    create: async (type: PitchType, jobOfferId?: string, content?: string) => {
-        return apiRequest<IPitch>({ endpoint: "/pitches", method: "POST", data: { type, jobOfferId, content } })
+    create: async (type: PitchType, jobOfferId?: string, content?: string, description?: string) => {
+        return apiRequest<IPitch>({ endpoint: "/pitches", method: "POST", data: { type, jobOfferId, content, description } })
     },
 
     get: async (id: string) => {

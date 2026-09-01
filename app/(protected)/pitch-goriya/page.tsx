@@ -32,6 +32,7 @@ function PitchGoriyaContent() {
     const [active, setActive] = useState<IPitch | null>(null)
 
     const [newType, setNewType] = useState<PitchType>("EMPLOI")
+    const [newDescription, setNewDescription] = useState("")
     const [newContent, setNewContent] = useState("")
     const [creating, setCreating] = useState(false)
 
@@ -83,11 +84,17 @@ function PitchGoriyaContent() {
     const handleCreate = async () => {
         setCreating(true)
         try {
-            const res = await pitchService.create(newType, undefined, newContent.trim() || undefined)
+            const res = await pitchService.create(
+                newType,
+                undefined,
+                newContent.trim() || undefined,
+                newDescription.trim() || undefined,
+            )
             const pitch = (res as any)?.data ?? res
             setPitches((prev) => [pitch, ...prev])
             setActive(pitch)
             setNewContent("")
+            setNewDescription("")
         } catch (err) {
             console.error("[pitch-goriya] create error:", err)
         } finally {
@@ -178,12 +185,24 @@ function PitchGoriyaContent() {
                             <Sparkles className="h-4 w-4" />{creating ? "Génération..." : "Générer un pitch"}
                         </Button>
                     </div>
-                    <Textarea
-                        value={newContent}
-                        onChange={(e) => setNewContent(e.target.value)}
-                        placeholder="Optionnel : écrivez vous-même le script du pitch (sinon généré par IA)..."
-                        className="min-h-[70px]"
-                    />
+                    <div>
+                        <label className="mb-1 block text-xs font-medium text-foreground">Décris l'idée de ton pitch</label>
+                        <Textarea
+                            value={newDescription}
+                            onChange={(e) => setNewDescription(e.target.value)}
+                            placeholder="De quoi parle ton pitch ? (ex : mon projet, ce qui me démarque, l'objectif visé...) — sert de base à la génération IA"
+                            className="min-h-[80px]"
+                        />
+                    </div>
+                    <div>
+                        <label className="mb-1 block text-xs font-medium text-muted-foreground">Script (optionnel)</label>
+                        <Textarea
+                            value={newContent}
+                            onChange={(e) => setNewContent(e.target.value)}
+                            placeholder="Optionnel : écris toi-même le script mot pour mot (sinon généré par IA à partir de l'idée)..."
+                            className="min-h-[70px]"
+                        />
+                    </div>
                 </CardContent>
             </Card>
 
@@ -223,6 +242,13 @@ function PitchGoriyaContent() {
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
                                 </div>
+
+                                {active.description && (
+                                    <div className="rounded-lg bg-muted/50 p-3">
+                                        <p className="mb-1 text-xs font-medium text-foreground">Idée du pitch</p>
+                                        <p className="whitespace-pre-line text-sm text-muted-foreground">{active.description}</p>
+                                    </div>
+                                )}
 
                                 <p className="whitespace-pre-line text-sm text-muted-foreground">{active.content}</p>
 
