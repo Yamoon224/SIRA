@@ -1,22 +1,43 @@
 import { apiRequest } from "@/lib/api-client-http"
 
+export interface CreateCheckoutData {
+    userId: string
+    planId: string
+    gateway?: string
+    successUrl?: string
+    errorUrl?: string
+    customerPhone?: string
+}
+
+// Kkiapay (widget client) renvoie amount/clientReference ; les gateways à
+// session hébergée (paiementpro, wave, stripe) renvoient une checkoutUrl.
+export type CheckoutResponse =
+    | { amount: number; currency: string; clientReference: string }
+    | { gateway: string; checkoutUrl: string; sessionId: string }
+
 export const subscriptionService = {
     getPlans: (userType: "USER" | "ENTREPRISE" = "USER") =>
         apiRequest<any>({ endpoint: `/subscriptions/plans?userType=${userType}`, method: "GET" }),
 
+    getPaymentGateways: () =>
+        apiRequest<{ enabledGateways: string[]; defaultGateway: string }>({
+            endpoint: "/subscriptions/payment-gateways",
+            method: "GET",
+        }),
+
     subscribe: (data: { userId: string; planId: string }) =>
         apiRequest<any>({ endpoint: "/subscriptions/subscribe", method: "POST", data }),
 
-    createCheckout: (data: { userId: string; planId: string }) =>
-        apiRequest<{ amount: number; currency: string; clientReference: string }>({
+    createCheckout: (data: CreateCheckoutData) =>
+        apiRequest<CheckoutResponse>({
             endpoint: "/subscriptions/checkout",
             method: "POST",
             data,
         }),
 
-    verifyCheckout: (transactionId: string, userId: string, planId: string) =>
+    verifyCheckout: (transactionId: string, userId: string, planId: string, gateway?: string) =>
         apiRequest<any>({
-            endpoint: `/subscriptions/checkout/verify/${transactionId}?userId=${userId}&planId=${planId}`,
+            endpoint: `/subscriptions/checkout/verify/${transactionId}?userId=${userId}&planId=${planId}${gateway ? `&gateway=${gateway}` : ""}`,
             method: "GET",
         }),
 

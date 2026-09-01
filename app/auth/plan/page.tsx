@@ -24,6 +24,9 @@ export default function PlanPage() {
     const [plans, setPlans] = useState<Plan[]>([])
     const [loading, setLoading] = useState(true)
     const [subscribing, setSubscribing] = useState<string | null>(null)
+    const [gateways, setGateways] = useState<string[]>([])
+    const [gateway, setGateway] = useState<string>("kkiapay")
+    const [phone, setPhone] = useState("")
     const pendingCheckoutRef = useRef<{ userId: string; planId: string } | null>(null)
 
     useEffect(() => {
@@ -36,9 +39,26 @@ export default function PlanPage() {
             .finally(() => setLoading(false))
     }, [])
 
+    useEffect(() => {
+        subscriptionService.getPaymentGateways()
+            .then((res) => {
+                const data = (res as any)?.data ?? res
+                setGateways(data?.enabledGateways ?? [])
+                if (data?.defaultGateway) setGateway(data.defaultGateway)
+            })
+            .catch(() => {})
+    }, [])
+
+    // Sélecteur affiché seulement si l'utilisateur a réellement le choix.
+    const showGatewayPicker = gateways.includes("kkiapay") && gateways.includes("paiementpro")
+
     const handleSelectPlan = async (plan: Plan) => {
         if (!user?.id) {
             router.push("/dashboard")
+            return
+        }
+        if (Number(plan.price) > 0 && gateway === "paiementpro" && phone.trim().length < 8) {
+            toast.error("Renseigne ton numéro de téléphone pour payer via Paiement Pro.")
             return
         }
         setSubscribing(plan.id)
@@ -51,7 +71,24 @@ export default function PlanPage() {
                 return
             }
 
-            // Paid plan - ouvre le widget de paiement Kkiapay
+            if (gateway === "paiementpro") {
+                // Session hébergée — on redirige le navigateur vers Paiement Pro.
+                const origin = window.location.origin
+                const res = await subscriptionService.createCheckout({
+                    userId: user.id,
+                    planId: plan.id,
+                    gateway: "paiementpro",
+                    customerPhone: phone.trim(),
+                    successUrl: `${origin}/auth/payment-success?userId=${user.id}&planId=${plan.id}&gateway=paiementpro`,
+                    errorUrl: `${origin}/auth/payment-error?planId=${plan.id}`,
+                })
+                const data = (res as any)?.data ?? res
+                if (!data?.checkoutUrl) throw new Error("checkoutUrl manquante")
+                window.location.href = data.checkoutUrl
+                return
+            }
+
+            // Kkiapay - ouvre le widget de paiement côté client
             const res = await subscriptionService.createCheckout({ userId: user.id, planId: plan.id })
             const data = (res as any)?.data ?? res
             pendingCheckoutRef.current = { userId: user.id, planId: plan.id }
@@ -101,6 +138,41 @@ export default function PlanPage() {
                     <h1 className="text-3xl font-bold text-foreground mb-2">Choisis ton forfait</h1>
                     <p className="text-muted-foreground text-sm">Commence gratuitement, passe au Premium quand tu veux</p>
                 </div>
+
+                {showGatewayPicker && (
+                    <div className="mx-auto mb-8 max-w-md">
+                        <p className="mb-2 text-center text-xs font-medium text-muted-foreground">Moyen de paiement</p>
+                        <div className="grid grid-cols-2 gap-2">
+                            {[
+                                { id: "kkiapay", label: "Kkiapay" },
+                                { id: "paiementpro", label: "Paiement Pro" },
+                            ].map((g) => (
+                                <button
+                                    key={g.id}
+                                    type="button"
+                                    onClick={() => setGateway(g.id)}
+                                    className={`rounded-xl border-2 px-4 py-2 text-sm font-semibold transition-colors ${
+                                        gateway === g.id
+                                            ? "border-[#2f6de6] bg-blue-50 text-[#2f6de6]"
+                                            : "border-gray-200 text-muted-foreground hover:border-gray-300"
+                                    }`}
+                                >
+                                    {g.label}
+                                </button>
+                            ))}
+                        </div>
+                        {gateway === "paiementpro" && (
+                            <input
+                                type="tel"
+                                inputMode="tel"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                placeholder="Numéro de téléphone (Mobile Money)"
+                                className="mt-3 w-full rounded-xl border border-gray-200 px-4 py-2 text-sm outline-none focus:border-[#2f6de6]"
+                            />
+                        )}
+                    </div>
+                )}
 
                 {loading ? (
                     <div className="flex justify-center py-16">
