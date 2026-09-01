@@ -122,20 +122,38 @@ export function formatDate(
 }
 
 
+const MEDIA_BASE_URL = (process.env.NEXT_PUBLIC_BACKEND_URL || 'https://goriya-api.lunion-lab.com').replace(/\/+$/, '')
+
 /**
- * Résout un chemin de média renvoyé par l'API en URL absolue.
- * L'API renvoie désormais des URLs absolues (voir backend App\Support\MediaUrl),
- * mais ce helper couvre les anciennes réponses / le cache : chemins nus,
- * `/companies/…` (ancien format en base) et `/storage/…`.
+ * Résout un chemin de média renvoyé par l'API en URL absolue et servable.
+ * Gère : chemins nus (`companies/x.png`), `/companies/x.png` (ancien format en
+ * base), `/storage/…`, et URLs absolues dont le host est local/interne
+ * (`localhost`, `127.0.0.1`, `*.railway.app`) — dans ce cas on ré-écrit le host
+ * vers le backend public en gardant le chemin. Les vraies URLs externes
+ * (données seed : unsplash, etc.) passent inchangées.
  */
 export function formatFileUrl(file: string | null | undefined): string {
     if (!file) return ''
-    if (file.startsWith('http://') || file.startsWith('https://')) return file
+    const value = file.trim()
+    if (!value) return ''
 
-    const base = (process.env.NEXT_PUBLIC_BACKEND_URL || 'https://goriya-api.lunion-lab.com').replace(/\/+$/, '')
-    let path = '/' + file.replace(/^\/+/, '')
+    if (/^https?:\/\//i.test(value)) {
+        try {
+            const u = new URL(value)
+            const internal = /^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/.test(u.hostname) || u.hostname.endsWith('.railway.app')
+            if (internal) return MEDIA_BASE_URL + u.pathname + u.search
+            // Évite le blocage "mixed content" : force https pour les médias de l'API.
+            if (u.protocol === 'http:' && u.pathname.startsWith('/storage/')) {
+                u.protocol = 'https:'
+                return u.toString()
+            }
+        } catch { /* ignore */ }
+        return value
+    }
+
+    let path = '/' + value.replace(/^\/+/, '')
     if (!path.startsWith('/storage/')) path = '/storage' + path
-    return base + path
+    return MEDIA_BASE_URL + path
 }
 
 /** Met en majuscule la première lettre d'un texte, sans toucher au reste (pas de title case). */

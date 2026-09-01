@@ -606,7 +606,7 @@ export default function Page() {
             {/* Career cards */}
             <section className="py-8 sm:py-14 bg-white dark:bg-background">
                 <div className="mx-auto max-w-[1180px] px-3 sm:px-4">
-                    {/* <div className="mb-4 sm:mb-6">
+                    <div className="mb-4 sm:mb-6">
                         <h3 className="text-lg xs:text-xl sm:text-2xl font-bold">Prends ta carrière en main</h3>
                     </div>
                     <div className="inline-flex rounded-full border border-[#e2e8f5] dark:border-border overflow-hidden mb-5 bg-white dark:bg-card">
@@ -616,7 +616,7 @@ export default function Page() {
                                 {tab}
                             </button>
                         ))}
-                    </div> */}
+                    </div>
                     {homeCareerLoading ? (
                         <div className="flex justify-center py-10"><Loader2 className="w-5 h-5 animate-spin text-[#2f6de6]" /></div>
                     ) : homeCareerJobs.length === 0 ? (

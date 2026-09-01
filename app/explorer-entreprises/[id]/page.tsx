@@ -12,7 +12,8 @@ import { companyService } from "@/lib/api/company.service"
 import { jobService } from "@/lib/api/job.service"
 import { ICompany, IJobOffer } from "@/lib/@types/entities"
 import { CompanyLogo } from "@/components/company-logo"
-import { capitalizeFirst } from "@/lib/utils"
+import { capitalizeFirst, formatFileUrl } from "@/lib/utils"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 
 const JOB_TYPES = ["CDI", "CDD", "STAGE", "FREELANCE"]
 const DURATIONS = ["1-3 mois", "4-6 mois", "7-12 mois", "13-24 mois", "25-36 mois"]
@@ -158,7 +159,8 @@ export default function EntrepriseDetailPage() {
     const [similarCompanies, setSimilarCompanies] = useState<ICompany[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(false)
-    const [activeTab, setActiveTab] = useState<"profil" | "jobs">("profil")
+    const [activeTab, setActiveTab] = useState<"profil" | "jobs" | "galerie">("profil")
+    const [lightboxSrc, setLightboxSrc] = useState<string | null>(null)
     const [followedIds, setFollowedIds] = useState<string[]>([])
     const [savedJobIds, setSavedJobIds] = useState<string[]>([])
 
@@ -262,7 +264,7 @@ export default function EntrepriseDetailPage() {
             <div className="bg-white">
                 <div className="relative h-[200px] sm:h-[250px] overflow-hidden bg-gradient-to-r from-[#1539be] to-[#2f81f1]">
                     {company.coverImage && (
-                        <img src={company.coverImage} alt="cover" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                        <img src={formatFileUrl(company.coverImage)} alt="cover" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                     )}
                     {/* Logo + nom d'entreprise ancrés en bas de la couverture */}
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent pt-20">
@@ -295,21 +297,32 @@ export default function EntrepriseDetailPage() {
                                 <div className="flex rounded-full border border-[#d8deeb] overflow-hidden bg-white text-[12px]">
                                     <button
                                         onClick={() => setActiveTab("profil")}
-                                        className={`px-5 h-8 font-semibold transition-colors ${activeTab === "profil" ? "bg-white text-[#1b2331]" : "text-[#9aa3b2] hover:text-[#1b2331]"}`}
+                                        className={`px-4 sm:px-5 h-8 font-semibold transition-colors ${activeTab === "profil" ? "bg-white text-[#1b2331]" : "text-[#9aa3b2] hover:text-[#1b2331]"}`}
                                     >
                                         Profil
                                     </button>
                                     <button
                                         onClick={() => setActiveTab("jobs")}
-                                        className={`px-5 h-8 font-semibold transition-colors flex items-center gap-1.5 ${activeTab === "jobs" ? "bg-[#2f6de6] text-white" : "text-[#9aa3b2] hover:text-[#1b2331]"}`}
+                                        className={`px-4 sm:px-5 h-8 font-semibold transition-colors flex items-center gap-1.5 ${activeTab === "jobs" ? "bg-[#2f6de6] text-white" : "text-[#9aa3b2] hover:text-[#1b2331]"}`}
                                     >
-                                        Jobs
+                                        Offres
                                         {jobs.length > 0 && (
                                             <span className={`w-5 h-5 rounded-full text-[10px] flex items-center justify-center font-bold ${activeTab === "jobs" ? "bg-white/20 text-white" : "bg-[#f0f3fb] text-[#2f6de6]"}`}>
                                                 {jobs.length}
                                             </span>
                                         )}
                                     </button>
+                                    {(company.gallery?.length ?? 0) > 0 && (
+                                        <button
+                                            onClick={() => setActiveTab("galerie")}
+                                            className={`px-4 sm:px-5 h-8 font-semibold transition-colors flex items-center gap-1.5 ${activeTab === "galerie" ? "bg-[#2f6de6] text-white" : "text-[#9aa3b2] hover:text-[#1b2331]"}`}
+                                        >
+                                            Galerie
+                                            <span className={`w-5 h-5 rounded-full text-[10px] flex items-center justify-center font-bold ${activeTab === "galerie" ? "bg-white/20 text-white" : "bg-[#f0f3fb] text-[#2f6de6]"}`}>
+                                                {company.gallery!.length}
+                                            </span>
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -557,7 +570,7 @@ export default function EntrepriseDetailPage() {
                                             </div>
                                             {company.coverImage && (
                                                 <div className="w-[100px] flex-shrink-0 hidden sm:block">
-                                                    <img src={company.coverImage} alt={company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                                    <img src={formatFileUrl(company.coverImage)} alt={company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                 </div>
                                             )}
                                         </div>
@@ -567,7 +580,41 @@ export default function EntrepriseDetailPage() {
                         )}
                     </div>
                 )}
+
+                {/* ── GALERIE TAB ── */}
+                {activeTab === "galerie" && (
+                    <div>
+                        {(company.gallery?.length ?? 0) === 0 ? (
+                            <div className="bg-white rounded-xl border border-[#e8edf6] flex flex-col items-center justify-center py-14 text-center px-4">
+                                <Building2 className="w-8 h-8 text-[#c8d0df] mb-3" />
+                                <p className="text-[13px] font-semibold text-[#1b2331]">Aucune photo</p>
+                                <p className="text-[11px] text-[#9aa3b2] mt-1">Cette entreprise n'a pas encore ajouté de photos.</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                                {company.gallery!.map((src, i) => (
+                                    <button
+                                        key={i}
+                                        type="button"
+                                        onClick={() => setLightboxSrc(formatFileUrl(src))}
+                                        className="aspect-video overflow-hidden rounded-lg border border-[#e8edf6] hover:border-[#2f6de6] transition-colors"
+                                    >
+                                        <img src={formatFileUrl(src)} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
             </main>
+
+            {/* Lightbox galerie */}
+            <Dialog open={!!lightboxSrc} onOpenChange={(open) => !open && setLightboxSrc(null)}>
+                <DialogContent className="max-w-3xl p-0 overflow-hidden bg-black border-0">
+                    <DialogTitle className="sr-only">Photo de la galerie</DialogTitle>
+                    {lightboxSrc && <img src={lightboxSrc} alt="" className="w-full h-full object-contain max-h-[80vh]" />}
+                </DialogContent>
+            </Dialog>
 
             {/* Filter Modal */}
             <FilterModal
