@@ -25,7 +25,7 @@ export default function PlanPage() {
     const [loading, setLoading] = useState(true)
     const [subscribing, setSubscribing] = useState<string | null>(null)
     const [gateways, setGateways] = useState<string[]>([])
-    const [gateway, setGateway] = useState<string>("kkiapay")
+    const [gateway, setGateway] = useState<string>("paiementpro")
     const [phone, setPhone] = useState("")
     const pendingCheckoutRef = useRef<{ userId: string; planId: string } | null>(null)
 
@@ -89,7 +89,7 @@ export default function PlanPage() {
             }
 
             // Kkiapay - ouvre le widget de paiement côté client
-            const res = await subscriptionService.createCheckout({ userId: user.id, planId: plan.id })
+            const res = await subscriptionService.createCheckout({ userId: user.id, planId: plan.id, gateway: "kkiapay" })
             const data = (res as any)?.data ?? res
             pendingCheckoutRef.current = { userId: user.id, planId: plan.id }
             openKkiapayWidget({ amount: data.amount, clientReference: data.clientReference })
@@ -139,28 +139,32 @@ export default function PlanPage() {
                     <p className="text-muted-foreground text-sm">Commence gratuitement, passe au Premium quand tu veux</p>
                 </div>
 
-                {showGatewayPicker && (
+                {(showGatewayPicker || gateway === "paiementpro") && (
                     <div className="mx-auto mb-8 max-w-md">
-                        <p className="mb-2 text-center text-xs font-medium text-muted-foreground">Moyen de paiement</p>
-                        <div className="grid grid-cols-2 gap-2">
-                            {[
-                                { id: "kkiapay", label: "Kkiapay" },
-                                { id: "paiementpro", label: "Paiement Pro" },
-                            ].map((g) => (
-                                <button
-                                    key={g.id}
-                                    type="button"
-                                    onClick={() => setGateway(g.id)}
-                                    className={`rounded-xl border-2 px-4 py-2 text-sm font-semibold transition-colors ${
-                                        gateway === g.id
-                                            ? "border-[#2f6de6] bg-blue-50 text-[#2f6de6]"
-                                            : "border-gray-200 text-muted-foreground hover:border-gray-300"
-                                    }`}
-                                >
-                                    {g.label}
-                                </button>
-                            ))}
-                        </div>
+                        {showGatewayPicker && (
+                            <>
+                                <p className="mb-2 text-center text-xs font-medium text-muted-foreground">Moyen de paiement</p>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {[
+                                        { id: "paiementpro", label: "Paiement Pro" },
+                                        { id: "kkiapay", label: "Kkiapay" },
+                                    ].map((g) => (
+                                        <button
+                                            key={g.id}
+                                            type="button"
+                                            onClick={() => setGateway(g.id)}
+                                            className={`rounded-xl border-2 px-4 py-2 text-sm font-semibold transition-colors ${
+                                                gateway === g.id
+                                                    ? "border-[#2f6de6] bg-blue-50 text-[#2f6de6]"
+                                                    : "border-gray-200 text-muted-foreground hover:border-gray-300"
+                                            }`}
+                                        >
+                                            {g.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
+                        )}
                         {gateway === "paiementpro" && (
                             <input
                                 type="tel"

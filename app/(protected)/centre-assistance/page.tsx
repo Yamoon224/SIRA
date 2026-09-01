@@ -35,6 +35,9 @@ export default function Page() {
     const [plans, setPlans] = useState<Plan[]>([])
     const [loadingPlans, setLoadingPlans] = useState(true)
     const [subscribing, setSubscribing] = useState<string | null>(null)
+    const [gateways, setGateways] = useState<string[]>([])
+    const [gateway, setGateway] = useState<string>("paiementpro")
+    const [phone, setPhone] = useState("")
     const pendingCheckoutRef = useRef<{ userId: string; planId: string } | null>(null)
 
     useEffect(() => {
@@ -47,9 +50,25 @@ export default function Page() {
             .finally(() => setLoadingPlans(false))
     }, [])
 
+    useEffect(() => {
+        subscriptionService.getPaymentGateways()
+            .then((res) => {
+                const data = (res as any)?.data ?? res
+                setGateways(data?.enabledGateways ?? [])
+                if (data?.defaultGateway) setGateway(data.defaultGateway)
+            })
+            .catch(() => {})
+    }, [])
+
+    const showGatewayPicker = gateways.includes("kkiapay") && gateways.includes("paiementpro")
+
     const handleSelectPlan = async (plan: Plan) => {
         if (!user?.id) {
             router.push("/auth/plan")
+            return
+        }
+        if (Number(plan.price) > 0 && gateway === "paiementpro" && phone.trim().length < 8) {
+            toast.error("Renseigne ton numéro de téléphone pour payer via Paiement Pro.")
             return
         }
         setSubscribing(plan.id)
@@ -60,7 +79,24 @@ export default function Page() {
                 router.push("/dashboard")
                 return
             }
-            const res = await subscriptionService.createCheckout({ userId: user.id, planId: plan.id })
+
+            if (gateway === "paiementpro") {
+                const origin = window.location.origin
+                const res = await subscriptionService.createCheckout({
+                    userId: user.id,
+                    planId: plan.id,
+                    gateway: "paiementpro",
+                    customerPhone: phone.trim(),
+                    successUrl: `${origin}/auth/payment-success?userId=${user.id}&planId=${plan.id}&gateway=paiementpro`,
+                    errorUrl: `${origin}/auth/payment-error?planId=${plan.id}`,
+                })
+                const data = (res as any)?.data ?? res
+                if (!data?.checkoutUrl) throw new Error("checkoutUrl manquante")
+                window.location.href = data.checkoutUrl
+                return
+            }
+
+            const res = await subscriptionService.createCheckout({ userId: user.id, planId: plan.id, gateway: "kkiapay" })
             const data = (res as any)?.data ?? res
             pendingCheckoutRef.current = { userId: user.id, planId: plan.id }
             openKkiapayWidget({ amount: data.amount, clientReference: data.clientReference })
