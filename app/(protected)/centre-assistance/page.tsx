@@ -310,6 +310,45 @@ export default function Page() {
                                 </p>
                             </div>
 
+                            {(showGatewayPicker || gateway === "paiementpro") && (
+                                <div className="mx-auto mb-6 max-w-md">
+                                    {showGatewayPicker && (
+                                        <>
+                                            <p className="mb-2 text-center text-xs font-medium text-[#7f8796]">Moyen de paiement</p>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {[
+                                                    { id: "paiementpro", label: "Paiement Pro" },
+                                                    { id: "kkiapay", label: "Kkiapay" },
+                                                ].map((g) => (
+                                                    <button
+                                                        key={g.id}
+                                                        type="button"
+                                                        onClick={() => setGateway(g.id)}
+                                                        className={`rounded-xl border-2 px-4 py-2 text-sm font-semibold transition-colors ${
+                                                            gateway === g.id
+                                                                ? "border-[#2f6de6] bg-[#eff4ff] text-[#2f6de6]"
+                                                                : "border-[#e8edf6] text-[#7f8796] hover:border-[#d8deeb]"
+                                                        }`}
+                                                    >
+                                                        {g.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </>
+                                    )}
+                                    {gateway === "paiementpro" && (
+                                        <input
+                                            type="tel"
+                                            inputMode="tel"
+                                            value={phone}
+                                            onChange={(e) => setPhone(e.target.value)}
+                                            placeholder="Numéro de téléphone (Mobile Money)"
+                                            className="mt-3 w-full rounded-xl border border-[#e8edf6] px-4 py-2 text-sm outline-none focus:border-[#2f6de6]"
+                                        />
+                                    )}
+                                </div>
+                            )}
+
                             {loadingPlans ? (
                                 <div className="flex justify-center py-16">
                                     <Loader2 className="h-8 w-8 animate-spin text-[#2f6de6]" />
