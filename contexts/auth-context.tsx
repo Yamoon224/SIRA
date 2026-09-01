@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { createContext, useContext } from "react"
+import { createContext, useContext, useEffect } from "react"
 import { useSession, signOut as nextAuthSignOut } from "next-auth/react"
 import { IUser } from "@/lib/@types/entities"
 import { authService } from "@/lib/api/auth.service"
@@ -23,6 +23,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const user = (session?.user as unknown as IUser) ?? null
     const isLoading = status === "loading"
+
+    // Le rafraîchissement du token backend a échoué (session trop ancienne) :
+    // on déconnecte proprement plutôt que de laisser l'app enchaîner les 401.
+    useEffect(() => {
+        if ((session as any)?.error === "RefreshAccessTokenError") {
+            nextAuthSignOut({ redirect: false }).then(() => {
+                window.location.href = "/auth/signin"
+            })
+        }
+    }, [session])
 
     const logout = async () => {
         try {

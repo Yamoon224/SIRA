@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Link from "next/link"
 import { MapPin, Clock, Heart, Globe, Phone, Mail, Users } from "lucide-react"
+import { toast } from "sonner"
 import { companyService } from "@/lib/api/company.service"
 import { jobService } from "@/lib/api/job.service"
 import { capitalizeFirst, formatFileUrl } from "@/lib/utils"
@@ -82,17 +83,16 @@ export default function CompanyProfilePage() {
   }
 
   const handleToggleFollow = async () => {
+    const next = !isFollowing
     setFollowLoading(true)
+    // Optimiste : on reflète l'état tout de suite, on revient en arrière en cas d'échec.
+    setIsFollowing(next)
     try {
-      if (isFollowing) {
-        await companyService.unfollowCompany(company.id)
-        setIsFollowing(false)
-      } else {
-        await companyService.followCompany(company.id)
-        setIsFollowing(true)
-      }
+      await (next ? companyService.followCompany(company.id) : companyService.unfollowCompany(company.id))
     } catch (err) {
       console.error("[entreprises/slug] follow toggle error:", err)
+      setIsFollowing(!next)
+      toast.error("Action impossible pour le moment. Réessaie dans un instant.")
     } finally {
       setFollowLoading(false)
     }
@@ -171,9 +171,6 @@ export default function CompanyProfilePage() {
               onClick={handleToggleFollow}
             >
               {isFollowing ? "Suivi" : "Suivre"}
-            </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setActiveTab("jobs")}>
-              Voir les offres
             </Button>
           </div>
         </div>

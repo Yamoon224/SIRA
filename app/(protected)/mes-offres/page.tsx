@@ -169,12 +169,7 @@ export default function MyApplicationsPage() {
                   <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Building2 className="w-8 h-8 text-gray-400" />
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Aucune candidature trouvée</h3>
-                  <p className="text-gray-600 mb-4">
-                    {selectedStatus === "all"
-                      ? "Tu n'as pas encore postulé à des offres d'emploi."
-                      : `Aucune candidature avec ce statut.`}
-                  </p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Aucune candidature trouvée</h3>
                   <Button onClick={() => router.push("/chercher-emploi")}>Parcourir les offres</Button>
                 </CardContent>
               </Card>
