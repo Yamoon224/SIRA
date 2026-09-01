@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
-import { cn } from "@/lib/utils"
+import { cn, formatFileUrl } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Bell, Settings, User, Menu, LogIn, Briefcase, LayoutDashboard } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -166,7 +166,7 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                                         <Avatar className="h-8 w-8">
-                                            <AvatarImage src={user?.avatar || "/placeholder.svg"} alt="Profile" />
+                                            <AvatarImage src={user?.avatar ? formatFileUrl(user.avatar) : undefined} alt="Profile" />
                                             <AvatarFallback className="bg-primary text-primary-foreground">
                                                 {user?.name?.charAt(0) || "U"}
                                             </AvatarFallback>

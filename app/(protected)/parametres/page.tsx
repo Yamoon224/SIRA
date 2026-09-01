@@ -19,6 +19,7 @@ import { localeService, type Locale } from "@/lib/api/locale.service"
 import { userService } from "@/lib/api/user.service"
 import { notificationService } from "@/lib/api/notification.service"
 import { subscriptionService } from "@/lib/api/subscription.service"
+import { formatFileUrl } from "@/lib/utils"
 
 const LOCALE_LABELS: Record<Locale, string> = { fr: "Français", en: "English", pt: "Português", ar: "العربية" }
 
@@ -115,15 +116,23 @@ export default function ParametresPage() {
   }
 
   const handleAvatarChange = async (file: File) => {
+    if (!["image/png", "image/jpeg", "image/jpg", "image/webp"].includes(file.type)) {
+      toast.error("Format non supporté (PNG, JPG ou WebP).")
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("L'image est trop volumineuse (max 5MB).")
+      return
+    }
     setUploadingAvatar(true)
     try {
       const res: any = await userService.uploadAvatar(file)
       const avatarUrl = res?.data?.avatarUrl ?? res?.avatarUrl
       if (avatarUrl) setProfile((prev) => ({ ...prev, avatar: avatarUrl }))
       toast.success("Photo de profil mise à jour")
-    } catch (err) {
+    } catch (err: any) {
       console.error("[parametres] avatar upload error:", err)
-      toast.error("Échec de l'envoi de la photo")
+      toast.error(err?.message ?? err?.error ?? "Échec de l'envoi de la photo")
     } finally {
       setUploadingAvatar(false)
     }
@@ -197,7 +206,7 @@ export default function ParametresPage() {
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-4">
                   <Avatar className="w-20 h-20">
-                    <AvatarImage src={profile.avatar ?? undefined} />
+                    <AvatarImage src={profile.avatar ? formatFileUrl(profile.avatar) : undefined} />
                     <AvatarFallback>{initials(`${profile.firstName} ${profile.lastName}`.trim() || "?")}</AvatarFallback>
                   </Avatar>
                   <div>
@@ -206,7 +215,11 @@ export default function ParametresPage() {
                       type="file"
                       accept="image/png,image/jpeg,image/jpg,image/webp"
                       className="hidden"
-                      onChange={(e) => e.target.files?.[0] && handleAvatarChange(e.target.files[0])}
+                      onChange={(e) => {
+                        const f = e.target.files?.[0]
+                        e.target.value = ""
+                        if (f) handleAvatarChange(f)
+                      }}
                     />
                     <Button variant="outline" size="sm" disabled={uploadingAvatar} onClick={() => fileInputRef.current?.click()}>
                       {uploadingAvatar ? "Envoi..." : "Changer la photo"}

@@ -23,7 +23,7 @@ import type { IPortfolio } from "@/lib/@types/entities"
 import { useRouter } from "next/navigation"
 import { publicProfileService, type IPublicProfile, type ProfileTheme } from "@/lib/api/public-profile.service"
 import { useAuth } from "@/contexts/auth-context"
-import { capitalizeFirst } from "@/lib/utils"
+import { capitalizeFirst, formatFileUrl } from "@/lib/utils"
 import { useState, useEffect } from "react"
 
 const THEME_LABELS: Record<ProfileTheme, string> = {
@@ -146,7 +146,7 @@ function buildProfile(apiData: any, authUser: { name?: string; email?: string; a
         location: apiData?.location || "",
         email: apiData?.email || authUser?.email || "",
         phone: apiData?.phone || "",
-        avatar: apiData?.avatar || authUser?.avatar || "/placeholder.svg",
+        avatar: apiData?.avatar || authUser?.avatar || "",
         bio: apiData?.bio || "",
     }
 }
@@ -205,7 +205,7 @@ export default function ProfilePage() {
                     <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-6">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
                             <Avatar className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0">
-                                <AvatarImage src={profile.avatar || "/placeholder.svg"} />
+                                <AvatarImage src={profile.avatar ? formatFileUrl(profile.avatar) : undefined} />
                                 <AvatarFallback className="text-2xl">
                                     {profile.firstName?.[0]}
                                     {profile.lastName?.[0]}

@@ -4,17 +4,14 @@ import Link from "next/link"
 import { useRef, useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
-import { Card, CardContent } from "@/components/ui/card"
-import { MapPin, Clock, Building2, Search, Bookmark, Upload, ChevronLeft, ChevronRight, Loader2, LogIn, Lock, Sparkles, Newspaper } from "lucide-react"
+import { Building2, Upload, ChevronLeft, ChevronRight, Loader2, LogIn, Lock, Sparkles } from "lucide-react"
 import { jobService } from "@/lib/api/job.service"
 import { companyService } from "@/lib/api/company.service"
-import { dashboardService } from "@/lib/api/dashboard.service"
-import { IJobOffer, ICompany, ICandidature } from "@/lib/@types/entities"
-import { formatAmount, capitalizeFirst, dedupeByName, formatFileUrl } from "@/lib/utils"
+import { IJobOffer, ICompany } from "@/lib/@types/entities"
+import { capitalizeFirst, dedupeByName, formatFileUrl } from "@/lib/utils"
 import { CompanyLogo } from "@/components/company-logo"
 import { articleService, type IArticle } from "@/lib/api/article.service"
 import { useAuth } from "@/contexts/auth-context"
@@ -88,9 +85,6 @@ export default function Page() {
     const isLoggedIn = !authLoading && !!user
 
     const cvInputRef = useRef<HTMLInputElement | null>(null)
-    const [savedJobs, setSavedJobs] = useState<string[]>([])
-    const [popularJobs, setPopularJobs] = useState<IJobOffer[]>([])
-    const [jobsLoading, setJobsLoading] = useState(true)
     const [isAnalyzingCV, setIsAnalyzingCV] = useState(false)
     const [uploadError, setUploadError] = useState("")
     const [gateState, setGateState] = useState<GateState>("idle")
@@ -99,8 +93,6 @@ export default function Page() {
     // Dynamic data states
     const [companies, setCompanies] = useState<ICompany[]>([])
     const [articles, setArticles] = useState<IArticle[]>([])
-    const [dashboardStats, setDashboardStats] = useState<{ totalApplications: number; interviews: number; profileViews: number; savedJobs: number } | null>(null)
-    const [recentApplications, setRecentApplications] = useState<ICandidature[]>([])
 
     // Career section state
     const [homeCareerTab, setHomeCareerTab] = useState("Stagiaires")
@@ -109,52 +101,22 @@ export default function Page() {
     const [homeCareerPage, setHomeCareerPage] = useState(1)
     const [homeCareerTotalPages, setHomeCareerTotalPages] = useState(1)
 
-    // Load popular jobs
+    // Load companies
     useEffect(() => {
-        jobService.getJobs({ limit: 6 })
-            .then((res) => {
-                const data = (res as any)?.data ?? res
-                setPopularJobs(Array.isArray(data) ? data : (data?.data ?? []))
-            })
-            .catch(() => setPopularJobs([]))
-            .finally(() => setJobsLoading(false))
-    }, [])
-
-    // Load companies for disconnected state
-    useEffect(() => {
-        if (isLoggedIn) return
         companyService.getCompanies({ limit: 10 })
             .then((res) => {
                 const data = (res as any)?.data ?? res
                 setCompanies(dedupeByName(Array.isArray(data) ? data : (data?.data ?? [])))
             })
             .catch(() => {})
-    }, [isLoggedIn])
+    }, [])
 
-    // Load latest articles (landing / déconnecté)
+    // Load latest articles (landing)
     useEffect(() => {
-        if (isLoggedIn) return
         articleService.getArticles({ limit: 3 })
             .then((res: any) => setArticles(res?.data ?? []))
             .catch(() => setArticles([]))
-    }, [isLoggedIn])
-
-    // Load dashboard stats + recent activity for connected state
-    useEffect(() => {
-        if (!isLoggedIn) return
-        dashboardService.getStats()
-            .then((res) => {
-                const data = (res as any)?.data ?? res
-                setDashboardStats(data)
-            })
-            .catch(() => {})
-        dashboardService.getRecentApplications(3)
-            .then((res) => {
-                const data = (res as any)?.data ?? res
-                setRecentApplications(Array.isArray(data) ? data : [])
-            })
-            .catch(() => {})
-    }, [isLoggedIn])
+    }, [])
 
     // Load anonymous usage status
     useEffect(() => {
@@ -186,20 +148,6 @@ export default function Page() {
     useEffect(() => {
         fetchHomeCareerJobs(1)
     }, [fetchHomeCareerJobs])
-
-    useEffect(() => {
-        if (!isLoggedIn) return
-        jobService.getSavedJobIds()
-            .then((res: any) => setSavedJobs(res?.data?.jobIds ?? res?.jobIds ?? []))
-            .catch(() => {})
-    }, [isLoggedIn])
-
-    const toggleSaveJob = (jobId: string) => {
-        const isSaved = savedJobs.includes(jobId)
-        setSavedJobs((prev) => (isSaved ? prev.filter((id) => id !== jobId) : [...prev, jobId]))
-        const action = isSaved ? jobService.unsaveJob(jobId) : jobService.saveJob(jobId)
-        action.catch(() => setSavedJobs((prev) => (isSaved ? [...prev, jobId] : prev.filter((id) => id !== jobId))))
-    }
 
     const handlePickCV = () => {
         if (isAnalyzingCV) return
@@ -274,146 +222,7 @@ export default function Page() {
         }
     }
 
-    // ─── Connected state ───────────────────────────────────────────────
-    if (isLoggedIn) {
-        const firstName = user?.name?.split(" ")[0] ?? "toi"
-        return (
-            <div className="min-h-screen bg-background">
-                <Header />
-                <main className="container mx-auto px-3 sm:px-6 py-5 sm:py-8">
-                    <div className="mb-6 sm:mb-8">
-                        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Bonjour, {firstName}!</h1>
-                        <p className="text-muted-foreground">Voici les dernières opportunités pour toi</p>
-                    </div>
-
-                    {/* Search Bar */}
-                    <form className="mb-8" onSubmit={(e) => { e.preventDefault(); const q = (e.currentTarget.querySelector("input") as HTMLInputElement)?.value; if (q) router.push(`/chercher-emploi?q=${encodeURIComponent(q)}`) }}>
-                        <div className="relative max-w-2xl">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                            <Input placeholder="Recherche un emploi par intitulé, poste, mot clé ou entreprise..." className="pl-12 h-12 text-base" />
-                        </div>
-                    </form>
-
-                    {/* Quick Stats */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mb-8">
-                        <Card>
-                            <CardContent className="p-6 text-center">
-                                <div className="text-2xl font-bold text-blue-600 mb-1">{dashboardStats?.totalApplications ?? <Loader2 className="w-5 h-5 animate-spin mx-auto" />}</div>
-                                <p className="text-sm text-muted-foreground">Candidatures envoyées</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardContent className="p-6 text-center">
-                                <div className="text-2xl font-bold text-green-600 mb-1">{dashboardStats?.interviews ?? <Loader2 className="w-5 h-5 animate-spin mx-auto" />}</div>
-                                <p className="text-sm text-muted-foreground">Entretiens programmés</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardContent className="p-6 text-center">
-                                <div className="text-2xl font-bold text-purple-600 mb-1">{dashboardStats?.savedJobs ?? <Loader2 className="w-5 h-5 animate-spin mx-auto" />}</div>
-                                <p className="text-sm text-muted-foreground">Offres sauvegardées</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardContent className="p-6 text-center">
-                                <div className="text-2xl font-bold text-orange-600 mb-1">{dashboardStats?.profileViews ?? <Loader2 className="w-5 h-5 animate-spin mx-auto" />}</div>
-                                <p className="text-sm text-muted-foreground">Vues de profil</p>
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    {/* Recommended Jobs */}
-                    <div className="mb-6 sm:mb-8">
-                        <div className="flex items-center justify-between mb-4 sm:mb-6">
-                            <h2 className="text-xl sm:text-2xl font-bold text-foreground">Recommandé pour toi</h2>
-                            <Link href="/chercher-emploi" className="text-blue-600 hover:text-blue-700 font-medium">Voir tout</Link>
-                        </div>
-                        {jobsLoading ? (
-                            <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-blue-600" /></div>
-                        ) : (
-                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
-                                {popularJobs.slice(0, 4).map((job) => (
-                                    <Card key={job.id} className="hover:shadow-lg transition-shadow">
-                                        <CardContent className="p-6">
-                                            <div className="flex justify-between items-start mb-4">
-                                                <div className="flex items-center gap-3">
-                                                    <CompanyLogo name={job.company?.name ?? "?"} logo={job.company?.logo} className="w-12 h-12 rounded-lg text-[14px] flex-shrink-0" />
-                                                    <div className="min-w-0">
-                                                        <h3 className="font-semibold text-foreground truncate">{job.company?.name ?? "-"}</h3>
-                                                        <p className="text-sm text-muted-foreground truncate">{capitalizeFirst(job.location)}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="flex gap-2 flex-shrink-0">
-                                                    <Button variant="ghost" size="sm" onClick={() => toggleSaveJob(job.id)} className="p-2">
-                                                        <Bookmark className={`w-4 h-4 ${savedJobs.includes(job.id) ? "fill-current text-blue-600" : "text-muted-foreground"}`} />
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                            <Link href={`/explorer-emplois/${job.id}`} className="hover:underline">
-                                                <h4 className="font-semibold text-lg mb-2 text-foreground line-clamp-2">{job.title}</h4>
-                                            </Link>
-                                            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                                                <Badge variant="secondary">{job.type}</Badge>
-                                                <div className="flex items-center gap-1">
-                                                    <Clock className="w-4 h-4" />
-                                                    {formatRelativeDate(job.publishDate)}
-                                                </div>
-                                            </div>
-                                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                                                <span className="font-semibold text-blue-600 truncate mr-2">{formatAmount(job.salary)}</span>
-                                                <Link href={`/explorer-emplois/${job.id}`}>
-                                                    <Button size="sm" className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 flex-shrink-0">Postuler</Button>
-                                                </Link>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Recent Activity */}
-                    <div className="mb-6 sm:mb-8">
-                        <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-4 sm:mb-6">Activité récente</h2>
-                        <Card>
-                            <CardContent className="p-6">
-                                {recentApplications.length > 0 ? (
-                                    <div className="space-y-4">
-                                        {recentApplications.map((app) => (
-                                            <div key={app.id} className="flex items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-muted/50 rounded-lg">
-                                                <div className={`w-2 h-2 mt-2 sm:mt-0 flex-shrink-0 rounded-full ${app.status === "APPROUVEE" ? "bg-green-500" : app.status === "REJETEE" ? "bg-red-500" : "bg-blue-500"}`} />
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="font-medium text-foreground">Candidature - {app.jobOffer?.title ?? "Poste"}</p>
-                                                    <p className="text-sm text-muted-foreground">{app.jobOffer?.company?.name ?? ""}</p>
-                                                </div>
-                                                <span className="text-xs sm:text-sm text-muted-foreground flex-shrink-0">{formatRelativeDate(app.appliedDate)}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="space-y-4">
-                                        <div className="flex items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-muted/50 rounded-lg">
-                                            <div className="w-2 h-2 mt-2 sm:mt-0 flex-shrink-0 bg-blue-500 rounded-full" />
-                                            <div className="flex-1 min-w-0">
-                                                <p className="font-medium text-foreground">Bienvenue sur Goriya</p>
-                                                <p className="text-sm text-muted-foreground">Commence par explorer les offres d'emploi disponibles</p>
-                                            </div>
-                                            <Link href="/explorer-emplois" className="flex-shrink-0">
-                                                <Button size="sm" variant="outline">Explorer</Button>
-                                            </Link>
-                                        </div>
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                    </div>
-                </main>
-                <Footer />
-            </div>
-        )
-    }
-
-    // ─── Disconnected / Landing page ───────────────────────────────────
+    // Accueil : la même page pour tout le monde, connecté ou non.
     return (
         <div className="min-h-screen bg-background text-foreground">
             <Header />
