@@ -162,7 +162,7 @@ export default function EntrepriseDetailPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(false)
     const { isAuthenticated } = useAuth()
-    const [activeTab, setActiveTab] = useState<"profil" | "jobs" | "galerie">("profil")
+    const [activeTab, setActiveTab] = useState<"profil" | "jobs">("profil")
     const [lightboxSrc, setLightboxSrc] = useState<string | null>(null)
     const [followedIds, setFollowedIds] = useState<string[]>([])
     const [savedJobIds, setSavedJobIds] = useState<string[]>([])
@@ -319,17 +319,6 @@ export default function EntrepriseDetailPage() {
                                             </span>
                                         )}
                                     </button>
-                                    {(company.gallery?.length ?? 0) > 0 && (
-                                        <button
-                                            onClick={() => setActiveTab("galerie")}
-                                            className={`px-4 sm:px-5 h-8 font-semibold transition-colors flex items-center gap-1.5 ${activeTab === "galerie" ? "bg-[#2f6de6] text-white" : "text-[#9aa3b2] hover:text-[#1b2331]"}`}
-                                        >
-                                            Galerie
-                                            <span className={`w-5 h-5 rounded-full text-[10px] flex items-center justify-center font-bold ${activeTab === "galerie" ? "bg-white/20 text-white" : "bg-[#f0f3fb] text-[#2f6de6]"}`}>
-                                                {company.gallery!.length}
-                                            </span>
-                                        </button>
-                                    )}
                                 </div>
                             </div>
                         </div>
@@ -457,6 +446,25 @@ export default function EntrepriseDetailPage() {
                                 </div>
                             </div>
                         </div>
+
+                        {/* Galerie photos */}
+                        {(company.gallery?.length ?? 0) > 0 && (
+                            <div className="bg-white rounded-xl border border-[#e8edf6] p-6">
+                                <h2 className="text-[18px] font-extrabold text-[#1b2331] mb-4">Galerie</h2>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                                    {company.gallery!.map((src, i) => (
+                                        <button
+                                            key={i}
+                                            type="button"
+                                            onClick={() => setLightboxSrc(formatFileUrl(src))}
+                                            className="aspect-video overflow-hidden rounded-lg border border-[#e8edf6] hover:border-[#2f6de6] transition-colors"
+                                        >
+                                            <img src={formatFileUrl(src)} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Similar companies */}
                         {similarCompanies.length > 0 && (
@@ -590,31 +598,6 @@ export default function EntrepriseDetailPage() {
                     </div>
                 )}
 
-                {/* ── GALERIE TAB ── */}
-                {activeTab === "galerie" && (
-                    <div>
-                        {(company.gallery?.length ?? 0) === 0 ? (
-                            <div className="bg-white rounded-xl border border-[#e8edf6] flex flex-col items-center justify-center py-14 text-center px-4">
-                                <Building2 className="w-8 h-8 text-[#c8d0df] mb-3" />
-                                <p className="text-[13px] font-semibold text-[#1b2331]">Aucune photo</p>
-                                <p className="text-[11px] text-[#9aa3b2] mt-1">Cette entreprise n'a pas encore ajouté de photos.</p>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                                {company.gallery!.map((src, i) => (
-                                    <button
-                                        key={i}
-                                        type="button"
-                                        onClick={() => setLightboxSrc(formatFileUrl(src))}
-                                        className="aspect-video overflow-hidden rounded-lg border border-[#e8edf6] hover:border-[#2f6de6] transition-colors"
-                                    >
-                                        <img src={formatFileUrl(src)} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                )}
             </main>
 
             {/* Lightbox galerie */}
