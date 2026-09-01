@@ -91,10 +91,14 @@ export function Sidebar() {
 
     const sectionHasActive = (section: NavSection) => section.items.some((it) => it.href === pathname)
 
-    // Ouvre d'emblée la section qui contient la page courante, les autres repliées.
-    const [openLabels, setOpenLabels] = useState<string[]>(() =>
-        navSections.filter((s) => s.label && sectionHasActive(s)).map((s) => s.label as string),
-    )
+    // Ouvre d'emblée la première catégorie + celle qui contient la page courante.
+    const [openLabels, setOpenLabels] = useState<string[]>(() => {
+        const labeled = navSections.filter((s) => s.label) as (NavSection & { label: string })[]
+        const initial = new Set<string>()
+        if (labeled[0]) initial.add(labeled[0].label)
+        labeled.forEach((s) => sectionHasActive(s) && initial.add(s.label))
+        return [...initial]
+    })
 
     const toggle = (label: string) =>
         setOpenLabels((prev) => (prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label]))
