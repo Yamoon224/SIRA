@@ -108,6 +108,12 @@ export const authOptions: NextAuthOptions = {
                     };
                 } catch (error: any) {
                     console.error("[authorize] Login failed:", error?.message ?? error);
+                    // Email non vérifié : on remonte un code d'erreur distinct pour
+                    // que la page de connexion ouvre la modale OTP (le backend vient
+                    // de renvoyer un nouveau code par email).
+                    if (error?.message === "EMAIL_NOT_VERIFIED" || error?.statusCode === 403) {
+                        throw new Error("EMAIL_NOT_VERIFIED");
+                    }
                     return null;
                 }
             },

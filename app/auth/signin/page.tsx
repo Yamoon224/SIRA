@@ -33,6 +33,8 @@ export default function Page() {
     const [isLoading, setIsLoading] = useState(false)
     const [isGoogleLoading, setIsGoogleLoading] = useState(false)
     const [showOTPModal, setShowOTPModal] = useState(false)
+    const [otpContext, setOtpContext] = useState<"signup" | "login">("signup")
+    const [otpEmail, setOtpEmail] = useState("")
     const [error, setError] = useState("")
     const [showPassword, setShowPassword] = useState(false)
     const [googleInitialized, setGoogleInitialized] = useState(false)
@@ -64,6 +66,8 @@ export default function Page() {
                 if (!userData) throw new Error("Erreur lors de l'inscription")
 
                 toast.success("Vérifie ta boîte mail pour le code de vérification")
+                setOtpContext("signup")
+                setOtpEmail(formData.email)
                 setShowOTPModal(true)
                 return
             }
@@ -75,7 +79,18 @@ export default function Page() {
                 redirect: false,
             })
 
-            if (result?.error) throw new Error("Email ou mot de passe incorrect")
+            if (result?.error) {
+                // Compte non vérifié : le backend a renvoyé un nouveau code OTP,
+                // on ouvre la modale de vérification au lieu d'un message d'erreur.
+                if (result.error === "EMAIL_NOT_VERIFIED") {
+                    toast.info("Ton compte n'est pas encore vérifié. Un code vient de t'être envoyé par email.")
+                    setOtpContext("login")
+                    setOtpEmail(loginData.email)
+                    setShowOTPModal(true)
+                    return
+                }
+                throw new Error("Email ou mot de passe incorrect")
+            }
 
             const session = await getSession()
             if (!session?.user) throw new Error("Erreur lors de la connexion")
@@ -105,7 +120,7 @@ export default function Page() {
 
     const handleOTPVerification = async (otpCode: string) => {
         try {
-            const response = await authService.verifyOtp(formData.email, otpCode)
+            const response = await authService.verifyOtp(otpEmail, otpCode)
             const payload = (response as any)?.data ?? response
             const token = payload?.access_token
 
@@ -116,7 +131,7 @@ export default function Page() {
 
             setShowOTPModal(false)
             toast.success("Compte vérifié avec succès !")
-            router.push("/auth/plan")
+            router.push(otpContext === "login" ? "/dashboard" : "/auth/plan")
         } catch (error: any) {
             console.error("Erreur lors de la vérification OTP:", error)
             toast.error(error?.message || "Code de vérification invalide. Réessaie.")
@@ -125,7 +140,7 @@ export default function Page() {
 
     const handleResendOTP = async () => {
         try {
-            await authService.requestOtp(formData.email)
+            await authService.requestOtp(otpEmail)
             toast.success("Un nouveau code a été envoyé")
         } catch (error: any) {
             toast.error(error?.message || "Impossible d'envoyer le code pour le moment")

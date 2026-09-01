@@ -93,7 +93,7 @@ export default function PlanPage() {
                     window.addFailedListener?.(handleKkiapayFailed)
                 }}
             />
-            <div className="w-full max-w-2xl">
+            <div className="w-full max-w-5xl">
                 <div className="text-center mb-10">
                     <div className="w-12 h-12 bg-[#2f6de6] rounded-full flex items-center justify-center mx-auto mb-4">
                         <span className="text-white text-xl font-bold">G</span>
@@ -107,13 +107,13 @@ export default function PlanPage() {
                         <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#2f6de6] border-t-transparent" />
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div className="flex flex-col md:flex-row md:items-stretch md:justify-center gap-6 mb-8">
                         {plans.map((plan) => {
                             const isPremium = plan.price > 0
                             return (
                                 <div
                                     key={plan.id}
-                                    className={`relative rounded-2xl border-2 p-6 flex flex-col ${
+                                    className={`relative rounded-2xl border-2 p-6 flex flex-col w-full md:flex-1 md:max-w-sm ${
                                         isPremium
                                             ? "border-[#2f6de6] shadow-lg shadow-blue-100"
                                             : "border-gray-200"
