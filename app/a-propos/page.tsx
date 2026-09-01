@@ -41,7 +41,7 @@ export default function AboutPage() {
                 <section className="bg-[#1e7df2] text-white py-14 sm:py-20">
                     <div className="mx-auto max-w-[900px] px-4 text-center">
                         <h1 className="font-extrabold leading-tight text-3xl sm:text-5xl">
-                            On aide les talents ivoiriens à décrocher le poste qui leur correspond vraiment.
+                            On aide les talents à decrocher le poste qui leur correspond
                         </h1>
                         <p className="mt-5 text-sm sm:text-base text-[#dbe8ff]">
                             Goriya est une plateforme IA qui connecte candidats et entreprises, en Côte d'Ivoire et au-delà.

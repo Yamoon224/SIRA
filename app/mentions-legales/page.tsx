@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export const metadata = {
     title: "Mentions légales - Goriya",
@@ -60,29 +61,38 @@ export default function MentionsLegalesPage() {
                 <p className="mt-2 text-sm text-[#7a8495]">Application GORIYA</p>
                 <p className="mt-3 text-sm text-[#7a8495]">Dernière mise à jour : 27 juillet 2026</p>
 
-                <div className="mt-8 sm:mt-10 space-y-8 sm:space-y-10">
-                    {sections.map((section) => (
-                        <section key={section.title}>
-                            <h2 className="text-lg sm:text-xl font-bold text-[#111827]">{section.title}</h2>
-                            <div className="mt-3 space-y-3">
-                                {section.body.map((paragraph, i) => (
-                                    <p key={i} className="text-sm sm:text-[15px] leading-7 text-[#3d4658]">
-                                        {paragraph}
-                                    </p>
-                                ))}
-                                {"list" in section && section.list && (
-                                    <ul className="list-disc space-y-1.5 pl-5">
-                                        {section.list.map((item, i) => (
-                                            <li key={i} className="text-sm sm:text-[15px] leading-7 text-[#3d4658]">
-                                                {item}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </div>
-                        </section>
+                <Accordion
+                    type="single"
+                    collapsible
+                    defaultValue="section-0"
+                    className="mt-8 sm:mt-10 w-full border-t border-[#e6e9f0]"
+                >
+                    {sections.map((section, idx) => (
+                        <AccordionItem key={section.title} value={`section-${idx}`} className="border-[#e6e9f0]">
+                            <AccordionTrigger className="text-lg sm:text-xl font-bold text-[#111827] hover:no-underline">
+                                {section.title}
+                            </AccordionTrigger>
+                            <AccordionContent>
+                                <div className="space-y-3">
+                                    {section.body.map((paragraph, i) => (
+                                        <p key={i} className="text-sm sm:text-[15px] leading-7 text-[#3d4658]">
+                                            {paragraph}
+                                        </p>
+                                    ))}
+                                    {"list" in section && section.list && (
+                                        <ul className="list-disc space-y-1.5 pl-5">
+                                            {section.list.map((item, i) => (
+                                                <li key={i} className="text-sm sm:text-[15px] leading-7 text-[#3d4658]">
+                                                    {item}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
                     ))}
-                </div>
+                </Accordion>
             </main>
 
             <Footer />
