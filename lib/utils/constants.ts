@@ -5,8 +5,8 @@ export const API_ENDPOINTS = {
         SIGNUP: "/auth/signin",
         LOGOUT: "/auth/logout",
         REFRESH: "/auth/refresh",
-        FORGOT_PASSWORD: "/auth/forgot-password",
-        RESET_PASSWORD: "/auth/reset-password",
+        FORGOT_PASSWORD: "/auth/password/forgot",
+        RESET_PASSWORD: "/auth/password/reset",
     },
     USER: {
         PROFILE: "/user/profile",

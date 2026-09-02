@@ -63,6 +63,26 @@ export const authService = {
         })
     },
 
+    // Réinitialisation de mot de passe : le backend répond toujours 200 avec
+    // le même message, qu'un compte existe ou non pour l'adresse.
+    forgotPassword: async (email: string) => {
+        return apiRequest<{ message: string }>({
+            endpoint: "/auth/password/forgot",
+            method: "POST",
+            data: { email },
+            skipAuth: true,
+        })
+    },
+
+    resetPassword: async (email: string, code: string, password: string) => {
+        return apiRequest<{ message: string }>({
+            endpoint: "/auth/password/reset",
+            method: "POST",
+            data: { email, code, password },
+            skipAuth: true,
+        })
+    },
+
     googleAuth: async (credential: string) => {
         return apiRequest<{ access_token: string; user: IUser; isNewUser: boolean }>({
             endpoint: "/auth/google",

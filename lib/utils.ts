@@ -1,6 +1,7 @@
 import { twMerge } from 'tailwind-merge'
 import { clsx, type ClassValue } from 'clsx'
 import { NextRequest, NextResponse } from 'next/server'
+import { BACKEND_URL } from './backend-url'
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
@@ -122,7 +123,7 @@ export function formatDate(
 }
 
 
-const MEDIA_BASE_URL = (process.env.NEXT_PUBLIC_BACKEND_URL || 'https://goriya-api.lunion-lab.com').replace(/\/+$/, '')
+const MEDIA_BASE_URL = BACKEND_URL.replace(/\/+$/, '')
 
 /**
  * Résout un chemin de média renvoyé par l'API en URL absolue et servable.

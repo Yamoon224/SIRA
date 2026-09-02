@@ -1,5 +1,6 @@
 import { apiRequest } from "@/lib/api-client-http"
 import { resolveToken } from "@/lib/utils"
+import { BACKEND_URL } from "@/lib/backend-url"
 import axios from "axios"
 
 export type PitchType = "EMPLOI" | "CONCOURS" | "APPEL_PROJET" | "STARTUP"
@@ -27,7 +28,7 @@ export interface IPitch {
     createdAt: string
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://goriya-api.lunion-lab.com"
+const API_BASE_URL = BACKEND_URL
 
 export const pitchService = {
     list: async () => {

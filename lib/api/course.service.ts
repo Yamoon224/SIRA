@@ -1,5 +1,6 @@
 import { apiRequest } from "@/lib/api-client-http"
 import { resolveToken } from "@/lib/utils"
+import { BACKEND_URL } from "@/lib/backend-url"
 import { IPaginatedResponse } from "@/lib/@types/api"
 import axios from "axios"
 
@@ -23,7 +24,7 @@ export interface IEnrollment {
     completedAt: string | null
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://goriya-api.lunion-lab.com"
+const API_BASE_URL = BACKEND_URL
 
 export const courseService = {
     paginate: async (filters?: { page?: number; limit?: number; category?: string }) => {
