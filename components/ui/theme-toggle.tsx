@@ -15,7 +15,7 @@ export function ThemeToggle() {
   }, [])
 
   if (!mounted) {
-    return <Button variant="outline" size="icon" disabled className="opacity-0" aria-hidden />
+    return <Button variant="outline" size="icon" disabled className="opacity-0 rounded-full" aria-hidden />
   }
 
   return (
