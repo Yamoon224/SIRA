@@ -70,7 +70,7 @@ export function OTPVerificationModal({ isOpen, onClose, onVerify, onResend }: OT
             <Button
               onClick={handleVerify}
               disabled={otpCode.length !== 6 || isLoading}
-              className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Vérification..." : "Envoyer le code"}
             </Button>
