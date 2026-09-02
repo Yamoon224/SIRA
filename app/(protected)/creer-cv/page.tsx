@@ -8,13 +8,24 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { useIsMobile } from "@/components/ui/use-mobile"
-import { FileBadge2, ChevronDown, Download, Plus, Save, Sparkles, Trash2 } from "lucide-react"
+import { FileBadge2, ChevronDown, CloudOff, Download, Plus, Save, Sparkles, Trash2 } from "lucide-react"
 import { generatePDF } from "@/lib/document-generator"
 import { SubscriptionGate } from "@/components/subscription-gate"
 import { AutocompleteInput } from "@/components/autocomplete-input"
 import { useAuth } from "@/contexts/auth-context"
 import { cvService, type CvCompetence, type CvContent, type CvExperience, type CvFormation } from "@/lib/api/cv.service"
+import { formatDerniereSauvegarde } from "@/lib/cv-draft"
 import {
     INDICATIF_PAR_DEFAUT,
     LOCALISATIONS,
@@ -52,6 +63,13 @@ const STEPS = [
 ]
 
 type ListKey = "experiences" | "formations" | "competences"
+
+/**
+ * État de l'auto-sauvegarde. `local` distingue explicitement « écrit sur cet
+ * appareil » de « synchronisé » : sans ça on promettrait une reprise depuis un
+ * autre appareil qui n'aurait pas lieu.
+ */
+type SaveState = "idle" | "saving" | "saved" | "local"
 
 const str = (v: unknown) => (typeof v === "string" ? v : "")
 
@@ -239,6 +257,8 @@ function CreerCVContent() {
     const [step, setStep] = useState(0)
     const [formData, setFormData] = useState<CvContent>(EMPTY_CV)
     const [savedAt, setSavedAt] = useState<string | null>(null)
+    const [saveState, setSaveState] = useState<SaveState>("idle")
+    const [confirmDelete, setConfirmDelete] = useState(false)
     const hydrated = useRef(false)
 
     const writeLocal = useCallback(
@@ -267,10 +287,18 @@ function CreerCVContent() {
             }
         }
 
-        const apply = (data: Record<string, unknown> | null | undefined, s?: number, at?: string | null) => {
+        const apply = (
+            data: Record<string, unknown> | null | undefined,
+            s: number | undefined,
+            at: string | null | undefined,
+            etat: SaveState,
+        ) => {
             setFormData(normalize(data))
             if (typeof s === "number") setStep(Math.min(Math.max(s, 0), STEPS.length - 1))
-            if (at) setSavedAt(at)
+            if (at) {
+                setSavedAt(at)
+                setSaveState(etat)
+            }
         }
 
         cvService
@@ -279,13 +307,14 @@ function CreerCVContent() {
                 if (cancelled) return
                 const draft = res?.data
                 const remote = (draft?.data ?? undefined) as Record<string, unknown> | undefined
-                apply(remote, draft?.step, draft?.updatedAt ?? null)
+                apply(remote, draft?.step, draft?.updatedAt ?? null, "saved")
                 if (remote) writeLocal(normalize(remote), draft?.step ?? 0, draft?.updatedAt ?? new Date().toISOString())
             })
             .catch(() => {
                 if (cancelled) return
+                // Repli hors-ligne : ce brouillon n'est pas (encore) sur le serveur.
                 const local = readLocal()
-                if (local) apply(local.data, local.step, local.savedAt ?? null)
+                if (local) apply(local.data, local.step, local.savedAt ?? null, "local")
             })
             .finally(() => {
                 if (!cancelled) hydrated.current = true
@@ -307,15 +336,20 @@ function CreerCVContent() {
             return
         }
 
+        setSaveState("saving")
         const id = setTimeout(() => {
             const at = new Date().toISOString()
             writeLocal(formData, step, at)
             cvService
                 .save({ data: formData, step })
-                .then((res) => setSavedAt(res?.data?.updatedAt ?? at))
+                .then((res) => {
+                    setSavedAt(res?.data?.updatedAt ?? at)
+                    setSaveState("saved")
+                })
                 .catch(() => {
                     // Hors-ligne : le cache local a déjà été écrit, resync au prochain chargement.
                     setSavedAt(at)
+                    setSaveState("local")
                 })
         }, 800)
         return () => clearTimeout(id)
@@ -371,14 +405,39 @@ function CreerCVContent() {
 
     const handleManualSave = async () => {
         const at = new Date().toISOString()
+        setSaveState("saving")
         writeLocal(formData, step, at)
         try {
             const res = await cvService.save({ data: formData, step })
             setSavedAt(res?.data?.updatedAt ?? at)
+            setSaveState("saved")
             toast.success("Brouillon enregistré")
         } catch {
             setSavedAt(at)
+            setSaveState("local")
             toast.error("Enregistré localement — la synchronisation avec le serveur a échoué")
+        }
+    }
+
+    /** Repart d'un formulaire vierge : serveur + cache local. */
+    const handleDeleteDraft = async () => {
+        setConfirmDelete(false)
+        try {
+            localStorage.removeItem(storageKey)
+        } catch {
+            /* navigation privée : rien à nettoyer */
+        }
+        // L'état est remis à zéro avant l'appel : le garde de l'auto-sauvegarde
+        // (CV vide + plus de cache local) empêche une réécriture immédiate.
+        setFormData(EMPTY_CV)
+        setStep(0)
+        setSavedAt(null)
+        setSaveState("idle")
+        try {
+            await cvService.remove()
+            toast.success("Brouillon supprimé")
+        } catch {
+            toast.error("Brouillon effacé sur cet appareil — la suppression côté serveur a échoué")
         }
     }
 
@@ -814,9 +873,50 @@ function CreerCVContent() {
                     </Button>
                 </div>
 
-                {savedAt && (
-                    <p className="mt-2 text-center text-[10px] text-[#aab2c2]">Brouillon enregistré automatiquement</p>
-                )}
+                <div className="mt-3 flex flex-col items-center gap-1">
+                    {saveState === "saving" && <p className="text-[11px] text-[#aab2c2]">Enregistrement…</p>}
+
+                    {saveState === "saved" && savedAt && (
+                        <p className="text-[11px] text-[#aab2c2]">
+                            Brouillon enregistré {formatDerniereSauvegarde(savedAt)}
+                        </p>
+                    )}
+
+                    {saveState === "local" && (
+                        <p className="flex items-center gap-1.5 text-[11px] text-[#b8860b]">
+                            <CloudOff className="h-3.5 w-3.5 shrink-0" />
+                            Enregistré sur cet appareil uniquement — synchronisation impossible
+                        </p>
+                    )}
+
+                    {savedAt && (
+                        <button
+                            type="button"
+                            onClick={() => setConfirmDelete(true)}
+                            className="text-[11px] text-[#aab2c2] underline-offset-2 transition-colors hover:text-[#e0685f] hover:underline"
+                        >
+                            Supprimer le brouillon
+                        </button>
+                    )}
+                </div>
+
+                <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Supprimer le brouillon ?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Le contenu saisi sera effacé de ce navigateur et de votre compte. Cette action est
+                                irréversible — pensez à télécharger votre CV avant si vous souhaitez le conserver.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Annuler</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleDeleteDraft} className="bg-[#e0685f] hover:bg-[#cc5a51]">
+                                Supprimer
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
         </div>
     )

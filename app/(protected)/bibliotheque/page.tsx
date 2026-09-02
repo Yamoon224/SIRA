@@ -1,17 +1,40 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { FileText, Zap, Download, MoreVertical, Search, Filter, ChevronLeft, ChevronRight } from "lucide-react"
+import { cvService } from "@/lib/api/cv.service"
+import { brouillonNonVide, formatDerniereSauvegarde } from "@/lib/cv-draft"
 
 export default function BibliothequePage() {
     const router = useRouter()
     const [selectedTab, setSelectedTab] = useState("all")
     const [currentPage, setCurrentPage] = useState(1)
+    /** Date de dernière modification du brouillon de CV, `null` s'il n'y en a pas. */
+    const [cvDraftAt, setCvDraftAt] = useState<string | null>(null)
+
+    useEffect(() => {
+        let cancelled = false
+        cvService
+            .get()
+            .then((res) => {
+                if (cancelled) return
+                const draft = res?.data
+                // La ligne est créée par le GET : seul le contenu dit s'il y a
+                // quelque chose à reprendre.
+                if (brouillonNonVide(draft)) setCvDraftAt(draft?.updatedAt ?? null)
+            })
+            .catch(() => {
+                // Sans brouillon lisible, la carte garde son libellé « Créer ».
+            })
+        return () => {
+            cancelled = true
+        }
+    }, [])
 
     const tabs = [
         { id: "all", label: "Tous (29)", count: 29 },
@@ -22,13 +45,21 @@ export default function BibliothequePage() {
     ]
 
     const quickActions = [
-        {
-            icon: FileText,
-            title: "Créer un CV",
-            description: "Créer un CV à partir de ton profil",
-            action: "Créer mon CV",
-            href: "/creer-cv",
-        },
+        cvDraftAt
+            ? {
+                  icon: FileText,
+                  title: "Reprendre mon CV",
+                  description: `Brouillon modifié ${formatDerniereSauvegarde(cvDraftAt)}`,
+                  action: "Reprendre",
+                  href: "/creer-cv",
+              }
+            : {
+                  icon: FileText,
+                  title: "Créer un CV",
+                  description: "Créer un CV à partir de ton profil",
+                  action: "Créer mon CV",
+                  href: "/creer-cv",
+              },
         {
             icon: Zap,
             title: "Simulation d'entretien",

@@ -222,7 +222,7 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                 </Button>
                             </Link>
                             <Link href="https://entreprise.goriya.net">
-                                <Button size="sm" className="sm:text-sm w-9 px-0 sm:w-auto sm:px-3 rounded-full" aria-label="Espace Entreprise">
+                                <Button size="sm" className="sm:text-sm w-9 px-0 sm:w-auto sm:px-3 rounded-full bg-[#2f6de6] hover:bg-[#2458ba]" aria-label="Espace Entreprise">
                                     <Briefcase className="w-4 h-4 sm:hidden" />
                                     <span className="hidden sm:inline">Espace Entreprise</span>
                                 </Button>
