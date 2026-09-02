@@ -289,7 +289,12 @@ function CreerCVContent() {
     const addCompetence = () => setFormData((p) => ({ ...p, competences: [...p.competences, { ...EMPTY_COMPETENCE }] }))
 
     const removeEntry = (key: ListKey, index: number) =>
-        setFormData((p) => ({ ...p, [key]: (p[key] as unknown[]).filter((_, i) => i !== index) }) as CvContent)
+        setFormData((p) => {
+            const drop = <T,>(list: T[]) => list.filter((_, i) => i !== index)
+            if (key === "experiences") return { ...p, experiences: drop(p.experiences) }
+            if (key === "formations") return { ...p, formations: drop(p.formations) }
+            return { ...p, competences: drop(p.competences) }
+        })
 
     const updateExperience = (i: number, field: keyof CvExperience, value: string) =>
         setFormData((p) => ({
