@@ -729,11 +729,7 @@ function CreerCVContent() {
         <Card className="overflow-hidden rounded-[12px] border-[#e1e6f1] bg-[#f2f4fb]">
             <CardContent className="p-4">
                 <div className="mb-2 flex justify-center">
-                    {/* Le favicon est un « g » bleu sur fond clair : on le pose en
-                        médaillon, l'aplat bleu restant visible en anneau autour. */}
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#2e6fe9]">
-                        <img src="/favicon.png" alt="" aria-hidden className="h-7 w-7 rounded-full object-cover" />
-                    </div>
+                    <img src="/goriya-logo-mark.png" alt="" aria-hidden className="h-10 w-10 object-contain" />
                 </div>
                 <p className="text-center text-[13px] font-semibold text-[#2e6fe9]">Analyse avec Goriya</p>
                 <p className="mb-3 text-center text-[11px] text-[#8b94ab]">Score d&apos;optimisation de votre CV</p>
