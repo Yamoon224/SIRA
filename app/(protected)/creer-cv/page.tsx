@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { FileBadge2, Download, Plus, Save, Sparkles, Trash2 } from "lucide-react"
+import { useIsMobile } from "@/components/ui/use-mobile"
+import { FileBadge2, ChevronDown, Download, Plus, Save, Sparkles, Trash2 } from "lucide-react"
 import { generatePDF } from "@/lib/document-generator"
 import { SubscriptionGate } from "@/components/subscription-gate"
 import { AutocompleteInput } from "@/components/autocomplete-input"
@@ -231,6 +232,8 @@ function ScoreGauge({ value }: { value: number }) {
 function CreerCVContent() {
     const { user } = useAuth()
     const storageKey = `goriya:cv-draft:${user?.id ?? "anon"}`
+    // Sous 768px les étapes deviennent un accordéon ; au-dessus, sidebar + carte.
+    const isMobile = useIsMobile()
 
     const [analysisProgress, setAnalysisProgress] = useState(0)
     const [step, setStep] = useState(0)
@@ -439,6 +442,264 @@ function CreerCVContent() {
         generatePDF(content, filename)
     }
 
+    /**
+     * Champs d'une étape, partagés par les deux mises en page (carte sur
+     * desktop, panneau d'accordéon sur mobile).
+     */
+    const champsEtape = (i: number) => (
+        <>
+            {i === 0 && (
+                <>
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <Field label="Nom complet">
+                            <Input value={formData.nom} onChange={(e) => handleInputChange("nom", e.target.value)} placeholder="Votre nom complet" className={inputCls} />
+                        </Field>
+                        <Field label="Email">
+                            <Input value={formData.email} onChange={(e) => handleInputChange("email", e.target.value)} placeholder="votre.email@exemple.com" className={inputCls} />
+                        </Field>
+                        <Field label="Téléphone">
+                            <div className="flex gap-2">
+                                <Select value={indicatif} onValueChange={(v) => handleInputChange("indicatif", v)}>
+                                    {/* Contenu du déclencheur écrit à la main : SelectValue reprendrait
+                                        le libellé complet de l'item (drapeau + indicatif + pays). */}
+                                    <SelectTrigger className={`${inputCls} w-[104px] shrink-0 px-2`} aria-label="Indicatif pays">
+                                        <span className="flex items-center gap-1">
+                                            <span>{drapeau(paysIndicatif.iso)}</span>
+                                            <span>{paysIndicatif.indicatif}</span>
+                                        </span>
+                                    </SelectTrigger>
+                                    <SelectContent className="max-h-64">
+                                        {PAYS_AFRICAINS.map((p) => (
+                                            <SelectItem key={p.iso} value={p.indicatif} className="text-[12px]">
+                                                <span className="mr-1.5">{drapeau(p.iso)}</span>
+                                                {p.indicatif}
+                                                <span className="ml-1.5 text-[#8b93a3]">{p.nom}</span>
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <Input
+                                    type="tel"
+                                    inputMode="tel"
+                                    value={formData.telephone}
+                                    onChange={(e) => handleInputChange("telephone", e.target.value)}
+                                    placeholder="07 39 47 82"
+                                    className={inputCls}
+                                />
+                            </div>
+                        </Field>
+                        <Field label="Adresse">
+                            <AutocompleteInput
+                                value={formData.adresse}
+                                onChange={(v) => handleInputChange("adresse", v)}
+                                options={LOCALISATIONS}
+                                placeholder="Ville, Pays"
+                                className={inputCls}
+                                aria-label="Adresse ou localisation"
+                            />
+                        </Field>
+                    </div>
+                    <div className="mt-3">
+                        <Field label="Résumé professionnel">
+                            <Textarea value={formData.profil} onChange={(e) => handleInputChange("profil", e.target.value)} placeholder="Décrivez brièvement votre profil professionnel..." className={`min-h-[112px] ${areaCls}`} />
+                        </Field>
+                    </div>
+                </>
+            )}
+
+            {i === 1 &&
+                (formData.experiences.length === 0 ? (
+                    <EmptyList title="Aucune expérience ajoutée" hint={'Cliquez sur "Ajouter une expérience" pour commencer'} />
+                ) : (
+                    <div className="space-y-4">
+                        {formData.experiences.map((exp, idx) => (
+                            <div key={idx} className={idx > 0 ? "border-t border-[#eef1f7] pt-4" : undefined}>
+                                <EntryHeader label={`Expérience ${idx + 1}`} onRemove={() => removeEntry("experiences", idx)} />
+                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                    <Field label="Nom de l'entreprise">
+                                        <Input value={exp.entreprise} onChange={(e) => updateExperience(idx, "entreprise", e.target.value)} placeholder="Nom de l'entreprise" className={inputCls} />
+                                    </Field>
+                                    <Field label="Poste">
+                                        <AutocompleteInput
+                                            value={exp.poste}
+                                            onChange={(v) => updateExperience(idx, "poste", v)}
+                                            options={POSTES}
+                                            placeholder="Intitulé du poste"
+                                            className={inputCls}
+                                            aria-label="Intitulé du poste"
+                                        />
+                                    </Field>
+                                    <Field label="Date de début">
+                                        <Input
+                                            type="date"
+                                            value={exp.dateDebut}
+                                            max={exp.dateFin || undefined}
+                                            onChange={(e) => updateExperience(idx, "dateDebut", e.target.value)}
+                                            className={inputCls}
+                                        />
+                                    </Field>
+                                    <Field label="Date de fin">
+                                        {exp.enCours ? (
+                                            <div className="flex h-8 items-center rounded-[7px] bg-[#f1f2f5] px-3 text-[12px] text-[#8b93a3]">
+                                                En cours
+                                            </div>
+                                        ) : (
+                                            <Input
+                                                type="date"
+                                                value={exp.dateFin}
+                                                min={exp.dateDebut || undefined}
+                                                onChange={(e) => updateExperience(idx, "dateFin", e.target.value)}
+                                                className={inputCls}
+                                            />
+                                        )}
+                                    </Field>
+                                </div>
+                                <label className="mt-2 flex cursor-pointer items-center gap-2 text-[12px] text-[#5b6474]">
+                                    <Checkbox
+                                        checked={exp.enCours}
+                                        onCheckedChange={(c) => toggleExperienceEnCours(idx, c === true)}
+                                    />
+                                    J&apos;occupe actuellement ce poste
+                                </label>
+                                <div className="mt-3">
+                                    <Field label="Description">
+                                        <Textarea value={exp.description} onChange={(e) => updateExperience(idx, "description", e.target.value)} placeholder="Décrivez vos missions et vos réalisations..." className={`min-h-[92px] ${areaCls}`} />
+                                    </Field>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ))}
+
+            {i === 2 &&
+                (formData.formations.length === 0 ? (
+                    <EmptyList title="Aucune formation ajoutée" hint={'Cliquez sur "Ajouter une formation" pour commencer'} />
+                ) : (
+                    <div className="space-y-4">
+                        {formData.formations.map((f, idx) => (
+                            <div key={idx} className={idx > 0 ? "border-t border-[#eef1f7] pt-4" : undefined}>
+                                <EntryHeader label={`Formation ${idx + 1}`} onRemove={() => removeEntry("formations", idx)} />
+                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                    <Field label="Etablissement">
+                                        <Input value={f.etablissement} onChange={(e) => updateFormation(idx, "etablissement", e.target.value)} placeholder="Nom de l'établissement" className={inputCls} />
+                                    </Field>
+                                    <Field label="Diplome/Formation">
+                                        {/* Radix affiche le placeholder tant que la valeur vaut "". */}
+                                        <Select value={f.diplome} onValueChange={(v) => updateFormation(idx, "diplome", v)}>
+                                            <SelectTrigger className={`${inputCls} px-3`} aria-label="Diplôme">
+                                                <SelectValue placeholder="Sélectionnez un diplôme" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {DIPLOMES.map((d) => (
+                                                    <SelectItem key={d} value={d} className="text-[12px]">
+                                                        {d}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </Field>
+                                    <Field label="Date de début">
+                                        <Input
+                                            type="date"
+                                            value={f.dateDebut}
+                                            max={f.dateFin || undefined}
+                                            onChange={(e) => updateFormation(idx, "dateDebut", e.target.value)}
+                                            className={inputCls}
+                                        />
+                                    </Field>
+                                    <Field label="Date de fin">
+                                        <Input
+                                            type="date"
+                                            value={f.dateFin}
+                                            min={f.dateDebut || undefined}
+                                            onChange={(e) => updateFormation(idx, "dateFin", e.target.value)}
+                                            className={inputCls}
+                                        />
+                                    </Field>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ))}
+
+            {i === 3 &&
+                (formData.competences.length === 0 ? (
+                    <EmptyList title="Aucune compétence ajoutée" hint={'Cliquez sur "Ajouter une compétence" pour commencer'} />
+                ) : (
+                    <div className="space-y-4">
+                        {formData.competences.map((c, idx) => (
+                            <div key={idx} className={idx > 0 ? "border-t border-[#eef1f7] pt-4" : undefined}>
+                                <EntryHeader label={`Compétence ${idx + 1}`} onRemove={() => removeEntry("competences", idx)} />
+                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                    <Field label="Compétence">
+                                        <Input value={c.nom} onChange={(e) => updateCompetence(idx, "nom", e.target.value)} placeholder="Ex : React" className={inputCls} />
+                                    </Field>
+                                    <Field label="Niveau">
+                                        <Select value={c.niveau || "Débutant"} onValueChange={(v) => updateCompetence(idx, "niveau", v)}>
+                                            <SelectTrigger className={`${inputCls} px-3`}>
+                                                <SelectValue placeholder="Débutant" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {NIVEAUX.map((n) => (
+                                                    <SelectItem key={n} value={n} className="text-[12px]">
+                                                        {n}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </Field>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ))}
+        </>
+    )
+
+    /** Bouton « Ajouter … » propre aux étapes répétables. */
+    const boutonAjout = (i: number) => {
+        if (i === 1) return <AddButton label="Ajouter une expérience" onClick={addExperience} />
+        if (i === 2) return <AddButton label="Ajouter une formation" onClick={addFormation} />
+        if (i === 3) return <AddButton label="Ajouter une compétence" onClick={addCompetence} />
+        return null
+    }
+
+    const carteAnalyse = (
+        <Card className="overflow-hidden rounded-[12px] border-[#e1e6f1] bg-[#f2f4fb]">
+            <CardContent className="p-4">
+                <div className="mb-2 flex justify-center">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#2e6fe9] text-[20px] font-semibold leading-none text-white">
+                        g
+                    </div>
+                </div>
+                <p className="text-center text-[13px] font-semibold text-[#2e6fe9]">Analyse avec Goriya</p>
+                <p className="mb-3 text-center text-[11px] text-[#8b94ab]">Score d&apos;optimisation de votre CV</p>
+
+                <ScoreGauge value={analysisProgress} />
+
+                <div className="mt-3 space-y-2 text-[10px] text-[#99a3b8]">
+                    <div className="flex items-center justify-between">
+                        <span>Structure</span>
+                        <span className="text-[#8dc79b]">Excellent</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <span>Mots-clés</span>
+                        <span className="text-[#c9b26f]">Moyen</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <span>Expérience</span>
+                        <span className="text-[#8dc79b]">Très bon</span>
+                    </div>
+                </div>
+
+                <Button onClick={handleAnalyze} className="mt-3 h-8 w-full rounded-full bg-[#2e6fe9] text-[11px] hover:bg-[#275ec6]">
+                    <Sparkles className="mr-1 h-3.5 w-3.5" />
+                    Analyser avec Goriya
+                </Button>
+            </CardContent>
+        </Card>
+    )
+
     return (
         <div className="min-h-[calc(100vh-80px)]">
             <div className="border-b border-[#d9dfea] px-4 py-4 sm:px-6">
@@ -446,295 +707,94 @@ function CreerCVContent() {
             </div>
 
             <div className="mx-auto w-full max-w-[1240px] px-4 py-4 sm:px-6">
-                <div className="grid grid-cols-1 gap-4 lg:grid-cols-[320px_1fr]">
-                    <div className="space-y-4">
-                        <Card className="overflow-hidden rounded-[12px] border-[#dfe5f1] bg-[#edf0ff]">
-                            <CardContent className="p-4">
-                                <div className="mb-4 text-center">
-                                    <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-white/80 text-[#2f6de6]">
-                                        <FileBadge2 className="h-6 w-6" />
-                                    </div>
-                                    <p className="text-[15px] font-semibold text-[#1f4ec2]">Créateur de CV</p>
-                                    <p className="mt-1 text-[11px] text-[#7d86a0]">Construisez votre CV professionnel</p>
+                {isMobile ? (
+                    // ── Mobile : une étape = un panneau d'accordéon. `step` pilote
+                    //    l'ouverture, donc un seul panneau est ouvert à la fois et
+                    //    il le reste tant qu'on remplit ses champs.
+                    <div className="space-y-3">
+                        {STEPS.map((s, i) => {
+                            const ouvert = i === step
+                            return (
+                                <div
+                                    key={s.id}
+                                    className={`rounded-[12px] border bg-white ${ouvert ? "border-[#c9d5f2]" : "border-[#dfe5f1]"}`}
+                                >
+                                    <button
+                                        type="button"
+                                        onClick={() => setStep(i)}
+                                        aria-expanded={ouvert}
+                                        aria-controls={`cv-section-${s.id}`}
+                                        className={`flex w-full items-center gap-2 rounded-t-[12px] px-4 py-3 text-left text-[13px] transition-colors ${
+                                            ouvert ? "font-medium text-[#1f4ec2]" : "text-[#5b6474]"
+                                        }`}
+                                    >
+                                        <span>{s.icon}</span>
+                                        <span className="flex-1">{s.label}</span>
+                                        <ChevronDown
+                                            className={`h-4 w-4 shrink-0 text-[#8b93a3] transition-transform duration-200 ${ouvert ? "rotate-180" : ""}`}
+                                        />
+                                    </button>
+                                    {ouvert && (
+                                        <div id={`cv-section-${s.id}`} className="border-t border-[#eef1f7] p-4">
+                                            {champsEtape(i)}
+                                            {boutonAjout(i)}
+                                        </div>
+                                    )}
                                 </div>
+                            )
+                        })}
 
-                                <div className="space-y-2">
-                                    {STEPS.map((s, i) => (
-                                        <button
-                                            key={s.id}
-                                            type="button"
-                                            onClick={() => setStep(i)}
-                                            aria-current={i === step ? "step" : undefined}
-                                            className={`flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-left text-[12px] transition-colors ${
-                                                i === step
-                                                    ? "bg-[#b8bfce] font-medium text-white"
-                                                    : "text-[#8b94ab] hover:bg-white/60"
-                                            }`}
-                                        >
-                                            <span>{s.icon}</span>
-                                            <span>{s.label}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="overflow-hidden rounded-[12px] border-[#e1e6f1] bg-[#f2f4fb]">
-                            <CardContent className="p-4">
-                                <div className="mb-2 flex justify-center">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#2e6fe9] text-[20px] font-semibold leading-none text-white">
-                                        g
-                                    </div>
-                                </div>
-                                <p className="text-center text-[13px] font-semibold text-[#2e6fe9]">Analyse avec Goriya</p>
-                                <p className="mb-3 text-center text-[11px] text-[#8b94ab]">Score d&apos;optimisation de votre CV</p>
-
-                                <ScoreGauge value={analysisProgress} />
-
-                                <div className="mt-3 space-y-2 text-[10px] text-[#99a3b8]">
-                                    <div className="flex items-center justify-between">
-                                        <span>Structure</span>
-                                        <span className="text-[#8dc79b]">Excellent</span>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <span>Mots-clés</span>
-                                        <span className="text-[#c9b26f]">Moyen</span>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <span>Expérience</span>
-                                        <span className="text-[#8dc79b]">Très bon</span>
-                                    </div>
-                                </div>
-
-                                <Button onClick={handleAnalyze} className="mt-3 h-8 w-full rounded-full bg-[#2e6fe9] text-[11px] hover:bg-[#275ec6]">
-                                    <Sparkles className="mr-1 h-3.5 w-3.5" />
-                                    Analyser avec Goriya
-                                </Button>
-                            </CardContent>
-                        </Card>
+                        {carteAnalyse}
                     </div>
-
-                    <div>
-                        <Card className="rounded-[12px] border-[#dfe5f1] bg-white">
-                            <CardContent className="p-4">
-                                <h2 className="mb-3 text-[15px] font-semibold text-[#2a3242]">{STEPS[step].label}</h2>
-
-                                {step === 0 && (
-                                    <>
-                                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                            <Field label="Nom complet">
-                                                <Input value={formData.nom} onChange={(e) => handleInputChange("nom", e.target.value)} placeholder="Votre nom complet" className={inputCls} />
-                                            </Field>
-                                            <Field label="Email">
-                                                <Input value={formData.email} onChange={(e) => handleInputChange("email", e.target.value)} placeholder="votre.email@exemple.com" className={inputCls} />
-                                            </Field>
-                                            <Field label="Téléphone">
-                                                <div className="flex gap-2">
-                                                    <Select
-                                                        value={formData.indicatif || INDICATIF_PAR_DEFAUT}
-                                                        onValueChange={(v) => handleInputChange("indicatif", v)}
-                                                    >
-                                                        {/* Contenu du déclencheur écrit à la main : SelectValue reprendrait
-                                                            le libellé complet de l'item (drapeau + indicatif + pays). */}
-                                                        <SelectTrigger className={`${inputCls} w-[104px] shrink-0 px-2`} aria-label="Indicatif pays">
-                                                            <span className="flex items-center gap-1">
-                                                                <span>{drapeau(paysIndicatif.iso)}</span>
-                                                                <span>{paysIndicatif.indicatif}</span>
-                                                            </span>
-                                                        </SelectTrigger>
-                                                        <SelectContent className="max-h-64">
-                                                            {PAYS_AFRICAINS.map((p) => (
-                                                                <SelectItem key={p.iso} value={p.indicatif} className="text-[12px]">
-                                                                    <span className="mr-1.5">{drapeau(p.iso)}</span>
-                                                                    {p.indicatif}
-                                                                    <span className="ml-1.5 text-[#8b93a3]">{p.nom}</span>
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <Input
-                                                        type="tel"
-                                                        inputMode="tel"
-                                                        value={formData.telephone}
-                                                        onChange={(e) => handleInputChange("telephone", e.target.value)}
-                                                        placeholder="07 39 47 82"
-                                                        className={inputCls}
-                                                    />
-                                                </div>
-                                            </Field>
-                                            <Field label="Adresse">
-                                                <AutocompleteInput
-                                                    value={formData.adresse}
-                                                    onChange={(v) => handleInputChange("adresse", v)}
-                                                    options={LOCALISATIONS}
-                                                    placeholder="Ville, Pays"
-                                                    className={inputCls}
-                                                    aria-label="Adresse ou localisation"
-                                                />
-                                            </Field>
+                ) : (
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[320px_1fr]">
+                        <div className="space-y-4">
+                            <Card className="overflow-hidden rounded-[12px] border-[#dfe5f1] bg-[#edf0ff]">
+                                <CardContent className="p-4">
+                                    <div className="mb-4 text-center">
+                                        <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-white/80 text-[#2f6de6]">
+                                            <FileBadge2 className="h-6 w-6" />
                                         </div>
-                                        <div className="mt-3">
-                                            <Field label="Résumé professionnel">
-                                                <Textarea value={formData.profil} onChange={(e) => handleInputChange("profil", e.target.value)} placeholder="Décrivez brièvement votre profil professionnel..." className={`min-h-[112px] ${areaCls}`} />
-                                            </Field>
-                                        </div>
-                                    </>
-                                )}
+                                        <p className="text-[15px] font-semibold text-[#1f4ec2]">Créateur de CV</p>
+                                        <p className="mt-1 text-[11px] text-[#7d86a0]">Construisez votre CV professionnel</p>
+                                    </div>
 
-                                {step === 1 &&
-                                    (formData.experiences.length === 0 ? (
-                                        <EmptyList title="Aucune expérience ajoutée" hint={'Cliquez sur "Ajouter une expérience" pour commencer'} />
-                                    ) : (
-                                        <div className="space-y-4">
-                                            {formData.experiences.map((exp, i) => (
-                                                <div key={i} className={i > 0 ? "border-t border-[#eef1f7] pt-4" : undefined}>
-                                                    <EntryHeader label={`Expérience ${i + 1}`} onRemove={() => removeEntry("experiences", i)} />
-                                                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                                        <Field label="Nom de l'entreprise">
-                                                            <Input value={exp.entreprise} onChange={(e) => updateExperience(i, "entreprise", e.target.value)} placeholder="Nom de l'entreprise" className={inputCls} />
-                                                        </Field>
-                                                        <Field label="Poste">
-                                                            <AutocompleteInput
-                                                                value={exp.poste}
-                                                                onChange={(v) => updateExperience(i, "poste", v)}
-                                                                options={POSTES}
-                                                                placeholder="Intitulé du poste"
-                                                                className={inputCls}
-                                                                aria-label="Intitulé du poste"
-                                                            />
-                                                        </Field>
-                                                        <Field label="Date de début">
-                                                            <Input
-                                                                type="date"
-                                                                value={exp.dateDebut}
-                                                                max={exp.dateFin || undefined}
-                                                                onChange={(e) => updateExperience(i, "dateDebut", e.target.value)}
-                                                                className={inputCls}
-                                                            />
-                                                        </Field>
-                                                        <Field label="Date de fin">
-                                                            {exp.enCours ? (
-                                                                <div className="flex h-8 items-center rounded-[7px] bg-[#f1f2f5] px-3 text-[12px] text-[#8b93a3]">
-                                                                    En cours
-                                                                </div>
-                                                            ) : (
-                                                                <Input
-                                                                    type="date"
-                                                                    value={exp.dateFin}
-                                                                    min={exp.dateDebut || undefined}
-                                                                    onChange={(e) => updateExperience(i, "dateFin", e.target.value)}
-                                                                    className={inputCls}
-                                                                />
-                                                            )}
-                                                        </Field>
-                                                    </div>
-                                                    <label className="mt-2 flex cursor-pointer items-center gap-2 text-[12px] text-[#5b6474]">
-                                                        <Checkbox
-                                                            checked={exp.enCours}
-                                                            onCheckedChange={(c) => toggleExperienceEnCours(i, c === true)}
-                                                        />
-                                                        J&apos;occupe actuellement ce poste
-                                                    </label>
-                                                    <div className="mt-3">
-                                                        <Field label="Description">
-                                                            <Textarea value={exp.description} onChange={(e) => updateExperience(i, "description", e.target.value)} placeholder="Décrivez vos missions et vos réalisations..." className={`min-h-[92px] ${areaCls}`} />
-                                                        </Field>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ))}
+                                    <div className="space-y-2">
+                                        {STEPS.map((s, i) => (
+                                            <button
+                                                key={s.id}
+                                                type="button"
+                                                onClick={() => setStep(i)}
+                                                aria-current={i === step ? "step" : undefined}
+                                                className={`flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-left text-[12px] transition-colors ${
+                                                    i === step
+                                                        ? "bg-[#b8bfce] font-medium text-white"
+                                                        : "text-[#8b94ab] hover:bg-white/60"
+                                                }`}
+                                            >
+                                                <span>{s.icon}</span>
+                                                <span>{s.label}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
 
-                                {step === 2 &&
-                                    (formData.formations.length === 0 ? (
-                                        <EmptyList title="Aucune formation ajoutée" hint={'Cliquez sur "Ajouter une formation" pour commencer'} />
-                                    ) : (
-                                        <div className="space-y-4">
-                                            {formData.formations.map((f, i) => (
-                                                <div key={i} className={i > 0 ? "border-t border-[#eef1f7] pt-4" : undefined}>
-                                                    <EntryHeader label={`Formation ${i + 1}`} onRemove={() => removeEntry("formations", i)} />
-                                                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                                        <Field label="Etablissement">
-                                                            <Input value={f.etablissement} onChange={(e) => updateFormation(i, "etablissement", e.target.value)} placeholder="Nom de l'établissement" className={inputCls} />
-                                                        </Field>
-                                                        <Field label="Diplome/Formation">
-                                                            {/* Radix affiche le placeholder tant que la valeur vaut "". */}
-                                                            <Select value={f.diplome} onValueChange={(v) => updateFormation(i, "diplome", v)}>
-                                                                <SelectTrigger className={`${inputCls} px-3`} aria-label="Diplôme">
-                                                                    <SelectValue placeholder="Sélectionnez un diplôme" />
-                                                                </SelectTrigger>
-                                                                <SelectContent>
-                                                                    {DIPLOMES.map((d) => (
-                                                                        <SelectItem key={d} value={d} className="text-[12px]">
-                                                                            {d}
-                                                                        </SelectItem>
-                                                                    ))}
-                                                                </SelectContent>
-                                                            </Select>
-                                                        </Field>
-                                                        <Field label="Date de début">
-                                                            <Input
-                                                                type="date"
-                                                                value={f.dateDebut}
-                                                                max={f.dateFin || undefined}
-                                                                onChange={(e) => updateFormation(i, "dateDebut", e.target.value)}
-                                                                className={inputCls}
-                                                            />
-                                                        </Field>
-                                                        <Field label="Date de fin">
-                                                            <Input
-                                                                type="date"
-                                                                value={f.dateFin}
-                                                                min={f.dateDebut || undefined}
-                                                                onChange={(e) => updateFormation(i, "dateFin", e.target.value)}
-                                                                className={inputCls}
-                                                            />
-                                                        </Field>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ))}
+                            {carteAnalyse}
+                        </div>
 
-                                {step === 3 &&
-                                    (formData.competences.length === 0 ? (
-                                        <EmptyList title="Aucune compétence ajoutée" hint={'Cliquez sur "Ajouter une compétence" pour commencer'} />
-                                    ) : (
-                                        <div className="space-y-4">
-                                            {formData.competences.map((c, i) => (
-                                                <div key={i} className={i > 0 ? "border-t border-[#eef1f7] pt-4" : undefined}>
-                                                    <EntryHeader label={`Compétence ${i + 1}`} onRemove={() => removeEntry("competences", i)} />
-                                                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                                        <Field label="Compétence">
-                                                            <Input value={c.nom} onChange={(e) => updateCompetence(i, "nom", e.target.value)} placeholder="Ex : React" className={inputCls} />
-                                                        </Field>
-                                                        <Field label="Niveau">
-                                                            <Select value={c.niveau || "Débutant"} onValueChange={(v) => updateCompetence(i, "niveau", v)}>
-                                                                <SelectTrigger className={`${inputCls} px-3`}>
-                                                                    <SelectValue placeholder="Débutant" />
-                                                                </SelectTrigger>
-                                                                <SelectContent>
-                                                                    {NIVEAUX.map((n) => (
-                                                                        <SelectItem key={n} value={n} className="text-[12px]">
-                                                                            {n}
-                                                                        </SelectItem>
-                                                                    ))}
-                                                                </SelectContent>
-                                                            </Select>
-                                                        </Field>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ))}
-                            </CardContent>
-                        </Card>
+                        <div>
+                            <Card className="rounded-[12px] border-[#dfe5f1] bg-white">
+                                <CardContent className="p-4">
+                                    <h2 className="mb-3 text-[15px] font-semibold text-[#2a3242]">{STEPS[step].label}</h2>
+                                    {champsEtape(step)}
+                                </CardContent>
+                            </Card>
 
-                        {step === 1 && <AddButton label="Ajouter une expérience" onClick={addExperience} />}
-                        {step === 2 && <AddButton label="Ajouter une formation" onClick={addFormation} />}
-                        {step === 3 && <AddButton label="Ajouter une compétence" onClick={addCompetence} />}
+                            {boutonAjout(step)}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 <div className="mx-auto mt-6 flex w-full max-w-[720px] flex-col items-center justify-center gap-3 sm:flex-row">
                     <Button

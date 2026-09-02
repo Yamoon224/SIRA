@@ -232,7 +232,7 @@ export default function Page() {
                         <Button
                             onClick={handleGoogleAuth}
                             variant="outline"
-                            className="w-full flex items-center justify-center space-x-2 py-3 bg-card hover:bg-accent transition-colors"
+                            className="w-full rounded-full flex items-center justify-center space-x-2 py-3 bg-card hover:bg-accent transition-colors"
                             disabled={isGoogleLoading || !googleInitialized}
                         >
                             {isGoogleLoading ? (
