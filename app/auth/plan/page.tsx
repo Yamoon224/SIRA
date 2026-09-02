@@ -80,12 +80,18 @@ export default function PlanPage() {
         return `${price.toLocaleString("fr-FR")} FCFA / ${period === "ANNUAL" ? "an" : "mois"}`
     }
 
+    // Un seul plan mis en avant, celui du milieu — auparavant le badge
+    // « Recommandé » s'affichait sur tous les plans payants.
+    const recommendedIndex = plans.length > 0 ? Math.floor((plans.length - 1) / 2) : -1
+
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-12">
             <div className="w-full max-w-5xl">
                 <div className="text-center mb-10">
+                    {/* Le favicon est un « g » bleu sur fond clair : on le pose en
+                        médaillon, l'aplat bleu restant visible en anneau autour. */}
                     <div className="w-12 h-12 bg-[#2f6de6] rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span className="text-white text-xl font-bold">G</span>
+                        <img src="/favicon.png" alt="" aria-hidden className="h-9 w-9 rounded-full object-cover" />
                     </div>
                     <h1 className="text-3xl font-bold text-foreground mb-2">Choisis ton forfait</h1>
                     <p className="text-muted-foreground text-sm">Commence gratuitement, passe au Premium quand tu veux</p>
@@ -108,18 +114,22 @@ export default function PlanPage() {
                     </div>
                 ) : (
                     <div className="flex flex-col md:flex-row md:items-stretch md:justify-center gap-6 mb-8">
-                        {plans.map((plan) => {
+                        {plans.map((plan, index) => {
                             const isPremium = plan.price > 0
+                            const isRecommended = index === recommendedIndex
+                            const isLast = index === plans.length - 1
                             return (
                                 <div
                                     key={plan.id}
                                     className={`relative rounded-2xl border-2 p-6 flex flex-col w-full md:flex-1 md:max-w-sm ${
-                                        isPremium
+                                        isRecommended
                                             ? "border-[#2f6de6] shadow-lg shadow-blue-100"
-                                            : "border-gray-200"
+                                            : isLast
+                                              ? "border-black"
+                                              : "border-gray-200"
                                     }`}
                                 >
-                                    {isPremium && (
+                                    {isRecommended && (
                                         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                                             <span className="bg-[#2f6de6] text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1">
                                                 <Star className="w-3 h-3" /> Recommandé
