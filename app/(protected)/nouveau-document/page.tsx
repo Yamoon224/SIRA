@@ -1,12 +1,10 @@
 "use client"
 
-import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { FilePenLine, FileSignature, FileText, PenLine } from "lucide-react"
 
 export default function Page() {
   const router = useRouter()
-  const [selectedType, setSelectedType] = useState("motivation")
 
   const cards = [
     {
@@ -30,7 +28,6 @@ export default function Page() {
   ]
 
   const handleSelect = (type: string) => {
-    setSelectedType(type)
     router.push(`/creer-document/${type}`)
   }
 
@@ -53,18 +50,15 @@ export default function Page() {
         <div className="mt-10 grid w-full max-w-[680px] grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
           {cards.map((card) => {
             const Icon = card.icon
-            const isSelected = selectedType === card.id
 
             return (
+              // Aucune carte n'est pré-sélectionnée : l'état « sélectionné » est
+              // porté par le survol (et le focus clavier, son équivalent).
               <button
                 key={card.id}
                 type="button"
                 onClick={() => handleSelect(card.id)}
-                className={`rounded-[12px] border px-4 py-5 text-center transition-colors ${
-                  isSelected
-                    ? "border-[#6a9ff3] bg-[#f5f9ff]"
-                    : "border-[#e1e6f1] bg-white hover:border-[#cdd6e9]"
-                }`}
+                className="rounded-[12px] border border-[#e1e6f1] bg-white px-4 py-5 text-center transition-colors hover:border-[#6a9ff3] hover:bg-[#f5f9ff] focus-visible:border-[#6a9ff3] focus-visible:bg-[#f5f9ff] focus-visible:outline-none"
               >
                 <div className="mx-auto mb-3 flex h-7 w-7 items-center justify-center rounded-md bg-[#7f39fb] text-white">
                   <Icon className="h-4 w-4" strokeWidth={2} />
