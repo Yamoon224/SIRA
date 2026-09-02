@@ -63,23 +63,23 @@ function FilterModal({
     return (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
             <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-            <div className="relative z-10 bg-white rounded-t-3xl sm:rounded-2xl w-full sm:max-w-md p-6 shadow-2xl">
+            <div className="relative z-10 bg-white dark:bg-card rounded-t-3xl sm:rounded-2xl w-full sm:max-w-md p-6 shadow-2xl">
                 <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-[18px] font-extrabold text-[#1b2331]">Tous les filtres</h2>
-                    <button onClick={onClose} className="w-8 h-8 rounded-full bg-[#f4f5f7] flex items-center justify-center hover:bg-[#e8edf6]">
-                        <X className="w-4 h-4 text-[#7f8796]" />
+                    <h2 className="text-[18px] font-extrabold text-[#1b2331] dark:text-foreground">Tous les filtres</h2>
+                    <button onClick={onClose} className="w-8 h-8 rounded-full bg-[#f4f5f7] dark:bg-muted flex items-center justify-center hover:bg-[#e8edf6] dark:hover:bg-muted">
+                        <X className="w-4 h-4 text-[#7f8796] dark:text-muted-foreground" />
                     </button>
                 </div>
 
                 {/* Type de travail */}
                 <div className="mb-5">
-                    <p className="text-[12px] font-bold text-[#1b2331] mb-3">Type de travail</p>
+                    <p className="text-[12px] font-bold text-[#1b2331] dark:text-foreground mb-3">Type de travail</p>
                     <div className="flex flex-wrap gap-2">
                         {JOB_TYPES.map(type => (
                             <button
                                 key={type}
                                 onClick={() => toggle(selectedTypes, type, setSelectedTypes)}
-                                className={`px-4 py-1.5 rounded-full text-[12px] font-semibold border transition-all ${selectedTypes.includes(type) ? "bg-[#2f6de6] text-white border-[#2f6de6]" : "bg-white text-[#4e5a6e] border-[#d8deeb] hover:border-[#2f6de6]"}`}
+                                className={`px-4 py-1.5 rounded-full text-[12px] font-semibold border transition-all ${selectedTypes.includes(type) ? "bg-[#2f6de6] text-white border-[#2f6de6]" : "bg-white dark:bg-card text-[#4e5a6e] dark:text-foreground border-[#d8deeb] dark:border-border hover:border-[#2f6de6]"}`}
                             >
                                 {type}
                             </button>
@@ -89,21 +89,21 @@ function FilterModal({
 
                 {/* Profession */}
                 <div className="mb-5">
-                    <p className="text-[12px] font-bold text-[#1b2331] mb-3">Profession</p>
-                    <button className="w-full text-left px-4 py-2.5 rounded-xl border border-[#d8deeb] text-[12px] text-[#9aa3b2] hover:border-[#2f6de6] transition-colors">
+                    <p className="text-[12px] font-bold text-[#1b2331] dark:text-foreground mb-3">Profession</p>
+                    <button className="w-full text-left px-4 py-2.5 rounded-xl border border-[#d8deeb] dark:border-border text-[12px] text-[#9aa3b2] dark:text-muted-foreground hover:border-[#2f6de6] transition-colors">
                         Sélectionner des professions
                     </button>
                 </div>
 
                 {/* Durée du travail */}
                 <div className="mb-5">
-                    <p className="text-[12px] font-bold text-[#1b2331] mb-3">Durée du travail</p>
+                    <p className="text-[12px] font-bold text-[#1b2331] dark:text-foreground mb-3">Durée du travail</p>
                     <div className="flex flex-wrap gap-2">
                         {DURATIONS.map(dur => (
                             <button
                                 key={dur}
                                 onClick={() => toggle(selectedDurations, dur, setSelectedDurations)}
-                                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all ${selectedDurations.includes(dur) ? "bg-[#2f6de6] text-white border-[#2f6de6]" : "bg-white text-[#4e5a6e] border-[#d8deeb] hover:border-[#2f6de6]"}`}
+                                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all ${selectedDurations.includes(dur) ? "bg-[#2f6de6] text-white border-[#2f6de6]" : "bg-white dark:bg-card text-[#4e5a6e] dark:text-foreground border-[#d8deeb] dark:border-border hover:border-[#2f6de6]"}`}
                             >
                                 {dur}
                             </button>
@@ -113,13 +113,13 @@ function FilterModal({
 
                 {/* Niveau d'expérience */}
                 <div className="mb-6">
-                    <p className="text-[12px] font-bold text-[#1b2331] mb-3">Niveau d'expérience</p>
+                    <p className="text-[12px] font-bold text-[#1b2331] dark:text-foreground mb-3">Niveau d'expérience</p>
                     <div className="flex flex-wrap gap-2">
                         {EXPERIENCES.map(exp => (
                             <button
                                 key={exp}
                                 onClick={() => toggle(selectedExperiences, exp, setSelectedExperiences)}
-                                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all ${selectedExperiences.includes(exp) ? "bg-[#2f6de6] text-white border-[#2f6de6]" : "bg-white text-[#4e5a6e] border-[#d8deeb] hover:border-[#2f6de6]"}`}
+                                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all ${selectedExperiences.includes(exp) ? "bg-[#2f6de6] text-white border-[#2f6de6]" : "bg-white dark:bg-card text-[#4e5a6e] dark:text-foreground border-[#d8deeb] dark:border-border hover:border-[#2f6de6]"}`}
                             >
                                 {exp}
                             </button>
@@ -136,7 +136,7 @@ function FilterModal({
                             setSelectedExperiences([])
                             onClose()
                         }}
-                        className="flex-1 rounded-full border-[#d8deeb] text-[12px] h-10"
+                        className="flex-1 rounded-full border-[#d8deeb] dark:border-border text-[12px] h-10"
                     >
                         Annuler
                     </Button>
@@ -243,7 +243,7 @@ export default function EntrepriseDetailPage() {
     if (loading) {
         return (
             <div className="min-h-screen bg-background flex items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-[#2f6de6]" />
+                <Loader2 className="w-8 h-8 animate-spin text-[#2f6de6] dark:text-primary" />
             </div>
         )
     }
@@ -252,9 +252,9 @@ export default function EntrepriseDetailPage() {
         return (
             <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 text-center px-4">
                 <AlertCircle className="w-10 h-10 text-[#e07b10]" />
-                <h2 className="text-lg font-bold text-[#1b2331]">Entreprise introuvable</h2>
-                <p className="text-[13px] text-[#9aa3b2]">Cette entreprise n'existe pas ou n'est plus disponible.</p>
-                <Link href="/explorer-entreprises" className="text-[#2f6de6] text-sm font-semibold hover:underline">
+                <h2 className="text-lg font-bold text-[#1b2331] dark:text-foreground">Entreprise introuvable</h2>
+                <p className="text-[13px] text-[#9aa3b2] dark:text-muted-foreground">Cette entreprise n'existe pas ou n'est plus disponible.</p>
+                <Link href="/explorer-entreprises" className="text-[#2f6de6] dark:text-primary text-sm font-semibold hover:underline">
                     Retour aux entreprises
                 </Link>
             </div>
@@ -266,7 +266,7 @@ export default function EntrepriseDetailPage() {
             <Header />
 
             {/* Cover + Profile hero */}
-            <div className="bg-white">
+            <div className="bg-white dark:bg-card">
                 <div className="relative h-[200px] sm:h-[250px] overflow-hidden bg-gradient-to-r from-[#1539be] to-[#2f81f1]">
                     {company.coverImage && (
                         <img src={formatFileUrl(company.coverImage)} alt="cover" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
@@ -274,7 +274,7 @@ export default function EntrepriseDetailPage() {
                     {/* Logo + nom d'entreprise ancrés en bas de la couverture */}
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent pt-20">
                         <div className="mx-auto max-w-[1000px] px-4 pb-4 flex items-end gap-3">
-                            <CompanyLogo name={company.name} logo={company.logo} className="w-16 h-16 sm:w-[68px] sm:h-[68px] rounded-2xl text-[20px] border-2 border-white shadow-lg shrink-0" />
+                            <CompanyLogo name={company.name} logo={company.logo} className="w-16 h-16 sm:w-[68px] sm:h-[68px] rounded-2xl text-[20px] border-2 border-white dark:border-border shadow-lg shrink-0" />
                             <div className="min-w-0 pb-0.5">
                                 <h1 className="text-[20px] sm:text-[26px] font-extrabold leading-tight text-white drop-shadow-sm line-clamp-2">{company.name}</h1>
                                 <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1 text-[11px] text-white/90">
@@ -292,29 +292,29 @@ export default function EntrepriseDetailPage() {
                 </div>
 
                 <div className="mx-auto max-w-[1000px] px-4">
-                    <div className="flex flex-wrap items-center justify-end gap-2 py-3 border-b border-[#e8edf6]">
+                    <div className="flex flex-wrap items-center justify-end gap-2 py-3 border-b border-[#e8edf6] dark:border-border">
                                 {isAuthenticated && (
                                 <button
                                     onClick={handleToggleFollow}
-                                    className={`h-8 px-5 rounded-full border text-[12px] bg-white transition-colors flex items-center gap-1.5 ${isFollowing ? "border-[#2f6de6] text-[#2f6de6]" : "border-[#d8deeb] text-[#1b2331] hover:border-[#2f6de6]"}`}
+                                    className={`h-8 px-5 rounded-full border text-[12px] bg-white dark:bg-card transition-colors flex items-center gap-1.5 ${isFollowing ? "border-[#2f6de6] text-[#2f6de6] dark:text-primary" : "border-[#d8deeb] dark:border-border text-[#1b2331] dark:text-foreground hover:border-[#2f6de6]"}`}
                                 >
                                     <Heart className={`w-3.5 h-3.5 ${isFollowing ? "fill-current" : ""}`} /> {isFollowing ? "Suivi" : "Suivre"}
                                 </button>
                                 )}
-                                <div className="flex rounded-full border border-[#d8deeb] overflow-hidden bg-white text-[12px]">
+                                <div className="flex rounded-full border border-[#d8deeb] dark:border-border overflow-hidden bg-white dark:bg-card text-[12px]">
                                     <button
                                         onClick={() => setActiveTab("profil")}
-                                        className={`px-4 sm:px-5 h-8 font-semibold transition-colors ${activeTab === "profil" ? "bg-white text-[#1b2331]" : "text-[#9aa3b2] hover:text-[#1b2331]"}`}
+                                        className={`px-4 sm:px-5 h-8 font-semibold transition-colors ${activeTab === "profil" ? "bg-white dark:bg-card text-[#1b2331] dark:text-foreground" : "text-[#9aa3b2] dark:text-muted-foreground hover:text-[#1b2331] dark:hover:text-foreground"}`}
                                     >
                                         Profil
                                     </button>
                                     <button
                                         onClick={() => setActiveTab("jobs")}
-                                        className={`px-4 sm:px-5 h-8 font-semibold transition-colors flex items-center gap-1.5 ${activeTab === "jobs" ? "bg-[#2f6de6] text-white" : "text-[#9aa3b2] hover:text-[#1b2331]"}`}
+                                        className={`px-4 sm:px-5 h-8 font-semibold transition-colors flex items-center gap-1.5 ${activeTab === "jobs" ? "bg-[#2f6de6] text-white" : "text-[#9aa3b2] dark:text-muted-foreground hover:text-[#1b2331] dark:hover:text-foreground"}`}
                                     >
                                         Offres
                                         {jobs.length > 0 && (
-                                            <span className={`w-5 h-5 rounded-full text-[10px] flex items-center justify-center font-bold ${activeTab === "jobs" ? "bg-white/20 text-white" : "bg-[#f0f3fb] text-[#2f6de6]"}`}>
+                                            <span className={`w-5 h-5 rounded-full text-[10px] flex items-center justify-center font-bold ${activeTab === "jobs" ? "bg-white/20 text-white" : "bg-[#f0f3fb] dark:bg-muted text-[#2f6de6] dark:text-primary"}`}>
                                                 {jobs.length}
                                             </span>
                                         )}
@@ -331,19 +331,19 @@ export default function EntrepriseDetailPage() {
                     <div className="space-y-6">
                         {/* About / Présentation */}
                         {company.about && (
-                            <div className="bg-white rounded-xl border border-[#e8edf6] p-6">
-                                <h2 className="text-[18px] font-extrabold text-[#1b2331] mb-4">Présentation</h2>
-                                <p className="text-[13px] text-[#4e5a6e] leading-[1.8] whitespace-pre-line">{capitalizeFirst(company.about)}</p>
+                            <div className="bg-white dark:bg-card rounded-xl border border-[#e8edf6] dark:border-border p-6">
+                                <h2 className="text-[18px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Présentation</h2>
+                                <p className="text-[13px] text-[#4e5a6e] dark:text-foreground leading-[1.8] whitespace-pre-line">{capitalizeFirst(company.about)}</p>
                             </div>
                         )}
 
                         {/* Ce qu'ils recherchent */}
-                        <div className="bg-white rounded-xl border border-[#e8edf6] p-6">
-                            <h2 className="text-[18px] font-extrabold text-[#1b2331] mb-4">Ce qu'ils recherchent</h2>
+                        <div className="bg-white dark:bg-card rounded-xl border border-[#e8edf6] dark:border-border p-6">
+                            <h2 className="text-[18px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Ce qu'ils recherchent</h2>
                             <div className="space-y-2">
                                 {["Des candidats passionnés et motivés", "Des profils avec une expérience pertinente", "Des personnes capables de s'adapter rapidement"].map((item, i) => (
-                                    <div key={i} className="flex items-start gap-2 text-[13px] text-[#4e5a6e]">
-                                        <span className="text-[#2f6de6] mt-0.5 flex-shrink-0">✓</span>
+                                    <div key={i} className="flex items-start gap-2 text-[13px] text-[#4e5a6e] dark:text-foreground">
+                                        <span className="text-[#2f6de6] dark:text-primary mt-0.5 flex-shrink-0">✓</span>
                                         {item}
                                     </div>
                                 ))}
@@ -351,12 +351,12 @@ export default function EntrepriseDetailPage() {
                         </div>
 
                         {/* Culture et valeur */}
-                        <div className="bg-white rounded-xl border border-[#e8edf6] p-6">
-                            <h2 className="text-[18px] font-extrabold text-[#1b2331] mb-4">Culture et valeurs</h2>
+                        <div className="bg-white dark:bg-card rounded-xl border border-[#e8edf6] dark:border-border p-6">
+                            <h2 className="text-[18px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Culture et valeurs</h2>
                             <div className="space-y-2">
                                 {["Innovation et créativité", "Collaboration et esprit d'équipe", "Engagement envers la satisfaction client", "Développement continu des compétences"].map((val, i) => (
-                                    <div key={i} className="flex items-start gap-2 text-[13px] text-[#4e5a6e]">
-                                        <span className="text-[#2f6de6] mt-0.5 flex-shrink-0">•</span>
+                                    <div key={i} className="flex items-start gap-2 text-[13px] text-[#4e5a6e] dark:text-foreground">
+                                        <span className="text-[#2f6de6] dark:text-primary mt-0.5 flex-shrink-0">•</span>
                                         {val}
                                     </div>
                                 ))}
@@ -364,34 +364,34 @@ export default function EntrepriseDetailPage() {
                         </div>
 
                         {/* Contact + Stats grid */}
-                        <div className="bg-white rounded-xl border border-[#e8edf6] p-6">
-                            <h2 className="text-[18px] font-extrabold text-[#1b2331] mb-5">Informations</h2>
+                        <div className="bg-white dark:bg-card rounded-xl border border-[#e8edf6] dark:border-border p-6">
+                            <h2 className="text-[18px] font-extrabold text-[#1b2331] dark:text-foreground mb-5">Informations</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 <div className="space-y-4">
                                     {company.website && (
                                         <div className="flex items-start gap-3">
-                                            <Globe className="w-4 h-4 text-[#9aa3b2] flex-shrink-0 mt-0.5" />
+                                            <Globe className="w-4 h-4 text-[#9aa3b2] dark:text-muted-foreground flex-shrink-0 mt-0.5" />
                                             <div>
-                                                <p className="text-[10px] text-[#9aa3b2] mb-0.5">Site web</p>
-                                                <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-[12px] font-medium text-[#2f6de6] hover:underline">{company.website}</a>
+                                                <p className="text-[10px] text-[#9aa3b2] dark:text-muted-foreground mb-0.5">Site web</p>
+                                                <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-[12px] font-medium text-[#2f6de6] dark:text-primary hover:underline">{company.website}</a>
                                             </div>
                                         </div>
                                     )}
                                     {company.phone && (
                                         <div className="flex items-start gap-3">
-                                            <Phone className="w-4 h-4 text-[#9aa3b2] flex-shrink-0 mt-0.5" />
+                                            <Phone className="w-4 h-4 text-[#9aa3b2] dark:text-muted-foreground flex-shrink-0 mt-0.5" />
                                             <div>
-                                                <p className="text-[10px] text-[#9aa3b2] mb-0.5">Téléphone</p>
-                                                <p className="text-[12px] font-medium text-[#4e5a6e]">{company.phone}</p>
+                                                <p className="text-[10px] text-[#9aa3b2] dark:text-muted-foreground mb-0.5">Téléphone</p>
+                                                <p className="text-[12px] font-medium text-[#4e5a6e] dark:text-foreground">{company.phone}</p>
                                             </div>
                                         </div>
                                     )}
                                     {company.email && (
                                         <div className="flex items-start gap-3">
-                                            <Mail className="w-4 h-4 text-[#9aa3b2] flex-shrink-0 mt-0.5" />
+                                            <Mail className="w-4 h-4 text-[#9aa3b2] dark:text-muted-foreground flex-shrink-0 mt-0.5" />
                                             <div>
-                                                <p className="text-[10px] text-[#9aa3b2] mb-0.5">E-mail</p>
-                                                <p className="text-[12px] font-medium text-[#4e5a6e]">{company.email}</p>
+                                                <p className="text-[10px] text-[#9aa3b2] dark:text-muted-foreground mb-0.5">E-mail</p>
+                                                <p className="text-[12px] font-medium text-[#4e5a6e] dark:text-foreground">{company.email}</p>
                                             </div>
                                         </div>
                                     )}
@@ -400,35 +400,35 @@ export default function EntrepriseDetailPage() {
                                 <div className="space-y-4">
                                     {(company.location || company.headquarters) && (
                                         <div className="flex items-start gap-3">
-                                            <MapPin className="w-4 h-4 text-[#9aa3b2] flex-shrink-0 mt-0.5" />
+                                            <MapPin className="w-4 h-4 text-[#9aa3b2] dark:text-muted-foreground flex-shrink-0 mt-0.5" />
                                             <div>
-                                                <p className="text-[10px] text-[#9aa3b2] mb-0.5">Localisation</p>
-                                                <p className="text-[12px] font-semibold text-[#1b2331]">{capitalizeFirst(company.location || company.headquarters)}</p>
+                                                <p className="text-[10px] text-[#9aa3b2] dark:text-muted-foreground mb-0.5">Localisation</p>
+                                                <p className="text-[12px] font-semibold text-[#1b2331] dark:text-foreground">{capitalizeFirst(company.location || company.headquarters)}</p>
                                             </div>
                                         </div>
                                     )}
                                     {company.sector && (
                                         <div className="flex items-start gap-3">
-                                            <Building2 className="w-4 h-4 text-[#9aa3b2] flex-shrink-0 mt-0.5" />
+                                            <Building2 className="w-4 h-4 text-[#9aa3b2] dark:text-muted-foreground flex-shrink-0 mt-0.5" />
                                             <div>
-                                                <p className="text-[10px] text-[#9aa3b2] mb-0.5">Secteur</p>
-                                                <p className="text-[12px] font-semibold text-[#1b2331]">{company.sector}</p>
+                                                <p className="text-[10px] text-[#9aa3b2] dark:text-muted-foreground mb-0.5">Secteur</p>
+                                                <p className="text-[12px] font-semibold text-[#1b2331] dark:text-foreground">{company.sector}</p>
                                             </div>
                                         </div>
                                     )}
                                     {company.companySize && (
                                         <div className="flex items-start gap-3">
-                                            <Users className="w-4 h-4 text-[#9aa3b2] flex-shrink-0 mt-0.5" />
+                                            <Users className="w-4 h-4 text-[#9aa3b2] dark:text-muted-foreground flex-shrink-0 mt-0.5" />
                                             <div>
-                                                <p className="text-[10px] text-[#9aa3b2] mb-0.5">Taille</p>
-                                                <p className="text-[12px] font-semibold text-[#1b2331]">{company.companySize}</p>
+                                                <p className="text-[10px] text-[#9aa3b2] dark:text-muted-foreground mb-0.5">Taille</p>
+                                                <p className="text-[12px] font-semibold text-[#1b2331] dark:text-foreground">{company.companySize}</p>
                                             </div>
                                         </div>
                                     )}
                                 </div>
 
                                 <div>
-                                    <p className="text-[12px] font-semibold text-[#1b2331] mb-3">Suis-nous sur</p>
+                                    <p className="text-[12px] font-semibold text-[#1b2331] dark:text-foreground mb-3">Suis-nous sur</p>
                                     {company.socialLinks?.length > 0 ? (
                                         <div className="flex gap-2">
                                             {company.socialLinks.slice(0, 3).map((link, i) => (
@@ -441,7 +441,7 @@ export default function EntrepriseDetailPage() {
                                             ))}
                                         </div>
                                     ) : (
-                                        <p className="text-[11px] text-[#9aa3b2]">Aucun réseau social renseigné.</p>
+                                        <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground">Aucun réseau social renseigné.</p>
                                     )}
                                 </div>
                             </div>
@@ -449,15 +449,15 @@ export default function EntrepriseDetailPage() {
 
                         {/* Galerie photos */}
                         {(company.gallery?.length ?? 0) > 0 && (
-                            <div className="bg-white rounded-xl border border-[#e8edf6] p-6">
-                                <h2 className="text-[18px] font-extrabold text-[#1b2331] mb-4">Galerie</h2>
+                            <div className="bg-white dark:bg-card rounded-xl border border-[#e8edf6] dark:border-border p-6">
+                                <h2 className="text-[18px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Galerie</h2>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                                     {company.gallery!.map((src, i) => (
                                         <button
                                             key={i}
                                             type="button"
                                             onClick={() => setLightboxSrc(formatFileUrl(src))}
-                                            className="aspect-video overflow-hidden rounded-lg border border-[#e8edf6] hover:border-[#2f6de6] transition-colors"
+                                            className="aspect-video overflow-hidden rounded-lg border border-[#e8edf6] dark:border-border hover:border-[#2f6de6] transition-colors"
                                         >
                                             <img src={formatFileUrl(src)} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                         </button>
@@ -468,15 +468,15 @@ export default function EntrepriseDetailPage() {
 
                         {/* Similar companies */}
                         {similarCompanies.length > 0 && (
-                            <div className="bg-white rounded-xl border border-[#e8edf6] p-6">
-                                <h2 className="text-[18px] font-extrabold text-[#1b2331] mb-4">Autres entreprises que tu peux consulter</h2>
+                            <div className="bg-white dark:bg-card rounded-xl border border-[#e8edf6] dark:border-border p-6">
+                                <h2 className="text-[18px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Autres entreprises que tu peux consulter</h2>
                                 <div className="flex gap-3 overflow-x-auto pb-2">
                                     {similarCompanies.map(sim => (
                                         <Link key={sim.id} href={`/explorer-entreprises/${sim.id}`} className="flex-shrink-0">
-                                            <div className="w-[140px] rounded-xl border border-[#e8edf6] p-3 hover:border-[#2f6de6] hover:shadow-sm transition-all">
+                                            <div className="w-[140px] rounded-xl border border-[#e8edf6] dark:border-border p-3 hover:border-[#2f6de6] hover:shadow-sm transition-all">
                                                 <CompanyLogo name={sim.name} logo={sim.logo} className="w-9 h-9 rounded-lg text-[11px] mb-2" />
-                                                <p className="text-[11px] font-bold text-[#1b2331] truncate">{sim.name}</p>
-                                                <p className="text-[10px] text-[#9aa3b2] truncate">{sim.sector}</p>
+                                                <p className="text-[11px] font-bold text-[#1b2331] dark:text-foreground truncate">{sim.name}</p>
+                                                <p className="text-[10px] text-[#9aa3b2] dark:text-muted-foreground truncate">{sim.sector}</p>
                                             </div>
                                         </Link>
                                     ))}
@@ -492,13 +492,13 @@ export default function EntrepriseDetailPage() {
                         {/* Search + filters row */}
                         <div className="space-y-3">
                             <div className="relative">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9aa3b2]" />
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9aa3b2] dark:text-muted-foreground" />
                                 <Input
                                     type="search"
                                     value={jobSearch}
                                     onChange={e => setJobSearch(e.target.value)}
                                     placeholder="Recherche par job, mot-clé ou entreprise"
-                                    className="pl-10 h-11 rounded-xl border-[#d8deeb] bg-white dark:bg-white text-[#111827] dark:text-[#111827] placeholder:text-[#9aa3b2] dark:placeholder:text-[#9aa3b2] text-[13px]"
+                                    className="pl-10 h-11 rounded-xl border-[#d8deeb] dark:border-border bg-white text-[#111827] placeholder:text-[#9aa3b2] text-[13px]"
                                 />
                             </div>
 
@@ -506,17 +506,17 @@ export default function EntrepriseDetailPage() {
                             <div className="flex gap-2 flex-wrap">
                                 <button
                                     onClick={() => setActiveJobType(activeJobType === "CDI" ? null : "CDI")}
-                                    className={`px-4 h-8 rounded-full text-[12px] font-semibold border transition-all ${activeJobType === "CDI" ? "bg-[#2f6de6] text-white border-[#2f6de6]" : "bg-white text-[#4e5a6e] border-[#d8deeb] hover:border-[#2f6de6]"}`}
+                                    className={`px-4 h-8 rounded-full text-[12px] font-semibold border transition-all ${activeJobType === "CDI" ? "bg-[#2f6de6] text-white border-[#2f6de6]" : "bg-white dark:bg-card text-[#4e5a6e] dark:text-foreground border-[#d8deeb] dark:border-border hover:border-[#2f6de6]"}`}
                                 >
                                     Type de job
                                 </button>
                                 <button
                                     onClick={() => setShowRemote(r => !r)}
-                                    className={`px-4 h-8 rounded-full text-[12px] font-semibold border transition-all ${showRemote ? "bg-[#2f6de6] text-white border-[#2f6de6]" : "bg-white text-[#4e5a6e] border-[#d8deeb] hover:border-[#2f6de6]"}`}
+                                    className={`px-4 h-8 rounded-full text-[12px] font-semibold border transition-all ${showRemote ? "bg-[#2f6de6] text-white border-[#2f6de6]" : "bg-white dark:bg-card text-[#4e5a6e] dark:text-foreground border-[#d8deeb] dark:border-border hover:border-[#2f6de6]"}`}
                                 >
                                     Télétravail
                                 </button>
-                                <button className="px-4 h-8 rounded-full text-[12px] font-semibold border border-[#d8deeb] bg-white text-[#4e5a6e] hover:border-[#2f6de6] transition-all">
+                                <button className="px-4 h-8 rounded-full text-[12px] font-semibold border border-[#d8deeb] dark:border-border bg-white dark:bg-card text-[#4e5a6e] dark:text-foreground hover:border-[#2f6de6] transition-all">
                                     Professions
                                 </button>
                                 <button
@@ -534,14 +534,14 @@ export default function EntrepriseDetailPage() {
 
                         {/* Job list */}
                         {filteredJobs.length === 0 ? (
-                            <div className="bg-white rounded-xl border border-[#e8edf6] flex flex-col items-center justify-center py-14 text-center px-4">
+                            <div className="bg-white dark:bg-card rounded-xl border border-[#e8edf6] dark:border-border flex flex-col items-center justify-center py-14 text-center px-4">
                                 <Building2 className="w-8 h-8 text-[#c8d0df] mb-3" />
-                                <p className="text-[13px] font-semibold text-[#1b2331]">Aucune offre disponible</p>
-                                <p className="text-[11px] text-[#9aa3b2] mt-1">
+                                <p className="text-[13px] font-semibold text-[#1b2331] dark:text-foreground">Aucune offre disponible</p>
+                                <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground mt-1">
                                     {jobs.length === 0 ? "Cette entreprise n'a pas encore publié d'offres." : "Aucun résultat pour ces filtres."}
                                 </p>
                                 {(jobSearch || activeJobType || activeFilterCount > 0) && (
-                                    <button onClick={() => { setJobSearch(""); setActiveJobType(null); setSelectedTypes([]); setSelectedDurations([]); setSelectedExperiences([]) }} className="mt-3 text-[12px] text-[#2f6de6] hover:underline">
+                                    <button onClick={() => { setJobSearch(""); setActiveJobType(null); setSelectedTypes([]); setSelectedDurations([]); setSelectedExperiences([]) }} className="mt-3 text-[12px] text-[#2f6de6] dark:text-primary hover:underline">
                                         Réinitialiser les filtres
                                     </button>
                                 )}
@@ -550,39 +550,39 @@ export default function EntrepriseDetailPage() {
                             <div className="space-y-5">
                                 {filteredJobs.map((job) => (
                                     <Link key={job.id} href={`/explorer-emplois/${job.id}`}>
-                                        <div className="bg-white rounded-xl border border-[#e8edf6] flex items-stretch overflow-hidden hover:border-[#2f6de6] hover:shadow-sm transition-all">
+                                        <div className="bg-white dark:bg-card rounded-xl border border-[#e8edf6] dark:border-border flex items-stretch overflow-hidden hover:border-[#2f6de6] hover:shadow-sm transition-all">
                                             <div className="flex-1 p-4">
                                                 <div className="flex items-start justify-between gap-4">
                                                     <div className="flex-1">
-                                                        <h3 className="font-bold text-[15px] text-[#1b2331] mb-2">{job.title}</h3>
-                                                        <div className="flex flex-wrap gap-3 text-[11px] text-[#7f8796] mb-2">
+                                                        <h3 className="font-bold text-[15px] text-[#1b2331] dark:text-foreground mb-2">{job.title}</h3>
+                                                        <div className="flex flex-wrap gap-3 text-[11px] text-[#7f8796] dark:text-muted-foreground mb-2">
                                                             {job.location && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{capitalizeFirst(job.location)}</span>}
                                                             {job.type && <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{job.type}</span>}
                                                             {job.salary && <span className="text-[#22a05b] font-semibold">{job.salary}</span>}
                                                         </div>
                                                         <div className="flex flex-wrap gap-2">
                                                             {job.type && (
-                                                                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#eff4ff] text-[#2f6de6] border border-[#dce8ff] font-semibold">{job.type}</span>
+                                                                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#eff4ff] dark:bg-primary/10 text-[#2f6de6] dark:text-primary border border-[#dce8ff] dark:border-border font-semibold">{job.type}</span>
                                                             )}
                                                             {job.experience && (
-                                                                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#f4f5f7] text-[#7f8796] border border-[#e8eef6]">{job.experience}</span>
+                                                                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#f4f5f7] dark:bg-muted text-[#7f8796] dark:text-muted-foreground border border-[#e8eef6] dark:border-border">{job.experience}</span>
                                                             )}
                                                             {job.publishDate && (
-                                                                <span className="text-[10px] text-[#9aa3b2]">{formatPosted(job.publishDate)}</span>
+                                                                <span className="text-[10px] text-[#9aa3b2] dark:text-muted-foreground">{formatPosted(job.publishDate)}</span>
                                                             )}
                                                         </div>
                                                     </div>
                                                     {isAuthenticated && (
                                                     <button
                                                         onClick={(e) => handleToggleSaveJob(e, job.id)}
-                                                        className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#f4f5f7] flex-shrink-0"
+                                                        className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#f4f5f7] dark:hover:bg-muted flex-shrink-0"
                                                     >
-                                                        <Heart className={`w-4 h-4 ${savedJobIds.includes(job.id) ? "text-[#2f6de6] fill-current" : "text-[#9aa3b2]"}`} />
+                                                        <Heart className={`w-4 h-4 ${savedJobIds.includes(job.id) ? "text-[#2f6de6] dark:text-primary fill-current" : "text-[#9aa3b2] dark:text-muted-foreground"}`} />
                                                     </button>
                                                     )}
                                                 </div>
                                                 {job.description && (
-                                                    <p className="mt-2 text-[11px] text-[#9aa3b2] line-clamp-1">{job.description}</p>
+                                                    <p className="mt-2 text-[11px] text-[#9aa3b2] dark:text-muted-foreground line-clamp-1">{job.description}</p>
                                                 )}
                                             </div>
                                             {company.coverImage && (

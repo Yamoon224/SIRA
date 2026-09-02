@@ -68,7 +68,7 @@ export default function CompleteProfilePage() {
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4 bg-white rounded-2xl border border-[#e8edf6] p-6 shadow-sm">
+                <form onSubmit={handleSubmit} className="space-y-4 bg-white dark:bg-card rounded-2xl border border-[#e8edf6] dark:border-border p-6 shadow-sm">
                     <div className="space-y-1.5">
                         <Label htmlFor="titre" className="text-sm font-medium text-foreground">
                             Titre professionnel
@@ -119,7 +119,7 @@ export default function CompleteProfilePage() {
                         className="w-full h-10 rounded-full bg-[#2f6de6] hover:bg-[#2157d3] text-white font-semibold"
                     >
                         {loading ? (
-                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white dark:border-border border-t-transparent" />
                         ) : (
                             "Continuer"
                         )}

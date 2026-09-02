@@ -27,7 +27,7 @@ export function CompanyLogo({ name, logo, className = "w-6 h-6 text-[10px]" }: {
 
     if (resolvedLogo && !failed) {
         return (
-            <div className={cn("rounded-full overflow-hidden bg-[#f0f3fb] flex items-center justify-center shrink-0", className)}>
+            <div className={cn("rounded-full overflow-hidden bg-[#f0f3fb] dark:bg-muted flex items-center justify-center shrink-0", className)}>
                 <img src={resolvedLogo} alt={name} className="w-full h-full object-cover" onError={() => setFailed(true)} />
             </div>
         )

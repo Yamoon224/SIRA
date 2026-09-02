@@ -134,7 +134,7 @@ function PresentationsIaContent() {
                             <button
                                 key={p.id}
                                 onClick={() => setActive(p)}
-                                className={`w-full rounded-lg border px-3 py-2.5 text-left transition-colors ${active?.id === p.id ? "border-blue-600 bg-blue-50" : "border-border bg-white hover:bg-muted/50"}`}
+                                className={`w-full rounded-lg border px-3 py-2.5 text-left transition-colors ${active?.id === p.id ? "border-blue-600 bg-blue-50" : "border-border bg-white dark:bg-card hover:bg-muted/50"}`}
                             >
                                 <p className="flex items-center gap-1.5 text-sm font-medium text-foreground">
                                     <PresentationIcon className="h-3.5 w-3.5" />{p.title}

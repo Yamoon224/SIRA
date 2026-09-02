@@ -65,31 +65,31 @@ function VideoInterviewBox() {
 
     return (
         <div className="flex flex-col items-center justify-center w-full h-full min-h-[500px]">
-            <div className="relative w-full h-[420px] flex items-center justify-center bg-white border border-[#e8edf6] rounded-2xl">
+            <div className="relative w-full h-[420px] flex items-center justify-center bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-2xl">
                 {cameraActive && stream ? (
                     <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover rounded-2xl" />
                 ) : (
                     <div className="flex flex-col items-center justify-center w-full h-full">
-                        <Camera className="w-10 h-10 text-[#7f8796] mb-2" />
-                        <span className="text-[#7f8796] text-[15px]">Caméra désactivée</span>
+                        <Camera className="w-10 h-10 text-[#7f8796] dark:text-muted-foreground mb-2" />
+                        <span className="text-[#7f8796] dark:text-muted-foreground text-[15px]">Caméra désactivée</span>
                     </div>
                 )}
                 <div className="absolute left-4 bottom-6 w-1/3">
-                    <div className="bg-[#e8edf6] rounded-full h-5 flex items-center">
+                    <div className="bg-[#e8edf6] dark:bg-muted rounded-full h-5 flex items-center">
                         <div className="bg-[#7f8796] h-3 rounded-full ml-1 my-1" style={{ width: "60%" }} />
                         <span className="absolute left-2 text-xs text-white font-medium">Progression: 60</span>
                     </div>
                 </div>
                 <div className="absolute right-4 bottom-6 flex gap-2">
                     <button
-                        className={`w-9 h-9 flex items-center justify-center rounded-lg border border-[#e8edf6] bg-white ${cameraActive ? "text-[#2f6de6]" : "text-[#7f8796]"} hover:bg-[#f4f5f7]`}
+                        className={`w-9 h-9 flex items-center justify-center rounded-lg border border-[#e8edf6] dark:border-border bg-white dark:bg-card ${cameraActive ? "text-[#2f6de6] dark:text-primary" : "text-[#7f8796] dark:text-muted-foreground"} hover:bg-[#f4f5f7] dark:hover:bg-muted`}
                         onClick={() => setCameraActive((v) => !v)}
                         type="button"
                     >
                         <Camera className="w-5 h-5" />
                     </button>
                     <button
-                        className="w-9 h-9 flex items-center justify-center rounded-lg border border-[#e8edf6] bg-white text-[#7f8796] hover:bg-[#f4f5f7]"
+                        className="w-9 h-9 flex items-center justify-center rounded-lg border border-[#e8edf6] dark:border-border bg-white dark:bg-card text-[#7f8796] dark:text-muted-foreground hover:bg-[#f4f5f7] dark:hover:bg-muted"
                         type="button"
                         disabled
                     >
@@ -170,9 +170,9 @@ function SimulationEntretienContent() {
     return (
         <div className="p-6">
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-semibold text-[#1b2331]">Simulation d'Entretien avec Goriya</h1>
+                <h1 className="text-2xl font-semibold text-[#1b2331] dark:text-foreground">Simulation d'Entretien avec Goriya</h1>
                 <div className="flex gap-3">
-                    <Button variant="outline" className="flex items-center gap-2 bg-white text-[#1b2331] border-[#d8deeb] hover:bg-[#f4f5f7]" onClick={handleRestart}>
+                    <Button variant="outline" className="flex items-center gap-2 bg-white dark:bg-card text-[#1b2331] dark:text-foreground border-[#d8deeb] dark:border-border hover:bg-[#f4f5f7] dark:hover:bg-muted" onClick={handleRestart}>
                         <RotateCcw className="w-4 h-4" />
                         Recommencer
                     </Button>
@@ -189,50 +189,50 @@ function SimulationEntretienContent() {
 
             {showFeedback && (
                 <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-0 relative">
+                    <div className="bg-white dark:bg-card rounded-2xl shadow-xl max-w-lg w-full p-0 relative">
                         <button
                             onClick={() => setShowFeedback(false)}
-                            className="absolute top-4 right-4 p-1 hover:bg-white border border-transparent hover:border-blue-500 rounded-full"
+                            className="absolute top-4 right-4 p-1 hover:bg-white dark:hover:bg-card border border-transparent hover:border-blue-500 rounded-full"
                         >
-                            <X className="w-6 h-6 text-[#7f8796]" />
+                            <X className="w-6 h-6 text-[#7f8796] dark:text-muted-foreground" />
                         </button>
                         <div className="px-8 pt-8 pb-6">
                             <div className="flex flex-col items-center mb-6">
                                 <div className="w-14 h-14 bg-[#2f6de6] rounded-full flex items-center justify-center mb-2">
                                     <span className="text-white text-2xl font-bold">g</span>
                                 </div>
-                                <h2 className="text-lg font-bold text-[#1b2331] mb-1">Feedback de ton entretien</h2>
-                                <p className="text-[13px] text-[#7f8796] text-center">Analyse de ta performance et conseils d'amélioration</p>
+                                <h2 className="text-lg font-bold text-[#1b2331] dark:text-foreground mb-1">Feedback de ton entretien</h2>
+                                <p className="text-[13px] text-[#7f8796] dark:text-muted-foreground text-center">Analyse de ta performance et conseils d'amélioration</p>
                             </div>
                             <div className="flex justify-center gap-4 mb-6">
                                 <div className="flex flex-col items-center">
-                                    <span className="text-[22px] font-bold text-[#2f6de6]">{sessionScore != null ? `${sessionScore}%` : "85%"}</span>
-                                    <span className="text-[12px] text-[#7f8796]">Score global</span>
+                                    <span className="text-[22px] font-bold text-[#2f6de6] dark:text-primary">{sessionScore != null ? `${sessionScore}%` : "85%"}</span>
+                                    <span className="text-[12px] text-[#7f8796] dark:text-muted-foreground">Score global</span>
                                 </div>
                                 <div className="flex flex-col items-center">
-                                    <span className="text-[22px] font-bold text-[#7c4dff]">8.5/10</span>
-                                    <span className="text-[12px] text-[#7f8796]">Communication</span>
+                                    <span className="text-[22px] font-bold text-[#7c4dff] dark:text-primary">8.5/10</span>
+                                    <span className="text-[12px] text-[#7f8796] dark:text-muted-foreground">Communication</span>
                                 </div>
                                 <div className="flex flex-col items-center">
                                     <span className="text-[22px] font-bold text-[#a259e6]">
                                         {sessionDuration != null ? `${sessionDuration}min` : "12min"}
                                     </span>
-                                    <span className="text-[12px] text-[#7f8796]">Durée totale</span>
+                                    <span className="text-[12px] text-[#7f8796] dark:text-muted-foreground">Durée totale</span>
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                                <div className="rounded-xl border border-[#e8edf6] p-4">
+                                <div className="rounded-xl border border-[#e8edf6] dark:border-border p-4">
                                     <div className="font-semibold text-[#2ecc71] mb-2 text-[14px]">Points forts</div>
-                                    <ul className="text-[13px] text-[#1b2331] space-y-1">
+                                    <ul className="text-[13px] text-[#1b2331] dark:text-foreground space-y-1">
                                         <li>Excellente présentation personnelle</li>
                                         <li>Réponses structurées et claires</li>
                                         <li>Bonne connaissance des entreprises</li>
                                         <li>Confiance et professionnalisme</li>
                                     </ul>
                                 </div>
-                                <div className="rounded-xl border border-[#e8edf6] p-4">
+                                <div className="rounded-xl border border-[#e8edf6] dark:border-border p-4">
                                     <div className="font-semibold text-[#ff9800] mb-2 text-[14px]">Points d'amélioration</div>
-                                    <ul className="text-[13px] text-[#1b2331] space-y-1">
+                                    <ul className="text-[13px] text-[#1b2331] dark:text-foreground space-y-1">
                                         <li>Développer davantage les exemples concrets</li>
                                         <li>Améliorer la gestion du stress</li>
                                         <li>Préparer plus de questions sur le poste</li>

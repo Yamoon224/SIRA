@@ -62,20 +62,20 @@ export default function Page() {
 
     return (
         <ProtectedRoute>
-            <div className="bg-white">
+            <div className="bg-white dark:bg-card">
                 <div className="mx-auto max-w-7xl">
                     <div className="mb-8">
-                        <h1 className="text-[24px] font-bold text-[#1b2331]">Tableau de bord</h1>
+                        <h1 className="text-[24px] font-bold text-[#1b2331] dark:text-foreground">Tableau de bord</h1>
                     </div>
 
                     <div className="mb-8 flex items-start justify-between">
                         <div>
-                            <h2 className="text-[28px] font-bold text-[#1b2331] mb-1">Bonjour, {displayName}</h2>
-                            <p className="text-[13px] text-[#7f8796]">Voici un aperçu de tes candidatures et offres d'emploi</p>
+                            <h2 className="text-[28px] font-bold text-[#1b2331] dark:text-foreground mb-1">Bonjour, {displayName}</h2>
+                            <p className="text-[13px] text-[#7f8796] dark:text-muted-foreground">Voici un aperçu de tes candidatures et offres d'emploi</p>
                         </div>
                         <div className="text-right hidden md:block">
-                            <p className="text-[11px] text-[#9aa3b2] mb-1">Prochaine entrevue</p>
-                            <p className="text-[14px] font-semibold text-[#1b2331] mb-3">Aujourd'hui</p>
+                            <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground mb-1">Prochaine entrevue</p>
+                            <p className="text-[14px] font-semibold text-[#1b2331] dark:text-foreground mb-3">Aujourd'hui</p>
                             <Avatar className="w-10 h-10 ml-auto">
                                 <AvatarImage src={user?.avatar ?? undefined} />
                                 <AvatarFallback>{initials}</AvatarFallback>
@@ -85,31 +85,31 @@ export default function Page() {
 
                     {/* Stats Cards */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                        <div className="bg-white border border-[#e8edf6] rounded-xl p-4">
+                        <div className="bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-xl p-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-[11px] text-[#9aa3b2] mb-1">Candidatures soumises</p>
-                                    <p className="text-[28px] font-bold text-[#1b2331]">{dashStats?.totalApplications ?? "-"}</p>
+                                    <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground mb-1">Candidatures soumises</p>
+                                    <p className="text-[28px] font-bold text-[#1b2331] dark:text-foreground">{dashStats?.totalApplications ?? "-"}</p>
                                 </div>
                                 <Briefcase className="w-10 h-10 text-[#e8edf6]" />
                             </div>
                         </div>
 
-                        <div className="bg-white border border-[#e8edf6] rounded-xl p-4">
+                        <div className="bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-xl p-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-[11px] text-[#9aa3b2] mb-1">Entretiens</p>
-                                    <p className="text-[28px] font-bold text-[#1b2331]">{dashStats?.interviews ?? "-"}</p>
+                                    <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground mb-1">Entretiens</p>
+                                    <p className="text-[28px] font-bold text-[#1b2331] dark:text-foreground">{dashStats?.interviews ?? "-"}</p>
                                 </div>
                                 <Briefcase className="w-10 h-10 text-[#e8edf6]" />
                             </div>
                         </div>
 
-                        <div className="bg-white border border-[#e8edf6] rounded-xl p-4">
+                        <div className="bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-xl p-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-[11px] text-[#9aa3b2] mb-1">Offres sauvegardées</p>
-                                    <p className="text-[28px] font-bold text-[#1b2331]">{dashStats?.savedJobs ?? "-"}</p>
+                                    <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground mb-1">Offres sauvegardées</p>
+                                    <p className="text-[28px] font-bold text-[#1b2331] dark:text-foreground">{dashStats?.savedJobs ?? "-"}</p>
                                 </div>
                                 <div className="w-10 h-10 bg-[#2f6de6] rounded-full flex items-center justify-center">
                                     <span className="text-white text-[14px] font-bold">★</span>
@@ -117,11 +117,11 @@ export default function Page() {
                             </div>
                         </div>
 
-                        <div className="bg-white border border-[#e8edf6] rounded-xl p-4">
+                        <div className="bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-xl p-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-[11px] text-[#9aa3b2] mb-1">Vues du profil</p>
-                                    <p className="text-[28px] font-bold text-[#1b2331]">{dashStats?.profileViews ?? "-"}</p>
+                                    <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground mb-1">Vues du profil</p>
+                                    <p className="text-[28px] font-bold text-[#1b2331] dark:text-foreground">{dashStats?.profileViews ?? "-"}</p>
                                 </div>
                                 <Eye className="w-10 h-10 text-[#e8edf6]" />
                             </div>
@@ -130,28 +130,28 @@ export default function Page() {
 
                     {/* Progression carrière (Career Dashboard) */}
                     {career && (
-                        <div className="mb-8 bg-white border border-[#e8edf6] rounded-xl p-5">
-                            <h3 className="text-[16px] font-bold text-[#1b2331] mb-4">Progression carrière</h3>
+                        <div className="mb-8 bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-xl p-5">
+                            <h3 className="text-[16px] font-bold text-[#1b2331] dark:text-foreground mb-4">Progression carrière</h3>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                                 <div>
-                                    <p className="text-[11px] text-[#9aa3b2] mb-1">Taux de réponse</p>
-                                    <p className="text-[22px] font-bold text-[#1b2331]">{career.applications.responseRate}%</p>
+                                    <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground mb-1">Taux de réponse</p>
+                                    <p className="text-[22px] font-bold text-[#1b2331] dark:text-foreground">{career.applications.responseRate}%</p>
                                 </div>
                                 <div>
-                                    <p className="text-[11px] text-[#9aa3b2] mb-1">Formations en cours</p>
-                                    <p className="text-[22px] font-bold text-[#1b2331]">{career.formations.inProgress}</p>
+                                    <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground mb-1">Formations en cours</p>
+                                    <p className="text-[22px] font-bold text-[#1b2331] dark:text-foreground">{career.formations.inProgress}</p>
                                 </div>
                                 <div>
-                                    <p className="text-[11px] text-[#9aa3b2] mb-1">Formations terminées</p>
-                                    <p className="text-[22px] font-bold text-[#1b2331]">{career.formations.completed}</p>
+                                    <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground mb-1">Formations terminées</p>
+                                    <p className="text-[22px] font-bold text-[#1b2331] dark:text-foreground">{career.formations.completed}</p>
                                 </div>
                             </div>
                             {career.recommendations.length > 0 && (
                                 <div className="space-y-2">
                                     {career.recommendations.map((rec, i) => (
-                                        <div key={i} className="flex items-start gap-2 rounded-lg bg-[#f4f7ff] px-3 py-2">
-                                            <span className="mt-0.5 text-[#2f6de6]">💡</span>
-                                            <p className="text-[12px] text-[#1b2331]">{rec}</p>
+                                        <div key={i} className="flex items-start gap-2 rounded-lg bg-[#f4f7ff] dark:bg-muted px-3 py-2">
+                                            <span className="mt-0.5 text-[#2f6de6] dark:text-primary">💡</span>
+                                            <p className="text-[12px] text-[#1b2331] dark:text-foreground">{rec}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -161,31 +161,31 @@ export default function Page() {
 
                     {/* Historique Section */}
                     <div className="mb-8">
-                        <h3 className="text-[16px] font-bold text-[#1b2331] mb-4">Historique des identités opérationnelles</h3>
+                        <h3 className="text-[16px] font-bold text-[#1b2331] dark:text-foreground mb-4">Historique des identités opérationnelles</h3>
 
                         {recentApplications.length === 0 ? (
-                            <p className="text-[12px] text-[#9aa3b2] text-center py-4">Aucune candidature récente.</p>
+                            <p className="text-[12px] text-[#9aa3b2] dark:text-muted-foreground text-center py-4">Aucune candidature récente.</p>
                         ) : (
                             <div className="space-y-3">
                                 {recentApplications.map((app) => (
                                     <button
                                         key={app.id}
                                         onClick={() => app.jobOffer?.id && router.push(`/explorer-emplois/${app.jobOffer.id}`)}
-                                        className="w-full bg-white border border-[#e8edf6] rounded-xl p-4 flex items-center justify-between hover:border-[#2f6de6] transition-colors text-left"
+                                        className="w-full bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-xl p-4 flex items-center justify-between hover:border-[#2f6de6] transition-colors text-left"
                                     >
                                         <div className="flex items-center gap-3 flex-1">
                                             <span className="text-[20px]">📋</span>
                                             <div>
-                                                <p className="text-[13px] font-semibold text-[#1b2331]">{app.jobOffer?.title ?? "Candidature"}</p>
+                                                <p className="text-[13px] font-semibold text-[#1b2331] dark:text-foreground">{app.jobOffer?.title ?? "Candidature"}</p>
                                                 <div className="flex items-center gap-2 mt-1">
-                                                    <span className="text-[11px] text-[#7f8796]">{app.jobOffer?.company?.name ?? "-"}</span>
-                                                    <span className="text-[11px] text-[#9aa3b2]">•</span>
-                                                    <span className="text-[11px] text-[#7f8796]">{new Date(app.appliedDate).toLocaleDateString("fr-FR")}</span>
+                                                    <span className="text-[11px] text-[#7f8796] dark:text-muted-foreground">{app.jobOffer?.company?.name ?? "-"}</span>
+                                                    <span className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground">•</span>
+                                                    <span className="text-[11px] text-[#7f8796] dark:text-muted-foreground">{new Date(app.appliedDate).toLocaleDateString("fr-FR")}</span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <Badge variant="outline" className="text-[10px] px-2 py-1 border-[#d8deeb] text-[#2f6de6]">
+                                            <Badge variant="outline" className="text-[10px] px-2 py-1 border-[#d8deeb] dark:border-border text-[#2f6de6] dark:text-primary">
                                                 {STATUS_LABEL[app.status] ?? app.status}
                                             </Badge>
                                         </div>
@@ -195,15 +195,15 @@ export default function Page() {
                         )}
 
                         <div className="mt-4 text-center">
-                            <button onClick={() => router.push("/mes-offres")} className="text-[12px] text-[#2f6de6] font-medium hover:underline">
+                            <button onClick={() => router.push("/mes-offres")} className="text-[12px] text-[#2f6de6] dark:text-primary font-medium hover:underline">
                                 Voir l'historique en entier de mes candidatures →
                             </button>
                         </div>
                     </div>
 
                     {/* Quick Actions */}
-                    <div className="mb-8 bg-[#f4f5f7] rounded-xl p-6">
-                        <h3 className="text-[16px] font-bold text-[#1b2331] mb-4 text-center">Actions rapides</h3>
+                    <div className="mb-8 bg-[#f4f5f7] dark:bg-muted rounded-xl p-6">
+                        <h3 className="text-[16px] font-bold text-[#1b2331] dark:text-foreground mb-4 text-center">Actions rapides</h3>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                             {[
                                 { icon: "📄", label: "Créer mon CV", href: "/creer-cv" },
@@ -214,10 +214,10 @@ export default function Page() {
                                 <button
                                     key={action.href}
                                     onClick={() => router.push(action.href)}
-                                    className="bg-white border border-[#e8edf6] rounded-lg p-4 text-center hover:border-[#2f6de6] hover:bg-[#f4f7ff] transition-colors"
+                                    className="bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-lg p-4 text-center hover:border-[#2f6de6] hover:bg-[#f4f7ff] dark:hover:bg-muted transition-colors"
                                 >
                                     <p className="text-[20px] mb-2">{action.icon}</p>
-                                    <p className="text-[12px] font-medium text-[#1b2331]">{action.label}</p>
+                                    <p className="text-[12px] font-medium text-[#1b2331] dark:text-foreground">{action.label}</p>
                                 </button>
                             ))}
                         </div>
@@ -226,12 +226,12 @@ export default function Page() {
                     {/* Companies Section */}
                     <div>
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-[16px] font-bold text-[#1b2331]">Les entreprises qui recrutent</h3>
-                            <button onClick={() => router.push("/entreprises")} className="text-[12px] text-[#2f6de6] font-medium hover:underline">Voir plus →</button>
+                            <h3 className="text-[16px] font-bold text-[#1b2331] dark:text-foreground">Les entreprises qui recrutent</h3>
+                            <button onClick={() => router.push("/entreprises")} className="text-[12px] text-[#2f6de6] dark:text-primary font-medium hover:underline">Voir plus →</button>
                         </div>
 
                         {recruitingCompanies.length === 0 ? (
-                            <p className="text-[12px] text-[#9aa3b2] text-center py-4">Aucune entreprise disponible.</p>
+                            <p className="text-[12px] text-[#9aa3b2] dark:text-muted-foreground text-center py-4">Aucune entreprise disponible.</p>
                         ) : (
                             <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                                 {recruitingCompanies.map((company) => (

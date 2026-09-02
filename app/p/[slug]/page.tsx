@@ -36,7 +36,7 @@ export default function PublicProfilePage() {
 
             <main className="mx-auto max-w-[860px] px-4 pt-10 pb-16">
                 {loading ? (
-                    <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-[#2f6de6]" /></div>
+                    <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-[#2f6de6] dark:text-primary" /></div>
                 ) : error || !profile ? (
                     <p className="text-center text-sm text-muted-foreground py-16">Ce profil est introuvable ou n'est plus public.</p>
                 ) : (

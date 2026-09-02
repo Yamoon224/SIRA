@@ -75,7 +75,7 @@ export default function PaymentSuccessPage() {
 
                 {state === "loading" && (
                     <>
-                        <Loader2 className="mx-auto h-16 w-16 animate-spin text-[#2f6de6]" />
+                        <Loader2 className="mx-auto h-16 w-16 animate-spin text-[#2f6de6] dark:text-primary" />
                         <div>
                             <h1 className="text-2xl font-bold text-foreground">Vérification du paiement…</h1>
                             <p className="text-muted-foreground text-sm mt-1">Merci de patienter quelques instants.</p>

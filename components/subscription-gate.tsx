@@ -16,7 +16,7 @@ export function SubscriptionGate({ children, featureLabel = "cette fonctionnalit
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[300px]">
-                <Loader2 className="h-8 w-8 animate-spin text-[#2f6de6]" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#2f6de6] dark:text-primary" />
             </div>
         )
     }
@@ -24,8 +24,8 @@ export function SubscriptionGate({ children, featureLabel = "cette fonctionnalit
     if (!hasSubscription) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px] px-4 text-center">
-                <div className="w-16 h-16 rounded-full bg-[#eef3ff] flex items-center justify-center mb-5">
-                    <Lock className="h-7 w-7 text-[#2f6de6]" />
+                <div className="w-16 h-16 rounded-full bg-[#eef3ff] dark:bg-primary/10 flex items-center justify-center mb-5">
+                    <Lock className="h-7 w-7 text-[#2f6de6] dark:text-primary" />
                 </div>
                 <h2 className="text-xl font-bold text-foreground mb-2">
                     Abonnement requis

@@ -102,20 +102,20 @@ export default function CompaniesPage() {
 
     return (
         <div className="min-h-[calc(100vh-80px)]">
-            <div className="border-b border-[#d9dfea] px-4 py-4 sm:px-6">
-                <h1 className="text-2xl sm:text-[30px] font-semibold leading-none text-[#1b2331]">Parcourir les entreprises</h1>
+            <div className="border-b border-[#d9dfea] dark:border-border px-4 py-4 sm:px-6">
+                <h1 className="text-2xl sm:text-[30px] font-semibold leading-none text-[#1b2331] dark:text-foreground">Parcourir les entreprises</h1>
             </div>
 
             <div className="mx-auto w-full max-w-[1240px] px-4 py-4 sm:px-6">
                 <div>
                     <div className="mb-3">
                             <div className="relative w-full">
-                                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9aa3b2]" />
+                                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9aa3b2] dark:text-muted-foreground" />
                                 <Input
                                     placeholder="Rechercher une entreprise par son nom"
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
-                                    className="h-9 rounded-full border-[#dce3ef] pl-10 text-[12px]"
+                                    className="h-9 rounded-full border-[#dce3ef] dark:border-border pl-10 text-[12px]"
                                 />
                             </div>
                         </div>
@@ -125,7 +125,7 @@ export default function CompaniesPage() {
                             <div className="mb-3 flex flex-wrap gap-2">
                                 <button
                                     onClick={() => setActiveSector(null)}
-                                    className={`h-7 rounded-full border px-3 text-[11px] transition-colors ${!activeSector ? "border-[#2f6de6] bg-[#edf4ff] text-[#2f6de6] font-semibold" : "border-[#d8deeb] text-[#7d8798] hover:border-[#2f6de6]"}`}
+                                    className={`h-7 rounded-full border px-3 text-[11px] transition-colors ${!activeSector ? "border-[#2f6de6] bg-[#edf4ff] dark:bg-primary/10 text-[#2f6de6] dark:text-primary font-semibold" : "border-[#d8deeb] dark:border-border text-[#7d8798] dark:text-muted-foreground hover:border-[#2f6de6]"}`}
                                 >
                                     Tous les secteurs
                                 </button>
@@ -133,36 +133,36 @@ export default function CompaniesPage() {
                                     <button
                                         key={s.name}
                                         onClick={() => setActiveSector(activeSector === s.name ? null : s.name)}
-                                        className={`h-7 rounded-full border px-3 text-[11px] transition-colors ${activeSector === s.name ? "border-[#2f6de6] bg-[#edf4ff] text-[#2f6de6] font-semibold" : "border-[#d8deeb] text-[#7d8798] hover:border-[#2f6de6]"}`}
+                                        className={`h-7 rounded-full border px-3 text-[11px] transition-colors ${activeSector === s.name ? "border-[#2f6de6] bg-[#edf4ff] dark:bg-primary/10 text-[#2f6de6] dark:text-primary font-semibold" : "border-[#d8deeb] dark:border-border text-[#7d8798] dark:text-muted-foreground hover:border-[#2f6de6]"}`}
                                     >
-                                        {s.name} <span className="text-[#b6bdca]">({s.count})</span>
+                                        {s.name} <span className="text-[#b6bdca] dark:text-muted-foreground">({s.count})</span>
                                     </button>
                                 ))}
                             </div>
                         )}
 
                         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                            <p className="text-[11px] text-[#8b93a3]">
+                            <p className="text-[11px] text-[#8b93a3] dark:text-muted-foreground">
                                 {activeSector ? `Secteur : ${activeSector}` : "Toutes les entreprises"}
                             </p>
                             <div ref={sortRef} className="relative">
                                 <button
                                     onClick={() => setSortOpen((v) => !v)}
-                                    className="flex items-center gap-1 text-[11px] text-[#8b93a3]"
+                                    className="flex items-center gap-1 text-[11px] text-[#8b93a3] dark:text-muted-foreground"
                                 >
                                     Trier par:
-                                    <span className="font-medium text-[#2f6de6]">
+                                    <span className="font-medium text-[#2f6de6] dark:text-primary">
                                         {SORT_OPTIONS.find((o) => o.value === sortBy)?.label}
                                     </span>
-                                    <ChevronDown className={`h-3.5 w-3.5 text-[#2f6de6] transition-transform ${sortOpen ? "rotate-180" : ""}`} />
+                                    <ChevronDown className={`h-3.5 w-3.5 text-[#2f6de6] dark:text-primary transition-transform ${sortOpen ? "rotate-180" : ""}`} />
                                 </button>
                                 {sortOpen && (
-                                    <div className="absolute right-0 z-20 mt-1 w-48 rounded-lg border border-[#e0e5f0] bg-white py-1 shadow-lg">
+                                    <div className="absolute right-0 z-20 mt-1 w-48 rounded-lg border border-[#e0e5f0] dark:border-border bg-white dark:bg-card py-1 shadow-lg">
                                         {SORT_OPTIONS.map((o) => (
                                             <button
                                                 key={o.value}
                                                 onClick={() => { setSortBy(o.value); setSortOpen(false) }}
-                                                className={`block w-full px-3 py-1.5 text-left text-[11px] hover:bg-[#f4f7ff] ${sortBy === o.value ? "font-semibold text-[#2f6de6]" : "text-[#4e5a6e]"}`}
+                                                className={`block w-full px-3 py-1.5 text-left text-[11px] hover:bg-[#f4f7ff] dark:hover:bg-muted ${sortBy === o.value ? "font-semibold text-[#2f6de6] dark:text-primary" : "text-[#4e5a6e] dark:text-foreground"}`}
                                             >
                                                 {o.label}
                                             </button>
@@ -177,7 +177,7 @@ export default function CompaniesPage() {
                                 <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#2f6de6] border-t-transparent" />
                             </div>
                         ) : sortedCompanies.length === 0 ? (
-                            <p className="text-center text-[12px] text-[#8b93a3] py-12">Aucune entreprise trouvée.</p>
+                            <p className="text-center text-[12px] text-[#8b93a3] dark:text-muted-foreground py-12">Aucune entreprise trouvée.</p>
                         ) : (
                             <div className="grid grid-cols-1 xs:grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
                                 {sortedCompanies.map((company) => (
@@ -201,7 +201,7 @@ export default function CompaniesPage() {
                                 <button
                                     onClick={() => setPage((prev) => Math.max(1, prev - 1))}
                                     disabled={page === 1}
-                                    className="flex h-8 items-center gap-1 rounded-full border border-[#dce3ef] px-3 text-[#4e5a6e] hover:border-[#2f6de6] hover:text-[#2f6de6] disabled:opacity-40 disabled:hover:border-[#dce3ef] disabled:hover:text-[#4e5a6e]"
+                                    className="flex h-8 items-center gap-1 rounded-full border border-[#dce3ef] dark:border-border px-3 text-[#4e5a6e] dark:text-foreground hover:border-[#2f6de6] hover:text-[#2f6de6] dark:hover:text-primary disabled:opacity-40 disabled:hover:border-[#dce3ef] dark:disabled:hover:border-border disabled:hover:text-[#4e5a6e] dark:disabled:hover:text-foreground"
                                 >
                                     <ChevronLeft className="h-3.5 w-3.5" /> Préc.
                                 </button>
@@ -212,7 +212,7 @@ export default function CompaniesPage() {
                                         className={`flex h-8 w-8 items-center justify-center rounded-full border transition-colors ${
                                             page === n
                                                 ? "border-[#2f6de6] bg-[#2f6de6] text-white"
-                                                : "border-[#dce3ef] text-[#4e5a6e] hover:border-[#2f6de6] hover:text-[#2f6de6]"
+                                                : "border-[#dce3ef] dark:border-border text-[#4e5a6e] dark:text-foreground hover:border-[#2f6de6] hover:text-[#2f6de6] dark:hover:text-primary"
                                         }`}
                                     >
                                         {n}
@@ -220,10 +220,10 @@ export default function CompaniesPage() {
                                 ))}
                                 {pageNumbers[pageNumbers.length - 1] < totalPages && (
                                     <>
-                                        <span className="px-0.5 text-[#9aa3b2]">…</span>
+                                        <span className="px-0.5 text-[#9aa3b2] dark:text-muted-foreground">…</span>
                                         <button
                                             onClick={() => setPage(totalPages)}
-                                            className="flex h-8 w-8 items-center justify-center rounded-full border border-[#dce3ef] text-[#4e5a6e] hover:border-[#2f6de6] hover:text-[#2f6de6]"
+                                            className="flex h-8 w-8 items-center justify-center rounded-full border border-[#dce3ef] dark:border-border text-[#4e5a6e] dark:text-foreground hover:border-[#2f6de6] hover:text-[#2f6de6] dark:hover:text-primary"
                                         >
                                             {totalPages}
                                         </button>
@@ -232,7 +232,7 @@ export default function CompaniesPage() {
                                 <button
                                     onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
                                     disabled={page >= totalPages}
-                                    className="flex h-8 items-center gap-1 rounded-full border border-[#dce3ef] px-3 text-[#4e5a6e] hover:border-[#2f6de6] hover:text-[#2f6de6] disabled:opacity-40 disabled:hover:border-[#dce3ef] disabled:hover:text-[#4e5a6e]"
+                                    className="flex h-8 items-center gap-1 rounded-full border border-[#dce3ef] dark:border-border px-3 text-[#4e5a6e] dark:text-foreground hover:border-[#2f6de6] hover:text-[#2f6de6] dark:hover:text-primary disabled:opacity-40 disabled:hover:border-[#dce3ef] dark:disabled:hover:border-border disabled:hover:text-[#4e5a6e] dark:disabled:hover:text-foreground"
                                 >
                                     Suiv. <ChevronRight className="h-3.5 w-3.5" />
                                 </button>

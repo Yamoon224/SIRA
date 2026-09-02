@@ -115,7 +115,7 @@ function RechercheEntrepriseContent() {
                             <button
                                 key={query.id}
                                 onClick={() => setActive(query)}
-                                className={`w-full rounded-lg border px-3 py-2.5 text-left transition-colors ${active?.id === query.id ? "border-blue-600 bg-blue-50" : "border-border bg-white hover:bg-muted/50"}`}
+                                className={`w-full rounded-lg border px-3 py-2.5 text-left transition-colors ${active?.id === query.id ? "border-blue-600 bg-blue-50" : "border-border bg-white dark:bg-card hover:bg-muted/50"}`}
                             >
                                 <div className="flex items-center justify-between">
                                     <p className="flex items-center gap-1.5 text-sm font-medium text-foreground">

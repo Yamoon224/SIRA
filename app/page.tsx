@@ -231,10 +231,10 @@ export default function Page() {
             {/* Hero */}
             <section className="relative overflow-hidden bg-[#1e7df2] text-white py-10 sm:py-14 md:py-16">
                 <div className="absolute -right-8 top-0 h-full w-[220px] sm:w-[320px] md:w-[380px] hidden md:block">
-                    <div className="absolute top-8 right-16 w-36 h-36 border-[18px] border-[#7ab2ff] rounded-full opacity-60" />
-                    <div className="absolute top-52 right-4 w-24 h-24 border-[14px] border-[#7ab2ff] rounded-full opacity-60" />
+                    <div className="absolute top-8 right-16 w-36 h-36 border-[18px] border-[#7ab2ff] dark:border-primary/50 rounded-full opacity-60" />
+                    <div className="absolute top-52 right-4 w-24 h-24 border-[14px] border-[#7ab2ff] dark:border-primary/50 rounded-full opacity-60" />
                     <div className="absolute top-40 right-40 w-12 h-12 bg-[#7ab2ff] rounded-full opacity-70" />
-                    <div className="absolute top-20 right-28 w-14 h-14 border-[10px] border-[#7ab2ff] rounded-full opacity-40" />
+                    <div className="absolute top-20 right-28 w-14 h-14 border-[10px] border-[#7ab2ff] dark:border-primary/50 rounded-full opacity-40" />
                 </div>
                 <div className="mx-auto max-w-[1180px] px-4 text-center relative z-10">
                     <h1 className="font-extrabold leading-tight text-2xl xs:text-3xl sm:text-4xl md:text-[40px] lg:text-[52px] max-w-[920px] mx-auto">
@@ -244,7 +244,7 @@ export default function Page() {
                         {gateState === "requires_subscription" ? (
                             <div className="flex flex-col items-center gap-3 max-w-[420px] mx-auto">
                                 <p className="text-sm text-[#ffd4d4]">{uploadError}</p>
-                                <Button onClick={() => router.push("/auth/plan")} className="h-11 sm:h-12 rounded-full bg-white text-[#20429b] hover:bg-[#f4f7ff] px-5 sm:px-8 font-semibold w-full">
+                                <Button onClick={() => router.push("/auth/plan")} className="h-11 sm:h-12 rounded-full bg-white dark:bg-card text-[#20429b] dark:text-primary hover:bg-[#f4f7ff] dark:hover:bg-muted px-5 sm:px-8 font-semibold w-full">
                                     <Sparkles className="w-4 h-4 mr-2" />Choisir un abonnement
                                 </Button>
                             </div>
@@ -254,17 +254,17 @@ export default function Page() {
                                 <p className="text-sm text-white font-semibold text-center">Tu as utilisé tes 3 analyses gratuites</p>
                                 <p className="text-xs text-[#b9d8ff] text-center">Connecte-toi pour continuer avec un abonnement.</p>
                                 <div className="flex gap-2 w-full">
-                                    <Button onClick={() => router.push("/auth/signin")} className="flex-1 h-10 rounded-full bg-white text-[#20429b] hover:bg-[#f4f7ff] font-semibold text-sm">
+                                    <Button onClick={() => router.push("/auth/signin")} className="flex-1 h-10 rounded-full bg-white dark:bg-card text-[#20429b] dark:text-primary hover:bg-[#f4f7ff] dark:hover:bg-muted font-semibold text-sm">
                                         <LogIn className="w-4 h-4 mr-1.5" />Se connecter
                                     </Button>
-                                    <Button onClick={() => router.push("/auth/signin")} variant="outline" className="flex-1 h-10 rounded-full border-white text-white bg-transparent hover:bg-white/10 text-sm">
+                                    <Button onClick={() => router.push("/auth/signin")} variant="outline" className="flex-1 h-10 rounded-full border-white dark:border-border text-white bg-transparent hover:bg-white/10 text-sm">
                                         Créer un compte
                                     </Button>
                                 </div>
                             </div>
                         ) : (
                             <>
-                                <Button onClick={handlePickCV} disabled={isAnalyzingCV} className="h-11 sm:h-12 rounded-full bg-white text-[#20429b] hover:bg-[#f4f7ff] px-5 sm:px-8 font-semibold w-full max-w-[420px] mx-auto">
+                                <Button onClick={handlePickCV} disabled={isAnalyzingCV} className="h-11 sm:h-12 rounded-full bg-white dark:bg-card text-[#20429b] dark:text-primary hover:bg-[#f4f7ff] dark:hover:bg-muted px-5 sm:px-8 font-semibold w-full max-w-[420px] mx-auto">
                                     {isAnalyzingCV ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
                                     {isAnalyzingCV ? "Analyse IA en cours..." : "Télécharger votre CV"}
                                 </Button>
@@ -340,14 +340,14 @@ export default function Page() {
                     <p className="text-xs sm:text-[14px] text-[#7d8798] dark:text-muted-foreground mt-2 sm:mt-4">Des opportunités de stages et d'emplois t'attendent ici. Es-tu prêt(e) à décrocher le poste qui te correspond vraiment ?</p>
                     <div className="mt-6 sm:mt-8 flex justify-center">
                         <form className="flex w-full max-w-[720px] relative" onSubmit={(e) => { e.preventDefault(); const q = (e.currentTarget.querySelector("input") as HTMLInputElement)?.value; router.push(`/explorer-emplois${q ? `?q=${encodeURIComponent(q)}` : ""}`) }}>
-                            <Input className="h-10 sm:h-12 rounded-full border-[#dbe4f4] bg-white dark:bg-white text-[#111827] dark:text-[#111827] placeholder:text-[#9aa3b2] dark:placeholder:text-[#9aa3b2] pr-32 text-sm w-full" placeholder="Quel métier recherches-tu ? (ex: Comptable, Commercial...)" />
+                            <Input className="h-10 sm:h-12 rounded-full border-[#dbe4f4] dark:border-border bg-white text-[#111827] placeholder:text-[#9aa3b2] pr-32 text-sm w-full" placeholder="Quel métier recherches-tu ? (ex: Comptable, Commercial...)" />
                             <Button type="submit" className="absolute right-1 top-1/2 -translate-y-1/2 h-8 sm:h-10 rounded-full bg-[#2f6de6] hover:bg-[#2458ba] px-4 sm:px-6 text-xs sm:text-sm font-semibold shadow-md">
                                 Trouver un emploi
                             </Button>
                         </form>
                     </div>
                     <Link href="/explorer-emplois">
-                        <Button variant="outline" className="mt-6 sm:mt-8 h-10 sm:h-11 px-6 sm:px-8 rounded-full border-[#97b8f5] text-[#2f6de6] bg-transparent w-full sm:w-auto">
+                        <Button variant="outline" className="mt-6 sm:mt-8 h-10 sm:h-11 px-6 sm:px-8 rounded-full border-[#97b8f5] dark:border-primary/50 text-[#2f6de6] dark:text-primary bg-transparent w-full sm:w-auto">
                             M'abonner aux alertes offres d'emploi 📩
                         </Button>
                     </Link>
@@ -391,17 +391,17 @@ export default function Page() {
 
             {/* CTA banner */}
             <section className="bg-gradient-to-r from-[#2058d6] to-[#1f4fc5] text-white py-10 sm:py-16 relative overflow-hidden">
-                <div className="absolute left-0 bottom-0 w-28 h-28 sm:w-52 sm:h-52 rounded-full border-[10px] sm:border-[20px] border-[#7cb0ff] opacity-40 -translate-x-5 sm:-translate-x-10 translate-y-5 sm:translate-y-10" />
+                <div className="absolute left-0 bottom-0 w-28 h-28 sm:w-52 sm:h-52 rounded-full border-[10px] sm:border-[20px] border-[#7cb0ff] dark:border-primary/50 opacity-40 -translate-x-5 sm:-translate-x-10 translate-y-5 sm:translate-y-10" />
                 <div className="mx-auto max-w-[1180px] px-3 sm:px-4 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center relative z-10">
                     <div>
                         <h3 className="text-xl xs:text-2xl sm:text-3xl md:text-[38px] lg:text-[52px] leading-none font-extrabold">Prends les commandes de ton avenir</h3>
                         <div className="mt-6 sm:mt-8 flex flex-wrap gap-3 justify-center md:justify-start">
                             <Link href="/auth/signin">
-                                <Button className="rounded-full bg-white text-[#1f4fc5] hover:bg-[#f4f7ff] w-full sm:w-auto">Créer mon compte (Gratuit)</Button>
+                                <Button className="rounded-full bg-white dark:bg-card text-[#1f4fc5] dark:text-primary hover:bg-[#f4f7ff] dark:hover:bg-muted w-full sm:w-auto">Créer mon compte (Gratuit)</Button>
                             </Link>
                             <Button
                                 onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); handlePickCV() }}
-                                className="rounded-full bg-white text-[#1f4fc5] hover:bg-[#f4f7ff] w-full sm:w-auto"
+                                className="rounded-full bg-white dark:bg-card text-[#1f4fc5] dark:text-primary hover:bg-[#f4f7ff] dark:hover:bg-muted w-full sm:w-auto"
                             >
                                 Analyser mon CV maintenant
                             </Button>
@@ -428,7 +428,7 @@ export default function Page() {
                         ))}
                     </div>
                     {homeCareerLoading ? (
-                        <div className="flex justify-center py-10"><Loader2 className="w-5 h-5 animate-spin text-[#2f6de6]" /></div>
+                        <div className="flex justify-center py-10"><Loader2 className="w-5 h-5 animate-spin text-[#2f6de6] dark:text-primary" /></div>
                     ) : homeCareerJobs.length === 0 ? (
                         <p className="text-center text-sm text-[#9aa3b2] dark:text-muted-foreground py-8">Aucune offre disponible pour cette catégorie.</p>
                     ) : (
@@ -485,7 +485,7 @@ export default function Page() {
                                 </h2>
                                 <p className="text-sm text-[#8a95a8] dark:text-muted-foreground mt-1">Nos derniers articles pour booster ta recherche.</p>
                             </div>
-                            <Link href="/blog" className="hidden sm:block text-sm font-semibold text-[#2f6de6] hover:underline whitespace-nowrap">Voir tous les articles</Link>
+                            <Link href="/blog" className="hidden sm:block text-sm font-semibold text-[#2f6de6] dark:text-primary hover:underline whitespace-nowrap">Voir tous les articles</Link>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                             {articles.map((article) => (
@@ -511,7 +511,7 @@ export default function Page() {
                         </div>
                         <div className="text-center mt-6 sm:hidden">
                             <Link href="/blog">
-                                <Button variant="outline" className="rounded-full border-[#97b8f5] text-[#2f6de6] bg-transparent">Voir tous les articles</Button>
+                                <Button variant="outline" className="rounded-full border-[#97b8f5] dark:border-primary/50 text-[#2f6de6] dark:text-primary bg-transparent">Voir tous les articles</Button>
                             </Link>
                         </div>
                     </div>

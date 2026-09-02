@@ -368,7 +368,7 @@ export default function Page() {
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-muted-foreground"
                                     >
                                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                     </button>
@@ -431,7 +431,7 @@ export default function Page() {
                 </div>
             </div>
 
-            <div className="hidden lg:flex flex-1 bg-white relative overflow-hidden" style={{ borderTopLeftRadius: 120, borderBottomLeftRadius: 120 }}>
+            <div className="hidden lg:flex flex-1 bg-white dark:bg-card relative overflow-hidden" style={{ borderTopLeftRadius: 120, borderBottomLeftRadius: 120 }}>
                 <div className="absolute top-1/4 right-1/4 w-96 h-96 rounded-full bg-blue-50/70 pointer-events-none" />
                 <div className="absolute bottom-1/4 left-1/4 w-56 h-56 rounded-full bg-blue-100/50 pointer-events-none" />
                 <img

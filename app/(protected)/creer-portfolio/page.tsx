@@ -106,49 +106,49 @@ function CreerPortfolioContent() {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-24">
-                <Loader2 className="h-7 w-7 animate-spin text-[#2f6de6]" />
+                <Loader2 className="h-7 w-7 animate-spin text-[#2f6de6] dark:text-primary" />
             </div>
         )
     }
 
     return (
-        <div className="bg-white">
+        <div className="bg-white dark:bg-card">
             <div className="mx-auto max-w-5xl">
                 {/* Page Title */}
-                <h1 className="text-2xl font-bold text-[#1b2331] mb-8">{editId ? "Modifier le portfolio" : "Créer un portfolio"}</h1>
+                <h1 className="text-2xl font-bold text-[#1b2331] dark:text-foreground mb-8">{editId ? "Modifier le portfolio" : "Créer un portfolio"}</h1>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Left Column */}
                     <div className="space-y-6">
                         {/* Profil professionnel */}
                         <div>
-                            <h2 className="text-lg font-bold text-[#1b2331] mb-4">Profil professionnel</h2>
+                            <h2 className="text-lg font-bold text-[#1b2331] dark:text-foreground mb-4">Profil professionnel</h2>
                             <div className="space-y-4">
                                 <div>
-                                    <Label className="text-[12px] font-semibold text-[#1b2331]">Nom complet</Label>
+                                    <Label className="text-[12px] font-semibold text-[#1b2331] dark:text-foreground">Nom complet</Label>
                                     <Input
                                         placeholder="Ton nom complet"
                                         value={profileData.fullName}
                                         onChange={(e) => setProfileData({ ...profileData, fullName: e.target.value })}
-                                        className="mt-1 h-9 text-[13px] border-[#e8edf6]"
+                                        className="mt-1 h-9 text-[13px] border-[#e8edf6] dark:border-border"
                                     />
                                 </div>
                                 <div>
-                                    <Label className="text-[12px] font-semibold text-[#1b2331]">Titre professionnel</Label>
+                                    <Label className="text-[12px] font-semibold text-[#1b2331] dark:text-foreground">Titre professionnel</Label>
                                     <Input
                                         placeholder="Ton titre professionnel"
                                         value={profileData.title}
                                         onChange={(e) => setProfileData({ ...profileData, title: e.target.value })}
-                                        className="mt-1 h-9 text-[13px] border-[#e8edf6]"
+                                        className="mt-1 h-9 text-[13px] border-[#e8edf6] dark:border-border"
                                     />
                                 </div>
                                 <div>
-                                    <Label className="text-[12px] font-semibold text-[#1b2331]">Bio / Description</Label>
+                                    <Label className="text-[12px] font-semibold text-[#1b2331] dark:text-foreground">Bio / Description</Label>
                                     <Textarea
                                         placeholder="Décris-toi en quelques lignes..."
                                         value={profileData.bio}
                                         onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
-                                        className="mt-1 text-[13px] border-[#e8edf6] min-h-[100px]"
+                                        className="mt-1 text-[13px] border-[#e8edf6] dark:border-border min-h-[100px]"
                                     />
                                 </div>
                             </div>
@@ -156,37 +156,37 @@ function CreerPortfolioContent() {
 
                         {/* Info professionelle */}
                         <div>
-                            <h3 className="font-bold text-[14px] text-[#1b2331] mb-3">Info professionelle</h3>
+                            <h3 className="font-bold text-[14px] text-[#1b2331] dark:text-foreground mb-3">Info professionelle</h3>
                             <div className="space-y-3">
                                 <div>
-                                    <Label className="text-[12px] font-semibold text-[#1b2331]">Localisation</Label>
+                                    <Label className="text-[12px] font-semibold text-[#1b2331] dark:text-foreground">Localisation</Label>
                                     <div className="mt-1">
                                         <AutocompleteInput
                                             value={profileData.location}
                                             onChange={(v) => setProfileData({ ...profileData, location: v })}
                                             options={LOCALISATIONS}
                                             placeholder="Ville, Pays"
-                                            className="h-9 text-[13px] border-[#e8edf6]"
+                                            className="h-9 text-[13px] border-[#e8edf6] dark:border-border"
                                             aria-label="Localisation"
                                         />
                                     </div>
                                 </div>
                                 <div>
-                                    <Label className="text-[12px] font-semibold text-[#1b2331]">Email</Label>
+                                    <Label className="text-[12px] font-semibold text-[#1b2331] dark:text-foreground">Email</Label>
                                     <Input
                                         placeholder="contact@email.com"
                                         value={profileData.email}
                                         onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                                        className="mt-1 h-9 text-[13px] border-[#e8edf6]"
+                                        className="mt-1 h-9 text-[13px] border-[#e8edf6] dark:border-border"
                                     />
                                 </div>
                                 <div>
-                                    <Label className="text-[12px] font-semibold text-[#1b2331]">Compétences</Label>
+                                    <Label className="text-[12px] font-semibold text-[#1b2331] dark:text-foreground">Compétences</Label>
                                     <Input
                                         placeholder="React, Node.js, JavaScript..."
                                         value={profileData.skills}
                                         onChange={(e) => setProfileData({ ...profileData, skills: e.target.value })}
-                                        className="mt-1 h-9 text-[13px] border-[#e8edf6]"
+                                        className="mt-1 h-9 text-[13px] border-[#e8edf6] dark:border-border"
                                     />
                                 </div>
                             </div>
@@ -194,30 +194,30 @@ function CreerPortfolioContent() {
 
                         {/* Mes projets */}
                         <div>
-                            <h3 className="font-bold text-[14px] text-[#1b2331] mb-3">Mes projets</h3>
+                            <h3 className="font-bold text-[14px] text-[#1b2331] dark:text-foreground mb-3">Mes projets</h3>
                             <div className="space-y-2">
                                 {projects.map((project, i) => (
                                     <div
                                         key={i}
-                                        className="flex items-center justify-between p-3 bg-[#f4f5f7] rounded-lg text-[12px]"
+                                        className="flex items-center justify-between p-3 bg-[#f4f5f7] dark:bg-muted rounded-lg text-[12px]"
                                     >
-                                        <span className="font-medium text-[#1b2331]">{project.title}</span>
-                                        <span className="text-[#2f6de6] font-medium cursor-pointer">{project.link}</span>
+                                        <span className="font-medium text-[#1b2331] dark:text-foreground">{project.title}</span>
+                                        <span className="text-[#2f6de6] dark:text-primary font-medium cursor-pointer">{project.link}</span>
                                     </div>
                                 ))}
                             </div>
-                            <button className="mt-3 w-full h-9 rounded-lg border border-[#d8deeb] text-[12px] font-medium text-[#2f6de6] hover:bg-[#f4f7ff]">
+                            <button className="mt-3 w-full h-9 rounded-lg border border-[#d8deeb] dark:border-border text-[12px] font-medium text-[#2f6de6] dark:text-primary hover:bg-[#f4f7ff] dark:hover:bg-muted">
                                 + Ajouter un projet
                             </button>
                         </div>
 
                         {/* Liens et réseaux */}
                         <div>
-                            <h3 className="font-bold text-[14px] text-[#1b2331] mb-3">Liens et réseaux</h3>
+                            <h3 className="font-bold text-[14px] text-[#1b2331] dark:text-foreground mb-3">Liens et réseaux</h3>
                             <div className="space-y-2">
                                 {socialLinks.map((link, i) => (
                                     <div key={i}>
-                                        <Label className="text-[12px] font-semibold text-[#1b2331]">{link.label}</Label>
+                                        <Label className="text-[12px] font-semibold text-[#1b2331] dark:text-foreground">{link.label}</Label>
                                         <Input
                                             placeholder={`Ton lien ${link.label.toLowerCase()}`}
                                             value={link.value}
@@ -226,7 +226,7 @@ function CreerPortfolioContent() {
                                                 next[i] = { ...next[i], value: e.target.value }
                                                 setSocialLinks(next)
                                             }}
-                                            className="mt-1 h-9 text-[13px] border-[#e8edf6]"
+                                            className="mt-1 h-9 text-[13px] border-[#e8edf6] dark:border-border"
                                         />
                                     </div>
                                 ))}
@@ -238,7 +238,7 @@ function CreerPortfolioContent() {
                     <div className="space-y-6">
                         {/* Thème du portfolio */}
                         <div>
-                            <h2 className="text-lg font-bold text-[#1b2331] mb-4">Thème du portfolio</h2>
+                            <h2 className="text-lg font-bold text-[#1b2331] dark:text-foreground mb-4">Thème du portfolio</h2>
                             <div className="grid grid-cols-2 gap-4">
                                 {themes.map((t) => (
                                     <button
@@ -247,14 +247,14 @@ function CreerPortfolioContent() {
                                         className={`p-4 rounded-lg border-2 transition-all ${
                                             theme === t.value
                                                 ? "border-[#2f6de6] ring-2 ring-[#2f6de6]/20"
-                                                : "border-[#e8edf6] hover:border-[#d8deeb]"
+                                                : "border-[#e8edf6] dark:border-border hover:border-[#d8deeb] dark:hover:border-border"
                                         }`}
                                     >
                                         <div className="flex gap-1.5 mb-2">
                                             <div className={`flex-1 h-6 rounded ${t.colors[0]}`} />
                                             <div className={`flex-1 h-6 rounded ${t.colors[1]}`} />
                                         </div>
-                                        <p className="text-[12px] font-medium text-[#1b2331]">{t.name}</p>
+                                        <p className="text-[12px] font-medium text-[#1b2331] dark:text-foreground">{t.name}</p>
                                     </button>
                                 ))}
                             </div>
@@ -262,26 +262,26 @@ function CreerPortfolioContent() {
 
                         {/* Statistiques */}
                         <div>
-                            <h3 className="font-bold text-[14px] text-[#1b2331] mb-3">Statistiques</h3>
+                            <h3 className="font-bold text-[14px] text-[#1b2331] dark:text-foreground mb-3">Statistiques</h3>
                             <div className="space-y-2">
-                                <div className="flex items-center justify-between p-3 bg-[#f4f5f7] rounded-lg">
-                                    <span className="text-[12px] text-[#7f8796]">Profils visités</span>
-                                    <span className="text-[14px] font-bold text-[#1b2331]">242</span>
+                                <div className="flex items-center justify-between p-3 bg-[#f4f5f7] dark:bg-muted rounded-lg">
+                                    <span className="text-[12px] text-[#7f8796] dark:text-muted-foreground">Profils visités</span>
+                                    <span className="text-[14px] font-bold text-[#1b2331] dark:text-foreground">242</span>
                                 </div>
-                                <div className="flex items-center justify-between p-3 bg-[#f4f5f7] rounded-lg">
-                                    <span className="text-[12px] text-[#7f8796]">Candidats du profil</span>
-                                    <span className="text-[14px] font-bold text-[#1b2331]">12</span>
+                                <div className="flex items-center justify-between p-3 bg-[#f4f5f7] dark:bg-muted rounded-lg">
+                                    <span className="text-[12px] text-[#7f8796] dark:text-muted-foreground">Candidats du profil</span>
+                                    <span className="text-[14px] font-bold text-[#1b2331] dark:text-foreground">12</span>
                                 </div>
-                                <div className="flex items-center justify-between p-3 bg-[#f4f5f7] rounded-lg">
-                                    <span className="text-[12px] text-[#7f8796]">Taux de conversion</span>
-                                    <span className="text-[14px] font-bold text-[#1b2331]">5%</span>
+                                <div className="flex items-center justify-between p-3 bg-[#f4f5f7] dark:bg-muted rounded-lg">
+                                    <span className="text-[12px] text-[#7f8796] dark:text-muted-foreground">Taux de conversion</span>
+                                    <span className="text-[14px] font-bold text-[#1b2331] dark:text-foreground">5%</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Consulte de l'emploi */}
                         <div>
-                            <h3 className="font-bold text-[14px] text-[#1b2331] mb-3">Consulte de l'emploi</h3>
+                            <h3 className="font-bold text-[14px] text-[#1b2331] dark:text-foreground mb-3">Consulte de l'emploi</h3>
                             <div className="bg-gradient-to-br from-[#5b7eff] to-[#2f6de6] rounded-lg p-4 text-white space-y-2">
                                 <p className="text-[12px] font-medium">
                                     Lien de partage vers ton portfolio candidat. Tu peux
@@ -313,7 +313,7 @@ function CreerPortfolioContent() {
                     <Button
                         variant="outline"
                         onClick={() => router.push("/portfolio")}
-                        className="px-8 h-9 rounded-full border border-[#d8deeb] text-[12px] font-medium"
+                        className="px-8 h-9 rounded-full border border-[#d8deeb] dark:border-border text-[12px] font-medium"
                     >
                         Annuler
                     </Button>

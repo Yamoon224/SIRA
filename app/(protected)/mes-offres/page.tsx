@@ -82,8 +82,8 @@ export default function MyApplicationsPage() {
   return (
       <div>
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Mes candidatures</h1>
-          <p className="text-gray-600">Suis l'état de tes candidatures et gère tes offres</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground mb-2">Mes candidatures</h1>
+          <p className="text-gray-600 dark:text-muted-foreground">Suis l'état de tes candidatures et gère tes offres</p>
         </div>
 
         <Tabs value={selectedStatus} onValueChange={setSelectedStatus} className="space-y-6">
@@ -101,9 +101,9 @@ export default function MyApplicationsPage() {
                 {[1, 2, 3].map((i) => (
                   <Card key={i} className="animate-pulse">
                     <CardContent className="p-6">
-                      <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
-                      <div className="h-3 bg-gray-200 rounded w-1/4 mb-4"></div>
-                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-muted rounded w-1/3 mb-2"></div>
+                      <div className="h-3 bg-gray-200 dark:bg-muted rounded w-1/4 mb-4"></div>
+                      <div className="h-3 bg-gray-200 dark:bg-muted rounded w-1/2"></div>
                     </CardContent>
                   </Card>
                 ))}
@@ -117,7 +117,7 @@ export default function MyApplicationsPage() {
                     <Link
                       key={application.id}
                       href={job?.id ? `/explorer-emplois/${job.id}` : "/mes-offres"}
-                      className="group block rounded-[14px] border border-[#b9c8ec] dark:border-border bg-white dark:bg-card p-3 sm:p-4 hover:border-[#8eb4ff] transition-colors"
+                      className="group block rounded-[14px] border border-[#b9c8ec] dark:border-border bg-white dark:bg-card p-3 sm:p-4 hover:border-[#8eb4ff] dark:hover:border-primary transition-colors"
                     >
                       <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                         <div className="flex-1 min-w-0">
@@ -145,7 +145,7 @@ export default function MyApplicationsPage() {
                               type="button"
                               disabled={withdrawingId === application.id}
                               onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleWithdraw(application.id) }}
-                              className="inline-flex items-center gap-1 text-[11px] text-[#e0526a] hover:text-[#c53f56] disabled:opacity-40"
+                              className="inline-flex items-center gap-1 text-[11px] text-[#e0526a] hover:text-[#c53f56] dark:hover:text-[#ff8897] disabled:opacity-40"
                             >
                               {withdrawingId === application.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5" />}
                               Retirer
@@ -166,10 +166,10 @@ export default function MyApplicationsPage() {
             ) : (
               <Card>
                 <CardContent className="p-12 text-center">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Building2 className="w-8 h-8 text-gray-400" />
+                  <div className="w-16 h-16 bg-gray-100 dark:bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Building2 className="w-8 h-8 text-gray-400 dark:text-muted-foreground" />
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Aucune candidature trouvée</h3>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-foreground mb-4">Aucune candidature trouvée</h3>
                   <Button onClick={() => router.push("/chercher-emploi")}>Parcourir les offres</Button>
                 </CardContent>
               </Card>

@@ -142,14 +142,14 @@ export function SearchBar() {
       case "location":
         return "bg-purple-100 text-purple-800"
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 dark:bg-muted text-gray-800 dark:text-foreground"
     }
   }
 
   return (
     <div ref={searchRef} className="relative">
       <div className="relative w-full min-w-0 sm:w-80">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-muted-foreground w-4 h-4" />
         <Input
           placeholder="Rechercher emplois, entreprises, lieux..."
           className="pl-10 w-full rounded-full min-w-0"

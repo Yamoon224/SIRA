@@ -147,23 +147,23 @@ export default function Page() {
 
   return (
     <div className="min-h-[calc(100vh-80px)]">
-      <div className="border-b border-[#d9dfea] px-4 py-4 sm:px-6">
-        <h1 className="text-2xl sm:text-[32px] font-semibold leading-none text-[#1b2331]">Nouveau document</h1>
+      <div className="border-b border-[#d9dfea] dark:border-border px-4 py-4 sm:px-6">
+        <h1 className="text-2xl sm:text-[32px] font-semibold leading-none text-[#1b2331] dark:text-foreground">Nouveau document</h1>
       </div>
 
       <div className="mx-auto grid w-full max-w-[1240px] grid-cols-1 gap-4 px-4 py-4 sm:px-6 lg:grid-cols-[1.62fr_1fr]">
-        <section className="flex min-h-0 lg:min-h-[548px] flex-col rounded-[12px] border border-[#e5e9f2] bg-white p-4 sm:p-5">
-          <h2 className="mb-3 text-[14px] font-semibold text-[#1d2433]">{template.title}</h2>
+        <section className="flex min-h-0 lg:min-h-[548px] flex-col rounded-[12px] border border-[#e5e9f2] dark:border-border bg-white dark:bg-card p-4 sm:p-5">
+          <h2 className="mb-3 text-[14px] font-semibold text-[#1d2433] dark:text-foreground">{template.title}</h2>
 
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {splitFields.map((field) => (
               <div key={field.id}>
-                <label className="mb-1 block text-[11px] text-[#8b93a3]">{field.label}</label>
+                <label className="mb-1 block text-[11px] text-[#8b93a3] dark:text-muted-foreground">{field.label}</label>
                 <Input
                   value={formData[field.id] || ""}
                   onChange={(e) => handleInputChange(field.id, e.target.value)}
                   placeholder={field.label}
-                  className={`h-8 rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0 ${
+                  className={`h-8 rounded-[7px] border-0 bg-[#f1f2f5] dark:bg-muted text-[12px] shadow-none focus-visible:ring-0 ${
                     errors[field.id] ? "ring-1 ring-red-400" : ""
                   }`}
                 />
@@ -174,12 +174,12 @@ export default function Page() {
           <div className="mt-2 space-y-2">
             {singleFields.map((field) => (
               <div key={field.id}>
-                <label className="mb-1 block text-[11px] text-[#8b93a3]">{field.label}</label>
+                <label className="mb-1 block text-[11px] text-[#8b93a3] dark:text-muted-foreground">{field.label}</label>
                 <Input
                   value={formData[field.id] || ""}
                   onChange={(e) => handleInputChange(field.id, e.target.value)}
                   placeholder={field.label}
-                  className={`h-8 rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0 ${
+                  className={`h-8 rounded-[7px] border-0 bg-[#f1f2f5] dark:bg-muted text-[12px] shadow-none focus-visible:ring-0 ${
                     errors[field.id] ? "ring-1 ring-red-400" : ""
                   }`}
                 />
@@ -196,15 +196,15 @@ export default function Page() {
           </Button>
         </section>
 
-        <section className="flex min-h-0 lg:min-h-[548px] flex-col rounded-[12px] border border-[#e5e9f2] bg-white p-4 sm:p-5">
-          <h2 className="mb-3 text-[14px] font-semibold text-[#1d2433]">Aperçu du document</h2>
+        <section className="flex min-h-0 lg:min-h-[548px] flex-col rounded-[12px] border border-[#e5e9f2] dark:border-border bg-white dark:bg-card p-4 sm:p-5">
+          <h2 className="mb-3 text-[14px] font-semibold text-[#1d2433] dark:text-foreground">Aperçu du document</h2>
 
-          <div className="relative h-[320px] sm:h-[418px] overflow-hidden rounded-[12px] bg-[#f2f5fb] p-4">
-            <div className="pointer-events-none absolute -left-14 bottom-3 h-48 w-48 rounded-full border-[22px] border-[#dce4f4] opacity-70" />
-            <div className="pointer-events-none absolute left-4 bottom-7 h-12 w-12 rounded-full bg-[#dce4f4] opacity-80" />
-            <div className="pointer-events-none absolute left-16 bottom-0 h-4 w-4 rounded-full bg-[#dce4f4] opacity-80" />
+          <div className="relative h-[320px] sm:h-[418px] overflow-hidden rounded-[12px] bg-[#f2f5fb] dark:bg-muted p-4">
+            <div className="pointer-events-none absolute -left-14 bottom-3 h-48 w-48 rounded-full border-[22px] border-[#dce4f4] dark:border-border opacity-70" />
+            <div className="pointer-events-none absolute left-4 bottom-7 h-12 w-12 rounded-full bg-[#dce4f4] dark:bg-primary/10 opacity-80" />
+            <div className="pointer-events-none absolute left-16 bottom-0 h-4 w-4 rounded-full bg-[#dce4f4] dark:bg-primary/10 opacity-80" />
 
-            <pre className="relative z-10 h-full whitespace-pre-wrap text-[10.5px] leading-[1.55] text-[#7d8595]">
+            <pre className="relative z-10 h-full whitespace-pre-wrap text-[10.5px] leading-[1.55] text-[#7d8595] dark:text-muted-foreground">
               {previewContent || defaultPreview}
             </pre>
           </div>
@@ -213,14 +213,14 @@ export default function Page() {
             <Button
               variant="ghost"
               onClick={handleClear}
-              className="h-9 rounded-full bg-[#eaedf8] text-[12px] font-medium text-[#646d80] hover:bg-[#dfe4f4]"
+              className="h-9 rounded-full bg-[#eaedf8] dark:bg-primary/10 text-[12px] font-medium text-[#646d80] dark:text-muted-foreground hover:bg-[#dfe4f4] dark:hover:bg-primary/10"
             >
               Effacer
             </Button>
             <Button
               variant="ghost"
               onClick={handleRegenerate}
-              className="h-9 rounded-full bg-[#eaedf8] text-[12px] font-medium text-[#646d80] hover:bg-[#dfe4f4]"
+              className="h-9 rounded-full bg-[#eaedf8] dark:bg-primary/10 text-[12px] font-medium text-[#646d80] dark:text-muted-foreground hover:bg-[#dfe4f4] dark:hover:bg-primary/10"
             >
               Régénérer
             </Button>

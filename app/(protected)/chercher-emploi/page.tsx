@@ -202,9 +202,9 @@ function ChercherEmploiContent() {
                 </p>
                 <div className="mt-6 flex justify-center">
                     <form className="w-full max-w-[690px] relative" onSubmit={handleSearch}>
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2f6de6]" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2f6de6] dark:text-primary" />
                         <Input
-                            className="h-11 rounded-full border-[#b9c8ec] bg-white dark:bg-white text-[#111827] dark:text-[#111827] placeholder:text-[#9aa3b2] dark:placeholder:text-[#9aa3b2] pl-10 pr-36 text-[12px]"
+                            className="h-11 rounded-full border-[#b9c8ec] dark:border-border bg-white text-[#111827] placeholder:text-[#9aa3b2] pl-10 pr-36 text-[12px]"
                             placeholder="Quel métier recherches-tu ?"
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
@@ -261,7 +261,7 @@ function ChercherEmploiContent() {
                         </Button>
                         {(locationFilter || typeFilter || experienceFilter) && (
                             <button type="button" onClick={() => { setLocationFilter(""); setTypeFilter(""); setExperienceFilter("") }}
-                                className="text-[11px] text-[#7f8796] hover:text-[#2f6de6] underline">
+                                className="text-[11px] text-[#7f8796] dark:text-muted-foreground hover:text-[#2f6de6] dark:hover:text-primary underline">
                                 Réinitialiser
                             </button>
                         )}
@@ -282,11 +282,11 @@ function ChercherEmploiContent() {
                 </div>
 
                 {loading ? (
-                    <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-[#2f6de6]" /></div>
+                    <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-[#2f6de6] dark:text-primary" /></div>
                 ) : jobs.length > 0 ? (
                     <div className="mt-3 grid grid-cols-1 lg:grid-cols-2 gap-3">
                         {jobs.map((job) => (
-                            <Link key={job.id} href={`/explorer-emplois/${job.id}`} className="group block rounded-[14px] border border-[#b9c8ec] dark:border-border bg-white dark:bg-card p-3 sm:p-4 hover:border-[#8eb4ff] transition-colors">
+                            <Link key={job.id} href={`/explorer-emplois/${job.id}`} className="group block rounded-[14px] border border-[#b9c8ec] dark:border-border bg-white dark:bg-card p-3 sm:p-4 hover:border-[#8eb4ff] dark:hover:border-primary transition-colors">
                                 <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                                     <div className="flex-1 min-w-0">
                                         <h3 className="text-[17px] font-extrabold text-[#1b2331] dark:text-foreground group-hover:underline">{job.title}</h3>
@@ -309,7 +309,7 @@ function ChercherEmploiContent() {
                                         <div className="mt-3 flex items-center gap-3">
                                             <CompanyLogo name={job.company?.name ?? "?"} logo={job.company?.logo} className="w-6 h-6 text-[12px]" />
                                             <button type="button" onClick={(e) => toggleBookmark(e, job.id)}
-                                                className={`transition-colors ${bookmarkedJobs.includes(job.id) ? "text-[#2f6de6]" : "text-[#9aa3b2] hover:text-[#2f6de6]"}`}>
+                                                className={`transition-colors ${bookmarkedJobs.includes(job.id) ? "text-[#2f6de6] dark:text-primary" : "text-[#9aa3b2] dark:text-muted-foreground hover:text-[#2f6de6] dark:hover:text-primary"}`}>
                                                 <Heart className={`w-4 h-4 ${bookmarkedJobs.includes(job.id) ? "fill-current" : ""}`} />
                                             </button>
                                             {job.salary && <span className="text-[11px] font-semibold text-[#2f6de6] dark:text-primary ml-auto">{job.salary}</span>}
@@ -344,7 +344,7 @@ function ChercherEmploiContent() {
             {/* Companies (populaires, ou correspondant à la recherche) */}
             {(companies.length > 0 || searchTerm) && (
                 <section className="mt-10 rounded-2xl bg-gradient-to-r from-[#4a8bf2] via-[#3970dd] to-[#2a56bf] px-4 sm:px-6 py-8 text-white relative overflow-hidden">
-                    <div className="absolute -left-14 bottom-2 w-36 h-36 rounded-full border-[14px] border-[#82b7ff] opacity-35" />
+                    <div className="absolute -left-14 bottom-2 w-36 h-36 rounded-full border-[14px] border-[#82b7ff] dark:border-primary/50 opacity-35" />
                     <h2 className="text-[18px] sm:text-[26px] font-extrabold mb-5 relative z-10">
                         {searchTerm ? `Entreprises pour « ${searchTerm} »` : "Entreprises populaires"}
                     </h2>

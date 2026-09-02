@@ -26,7 +26,7 @@ function SimulationConfigContent() {
 
     return (
         <div>
-            <h1 className="text-2xl font-semibold text-gray-900 mb-6">Simulation d'Entretien avec Goriya</h1>
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-foreground mb-6">Simulation d'Entretien avec Goriya</h1>
 
             {/* Modal-like container */}
             <div className="flex items-center justify-center min-h-[600px]">
@@ -44,14 +44,14 @@ function SimulationConfigContent() {
                                 <AvatarFallback className="text-white text-2xl font-bold">G</AvatarFallback>
                             </Avatar>
                             <h2 className="text-xl font-semibold mb-2">Simulation d'entretien IA</h2>
-                            <p className="text-gray-600 text-sm">
+                            <p className="text-gray-600 dark:text-muted-foreground text-sm">
                                 Prépare-toi pour tes entretiens avec notre assistant IA intelligent
                             </p>
                         </div>
 
                         <div className="space-y-4 mb-6">
                             <div>
-                                <Label htmlFor="jobType" className="text-sm font-medium text-gray-700">
+                                <Label htmlFor="jobType" className="text-sm font-medium text-gray-700 dark:text-foreground">
                                     Type de poste
                                 </Label>
                                 <Input
@@ -64,7 +64,7 @@ function SimulationConfigContent() {
                             </div>
 
                             <div>
-                                <Label htmlFor="company" className="text-sm font-medium text-gray-700">
+                                <Label htmlFor="company" className="text-sm font-medium text-gray-700 dark:text-foreground">
                                     Entreprise cible
                                 </Label>
                                 <Input
@@ -77,7 +77,7 @@ function SimulationConfigContent() {
                             </div>
 
                             <div>
-                                <Label htmlFor="difficulty" className="text-sm font-medium text-gray-700">
+                                <Label htmlFor="difficulty" className="text-sm font-medium text-gray-700 dark:text-foreground">
                                     Niveau de difficulté
                                 </Label>
                                 <Select
@@ -96,7 +96,7 @@ function SimulationConfigContent() {
                             </div>
 
                             <div>
-                                <Label htmlFor="duration" className="text-sm font-medium text-gray-700">
+                                <Label htmlFor="duration" className="text-sm font-medium text-gray-700 dark:text-foreground">
                                     Durée de l'entretien
                                 </Label>
                                 <Select
@@ -117,11 +117,11 @@ function SimulationConfigContent() {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4 mb-6">
-                            <Card className="p-4 text-center cursor-pointer hover:bg-white border-2 border-transparent hover:border-blue-200">
+                            <Card className="p-4 text-center cursor-pointer hover:bg-white dark:hover:bg-card border-2 border-transparent hover:border-blue-200">
                                 <MessageSquare className="w-8 h-8 mx-auto mb-2 text-blue-500" />
                                 <p className="text-sm font-medium">Chat en direct</p>
                             </Card>
-                            <Card className="p-4 text-center cursor-pointer hover:bg-white border-2 border-transparent hover:border-blue-200">
+                            <Card className="p-4 text-center cursor-pointer hover:bg-white dark:hover:bg-card border-2 border-transparent hover:border-blue-200">
                                 <Video className="w-8 h-8 mx-auto mb-2 text-blue-500" />
                                 <p className="text-sm font-medium">Appel vidéo</p>
                             </Card>

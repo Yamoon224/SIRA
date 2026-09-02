@@ -13,7 +13,7 @@ import { CallEmbed } from "@/components/call-embed"
 const STATUS_META: Record<CallSessionStatus, { label: string; className: string }> = {
     SCHEDULED: { label: "Planifié", className: "bg-blue-100 text-blue-600" },
     ACTIVE: { label: "En cours", className: "bg-green-500 text-white" },
-    ENDED: { label: "Terminé", className: "bg-gray-200 text-gray-700" },
+    ENDED: { label: "Terminé", className: "bg-gray-200 dark:bg-muted text-gray-700 dark:text-foreground" },
 }
 
 export default function Page() {
@@ -114,7 +114,7 @@ export default function Page() {
             ) : (
                 <div className="space-y-3">
                     {sessions.map((callSession) => (
-                        <div key={callSession.id} className="rounded-xl border border-border bg-white px-4 py-4">
+                        <div key={callSession.id} className="rounded-xl border border-border bg-white dark:bg-card px-4 py-4">
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
                                     <div className="flex items-center gap-2">

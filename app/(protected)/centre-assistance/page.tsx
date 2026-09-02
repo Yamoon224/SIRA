@@ -186,21 +186,21 @@ export default function Page() {
                 }}
             />
 
-            <div className="bg-white">
+            <div className="bg-white dark:bg-card">
                 <div className="mx-auto max-w-5xl">
                     {/* Header */}
-                    <h1 className="text-xl font-bold text-[#1b2331] mb-6">Centre d'assistance</h1>
+                    <h1 className="text-xl font-bold text-[#1b2331] dark:text-foreground mb-6">Centre d'assistance</h1>
 
                     {/* Tabs */}
-                    <div className="flex gap-1 border-b border-[#e8edf6] mb-8">
+                    <div className="flex gap-1 border-b border-[#e8edf6] dark:border-border mb-8">
                         {TABS.map((tab) => (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
                                     activeTab === tab.id
-                                        ? "border-[#2f6de6] text-[#2f6de6]"
-                                        : "border-transparent text-[#7f8796] hover:text-[#1b2331]"
+                                        ? "border-[#2f6de6] text-[#2f6de6] dark:text-primary"
+                                        : "border-transparent text-[#7f8796] dark:text-muted-foreground hover:text-[#1b2331] dark:hover:text-foreground"
                                 }`}
                             >
                                 {tab.label}
@@ -237,7 +237,7 @@ export default function Page() {
 
                             {/* Categories */}
                             <div className="mb-8">
-                                <h3 className="text-lg font-bold text-[#1b2331] mb-4">Parcourir par catégorie</h3>
+                                <h3 className="text-lg font-bold text-[#1b2331] dark:text-foreground mb-4">Parcourir par catégorie</h3>
                                 <div className="flex justify-center gap-6 flex-wrap">
                                     {categories.map((cat, i) => (
                                         <button
@@ -247,8 +247,8 @@ export default function Page() {
                                             <div className={`w-14 h-14 ${cat.color} rounded-full flex items-center justify-center text-white font-bold text-xl hover:shadow-lg transition-shadow cursor-pointer`}>
                                                 {cat.name.charAt(0)}
                                             </div>
-                                            <p className="text-[12px] font-medium text-[#1b2331]">{cat.name}</p>
-                                            <p className="text-[11px] text-[#9aa3b2]">{cat.count}</p>
+                                            <p className="text-[12px] font-medium text-[#1b2331] dark:text-foreground">{cat.name}</p>
+                                            <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground">{cat.count}</p>
                                         </button>
                                     ))}
                                 </div>
@@ -256,24 +256,24 @@ export default function Page() {
 
                             {/* FAQ */}
                             <div className="mb-8">
-                                <h3 className="text-lg font-bold text-[#1b2331] mb-4">Réponses aux questions</h3>
+                                <h3 className="text-lg font-bold text-[#1b2331] dark:text-foreground mb-4">Réponses aux questions</h3>
                                 <div className="space-y-3">
                                     {faqItems.map((item, i) => (
                                         <button
                                             key={i}
                                             onClick={() => setOpenFaqIndex(openFaqIndex === i ? null : i)}
-                                            className="w-full bg-white border border-[#e8edf6] rounded-xl p-4 hover:border-[#2f6de6] transition-colors text-left"
+                                            className="w-full bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-xl p-4 hover:border-[#2f6de6] transition-colors text-left"
                                         >
                                             <div className="flex items-center justify-between">
                                                 <div className="flex-1">
-                                                    <p className="font-medium text-[13px] text-[#1b2331] mb-1">{item.question}</p>
-                                                    <p className="text-[11px] text-[#9aa3b2]">{item.views}</p>
+                                                    <p className="font-medium text-[13px] text-[#1b2331] dark:text-foreground mb-1">{item.question}</p>
+                                                    <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground">{item.views}</p>
                                                 </div>
-                                                <ChevronDown className={`w-5 h-5 text-[#9aa3b2] transition-transform ${openFaqIndex === i ? "rotate-180" : ""}`} />
+                                                <ChevronDown className={`w-5 h-5 text-[#9aa3b2] dark:text-muted-foreground transition-transform ${openFaqIndex === i ? "rotate-180" : ""}`} />
                                             </div>
                                             {openFaqIndex === i && (
-                                                <div className="mt-4 pt-4 border-t border-[#e8edf6]">
-                                                    <p className="text-[12px] text-[#4e5a6e] leading-relaxed">
+                                                <div className="mt-4 pt-4 border-t border-[#e8edf6] dark:border-border">
+                                                    <p className="text-[12px] text-[#4e5a6e] dark:text-foreground leading-relaxed">
                                                         Réponse détaillée à la question...
                                                     </p>
                                                 </div>
@@ -285,19 +285,19 @@ export default function Page() {
 
                             {/* Resources */}
                             <div className="mb-8">
-                                <h3 className="text-lg font-bold text-[#1b2331] mb-4">Ressources utiles</h3>
+                                <h3 className="text-lg font-bold text-[#1b2331] dark:text-foreground mb-4">Ressources utiles</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {resources.map((resource, i) => (
-                                        <Card key={i} className="border border-[#e8edf6] hover:shadow-md transition-shadow">
+                                        <Card key={i} className="border border-[#e8edf6] dark:border-border hover:shadow-md transition-shadow">
                                             <CardContent className="p-4 flex items-start gap-3">
                                                 <div className="flex-1">
-                                                    <h4 className="font-semibold text-[13px] text-[#1b2331] mb-1">{resource.title}</h4>
-                                                    <p className="text-[12px] text-[#7f8796] mb-2">{resource.description}</p>
-                                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#eff4ff] text-[#5b6f98]">
+                                                    <h4 className="font-semibold text-[13px] text-[#1b2331] dark:text-foreground mb-1">{resource.title}</h4>
+                                                    <p className="text-[12px] text-[#7f8796] dark:text-muted-foreground mb-2">{resource.description}</p>
+                                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#eff4ff] dark:bg-primary/10 text-[#5b6f98] dark:text-muted-foreground">
                                                         {resource.badge}
                                                     </span>
                                                 </div>
-                                                <ChevronRight className="w-5 h-5 text-[#9aa3b2] flex-shrink-0" />
+                                                <ChevronRight className="w-5 h-5 text-[#9aa3b2] dark:text-muted-foreground flex-shrink-0" />
                                             </CardContent>
                                         </Card>
                                     ))}
@@ -310,8 +310,8 @@ export default function Page() {
                     {activeTab === "tarifs" && (
                         <div className="mb-8">
                             <div className="text-center mb-6">
-                                <h2 className="text-3xl font-bold text-[#1b2331] mb-3">Choisis ton forfait</h2>
-                                <p className="text-[#7f8796] text-sm max-w-md mx-auto">
+                                <h2 className="text-3xl font-bold text-[#1b2331] dark:text-foreground mb-3">Choisis ton forfait</h2>
+                                <p className="text-[#7f8796] dark:text-muted-foreground text-sm max-w-md mx-auto">
                                     Choisis le plan qui correspond à tes ambitions professionnelles.
                                     Commence gratuitement et évolue selon tes besoins.
                                 </p>
@@ -321,7 +321,7 @@ export default function Page() {
                                 <div className="mx-auto mb-6 max-w-md">
                                     {showGatewayPicker && (
                                         <>
-                                            <p className="mb-2 text-center text-xs font-medium text-[#7f8796]">Moyen de paiement</p>
+                                            <p className="mb-2 text-center text-xs font-medium text-[#7f8796] dark:text-muted-foreground">Moyen de paiement</p>
                                             <div className="grid grid-cols-2 gap-2">
                                                 {[
                                                     { id: "paiementpro", label: "Paiement Pro" },
@@ -333,8 +333,8 @@ export default function Page() {
                                                         onClick={() => setGateway(g.id)}
                                                         className={`rounded-xl border-2 px-4 py-2 text-sm font-semibold transition-colors ${
                                                             gateway === g.id
-                                                                ? "border-[#2f6de6] bg-[#eff4ff] text-[#2f6de6]"
-                                                                : "border-[#e8edf6] text-[#7f8796] hover:border-[#d8deeb]"
+                                                                ? "border-[#2f6de6] bg-[#eff4ff] dark:bg-primary/10 text-[#2f6de6] dark:text-primary"
+                                                                : "border-[#e8edf6] dark:border-border text-[#7f8796] dark:text-muted-foreground hover:border-[#d8deeb] dark:hover:border-border"
                                                         }`}
                                                     >
                                                         {g.label}
@@ -350,7 +350,7 @@ export default function Page() {
                                             value={phone}
                                             onChange={(e) => setPhone(e.target.value)}
                                             placeholder="Numéro de téléphone (Mobile Money)"
-                                            className="mt-3 w-full rounded-full border border-[#e8edf6] px-4 py-2 text-sm outline-none focus:border-[#2f6de6]"
+                                            className="mt-3 w-full rounded-full border border-[#e8edf6] dark:border-border px-4 py-2 text-sm outline-none focus:border-[#2f6de6]"
                                         />
                                     )}
                                 </div>
@@ -358,7 +358,7 @@ export default function Page() {
 
                             {loadingPlans ? (
                                 <div className="flex justify-center py-16">
-                                    <Loader2 className="h-8 w-8 animate-spin text-[#2f6de6]" />
+                                    <Loader2 className="h-8 w-8 animate-spin text-[#2f6de6] dark:text-primary" />
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
@@ -370,7 +370,7 @@ export default function Page() {
                                                 className={`relative rounded-2xl border-2 p-6 flex flex-col ${
                                                     isPremium
                                                         ? "border-[#2f6de6] shadow-lg shadow-blue-100"
-                                                        : "border-[#e8edf6]"
+                                                        : "border-[#e8edf6] dark:border-border"
                                                 }`}
                                             >
                                                 {isPremium && (
@@ -384,21 +384,21 @@ export default function Page() {
                                                 <div className="mb-4">
                                                     <div className="mb-3">
                                                         {isPremium ? (
-                                                            <Zap className="w-8 h-8 text-[#2f6de6]" />
+                                                            <Zap className="w-8 h-8 text-[#2f6de6] dark:text-primary" />
                                                         ) : (
-                                                            <div className="w-8 h-8 rounded-full bg-[#f4f7ff] flex items-center justify-center text-[#2f6de6] text-sm font-bold">G</div>
+                                                            <div className="w-8 h-8 rounded-full bg-[#f4f7ff] dark:bg-muted flex items-center justify-center text-[#2f6de6] dark:text-primary text-sm font-bold">G</div>
                                                         )}
                                                     </div>
-                                                    <h3 className={`text-xl font-bold mb-1 ${isPremium ? "text-[#2f6de6]" : "text-[#1b2331]"}`}>
+                                                    <h3 className={`text-xl font-bold mb-1 ${isPremium ? "text-[#2f6de6] dark:text-primary" : "text-[#1b2331] dark:text-foreground"}`}>
                                                         {plan.name}
                                                     </h3>
-                                                    <p className="text-2xl font-bold text-[#1b2331]">
+                                                    <p className="text-2xl font-bold text-[#1b2331] dark:text-foreground">
                                                         {Number(plan.price) === 0
                                                             ? "Gratuit"
                                                             : `${Number(plan.price).toLocaleString("fr-FR")} FCFA`}
                                                     </p>
                                                     {Number(plan.price) > 0 && (
-                                                        <p className="text-[11px] text-[#9aa3b2] mt-0.5">
+                                                        <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground mt-0.5">
                                                             {plan.billingPeriod === "ANNUAL" ? "par an" : "par mois"}
                                                         </p>
                                                     )}
@@ -406,8 +406,8 @@ export default function Page() {
 
                                                 <ul className="space-y-2.5 mb-6 flex-1">
                                                     {plan.features.map((f, i) => (
-                                                        <li key={i} className="flex items-center gap-2 text-sm text-[#4e5a6e]">
-                                                            <Check className={`w-4 h-4 shrink-0 ${isPremium ? "text-[#2f6de6]" : "text-[#9aa3b2]"}`} />
+                                                        <li key={i} className="flex items-center gap-2 text-sm text-[#4e5a6e] dark:text-foreground">
+                                                            <Check className={`w-4 h-4 shrink-0 ${isPremium ? "text-[#2f6de6] dark:text-primary" : "text-[#9aa3b2] dark:text-muted-foreground"}`} />
                                                             {f}
                                                         </li>
                                                     ))}
@@ -419,7 +419,7 @@ export default function Page() {
                                                     className={`w-full rounded-full font-semibold ${
                                                         isPremium
                                                             ? "bg-[#2f6de6] hover:bg-[#2157d3] text-white"
-                                                            : "bg-[#f4f7ff] hover:bg-[#e8edf6] text-[#1b2331]"
+                                                            : "bg-[#f4f7ff] dark:bg-muted hover:bg-[#e8edf6] dark:hover:bg-muted text-[#1b2331] dark:text-foreground"
                                                     }`}
                                                 >
                                                     {subscribing === plan.id ? (
@@ -439,14 +439,14 @@ export default function Page() {
                     )}
 
                     {/* CTA - visible sur les deux onglets */}
-                    <div className="bg-white border border-[#e8edf6] rounded-2xl p-8 text-center">
-                        <h3 className="text-lg font-bold text-[#1b2331] mb-2">Une question ? Besoin d'aide ?</h3>
-                        <p className="text-[13px] text-[#7f8796] mb-6">
+                    <div className="bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-2xl p-8 text-center">
+                        <h3 className="text-lg font-bold text-[#1b2331] dark:text-foreground mb-2">Une question ? Besoin d'aide ?</h3>
+                        <p className="text-[13px] text-[#7f8796] dark:text-muted-foreground mb-6">
                             Notre équipe est là pour t'accompagner dans ton choix et répondre à toutes tes questions.
                         </p>
                         <a
                             href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Assistance GORIYA")}`}
-                            className="inline-flex items-center px-6 h-9 rounded-full bg-[#f4f7ff] border border-[#d8deeb] text-[#2f6de6] text-[12px] font-medium hover:bg-[#e8edf6] transition-colors"
+                            className="inline-flex items-center px-6 h-9 rounded-full bg-[#f4f7ff] dark:bg-muted border border-[#d8deeb] dark:border-border text-[#2f6de6] dark:text-primary text-[12px] font-medium hover:bg-[#e8edf6] dark:hover:bg-muted transition-colors"
                         >
                             Contacter le support
                         </a>

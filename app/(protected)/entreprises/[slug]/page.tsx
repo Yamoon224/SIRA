@@ -103,7 +103,7 @@ export default function CompanyProfilePage() {
       <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
         <p className="text-lg font-semibold text-foreground">Entreprise introuvable</p>
         <p className="text-sm text-muted-foreground">Cette entreprise n'existe pas ou n'est plus disponible.</p>
-        <Link href="/entreprises" className="text-sm font-semibold text-[#2f6de6] hover:underline">Retour aux entreprises</Link>
+        <Link href="/entreprises" className="text-sm font-semibold text-[#2f6de6] dark:text-primary hover:underline">Retour aux entreprises</Link>
       </div>
     )
   }
@@ -142,7 +142,7 @@ export default function CompanyProfilePage() {
           <div className="absolute inset-0 bg-black/40" />
 
           <div className="absolute bottom-6 left-6 flex items-center gap-4">
-            <div className="w-20 h-20 bg-black rounded-full flex items-center justify-center border-4 border-white">
+            <div className="w-20 h-20 bg-black rounded-full flex items-center justify-center border-4 border-white dark:border-border">
               <img
                 src={formatFileUrl(company.logo) || "/placeholder.svg"}
                 alt={`${company.name} logo`}

@@ -58,7 +58,7 @@ export default function CreerPortfolioDetailPage() {
         <div className="mx-auto max-w-7xl">
             {/* Header */}
             <div className="mb-8">
-                <h1 className="text-2xl font-semibold text-gray-900">Créer un portfolio</h1>
+                <h1 className="text-2xl font-semibold text-gray-900 dark:text-foreground">Créer un portfolio</h1>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -74,8 +74,8 @@ export default function CreerPortfolioDetailPage() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="flex items-center gap-4 mb-4">
-                                <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
-                                    <User className="w-8 h-8 text-gray-400" />
+                                <div className="w-20 h-20 bg-gray-200 dark:bg-muted rounded-full flex items-center justify-center">
+                                    <User className="w-8 h-8 text-gray-400 dark:text-muted-foreground" />
                                 </div>
                                 <Button variant="outline" size="sm">
                                     <Upload className="w-4 h-4 mr-2" />
@@ -85,7 +85,7 @@ export default function CreerPortfolioDetailPage() {
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Nom</label>
                                     <Input
                                         value={formData.nom}
                                         onChange={(e) => handleInputChange("nom", e.target.value)}
@@ -93,7 +93,7 @@ export default function CreerPortfolioDetailPage() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Email</label>
                                     <Input
                                         type="email"
                                         value={formData.email}
@@ -104,7 +104,7 @@ export default function CreerPortfolioDetailPage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Bio professionnelle</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Bio professionnelle</label>
                                 <Textarea
                                     value={formData.profil}
                                     onChange={(e) => handleInputChange("profil", e.target.value)}
@@ -148,39 +148,39 @@ export default function CreerPortfolioDetailPage() {
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">JavaScript</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">JavaScript</label>
                                     <div className="flex items-center gap-2">
-                                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                                        <div className="flex-1 bg-gray-200 dark:bg-muted rounded-full h-2">
                                             <div className="bg-blue-500 h-2 rounded-full" style={{ width: "90%" }} />
                                         </div>
-                                        <span className="text-sm text-gray-600">90%</span>
+                                        <span className="text-sm text-gray-600 dark:text-muted-foreground">90%</span>
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">React</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">React</label>
                                     <div className="flex items-center gap-2">
-                                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                                        <div className="flex-1 bg-gray-200 dark:bg-muted rounded-full h-2">
                                             <div className="bg-blue-500 h-2 rounded-full" style={{ width: "85%" }} />
                                         </div>
-                                        <span className="text-sm text-gray-600">85%</span>
+                                        <span className="text-sm text-gray-600 dark:text-muted-foreground">85%</span>
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Python</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Python</label>
                                     <div className="flex items-center gap-2">
-                                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                                        <div className="flex-1 bg-gray-200 dark:bg-muted rounded-full h-2">
                                             <div className="bg-blue-500 h-2 rounded-full" style={{ width: "75%" }} />
                                         </div>
-                                        <span className="text-sm text-gray-600">75%</span>
+                                        <span className="text-sm text-gray-600 dark:text-muted-foreground">75%</span>
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">TypeScript</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">TypeScript</label>
                                     <div className="flex items-center gap-2">
-                                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                                        <div className="flex-1 bg-gray-200 dark:bg-muted rounded-full h-2">
                                             <div className="bg-blue-500 h-2 rounded-full" style={{ width: "80%" }} />
                                         </div>
-                                        <span className="text-sm text-gray-600">80%</span>
+                                        <span className="text-sm text-gray-600 dark:text-muted-foreground">80%</span>
                                     </div>
                                 </div>
                             </div>
@@ -205,7 +205,7 @@ export default function CreerPortfolioDetailPage() {
                                         <h4 className="font-medium">Application e-commerce</h4>
                                         <Badge variant="secondary">En cours</Badge>
                                     </div>
-                                    <p className="text-sm text-gray-600 mb-3">
+                                    <p className="text-sm text-gray-600 dark:text-muted-foreground mb-3">
                                         Développement d'une plateforme e-commerce moderne avec React et Node.js
                                     </p>
                                     <div className="flex gap-2">
@@ -231,7 +231,7 @@ export default function CreerPortfolioDetailPage() {
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">LinkedIn</label>
                                     <Input
                                         value={formData.linkedin}
                                         onChange={(e) => handleInputChange("linkedin", e.target.value)}
@@ -239,7 +239,7 @@ export default function CreerPortfolioDetailPage() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">GitHub</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">GitHub</label>
                                     <Input
                                         value={formData.github}
                                         onChange={(e) => handleInputChange("github", e.target.value)}
@@ -263,7 +263,7 @@ export default function CreerPortfolioDetailPage() {
                                 {themes.map((theme) => (
                                     <div
                                         key={theme.id}
-                                        className={`p-3 border rounded-lg cursor-pointer transition-all ${selectedTheme === theme.id ? "border-blue-500 bg-blue-50" : "border-gray-200"
+                                        className={`p-3 border rounded-lg cursor-pointer transition-all ${selectedTheme === theme.id ? "border-blue-500 bg-blue-50" : "border-gray-200 dark:border-border"
                                             }`}
                                         onClick={() => setSelectedTheme(theme.id)}
                                     >
@@ -283,21 +283,21 @@ export default function CreerPortfolioDetailPage() {
                         <CardContent className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Eye className="w-4 h-4 text-gray-500" />
+                                    <Eye className="w-4 h-4 text-gray-500 dark:text-muted-foreground" />
                                     <span className="text-sm">Vues du profil</span>
                                 </div>
                                 <span className="font-medium">1,234</span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <TrendingUp className="w-4 h-4 text-gray-500" />
+                                    <TrendingUp className="w-4 h-4 text-gray-500 dark:text-muted-foreground" />
                                     <span className="text-sm">Croissance mensuelle</span>
                                 </div>
                                 <span className="font-medium text-green-600">+15%</span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Users className="w-4 h-4 text-gray-500" />
+                                    <Users className="w-4 h-4 text-gray-500 dark:text-muted-foreground" />
                                     <span className="text-sm">Connexions</span>
                                 </div>
                                 <span className="font-medium">567</span>
@@ -315,7 +315,7 @@ export default function CreerPortfolioDetailPage() {
                                 Conseils de Goriya
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-3 text-sm text-gray-600">
+                        <CardContent className="space-y-3 text-sm text-gray-600 dark:text-muted-foreground">
                             <p className="text-blue-600">• Ajoute des captures d'écran de tes projets</p>
                             <p>• Rédige des descriptions détaillées de tes réalisations</p>
                             <p>• Mets à jour régulièrement ton portfolio</p>

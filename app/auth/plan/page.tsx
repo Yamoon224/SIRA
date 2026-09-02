@@ -100,7 +100,7 @@ export default function PlanPage() {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="Numéro de téléphone (Mobile Money)"
-                        className="w-full rounded-full border border-gray-200 px-4 py-2 text-sm outline-none focus:border-[#2f6de6]"
+                        className="w-full rounded-full border border-gray-200 dark:border-border px-4 py-2 text-sm outline-none focus:border-[#2f6de6]"
                     />
                 </div>
 
@@ -122,7 +122,7 @@ export default function PlanPage() {
                                             ? "border-[#2f6de6] shadow-lg shadow-blue-100"
                                             : isLast
                                               ? "border-black"
-                                              : "border-gray-200"
+                                              : "border-gray-200 dark:border-border"
                                     }`}
                                 >
                                     {isRecommended && (
@@ -136,13 +136,13 @@ export default function PlanPage() {
                                     <div className="mb-4">
                                         <div className="mb-2">
                                             {isPremium ? (
-                                                <Zap className="w-8 h-8 text-[#2f6de6]" />
+                                                <Zap className="w-8 h-8 text-[#2f6de6] dark:text-primary" />
                                             ) : (
-                                                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 text-sm font-bold">G</div>
+                                                <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-muted flex items-center justify-center text-gray-500 dark:text-muted-foreground text-sm font-bold">G</div>
                                             )}
                                         </div>
                                         <h3 className="text-xl font-bold text-foreground">{plan.name}</h3>
-                                        <p className={`text-2xl font-bold mt-2 ${isPremium ? "text-[#2f6de6]" : "text-foreground"}`}>
+                                        <p className={`text-2xl font-bold mt-2 ${isPremium ? "text-[#2f6de6] dark:text-primary" : "text-foreground"}`}>
                                             {formatPrice(plan.price, plan.billingPeriod)}
                                         </p>
                                     </div>
@@ -150,7 +150,7 @@ export default function PlanPage() {
                                     <ul className="space-y-2 mb-6 flex-1">
                                         {plan.features.map((f, i) => (
                                             <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                <Check className={`w-4 h-4 shrink-0 ${isPremium ? "text-[#2f6de6]" : "text-gray-400"}`} />
+                                                <Check className={`w-4 h-4 shrink-0 ${isPremium ? "text-[#2f6de6] dark:text-primary" : "text-gray-400 dark:text-muted-foreground"}`} />
                                                 {f}
                                             </li>
                                         ))}
@@ -162,11 +162,11 @@ export default function PlanPage() {
                                         className={`w-full rounded-full font-semibold ${
                                             isPremium
                                                 ? "bg-[#2f6de6] hover:bg-[#2157d3] text-white"
-                                                : "bg-white hover:bg-blue-50 text-foreground border border-blue-500"
+                                                : "bg-white dark:bg-card hover:bg-blue-50 text-foreground border border-blue-500"
                                         }`}
                                     >
                                         {subscribing === plan.id ? (
-                                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white dark:border-border border-t-transparent" />
                                         ) : plan.price === 0 ? (
                                             "Commencer gratuitement"
                                         ) : (

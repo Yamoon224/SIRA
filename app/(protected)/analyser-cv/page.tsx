@@ -62,33 +62,33 @@ function ScoreRing({ score }: { score: number }) {
                 <span className="text-[40px] font-semibold leading-none tabular-nums" style={{ color }}>
                     {pct}
                 </span>
-                <span className="mt-1 text-[11px] text-[#8b93a3]">sur 100</span>
+                <span className="mt-1 text-[11px] text-[#8b93a3] dark:text-muted-foreground">sur 100</span>
             </div>
         </div>
     )
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-    return <h2 className="mb-3 text-[13px] font-semibold text-[#1b2331]">{children}</h2>
+    return <h2 className="mb-3 text-[13px] font-semibold text-[#1b2331] dark:text-foreground">{children}</h2>
 }
 
 /** Silhouette des résultats pendant l'analyse : on annonce ce qui arrive. */
 function ResultsSkeleton() {
     return (
         <div className="mt-8 animate-pulse motion-reduce:animate-none" aria-hidden>
-            <div className="rounded-[14px] bg-[#eef2fd] p-6">
+            <div className="rounded-[14px] bg-[#eef2fd] dark:bg-primary/10 p-6">
                 <div className="flex flex-col items-center gap-5 sm:flex-row sm:gap-7">
-                    <div className="h-[132px] w-[132px] shrink-0 rounded-full border-[5px] border-[#dde4f2]" />
+                    <div className="h-[132px] w-[132px] shrink-0 rounded-full border-[5px] border-[#dde4f2] dark:border-border" />
                     <div className="w-full space-y-2">
-                        <div className="h-4 w-40 rounded bg-[#dde4f2]" />
-                        <div className="h-3 w-full max-w-[380px] rounded bg-[#e4eaf6]" />
-                        <div className="h-3 w-full max-w-[300px] rounded bg-[#e4eaf6]" />
+                        <div className="h-4 w-40 rounded bg-[#dde4f2] dark:bg-primary/10" />
+                        <div className="h-3 w-full max-w-[380px] rounded bg-[#e4eaf6] dark:bg-primary/10" />
+                        <div className="h-3 w-full max-w-[300px] rounded bg-[#e4eaf6] dark:bg-primary/10" />
                     </div>
                 </div>
             </div>
             <div className="mt-8 grid gap-x-10 gap-y-3 sm:grid-cols-2">
                 {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="h-3 rounded bg-[#eaeef7]" />
+                    <div key={i} className="h-3 rounded bg-[#eaeef7] dark:bg-muted" />
                 ))}
             </div>
         </div>
@@ -164,29 +164,29 @@ function AnalyserCVContent() {
 
     return (
         <div className="min-h-[calc(100vh-80px)]">
-            <div className="border-b border-[#d9dfea] px-4 py-4 sm:px-6">
-                <h1 className="text-2xl sm:text-[32px] font-semibold leading-none text-[#1b2331]">Analyse ton CV</h1>
+            <div className="border-b border-[#d9dfea] dark:border-border px-4 py-4 sm:px-6">
+                <h1 className="text-2xl sm:text-[32px] font-semibold leading-none text-[#1b2331] dark:text-foreground">Analyse ton CV</h1>
             </div>
 
             <div className="mx-auto w-full max-w-[840px] px-4 py-8 sm:px-6 sm:py-10">
-                <p className="max-w-[52ch] text-[14px] leading-relaxed text-[#7b8496]">
+                <p className="max-w-[52ch] text-[14px] leading-relaxed text-[#7b8496] dark:text-muted-foreground">
                     Dépose ton CV, Goriya le note et te dit précisément quoi corriger.
                 </p>
 
                 {/* ── Dépôt ─────────────────────────────────────────────────── */}
                 <div className="mt-6">
                     {cvFile ? (
-                        <div className="flex items-center gap-3 rounded-[12px] border border-[#dfe5f1] bg-white px-4 py-3">
-                            <FileText className="h-5 w-5 shrink-0 text-[#2f6de6]" strokeWidth={1.8} />
+                        <div className="flex items-center gap-3 rounded-[12px] border border-[#dfe5f1] dark:border-border bg-white dark:bg-card px-4 py-3">
+                            <FileText className="h-5 w-5 shrink-0 text-[#2f6de6] dark:text-primary" strokeWidth={1.8} />
                             <div className="min-w-0 flex-1">
-                                <p className="truncate text-[13px] font-medium text-[#1b2331]">{cvFile.name}</p>
-                                <p className="text-[11px] text-[#8b93a3]">{formatSize(cvFile.size)}</p>
+                                <p className="truncate text-[13px] font-medium text-[#1b2331] dark:text-foreground">{cvFile.name}</p>
+                                <p className="text-[11px] text-[#8b93a3] dark:text-muted-foreground">{formatSize(cvFile.size)}</p>
                             </div>
                             <button
                                 type="button"
                                 onClick={clearFile}
                                 aria-label="Retirer le fichier"
-                                className="rounded-full p-1 text-[#aab2c2] transition-colors hover:bg-[#f1f3f8] hover:text-[#d9544d]"
+                                className="rounded-full p-1 text-[#aab2c2] dark:text-muted-foreground transition-colors hover:bg-[#f1f3f8] dark:hover:bg-muted hover:text-[#d9544d]"
                             >
                                 <X className="h-4 w-4" />
                             </button>
@@ -200,22 +200,22 @@ function AnalyserCVContent() {
                             onDragLeave={() => setIsDragging(false)}
                             onDrop={handleDrop}
                             className={`rounded-[14px] border-2 border-dashed px-6 py-12 text-center transition-colors ${
-                                isDragging ? "border-[#2f6de6] bg-[#eef2fd]" : "border-[#dbe2ef] bg-white"
+                                isDragging ? "border-[#2f6de6] bg-[#eef2fd] dark:bg-primary/10" : "border-[#dbe2ef] dark:border-border bg-white dark:bg-card"
                             }`}
                         >
                             <ArrowUpFromLine
-                                className={`mx-auto mb-4 h-8 w-8 transition-colors ${isDragging ? "text-[#2f6de6]" : "text-[#b6bfd2]"}`}
+                                className={`mx-auto mb-4 h-8 w-8 transition-colors ${isDragging ? "text-[#2f6de6] dark:text-primary" : "text-[#b6bfd2] dark:text-muted-foreground"}`}
                                 strokeWidth={1.6}
                             />
-                            <p className="text-[15px] font-medium text-[#1b2331]">Dépose ton CV ici</p>
+                            <p className="text-[15px] font-medium text-[#1b2331] dark:text-foreground">Dépose ton CV ici</p>
                             <button
                                 type="button"
                                 onClick={() => inputRef.current?.click()}
-                                className="mt-1 text-[13px] text-[#2f6de6] underline-offset-2 hover:underline"
+                                className="mt-1 text-[13px] text-[#2f6de6] dark:text-primary underline-offset-2 hover:underline"
                             >
                                 ou choisis un fichier
                             </button>
-                            <p className="mt-5 text-[11px] text-[#9aa3b5]">PDF, Word ou image. 10 Mo maximum.</p>
+                            <p className="mt-5 text-[11px] text-[#9aa3b5] dark:text-muted-foreground">PDF, Word ou image. 10 Mo maximum.</p>
                         </div>
                     )}
 
@@ -261,14 +261,14 @@ function AnalyserCVContent() {
                 {analysis && v && (
                     <div className="mt-8">
                         {/* Seule surface de la page : le verdict. */}
-                        <div className="rounded-[14px] bg-[#eef2fd] p-6">
+                        <div className="rounded-[14px] bg-[#eef2fd] dark:bg-primary/10 p-6">
                             <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:gap-7 sm:text-left">
                                 <ScoreRing score={analysis.score} />
                                 <div>
                                     <p className="text-[18px] font-semibold" style={{ color: v.color }}>
                                         {v.label}
                                     </p>
-                                    <p className="mt-2 max-w-[52ch] text-[14px] leading-relaxed text-[#5b6474]">
+                                    <p className="mt-2 max-w-[52ch] text-[14px] leading-relaxed text-[#5b6474] dark:text-muted-foreground">
                                         {analysis.summary}
                                     </p>
                                 </div>
@@ -284,7 +284,7 @@ function AnalyserCVContent() {
                                             {analysis.strengths.map((s, i) => (
                                                 <li
                                                     key={i}
-                                                    className="border-l-2 border-[#1f9d63] pl-3 text-[13px] leading-relaxed text-[#5b6474]"
+                                                    className="border-l-2 border-[#1f9d63] pl-3 text-[13px] leading-relaxed text-[#5b6474] dark:text-muted-foreground"
                                                 >
                                                     {s}
                                                 </li>
@@ -300,7 +300,7 @@ function AnalyserCVContent() {
                                             {analysis.weaknesses.map((w, i) => (
                                                 <li
                                                     key={i}
-                                                    className="border-l-2 border-[#d9544d] pl-3 text-[13px] leading-relaxed text-[#5b6474]"
+                                                    className="border-l-2 border-[#d9544d] pl-3 text-[13px] leading-relaxed text-[#5b6474] dark:text-muted-foreground"
                                                 >
                                                     {w}
                                                 </li>
@@ -312,13 +312,13 @@ function AnalyserCVContent() {
                         ) : null}
 
                         {analysis.suggestions.length > 0 && (
-                            <section className="mt-9 border-t border-[#eef1f7] pt-7">
+                            <section className="mt-9 border-t border-[#eef1f7] dark:border-border pt-7">
                                 <SectionTitle>Ce que tu peux corriger</SectionTitle>
                                 <ul className="divide-y divide-[#eef1f7]">
                                     {analysis.suggestions.map((s, i) => (
                                         <li key={i} className="flex gap-3 py-3">
-                                            <Target className="mt-0.5 h-4 w-4 shrink-0 text-[#2f6de6]" strokeWidth={1.8} />
-                                            <span className="text-[13px] leading-relaxed text-[#5b6474]">{s}</span>
+                                            <Target className="mt-0.5 h-4 w-4 shrink-0 text-[#2f6de6] dark:text-primary" strokeWidth={1.8} />
+                                            <span className="text-[13px] leading-relaxed text-[#5b6474] dark:text-muted-foreground">{s}</span>
                                         </li>
                                     ))}
                                 </ul>
@@ -326,13 +326,13 @@ function AnalyserCVContent() {
                         )}
 
                         {analysis.keywords.length > 0 && (
-                            <section className="mt-9 border-t border-[#eef1f7] pt-7">
+                            <section className="mt-9 border-t border-[#eef1f7] dark:border-border pt-7">
                                 <SectionTitle>Mots-clés repérés</SectionTitle>
                                 <ul className="flex flex-wrap gap-2">
                                     {analysis.keywords.map((k, i) => (
                                         <li
                                             key={i}
-                                            className="rounded-full border border-[#dfe5f1] px-3 py-1 text-[12px] text-[#5b6474]"
+                                            className="rounded-full border border-[#dfe5f1] dark:border-border px-3 py-1 text-[12px] text-[#5b6474] dark:text-muted-foreground"
                                         >
                                             {k}
                                         </li>
@@ -341,7 +341,7 @@ function AnalyserCVContent() {
                             </section>
                         )}
 
-                        <div className="mt-10 flex flex-col gap-3 border-t border-[#eef1f7] pt-7 sm:flex-row">
+                        <div className="mt-10 flex flex-col gap-3 border-t border-[#eef1f7] dark:border-border pt-7 sm:flex-row">
                             <Button
                                 asChild
                                 className="h-11 rounded-full bg-[#2f6de6] text-[14px] font-medium hover:bg-[#2157d3] sm:px-7"
@@ -354,7 +354,7 @@ function AnalyserCVContent() {
                             <Button
                                 variant="ghost"
                                 onClick={clearFile}
-                                className="h-11 rounded-full text-[14px] text-[#5b6474] hover:bg-[#f1f3f8] sm:px-7"
+                                className="h-11 rounded-full text-[14px] text-[#5b6474] dark:text-muted-foreground hover:bg-[#f1f3f8] dark:hover:bg-muted sm:px-7"
                             >
                                 Analyser un autre CV
                             </Button>

@@ -151,15 +151,15 @@ export default function ProgrammerEntretienPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="text-center">
                     <div className="font-medium">Lundi</div>
-                    <div className="text-sm text-gray-600">09:00</div>
+                    <div className="text-sm text-gray-600 dark:text-muted-foreground">09:00</div>
                   </div>
                   <div className="text-center">
                     <div className="font-medium">Mardi</div>
-                    <div className="text-sm text-gray-600">14:00</div>
+                    <div className="text-sm text-gray-600 dark:text-muted-foreground">14:00</div>
                   </div>
                   <div className="text-center">
                     <div className="font-medium">Mercredi</div>
-                    <div className="text-sm text-gray-600">11:00</div>
+                    <div className="text-sm text-gray-600 dark:text-muted-foreground">11:00</div>
                   </div>
                 </div>
               </CardContent>

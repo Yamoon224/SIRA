@@ -369,7 +369,7 @@ function ReseauTab() {
 
 function UserRow({ connectUser, following, onToggle }: { connectUser: IConnectUser; following: boolean; onToggle: () => void }) {
     return (
-        <div className="flex items-center justify-between rounded-lg border border-border bg-white px-3 py-2">
+        <div className="flex items-center justify-between rounded-lg border border-border bg-white dark:bg-card px-3 py-2">
             <div className="flex items-center gap-2.5">
                 <Avatar className="h-8 w-8">
                     <AvatarImage src={connectUser.avatar ?? undefined} />

@@ -54,9 +54,9 @@ function ScoreGauge({ score }: { score: number }) {
                 />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-[22px] font-extrabold text-[#1b2331] leading-none">
+                <span className="text-[22px] font-extrabold text-[#1b2331] dark:text-foreground leading-none">
                     {score}
-                    <span className="text-[11px] font-semibold text-[#9aa3b2]">/100</span>
+                    <span className="text-[11px] font-semibold text-[#9aa3b2] dark:text-muted-foreground">/100</span>
                 </span>
             </div>
         </div>
@@ -79,13 +79,13 @@ function MatchingScoreWidget({ jobId }: { jobId: string }) {
 
     if (!isAuthenticated) {
         return (
-            <div className="bg-white rounded-xl border border-[#e8eef6] p-5">
+            <div className="bg-white dark:bg-card rounded-xl border border-[#e8eef6] dark:border-border p-5">
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-[13px] font-extrabold text-[#1b2331]">Ton profil correspond à cette offre</h3>
-                    <Lock className="w-4 h-4 text-[#9aa3b2]" />
+                    <h3 className="text-[13px] font-extrabold text-[#1b2331] dark:text-foreground">Ton profil correspond à cette offre</h3>
+                    <Lock className="w-4 h-4 text-[#9aa3b2] dark:text-muted-foreground" />
                 </div>
-                <div className="rounded-lg bg-[#f4f7ff] border border-[#dce8ff] p-3 text-center">
-                    <p className="text-[11px] text-[#4e5a6e] mb-2">Crée un compte gratuit pour voir si ce poste te correspond vraiment.</p>
+                <div className="rounded-lg bg-[#f4f7ff] dark:bg-muted border border-[#dce8ff] dark:border-border p-3 text-center">
+                    <p className="text-[11px] text-[#4e5a6e] dark:text-foreground mb-2">Crée un compte gratuit pour voir si ce poste te correspond vraiment.</p>
                     <Link href="/auth/signin">
                         <Button size="sm" className="w-full rounded-full bg-[#2f6de6] hover:bg-[#2458ba] text-[11px] h-8">
                             Voir mon score de compatibilité
@@ -97,17 +97,17 @@ function MatchingScoreWidget({ jobId }: { jobId: string }) {
     }
 
     return (
-        <div className="bg-white rounded-xl border border-[#e8eef6] p-5">
-            <h3 className="text-[13px] font-extrabold text-[#1b2331] mb-4">Ton profil correspond à cette offre</h3>
+        <div className="bg-white dark:bg-card rounded-xl border border-[#e8eef6] dark:border-border p-5">
+            <h3 className="text-[13px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Ton profil correspond à cette offre</h3>
 
             {loading ? (
-                <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 animate-spin text-[#2f6de6]" /></div>
+                <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 animate-spin text-[#2f6de6] dark:text-primary" /></div>
             ) : result ? (
                 <div className="flex items-center gap-4">
                     <ScoreGauge score={result.matchingScore} />
                     <ul className="space-y-1.5 flex-1">
                         {result.matchReasons.slice(0, 3).map((reason, i) => (
-                            <li key={i} className="text-[10px] text-[#4e5a6e] leading-4 flex items-start gap-1.5">
+                            <li key={i} className="text-[10px] text-[#4e5a6e] dark:text-foreground leading-4 flex items-start gap-1.5">
                                 <span className="mt-1 w-1 h-1 rounded-full bg-[#2f6de6] flex-shrink-0" />
                                 {reason}
                             </li>
@@ -115,7 +115,7 @@ function MatchingScoreWidget({ jobId }: { jobId: string }) {
                     </ul>
                 </div>
             ) : (
-                <p className="text-[11px] text-[#9aa3b2]">Impossible de calculer ton score pour le moment.</p>
+                <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground">Impossible de calculer ton score pour le moment.</p>
             )}
         </div>
     )
@@ -187,12 +187,12 @@ export default function JobDetailPage() {
             <main className="mx-auto max-w-[1180px] px-4 py-8">
                 {loading ? (
                     <div className="flex items-center justify-center min-h-[400px]">
-                        <Loader2 className="w-8 h-8 animate-spin text-[#2f6de6]" />
+                        <Loader2 className="w-8 h-8 animate-spin text-[#2f6de6] dark:text-primary" />
                     </div>
                 ) : error || !job ? (
                     <div className="flex flex-col items-center justify-center min-h-[400px] gap-4 text-center">
                         <AlertCircle className="w-12 h-12 text-red-400" />
-                        <h2 className="text-xl font-bold text-[#1b2331]">{error ?? "Offre introuvable"}</h2>
+                        <h2 className="text-xl font-bold text-[#1b2331] dark:text-foreground">{error ?? "Offre introuvable"}</h2>
                         <Link href="/explorer-emplois">
                             <Button className="rounded-full bg-[#2f6de6]">Voir toutes les offres</Button>
                         </Link>
@@ -202,44 +202,44 @@ export default function JobDetailPage() {
                         {/* LEFT - main content */}
                         <div className="lg:col-span-2 space-y-5">
                             {/* Job header card */}
-                            <div className="bg-white rounded-xl border border-[#e8eef6] p-6">
+                            <div className="bg-white dark:bg-card rounded-xl border border-[#e8eef6] dark:border-border p-6">
                                 {/* Company breadcrumb */}
                                 <div className="flex items-center gap-2 mb-4">
                                     <CompanyLogo name={job.company?.name ?? "?"} logo={job.company?.logo} className="w-7 h-7 text-[10px] flex-shrink-0" />
-                                    <span className="text-[11px] text-[#7f8796]">/</span>
-                                    <Link href={job.company?.id ? `/explorer-entreprises/${job.company.id}` : "/explorer-entreprises"} className="text-[11px] text-[#2f6de6] font-semibold hover:underline">
+                                    <span className="text-[11px] text-[#7f8796] dark:text-muted-foreground">/</span>
+                                    <Link href={job.company?.id ? `/explorer-entreprises/${job.company.id}` : "/explorer-entreprises"} className="text-[11px] text-[#2f6de6] dark:text-primary font-semibold hover:underline">
                                         {job.company?.name ?? "Entreprise"}
                                     </Link>
-                                    <span className="text-[11px] text-[#7f8796]">/</span>
-                                    <span className="text-[11px] text-[#9aa3b2] truncate max-w-[180px]">{job.title}</span>
+                                    <span className="text-[11px] text-[#7f8796] dark:text-muted-foreground">/</span>
+                                    <span className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground truncate max-w-[180px]">{job.title}</span>
                                 </div>
 
-                                <h1 className="text-[24px] sm:text-[30px] leading-tight font-extrabold text-[#1b2331] mb-4">{job.title}</h1>
+                                <h1 className="text-[24px] sm:text-[30px] leading-tight font-extrabold text-[#1b2331] dark:text-foreground mb-4">{job.title}</h1>
 
                                 {/* Tags */}
                                 <div className="flex flex-wrap gap-2 mb-5">
                                     {job.experience && (
-                                        <span className="text-[11px] px-3 py-1 rounded-full bg-[#f0f3fb] text-[#4e5a6e] border border-[#e8eef6]">
+                                        <span className="text-[11px] px-3 py-1 rounded-full bg-[#f0f3fb] dark:bg-muted text-[#4e5a6e] dark:text-foreground border border-[#e8eef6] dark:border-border">
                                             {job.experience}
                                         </span>
                                     )}
                                     {job.type && (
-                                        <span className="text-[11px] px-3 py-1 rounded-full bg-[#eff4ff] text-[#2f6de6] border border-[#dce8ff] font-semibold">
+                                        <span className="text-[11px] px-3 py-1 rounded-full bg-[#eff4ff] dark:bg-primary/10 text-[#2f6de6] dark:text-primary border border-[#dce8ff] dark:border-border font-semibold">
                                             {job.type}
                                         </span>
                                     )}
                                     {job.salary && (
-                                        <span className="text-[11px] px-3 py-1 rounded-full bg-[#f0fbf5] text-[#22a05b] border border-[#d0f0e0] font-semibold">
+                                        <span className="text-[11px] px-3 py-1 rounded-full bg-[#f0fbf5] dark:bg-muted text-[#22a05b] border border-[#d0f0e0] dark:border-[#415c4f] font-semibold">
                                             {job.salary}
                                         </span>
                                     )}
                                     {job.location && (
-                                        <span className="text-[11px] px-3 py-1 rounded-full bg-[#f4f5f7] text-[#7f8796] border border-[#e8eef6] flex items-center gap-1">
+                                        <span className="text-[11px] px-3 py-1 rounded-full bg-[#f4f5f7] dark:bg-muted text-[#7f8796] dark:text-muted-foreground border border-[#e8eef6] dark:border-border flex items-center gap-1">
                                             <MapPin className="w-3 h-3" />{capitalizeFirst(job.location)}
                                         </span>
                                     )}
                                     {job.publishDate && (
-                                        <span className="text-[11px] text-[#9aa3b2] flex items-center gap-1 px-1">
+                                        <span className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground flex items-center gap-1 px-1">
                                             <Calendar className="w-3 h-3" />{formatPosted(job.publishDate)}
                                         </span>
                                     )}
@@ -259,7 +259,7 @@ export default function JobDetailPage() {
                                     <Button
                                         variant="outline"
                                         onClick={handleToggleBookmark}
-                                        className={`rounded-full border-[#d8deeb] h-9 px-4 text-[12px] gap-1.5 ${bookmarked ? "text-[#2f6de6] border-[#2f6de6]" : ""}`}
+                                        className={`rounded-full border-[#d8deeb] dark:border-border h-9 px-4 text-[12px] gap-1.5 ${bookmarked ? "text-[#2f6de6] dark:text-primary border-[#2f6de6]" : ""}`}
                                     >
                                         <Bookmark className={`w-4 h-4 ${bookmarked ? "fill-current" : ""}`} />
                                         Sauvegarder
@@ -268,7 +268,7 @@ export default function JobDetailPage() {
                                     <Button
                                         variant="outline"
                                         onClick={handleShare}
-                                        className="rounded-full border-[#d8deeb] h-9 px-4 text-[12px] gap-1.5"
+                                        className="rounded-full border-[#d8deeb] dark:border-border h-9 px-4 text-[12px] gap-1.5"
                                     >
                                         <Share2 className="w-4 h-4" />
                                         Partager
@@ -278,12 +278,12 @@ export default function JobDetailPage() {
 
                             {/* Description */}
                             {job.description && (
-                                <div className="bg-white rounded-xl border border-[#e8eef6] p-6">
-                                    <h2 className="text-[20px] font-extrabold text-[#1b2331] mb-4">Le poste</h2>
+                                <div className="bg-white dark:bg-card rounded-xl border border-[#e8eef6] dark:border-border p-6">
+                                    <h2 className="text-[20px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Le poste</h2>
                                     <div className="space-y-4">
                                         <div>
-                                            <h3 className="text-[13px] font-bold text-[#1b2331] mb-2">Descriptif du poste</h3>
-                                            <p className="text-[13px] leading-[1.8] text-[#7f8796] whitespace-pre-wrap text-justify">{job.description}</p>
+                                            <h3 className="text-[13px] font-bold text-[#1b2331] dark:text-foreground mb-2">Descriptif du poste</h3>
+                                            <p className="text-[13px] leading-[1.8] text-[#7f8796] dark:text-muted-foreground whitespace-pre-wrap text-justify">{job.description}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -291,12 +291,12 @@ export default function JobDetailPage() {
 
                             {/* Requirements */}
                             {job.requirements?.length > 0 && (
-                                <div className="bg-white rounded-xl border border-[#e8eef6] p-6">
-                                    <h2 className="text-[20px] font-extrabold text-[#1b2331] mb-4">Profil recherché</h2>
+                                <div className="bg-white dark:bg-card rounded-xl border border-[#e8eef6] dark:border-border p-6">
+                                    <h2 className="text-[20px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Profil recherché</h2>
                                     <ul className="space-y-2">
                                         {job.requirements.map((req, i) => (
-                                            <li key={i} className="text-[13px] leading-6 text-[#7f8796] flex items-start gap-2">
-                                                <span className="text-[#2f6de6] mt-1 flex-shrink-0">•</span>
+                                            <li key={i} className="text-[13px] leading-6 text-[#7f8796] dark:text-muted-foreground flex items-start gap-2">
+                                                <span className="text-[#2f6de6] dark:text-primary mt-1 flex-shrink-0">•</span>
                                                 <span className="text-justify">{req}</span>
                                             </li>
                                         ))}
@@ -306,21 +306,21 @@ export default function JobDetailPage() {
 
                             {/* Benefits */}
                             {job.benefits && (
-                                <div className="bg-white rounded-xl border border-[#e8eef6] p-6">
-                                    <h2 className="text-[20px] font-extrabold text-[#1b2331] mb-4">Avantages</h2>
+                                <div className="bg-white dark:bg-card rounded-xl border border-[#e8eef6] dark:border-border p-6">
+                                    <h2 className="text-[20px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Avantages</h2>
                                     {(() => {
                                         const items = job.benefits.split(/\r?\n|;|•|·|- /).map((s) => s.trim()).filter(Boolean)
                                         return items.length > 1 ? (
                                             <ul className="space-y-2">
                                                 {items.map((item, i) => (
-                                                    <li key={i} className="text-[13px] leading-6 text-[#7f8796] flex items-start gap-2">
+                                                    <li key={i} className="text-[13px] leading-6 text-[#7f8796] dark:text-muted-foreground flex items-start gap-2">
                                                         <Check className="w-4 h-4 text-[#22a05b] shrink-0 mt-0.5" />
                                                         <span className="text-justify">{item}</span>
                                                     </li>
                                                 ))}
                                             </ul>
                                         ) : (
-                                            <p className="text-[13px] leading-6 text-[#7f8796] whitespace-pre-wrap text-justify">{job.benefits}</p>
+                                            <p className="text-[13px] leading-6 text-[#7f8796] dark:text-muted-foreground whitespace-pre-wrap text-justify">{job.benefits}</p>
                                         )
                                     })()}
                                 </div>
@@ -331,7 +331,7 @@ export default function JobDetailPage() {
                         <div className="space-y-4">
                             {/* Company card */}
                             {job.company && (
-                                <div className="bg-white rounded-xl border border-[#e8eef6] overflow-hidden">
+                                <div className="bg-white dark:bg-card rounded-xl border border-[#e8eef6] dark:border-border overflow-hidden">
                                     {(job.image || job.company.coverImage) && (
                                         <img
                                             src={formatFileUrl(job.image || job.company.coverImage)}
@@ -342,15 +342,15 @@ export default function JobDetailPage() {
                                     )}
                                     <div className="p-4">
                                         <div className="flex items-center gap-3 mb-3">
-                                            <CompanyLogo name={job.company.name} logo={job.company.logo} className="w-10 h-10 rounded-xl text-[13px] flex-shrink-0 border border-[#e8eef6]" />
+                                            <CompanyLogo name={job.company.name} logo={job.company.logo} className="w-10 h-10 rounded-xl text-[13px] flex-shrink-0 border border-[#e8eef6] dark:border-border" />
                                             <div>
-                                                <p className="text-[13px] font-bold text-[#1b2331]">{job.company.name}</p>
-                                                {job.company.sector && <p className="text-[11px] text-[#7f8796]">{job.company.sector}</p>}
+                                                <p className="text-[13px] font-bold text-[#1b2331] dark:text-foreground">{job.company.name}</p>
+                                                {job.company.sector && <p className="text-[11px] text-[#7f8796] dark:text-muted-foreground">{job.company.sector}</p>}
                                             </div>
                                         </div>
-                                        <p className="text-[12px] font-semibold text-[#1b2331] mb-3">Cette offre t'intéresse ?</p>
+                                        <p className="text-[12px] font-semibold text-[#1b2331] dark:text-foreground mb-3">Cette offre t'intéresse ?</p>
                                         <Link href={job.company.id ? `/explorer-entreprises/${job.company.id}` : "/explorer-entreprises"}>
-                                            <Button variant="outline" className="w-full rounded-full border-[#d8deeb] h-8 text-[11px] text-[#2f6de6]">
+                                            <Button variant="outline" className="w-full rounded-full border-[#d8deeb] dark:border-border h-8 text-[11px] text-[#2f6de6] dark:text-primary">
                                                 Découvrir l'entreprise
                                             </Button>
                                         </Link>
@@ -367,16 +367,16 @@ export default function JobDetailPage() {
                                 <p className="text-[14px] font-extrabold mb-1">Essayer dès maintenant</p>
                                 <p className="text-[11px] text-blue-200 mb-4">Accède à toutes les fonctionnalités premium et booste ta recherche d'emploi.</p>
                                 <Link href="/offres">
-                                    <Button className="w-full rounded-full bg-white text-[#2f6de6] hover:bg-[#f0f3fb] text-[11px] h-8 font-semibold">
+                                    <Button className="w-full rounded-full bg-white dark:bg-card text-[#2f6de6] dark:text-primary hover:bg-[#f0f3fb] dark:hover:bg-muted text-[11px] h-8 font-semibold">
                                         Voir les offres premium
                                     </Button>
                                 </Link>
                             </div>
 
                             {/* Apply sticky */}
-                            <div className="bg-white rounded-xl border border-[#e8eef6] p-5">
-                                <p className="text-[13px] font-bold text-[#1b2331] mb-1">Postule dès maintenant</p>
-                                <p className="text-[11px] text-[#7f8796] mb-4">
+                            <div className="bg-white dark:bg-card rounded-xl border border-[#e8eef6] dark:border-border p-5">
+                                <p className="text-[13px] font-bold text-[#1b2331] dark:text-foreground mb-1">Postule dès maintenant</p>
+                                <p className="text-[11px] text-[#7f8796] dark:text-muted-foreground mb-4">
                                     Rejoins les {job.applicants ?? 0} candidat{(job.applicants ?? 0) !== 1 ? "s" : ""} qui ont déjà postulé.
                                 </p>
                                 <Button
@@ -386,7 +386,7 @@ export default function JobDetailPage() {
                                 >
                                     {applying ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}Postuler
                                 </Button>
-                                <div className="text-[10px] text-[#9aa3b2] text-center">
+                                <div className="text-[10px] text-[#9aa3b2] dark:text-muted-foreground text-center">
                                     Offre publiée {formatPosted(job.publishDate)}
                                     {job.endDate && <span className="ml-2">· Clôture le {new Date(job.endDate).toLocaleDateString("fr-FR")}</span>}
                                 </div>
@@ -394,21 +394,21 @@ export default function JobDetailPage() {
                         </div>
 
                         {/* FAQ - pleine largeur, en dernier (juste avant le footer sur mobile) */}
-                        <div className="lg:col-span-3 bg-white rounded-xl border border-[#e8eef6] p-6">
-                            <h2 className="text-[20px] font-extrabold text-[#1b2331] mb-5">Questions et réponses sur l'offre</h2>
+                        <div className="lg:col-span-3 bg-white dark:bg-card rounded-xl border border-[#e8eef6] dark:border-border p-6">
+                            <h2 className="text-[20px] font-extrabold text-[#1b2331] dark:text-foreground mb-5">Questions et réponses sur l'offre</h2>
                             <div className="space-y-2">
                                 {faqs.map((faq, index) => (
-                                    <div key={index} className="border border-[#e8eef6] rounded-xl overflow-hidden">
+                                    <div key={index} className="border border-[#e8eef6] dark:border-border rounded-xl overflow-hidden">
                                         <button
                                             onClick={() => setOpenFaq(openFaq === index ? null : index)}
                                             className="w-full px-5 py-4 flex items-center justify-between text-left"
                                         >
-                                            <span className="text-[13px] font-semibold text-[#1b2331]">{faq.q}</span>
-                                            <ChevronDown className={`w-4 h-4 flex-shrink-0 text-[#9aa3b2] transition-transform ${openFaq === index ? "rotate-180" : ""}`} />
+                                            <span className="text-[13px] font-semibold text-[#1b2331] dark:text-foreground">{faq.q}</span>
+                                            <ChevronDown className={`w-4 h-4 flex-shrink-0 text-[#9aa3b2] dark:text-muted-foreground transition-transform ${openFaq === index ? "rotate-180" : ""}`} />
                                         </button>
                                         {openFaq === index && (
-                                            <div className="px-5 pb-4 border-t border-[#e8eef6] pt-3">
-                                                <p className="text-[13px] text-[#7f8796]">{faq.a}</p>
+                                            <div className="px-5 pb-4 border-t border-[#e8eef6] dark:border-border pt-3">
+                                                <p className="text-[13px] text-[#7f8796] dark:text-muted-foreground">{faq.a}</p>
                                             </div>
                                         )}
                                     </div>

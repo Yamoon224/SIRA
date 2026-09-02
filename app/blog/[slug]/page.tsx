@@ -39,7 +39,7 @@ export default function ArticlePage() {
                 </Link>
 
                 {loading ? (
-                    <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-[#2f6de6]" /></div>
+                    <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-[#2f6de6] dark:text-primary" /></div>
                 ) : error || !article ? (
                     <p className="text-center text-sm text-[#9aa3b2] dark:text-muted-foreground py-16">Article introuvable.</p>
                 ) : (

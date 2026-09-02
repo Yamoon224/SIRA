@@ -1,0 +1,280 @@
+/* ---------------------------------------------------------------------------
+   Pont de theme sombre - FICHIER GENERE, ne pas editer a la main.
+
+   Les pages de l'app ont ete ecrites avec une palette claire en dur
+   (bg-white, text-[#1b2331], border-[#e8edf6]...). En mode sombre ces valeurs
+   restaient claires : cartes blanches eblouissantes, textes encre illisibles,
+   bordures invisibles. Les regles ci-dessous remappent ces utilitaires sur les
+   jetons du theme, groupes par role.
+
+   Priorite : `:where()` annule la specificite de la classe, la regle pese donc
+   autant qu'un utilitaire simple (elle passe apres, donc elle gagne) mais moins
+   qu'un `dark:*` ecrit a la main dans un composant, qui reste prioritaire.
+
+   A terme, remplacer ces utilitaires par les jetons semantiques (bg-card,
+   text-foreground, border-border...) et supprimer ce fichier.
+
+   Regeneration : python scripts/gen-theme-dark-bridge.py
+   --------------------------------------------------------------------------- */
+
+@layer utilities {
+
+  /* Surfaces blanches -> surface de carte (138 usages) */
+  .dark :where(.bg-\[\#f2f4fb\]),
+  .dark :where(.bg-\[\#f2f5fb\]),
+  .dark :where(.bg-\[\#f3f5fa\]),
+  .dark :where(.bg-\[\#f7f8fb\]),
+  .dark :where(.bg-white),
+  .dark :where(.hover\:bg-\[\#f9fafb\]):hover,
+  .dark :where(.hover\:bg-white):hover {
+    background-color: var(--card);
+  }
+  .dark :where(.bg-white\/80) {
+    background-color: color-mix(in oklab, var(--card) 80%, transparent);
+  }
+  .dark :where(.hover\:bg-white\/60):hover {
+    background-color: color-mix(in oklab, var(--card) 60%, transparent);
+  }
+
+  /* Aplats gris ou bleutes clairs -> surface secondaire (61 usages) */
+  .dark :where(.bg-\[\#dce4f4\]),
+  .dark :where(.bg-\[\#dde4f2\]),
+  .dark :where(.bg-\[\#e4eaf6\]),
+  .dark :where(.bg-\[\#e8edf6\]),
+  .dark :where(.bg-\[\#eaedf8\]),
+  .dark :where(.bg-\[\#eaeef7\]),
+  .dark :where(.bg-\[\#f0f2f8\]),
+  .dark :where(.bg-\[\#f1f2f5\]),
+  .dark :where(.bg-\[\#f2f4f8\]),
+  .dark :where(.bg-\[\#f4f5f7\]),
+  .dark :where(.bg-gray-100),
+  .dark :where(.bg-gray-200),
+  .dark :where(.bg-gray-50),
+  .dark :where(.hover\:bg-\[\#dfe4f4\]):hover,
+  .dark :where(.hover\:bg-\[\#e6eaf4\]):hover,
+  .dark :where(.hover\:bg-\[\#e8edf6\]):hover,
+  .dark :where(.hover\:bg-\[\#f1f3f8\]):hover,
+  .dark :where(.hover\:bg-\[\#f4f5f7\]):hover {
+    background-color: var(--muted);
+  }
+
+  /* Aplats bleu pale (badges, survols) -> teinte de marque (71 usages) */
+  .dark :where(.bg-\[\#e8f1ff\]),
+  .dark :where(.bg-\[\#eaf2ff\]),
+  .dark :where(.bg-\[\#edf0ff\]),
+  .dark :where(.bg-\[\#edf4ff\]),
+  .dark :where(.bg-\[\#eef2fd\]),
+  .dark :where(.bg-\[\#eef3ff\]),
+  .dark :where(.bg-\[\#eff4ff\]),
+  .dark :where(.bg-\[\#f0f3fb\]),
+  .dark :where(.bg-\[\#f3eeff\]),
+  .dark :where(.bg-\[\#f4f7ff\]),
+  .dark :where(.bg-\[\#f8fbff\]),
+  .dark :where(.focus-visible\:bg-\[\#f5f9ff\]):focus-visible,
+  .dark :where(.hover\:bg-\[\#edf4ff\]):hover,
+  .dark :where(.hover\:bg-\[\#f0f3fb\]):hover,
+  .dark :where(.hover\:bg-\[\#f4f7ff\]):hover,
+  .dark :where(.hover\:bg-\[\#f5f9ff\]):hover {
+    background-color: var(--surface-brand);
+  }
+
+  /* Aplats pastel de statut -> teinte sombre de meme famille (6 usages) */
+  .dark :where(.bg-\[\#e8f8ef\]),
+  .dark :where(.bg-\[\#f0fbf5\]) {
+    background-color: #264a36;
+  }
+  .dark :where(.bg-\[\#fff3e8\]) {
+    background-color: #4a3726;
+  }
+  .dark :where(.bg-\[\#fce4ec\]) {
+    background-color: #4a2632;
+  }
+  .dark :where(.bg-\[\#fff3e0\]) {
+    background-color: #4a3c26;
+  }
+
+  /* Aplats deja sombres -> surface elevee (sinon invisibles) (5 usages) */
+  .dark :where(.bg-\[\#06080d\]),
+  .dark :where(.bg-\[\#0f121a\]),
+  .dark :where(.bg-\[\#1b2331\]),
+  .dark :where(.bg-\[\#2f2e41\]),
+  .dark :where(.hover\:bg-\[\#2d3e4f\]):hover {
+    background-color: var(--secondary);
+  }
+
+  /* Bordures gris clair -> bordure du theme (182 usages) */
+  .dark :where(.border-\[\#c8d0df\]),
+  .dark :where(.border-\[\#d0f0e0\]),
+  .dark :where(.border-\[\#d7ddea\]),
+  .dark :where(.border-\[\#d7deeb\]),
+  .dark :where(.border-\[\#d8deeb\]),
+  .dark :where(.border-\[\#d9dfea\]),
+  .dark :where(.border-\[\#dbe2ef\]),
+  .dark :where(.border-\[\#dbe3ef\]),
+  .dark :where(.border-\[\#dbe4f4\]),
+  .dark :where(.border-\[\#dce3ef\]),
+  .dark :where(.border-\[\#dce4f4\]),
+  .dark :where(.border-\[\#dde4f2\]),
+  .dark :where(.border-\[\#dfe5f1\]),
+  .dark :where(.border-\[\#e0e5f0\]),
+  .dark :where(.border-\[\#e1e6f1\]),
+  .dark :where(.border-\[\#e2e8f5\]),
+  .dark :where(.border-\[\#e5e9f2\]),
+  .dark :where(.border-\[\#e6e9f0\]),
+  .dark :where(.border-\[\#e8edf6\]),
+  .dark :where(.border-\[\#e8eef6\]),
+  .dark :where(.border-\[\#e9eef8\]),
+  .dark :where(.border-\[\#eef1f7\]),
+  .dark :where(.border-gray-200),
+  .dark :where(.border-gray-300),
+  .dark :where(.border-gray-400),
+  .dark :where(.disabled\:hover\:border-\[\#dce3ef\]):disabled:hover,
+  .dark :where(.divide-\[\#eef1f7\]),
+  .dark :where(.hover\:border-\[\#d8deeb\]):hover {
+    border-color: var(--border);
+  }
+
+  /* Bordures bleu pale (etats selectionnes) -> bordure de marque (36 usages) */
+  .dark :where(.border-\[\#7ab2ff\]),
+  .dark :where(.border-\[\#7cb0ff\]),
+  .dark :where(.border-\[\#82b7ff\]),
+  .dark :where(.border-\[\#97b8f5\]),
+  .dark :where(.border-\[\#b9c8ec\]),
+  .dark :where(.border-\[\#bfd0f5\]),
+  .dark :where(.border-\[\#c7d5f4\]),
+  .dark :where(.border-\[\#c8d7fb\]),
+  .dark :where(.border-\[\#c9d5f2\]),
+  .dark :where(.border-\[\#cfe0ff\]),
+  .dark :where(.border-\[\#dce8ff\]),
+  .dark :where(.focus-visible\:border-\[\#6a9ff3\]):focus-visible,
+  .dark :where(.hover\:border-\[\#6a9ff3\]):hover,
+  .dark :where(.hover\:border-\[\#8eb4ff\]):hover {
+    border-color: var(--line-brand);
+  }
+
+  /* Textes encre -> couleur de premier plan (276 usages) */
+  .dark :where(.disabled\:hover\:text-\[\#4e5a6e\]):disabled:hover,
+  .dark :where(.hover\:text-\[\#1b2331\]):hover,
+  .dark :where(.text-\[\#111827\]),
+  .dark :where(.text-\[\#121826\]),
+  .dark :where(.text-\[\#161d2d\]),
+  .dark :where(.text-\[\#1a2232\]),
+  .dark :where(.text-\[\#1b2331\]),
+  .dark :where(.text-\[\#1c2433\]),
+  .dark :where(.text-\[\#1d2432\]),
+  .dark :where(.text-\[\#1d2433\]),
+  .dark :where(.text-\[\#2a3242\]),
+  .dark :where(.text-\[\#2d3545\]),
+  .dark :where(.text-\[\#334155\]),
+  .dark :where(.text-\[\#3d4658\]),
+  .dark :where(.text-\[\#4a5568\]),
+  .dark :where(.text-\[\#4e5a6e\]),
+  .dark :where(.text-\[\#5b6474\]),
+  .dark :where(.text-\[\#5b6f98\]),
+  .dark :where(.text-\[\#646d80\]),
+  .dark :where(.text-\[\#667085\]),
+  .dark :where(.text-\[\#6b7585\]),
+  .dark :where(.text-\[\#6f7887\]),
+  .dark :where(.text-gray-700),
+  .dark :where(.text-gray-800),
+  .dark :where(.text-gray-900) {
+    color: var(--foreground);
+  }
+
+  /* Textes gris -> couleur secondaire (275 usages) */
+  .dark :where(.hover\:text-gray-600):hover,
+  .dark :where(.placeholder\:text-\[\#9aa3b2\])::placeholder,
+  .dark :where(.text-\[\#5c74af\]),
+  .dark :where(.text-\[\#707b90\]),
+  .dark :where(.text-\[\#7a8495\]),
+  .dark :where(.text-\[\#7a8db8\]),
+  .dark :where(.text-\[\#7b8496\]),
+  .dark :where(.text-\[\#7d8595\]),
+  .dark :where(.text-\[\#7d86a0\]),
+  .dark :where(.text-\[\#7d8798\]),
+  .dark :where(.text-\[\#7e889c\]),
+  .dark :where(.text-\[\#7f8796\]),
+  .dark :where(.text-\[\#80889a\]),
+  .dark :where(.text-\[\#8792a8\]),
+  .dark :where(.text-\[\#8a95a8\]),
+  .dark :where(.text-\[\#8b93a3\]),
+  .dark :where(.text-\[\#8b94ab\]),
+  .dark :where(.text-\[\#8dc79b\]),
+  .dark :where(.text-\[\#8f97a9\]),
+  .dark :where(.text-\[\#9098a7\]),
+  .dark :where(.text-\[\#99a3b8\]),
+  .dark :where(.text-\[\#9aa3b2\]),
+  .dark :where(.text-\[\#9aa3b5\]),
+  .dark :where(.text-\[\#9aa5b8\]),
+  .dark :where(.text-\[\#a2acbd\]),
+  .dark :where(.text-\[\#aab2c2\]),
+  .dark :where(.text-\[\#b6bdca\]),
+  .dark :where(.text-\[\#b6bdcb\]),
+  .dark :where(.text-\[\#b6bfd2\]),
+  .dark :where(.text-gray-400),
+  .dark :where(.text-gray-500),
+  .dark :where(.text-gray-600) {
+    color: var(--muted-foreground);
+  }
+
+  /* Textes bleu marque -> bleu eclairci (contraste sur fond sombre) (139 usages) */
+  .dark :where(.hover\:text-\[\#2f6de6\]):hover,
+  .dark :where(.text-\[\#1f4ec2\]),
+  .dark :where(.text-\[\#1f4fc5\]),
+  .dark :where(.text-\[\#20429b\]),
+  .dark :where(.text-\[\#2a62d7\]),
+  .dark :where(.text-\[\#2e6fe9\]),
+  .dark :where(.text-\[\#2f5099\]),
+  .dark :where(.text-\[\#2f6de6\]),
+  .dark :where(.text-\[\#7c4dff\]) {
+    color: var(--ink-brand);
+  }
+
+  /* Textes de statut -> version eclaircie (23 usages) */
+  .dark :where(.text-\[\#22a05b\]) {
+    color: #92e8b9;
+  }
+  .dark :where(.text-\[\#e07b10\]) {
+    color: #f2be88;
+  }
+  .dark :where(.hover\:text-\[\#d9544d\]):hover,
+  .dark :where(.text-\[\#d9544d\]) {
+    color: #e89692;
+  }
+  .dark :where(.hover\:text-\[\#e0685f\]):hover {
+    color: #e99690;
+  }
+  .dark :where(.hover\:text-\[\#c53f56\]):hover {
+    color: #e099a5;
+  }
+  .dark :where(.text-\[\#1cc6df\]) {
+    color: #89e3f0;
+  }
+  .dark :where(.text-\[\#2ecc71\]) {
+    color: #93e7b6;
+  }
+  .dark :where(.text-\[\#7c3aed\]) {
+    color: #af88f2;
+  }
+  .dark :where(.text-\[\#a259e6\]) {
+    color: #be8cee;
+  }
+  .dark :where(.text-\[\#b8860b\]) {
+    color: #f2d388;
+  }
+  .dark :where(.text-\[\#c2185b\]) {
+    color: #f089b2;
+  }
+  .dark :where(.text-\[\#c9b26f\]) {
+    color: #dbcb9f;
+  }
+  .dark :where(.text-\[\#e0526a\]) {
+    color: #eb8f9e;
+  }
+  .dark :where(.text-\[\#f57c00\]) {
+    color: #f2bd88;
+  }
+  .dark :where(.text-\[\#ff9800\]) {
+    color: #f2c788;
+  }
+}

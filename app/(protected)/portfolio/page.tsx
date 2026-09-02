@@ -61,7 +61,7 @@ export default function Page() {
             <div className="bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-xl p-4 sm:p-6">
                 {loading ? (
                     <div className="flex items-center justify-center py-10">
-                        <Loader2 className="h-7 w-7 animate-spin text-[#2f6de6]" />
+                        <Loader2 className="h-7 w-7 animate-spin text-[#2f6de6] dark:text-primary" />
                     </div>
                 ) : portfolios.length === 0 ? (
                     <div className="text-center py-10">
@@ -79,7 +79,7 @@ export default function Page() {
                                 key={portfolio.id}
                                 className="flex items-center gap-3 sm:gap-4 rounded-lg border border-[#e8edf6] dark:border-border p-3 hover:border-[#2f6de6] transition-colors"
                             >
-                                <div className="w-14 h-14 bg-[#f0f3fb] dark:bg-muted rounded-lg flex-shrink-0 flex items-center justify-center text-[20px] font-bold text-[#2f6de6]">
+                                <div className="w-14 h-14 bg-[#f0f3fb] dark:bg-muted rounded-lg flex-shrink-0 flex items-center justify-center text-[20px] font-bold text-[#2f6de6] dark:text-primary">
                                     {portfolio.title.charAt(0).toUpperCase()}
                                 </div>
                                 <button

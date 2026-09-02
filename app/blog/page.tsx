@@ -69,7 +69,7 @@ export default function BlogPage() {
                 </section>
 
                 <div className="mt-8 max-w-[480px] mx-auto relative">
-                    <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-[#9aa3b2]" />
+                    <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-[#9aa3b2] dark:text-muted-foreground" />
                     <Input
                         value={searchInput}
                         onChange={(e) => setSearchInput(e.target.value)}
@@ -79,7 +79,7 @@ export default function BlogPage() {
                 </div>
 
                 {loading ? (
-                    <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-[#2f6de6]" /></div>
+                    <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-[#2f6de6] dark:text-primary" /></div>
                 ) : articles.length === 0 ? (
                     <p className="text-center text-sm text-[#9aa3b2] dark:text-muted-foreground py-16">
                         {search ? "Aucun article ne correspond à ta recherche." : "Aucun article publié pour l'instant."}

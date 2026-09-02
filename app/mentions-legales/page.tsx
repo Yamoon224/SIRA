@@ -57,32 +57,32 @@ export default function MentionsLegalesPage() {
             <Header />
 
             <main className="mx-auto max-w-[860px] px-4 py-10 sm:py-16">
-                <h1 className="text-2xl xs:text-3xl sm:text-4xl font-extrabold text-[#111827]">Mentions légales</h1>
-                <p className="mt-2 text-sm text-[#7a8495]">Application GORIYA</p>
-                <p className="mt-3 text-sm text-[#7a8495]">Dernière mise à jour : 27 juillet 2026</p>
+                <h1 className="text-2xl xs:text-3xl sm:text-4xl font-extrabold text-[#111827] dark:text-foreground">Mentions légales</h1>
+                <p className="mt-2 text-sm text-[#7a8495] dark:text-muted-foreground">Application GORIYA</p>
+                <p className="mt-3 text-sm text-[#7a8495] dark:text-muted-foreground">Dernière mise à jour : 27 juillet 2026</p>
 
                 <Accordion
                     type="single"
                     collapsible
                     defaultValue="section-0"
-                    className="mt-8 sm:mt-10 w-full border-t border-[#e6e9f0]"
+                    className="mt-8 sm:mt-10 w-full border-t border-[#e6e9f0] dark:border-border"
                 >
                     {sections.map((section, idx) => (
-                        <AccordionItem key={section.title} value={`section-${idx}`} className="border-[#e6e9f0]">
-                            <AccordionTrigger className="text-lg sm:text-xl font-bold text-[#111827] hover:no-underline">
+                        <AccordionItem key={section.title} value={`section-${idx}`} className="border-[#e6e9f0] dark:border-border">
+                            <AccordionTrigger className="text-lg sm:text-xl font-bold text-[#111827] dark:text-foreground hover:no-underline">
                                 {section.title}
                             </AccordionTrigger>
                             <AccordionContent>
                                 <div className="space-y-3">
                                     {section.body.map((paragraph, i) => (
-                                        <p key={i} className="text-sm sm:text-[15px] leading-7 text-[#3d4658]">
+                                        <p key={i} className="text-sm sm:text-[15px] leading-7 text-[#3d4658] dark:text-foreground">
                                             {paragraph}
                                         </p>
                                     ))}
                                     {"list" in section && section.list && (
                                         <ul className="list-disc space-y-1.5 pl-5">
                                             {section.list.map((item, i) => (
-                                                <li key={i} className="text-sm sm:text-[15px] leading-7 text-[#3d4658]">
+                                                <li key={i} className="text-sm sm:text-[15px] leading-7 text-[#3d4658] dark:text-foreground">
                                                     {item}
                                                 </li>
                                             ))}

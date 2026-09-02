@@ -20,7 +20,7 @@ const TYPE_LABELS: Record<PitchType, string> = {
 }
 
 const STATUS_META: Record<string, { label: string; className: string }> = {
-    DRAFT: { label: "Brouillon", className: "bg-gray-200 text-gray-700" },
+    DRAFT: { label: "Brouillon", className: "bg-gray-200 dark:bg-muted text-gray-700 dark:text-foreground" },
     PROCESSING: { label: "En traitement", className: "bg-blue-100 text-blue-600" },
     READY: { label: "Prêt", className: "bg-green-500 text-white" },
     FAILED: { label: "Échec", className: "bg-red-500 text-white" },
@@ -215,7 +215,7 @@ function PitchGoriyaContent() {
                             <button
                                 key={pitch.id}
                                 onClick={() => setActive(pitch)}
-                                className={`w-full rounded-lg border px-3 py-2.5 text-left transition-colors ${active?.id === pitch.id ? "border-blue-600 bg-blue-50" : "border-border bg-white hover:bg-muted/50"}`}
+                                className={`w-full rounded-lg border px-3 py-2.5 text-left transition-colors ${active?.id === pitch.id ? "border-blue-600 bg-blue-50" : "border-border bg-white dark:bg-card hover:bg-muted/50"}`}
                             >
                                 <div className="flex items-center justify-between">
                                     <p className="text-sm font-medium text-foreground">{TYPE_LABELS[pitch.type]}</p>

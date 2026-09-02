@@ -30,11 +30,11 @@ export default function Page() {
     const skills = ["JavaScript", "React", "Node.js", "Python", "TypeScript"]
 
     return (
-        <div className="bg-gray-50">
+        <div className="bg-gray-50 dark:bg-muted">
             <div className="mx-auto max-w-7xl">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-2xl font-semibold text-gray-900">Créer un portfolio</h1>
+                    <h1 className="text-2xl font-semibold text-gray-900 dark:text-foreground">Créer un portfolio</h1>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -47,18 +47,18 @@ export default function Page() {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
-                                        <Camera className="w-8 h-8 text-gray-400" />
+                                    <div className="w-20 h-20 bg-gray-200 dark:bg-muted rounded-lg flex items-center justify-center">
+                                        <Camera className="w-8 h-8 text-gray-400 dark:text-muted-foreground" />
                                     </div>
                                     <div className="flex-1">
                                         <Button variant="outline" size="sm">
                                             Télécharger une photo
                                         </Button>
-                                        <p className="text-sm text-gray-500 mt-1">PNG, JPG jusqu'à 5MB</p>
+                                        <p className="text-sm text-gray-500 dark:text-muted-foreground mt-1">PNG, JPG jusqu'à 5MB</p>
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Bio professionnelle</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Bio professionnelle</label>
                                     <Textarea placeholder="Présente-toi en quelques lignes..." rows={3} />
                                 </div>
                             </CardContent>
@@ -71,11 +71,11 @@ export default function Page() {
                             </CardHeader>
                             <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Email</label>
                                     <Input placeholder="ton@email.com" />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Téléphone</label>
                                     <Input placeholder="+33 6 12 34 56 78" />
                                 </div>
                             </CardContent>
@@ -118,7 +118,7 @@ export default function Page() {
                                     {projects.map((project) => (
                                         <div key={project.id} className="border rounded-lg p-4">
                                             <div className="flex gap-4">
-                                                <div className="w-24 h-16 bg-gray-200 rounded overflow-hidden">
+                                                <div className="w-24 h-16 bg-gray-200 dark:bg-muted rounded overflow-hidden">
                                                     <Image
                                                         src={project.image || "/placeholder.svg"}
                                                         alt={project.title}
@@ -129,7 +129,7 @@ export default function Page() {
                                                 </div>
                                                 <div className="flex-1">
                                                     <h4 className="font-medium mb-1">{project.title}</h4>
-                                                    <p className="text-sm text-gray-600 mb-2">{project.description}</p>
+                                                    <p className="text-sm text-gray-600 dark:text-muted-foreground mb-2">{project.description}</p>
                                                     <div className="flex flex-wrap gap-1">
                                                         {project.technologies.map((tech) => (
                                                             <Badge key={tech} variant="outline" className="text-xs">
@@ -160,11 +160,11 @@ export default function Page() {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">LinkedIn</label>
                                     <Input placeholder="https://linkedin.com/in/ton-profil" />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Portfolio personnel</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Portfolio personnel</label>
                                     <Input placeholder="https://ton-site.com" />
                                 </div>
                             </CardContent>
@@ -183,7 +183,7 @@ export default function Page() {
                                     {themes.map((theme) => (
                                         <div
                                             key={theme.id}
-                                            className={`p-3 border-2 rounded-lg cursor-pointer transition-colors ${selectedTheme === theme.id ? "border-blue-500" : "border-gray-200"
+                                            className={`p-3 border-2 rounded-lg cursor-pointer transition-colors ${selectedTheme === theme.id ? "border-blue-500" : "border-gray-200 dark:border-border"
                                                 }`}
                                             onClick={() => setSelectedTheme(theme.id)}
                                         >
@@ -221,7 +221,7 @@ export default function Page() {
                             <CardHeader>
                                 <CardTitle>Conseils de Goriya</CardTitle>
                             </CardHeader>
-                            <CardContent className="space-y-3 text-sm text-gray-600">
+                            <CardContent className="space-y-3 text-sm text-gray-600 dark:text-muted-foreground">
                                 <p>• Ajoute des captures d'écran de tes projets</p>
                                 <p>• Décris les technologies utilisées</p>
                                 <p>• Inclus des liens vers tes réalisations</p>

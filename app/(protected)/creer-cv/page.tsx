@@ -169,25 +169,25 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
     // rétrécir sous la largeur de sa colonne et déborde sur mobile.
     return (
         <div className="min-w-0">
-            <label className="mb-1 block text-[11px] text-[#8b93a3]">{label}</label>
+            <label className="mb-1 block text-[11px] text-[#8b93a3] dark:text-muted-foreground">{label}</label>
             {children}
         </div>
     )
 }
 
-const inputCls = "h-8 rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0"
-const areaCls = "resize-none rounded-[7px] border-0 bg-[#f1f2f5] text-[12px] shadow-none focus-visible:ring-0"
+const inputCls = "h-8 rounded-[7px] border-0 bg-[#f1f2f5] dark:bg-muted text-[12px] shadow-none focus-visible:ring-0"
+const areaCls = "resize-none rounded-[7px] border-0 bg-[#f1f2f5] dark:bg-muted text-[12px] shadow-none focus-visible:ring-0"
 
 /** En-tête discret d'une entrée répétable : n° d'ordre + suppression. */
 function EntryHeader({ label, onRemove }: { label: string; onRemove: () => void }) {
     return (
         <div className="mb-2 flex items-center justify-between">
-            <span className="text-[11px] font-medium text-[#8b93a3]">{label}</span>
+            <span className="text-[11px] font-medium text-[#8b93a3] dark:text-muted-foreground">{label}</span>
             <button
                 type="button"
                 onClick={onRemove}
                 aria-label={`Supprimer ${label}`}
-                className="text-[#b6bdcb] transition-colors hover:text-[#e0685f]"
+                className="text-[#b6bdcb] dark:text-muted-foreground transition-colors hover:text-[#e0685f]"
             >
                 <Trash2 className="h-3.5 w-3.5" />
             </button>
@@ -199,8 +199,8 @@ function EntryHeader({ label, onRemove }: { label: string; onRemove: () => void 
 function EmptyList({ title, hint }: { title: string; hint: string }) {
     return (
         <div className="flex min-h-[180px] flex-col items-center justify-center text-center">
-            <p className="text-[12px] text-[#8b93a3]">{title}</p>
-            <p className="mt-1 text-[12px] text-[#8b93a3]">{hint}</p>
+            <p className="text-[12px] text-[#8b93a3] dark:text-muted-foreground">{title}</p>
+            <p className="mt-1 text-[12px] text-[#8b93a3] dark:text-muted-foreground">{hint}</p>
         </div>
     )
 }
@@ -242,7 +242,7 @@ function ScoreGauge({ value }: { value: number }) {
                     className="transition-[stroke-dashoffset] duration-300"
                 />
             </svg>
-            <div className="absolute inset-0 flex items-center justify-center text-[22px] font-bold leading-none text-[#2e6fe9]">
+            <div className="absolute inset-0 flex items-center justify-center text-[22px] font-bold leading-none text-[#2e6fe9] dark:text-primary">
                 {pct}%
             </div>
         </div>
@@ -534,7 +534,7 @@ function CreerCVContent() {
                                             <SelectItem key={p.iso} value={p.indicatif} className="text-[12px]">
                                                 <span className="mr-1.5">{drapeau(p.iso)}</span>
                                                 {p.indicatif}
-                                                <span className="ml-1.5 text-[#8b93a3]">{p.nom}</span>
+                                                <span className="ml-1.5 text-[#8b93a3] dark:text-muted-foreground">{p.nom}</span>
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -574,7 +574,7 @@ function CreerCVContent() {
                 ) : (
                     <div className="space-y-4">
                         {formData.experiences.map((exp, idx) => (
-                            <div key={idx} className={idx > 0 ? "border-t border-[#eef1f7] pt-4" : undefined}>
+                            <div key={idx} className={idx > 0 ? "border-t border-[#eef1f7] dark:border-border pt-4" : undefined}>
                                 <EntryHeader label={`Expérience ${idx + 1}`} onRemove={() => removeEntry("experiences", idx)} />
                                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                     <Field label="Nom de l'entreprise">
@@ -601,7 +601,7 @@ function CreerCVContent() {
                                     </Field>
                                     <Field label="Date de fin">
                                         {exp.enCours ? (
-                                            <div className="flex h-8 items-center rounded-[7px] bg-[#f1f2f5] px-3 text-[12px] text-[#8b93a3]">
+                                            <div className="flex h-8 items-center rounded-[7px] bg-[#f1f2f5] dark:bg-muted px-3 text-[12px] text-[#8b93a3] dark:text-muted-foreground">
                                                 En cours
                                             </div>
                                         ) : (
@@ -615,7 +615,7 @@ function CreerCVContent() {
                                         )}
                                     </Field>
                                 </div>
-                                <label className="mt-2 flex cursor-pointer items-center gap-2 text-[12px] text-[#5b6474]">
+                                <label className="mt-2 flex cursor-pointer items-center gap-2 text-[12px] text-[#5b6474] dark:text-muted-foreground">
                                     <Checkbox
                                         checked={exp.enCours}
                                         onCheckedChange={(c) => toggleExperienceEnCours(idx, c === true)}
@@ -638,7 +638,7 @@ function CreerCVContent() {
                 ) : (
                     <div className="space-y-4">
                         {formData.formations.map((f, idx) => (
-                            <div key={idx} className={idx > 0 ? "border-t border-[#eef1f7] pt-4" : undefined}>
+                            <div key={idx} className={idx > 0 ? "border-t border-[#eef1f7] dark:border-border pt-4" : undefined}>
                                 <EntryHeader label={`Formation ${idx + 1}`} onRemove={() => removeEntry("formations", idx)} />
                                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                     <Field label="Etablissement">
@@ -689,7 +689,7 @@ function CreerCVContent() {
                 ) : (
                     <div className="space-y-4">
                         {formData.competences.map((c, idx) => (
-                            <div key={idx} className={idx > 0 ? "border-t border-[#eef1f7] pt-4" : undefined}>
+                            <div key={idx} className={idx > 0 ? "border-t border-[#eef1f7] dark:border-border pt-4" : undefined}>
                                 <EntryHeader label={`Compétence ${idx + 1}`} onRemove={() => removeEntry("competences", idx)} />
                                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                     <Field label="Compétence">
@@ -726,20 +726,20 @@ function CreerCVContent() {
     }
 
     const carteAnalyse = (
-        <Card className="overflow-hidden rounded-[12px] border-[#e1e6f1] bg-[#f2f4fb]">
+        <Card className="overflow-hidden rounded-[12px] border-[#e1e6f1] dark:border-border bg-[#f2f4fb] dark:bg-muted">
             <CardContent className="p-4">
                 <div className="mb-2 flex justify-center">
                     <img src="/goriya-logo-mark.png" alt="" aria-hidden className="h-10 w-10 object-contain" />
                 </div>
-                <p className="text-center text-[13px] font-semibold text-[#2e6fe9]">Analyse avec Goriya</p>
-                <p className="mb-3 text-center text-[11px] text-[#8b94ab]">Score d&apos;optimisation de votre CV</p>
+                <p className="text-center text-[13px] font-semibold text-[#2e6fe9] dark:text-primary">Analyse avec Goriya</p>
+                <p className="mb-3 text-center text-[11px] text-[#8b94ab] dark:text-muted-foreground">Score d&apos;optimisation de votre CV</p>
 
                 <ScoreGauge value={analysisProgress} />
 
-                <div className="mt-3 space-y-2 text-[10px] text-[#99a3b8]">
+                <div className="mt-3 space-y-2 text-[10px] text-[#99a3b8] dark:text-muted-foreground">
                     <div className="flex items-center justify-between">
                         <span>Structure</span>
-                        <span className="text-[#8dc79b]">Excellent</span>
+                        <span className="text-[#8dc79b] dark:text-muted-foreground">Excellent</span>
                     </div>
                     <div className="flex items-center justify-between">
                         <span>Mots-clés</span>
@@ -747,7 +747,7 @@ function CreerCVContent() {
                     </div>
                     <div className="flex items-center justify-between">
                         <span>Expérience</span>
-                        <span className="text-[#8dc79b]">Très bon</span>
+                        <span className="text-[#8dc79b] dark:text-muted-foreground">Très bon</span>
                     </div>
                 </div>
 
@@ -761,8 +761,8 @@ function CreerCVContent() {
 
     return (
         <div className="min-h-[calc(100vh-80px)]">
-            <div className="border-b border-[#d9dfea] px-4 py-4 sm:px-6">
-                <h1 className="text-2xl sm:text-[32px] font-semibold leading-none text-[#1b2331]">Créer CV Intelligent</h1>
+            <div className="border-b border-[#d9dfea] dark:border-border px-4 py-4 sm:px-6">
+                <h1 className="text-2xl sm:text-[32px] font-semibold leading-none text-[#1b2331] dark:text-foreground">Créer CV Intelligent</h1>
             </div>
 
             <div className="mx-auto w-full max-w-[1240px] px-4 py-4 sm:px-6">
@@ -776,7 +776,7 @@ function CreerCVContent() {
                             return (
                                 <div
                                     key={s.id}
-                                    className={`rounded-[12px] border bg-white ${ouvert ? "border-[#c9d5f2]" : "border-[#dfe5f1]"}`}
+                                    className={`rounded-[12px] border bg-white dark:bg-card ${ouvert ? "border-[#c9d5f2] dark:border-border" : "border-[#dfe5f1] dark:border-border"}`}
                                 >
                                     <button
                                         type="button"
@@ -784,17 +784,17 @@ function CreerCVContent() {
                                         aria-expanded={ouvert}
                                         aria-controls={`cv-section-${s.id}`}
                                         className={`flex w-full items-center gap-2 rounded-t-[12px] px-4 py-3 text-left text-[13px] transition-colors ${
-                                            ouvert ? "font-medium text-[#1f4ec2]" : "text-[#5b6474]"
+                                            ouvert ? "font-medium text-[#1f4ec2] dark:text-primary" : "text-[#5b6474] dark:text-muted-foreground"
                                         }`}
                                     >
                                         <span>{s.icon}</span>
                                         <span className="flex-1">{s.label}</span>
                                         <ChevronDown
-                                            className={`h-4 w-4 shrink-0 text-[#8b93a3] transition-transform duration-200 ${ouvert ? "rotate-180" : ""}`}
+                                            className={`h-4 w-4 shrink-0 text-[#8b93a3] dark:text-muted-foreground transition-transform duration-200 ${ouvert ? "rotate-180" : ""}`}
                                         />
                                     </button>
                                     {ouvert && (
-                                        <div id={`cv-section-${s.id}`} className="border-t border-[#eef1f7] p-4">
+                                        <div id={`cv-section-${s.id}`} className="border-t border-[#eef1f7] dark:border-border p-4">
                                             {champsEtape(i)}
                                             {boutonAjout(i)}
                                         </div>
@@ -808,14 +808,14 @@ function CreerCVContent() {
                 ) : (
                     <div className="grid grid-cols-1 gap-4 lg:grid-cols-[320px_1fr]">
                         <div className="space-y-4">
-                            <Card className="overflow-hidden rounded-[12px] border-[#dfe5f1] bg-[#edf0ff]">
+                            <Card className="overflow-hidden rounded-[12px] border-[#dfe5f1] dark:border-border bg-[#edf0ff] dark:bg-primary/10">
                                 <CardContent className="p-4">
                                     <div className="mb-4 text-center">
-                                        <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-white/80 text-[#2f6de6]">
+                                        <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-white/80 text-[#2f6de6] dark:text-primary">
                                             <FileBadge2 className="h-6 w-6" />
                                         </div>
-                                        <p className="text-[15px] font-semibold text-[#1f4ec2]">Créateur de CV</p>
-                                        <p className="mt-1 text-[11px] text-[#7d86a0]">Construisez votre CV professionnel</p>
+                                        <p className="text-[15px] font-semibold text-[#1f4ec2] dark:text-primary">Créateur de CV</p>
+                                        <p className="mt-1 text-[11px] text-[#7d86a0] dark:text-muted-foreground">Construisez votre CV professionnel</p>
                                     </div>
 
                                     <div className="space-y-2">
@@ -827,8 +827,8 @@ function CreerCVContent() {
                                                 aria-current={i === step ? "step" : undefined}
                                                 className={`flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-left text-[12px] transition-colors ${
                                                     i === step
-                                                        ? "bg-[#b8bfce] font-medium text-white"
-                                                        : "text-[#8b94ab] hover:bg-white/60"
+                                                        ? "bg-[#b8bfce] dark:bg-primary/10 font-medium text-white"
+                                                        : "text-[#8b94ab] dark:text-muted-foreground hover:bg-white/60"
                                                 }`}
                                             >
                                                 <span>{s.icon}</span>
@@ -843,9 +843,9 @@ function CreerCVContent() {
                         </div>
 
                         <div>
-                            <Card className="rounded-[12px] border-[#dfe5f1] bg-white">
+                            <Card className="rounded-[12px] border-[#dfe5f1] dark:border-border bg-white dark:bg-card">
                                 <CardContent className="p-4">
-                                    <h2 className="mb-3 text-[15px] font-semibold text-[#2a3242]">{STEPS[step].label}</h2>
+                                    <h2 className="mb-3 text-[15px] font-semibold text-[#2a3242] dark:text-foreground">{STEPS[step].label}</h2>
                                     {champsEtape(step)}
                                 </CardContent>
                             </Card>
@@ -859,7 +859,7 @@ function CreerCVContent() {
                     <Button
                         variant="ghost"
                         onClick={handleManualSave}
-                        className="h-9 w-full sm:min-w-[230px] sm:w-auto rounded-full bg-[#f0f2f8] text-[12px] text-[#5b6474] hover:bg-[#e6eaf4]"
+                        className="h-9 w-full sm:min-w-[230px] sm:w-auto rounded-full bg-[#f0f2f8] dark:bg-muted text-[12px] text-[#5b6474] dark:text-muted-foreground hover:bg-[#e6eaf4] dark:hover:bg-muted"
                     >
                         <Save className="mr-1.5 h-3.5 w-3.5" />
                         Sauvegarder
@@ -874,10 +874,10 @@ function CreerCVContent() {
                 </div>
 
                 <div className="mt-3 flex flex-col items-center gap-1">
-                    {saveState === "saving" && <p className="text-[11px] text-[#aab2c2]">Enregistrement…</p>}
+                    {saveState === "saving" && <p className="text-[11px] text-[#aab2c2] dark:text-muted-foreground">Enregistrement…</p>}
 
                     {saveState === "saved" && savedAt && (
-                        <p className="text-[11px] text-[#aab2c2]">
+                        <p className="text-[11px] text-[#aab2c2] dark:text-muted-foreground">
                             Brouillon enregistré {formatDerniereSauvegarde(savedAt)}
                         </p>
                     )}
@@ -893,7 +893,7 @@ function CreerCVContent() {
                         <button
                             type="button"
                             onClick={() => setConfirmDelete(true)}
-                            className="text-[11px] text-[#aab2c2] underline-offset-2 transition-colors hover:text-[#e0685f] hover:underline"
+                            className="text-[11px] text-[#aab2c2] dark:text-muted-foreground underline-offset-2 transition-colors hover:text-[#e0685f] hover:underline"
                         >
                             Supprimer le brouillon
                         </button>

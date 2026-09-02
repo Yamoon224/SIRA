@@ -262,7 +262,7 @@ export default function ParametresPage() {
                     <Button variant="outline" size="sm" disabled={uploadingAvatar} onClick={() => fileInputRef.current?.click()}>
                       {uploadingAvatar ? "Envoi..." : "Changer la photo"}
                     </Button>
-                    <p className="text-sm text-gray-500 mt-1">JPG, PNG jusqu'à 5MB</p>
+                    <p className="text-sm text-gray-500 dark:text-muted-foreground mt-1">JPG, PNG jusqu'à 5MB</p>
                   </div>
                 </div>
 
@@ -465,7 +465,7 @@ export default function ParametresPage() {
                     onClick={() => setTheme("light")}
                     className="flex flex-col items-center gap-2 h-auto py-3"
                   >
-                    <div className="w-6 h-6 bg-white border-2 border-gray-300 rounded"></div>
+                    <div className="w-6 h-6 bg-white dark:bg-card border-2 border-gray-300 dark:border-border rounded"></div>
                     <span className="text-xs">Clair</span>
                   </Button>
 

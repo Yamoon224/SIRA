@@ -65,7 +65,7 @@ export default function NotificationsPage() {
       case "job": return <Briefcase className="w-5 h-5 text-blue-600" />
       case "message": return <MessageSquare className="w-5 h-5 text-green-600" />
       case "system": return <Settings className="w-5 h-5 text-purple-600" />
-      default: return <Bell className="w-5 h-5 text-gray-600" />
+      default: return <Bell className="w-5 h-5 text-gray-600 dark:text-muted-foreground" />
     }
   }
 

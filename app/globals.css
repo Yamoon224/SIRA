@@ -1,9 +1,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "./theme-dark-bridge.css";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  color-scheme: light;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -40,38 +42,51 @@
 }
 
 .dark {
-  --background: oklch(0.06 0.02 240);
-  --foreground: oklch(0.96 0.005 240);
-  --card: oklch(0.08 0.015 240);
-  --card-foreground: oklch(0.94 0.005 240);
-  --popover: oklch(0.08 0.015 240);
-  --popover-foreground: oklch(0.94 0.005 240);
-  --primary: oklch(0.55 0.18 240);
-  --primary-foreground: oklch(0.98 0.005 240);
-  --secondary: oklch(0.12 0.02 240);
-  --secondary-foreground: oklch(0.88 0.01 240);
-  --muted: oklch(0.1 0.015 240);
-  --muted-foreground: oklch(0.7 0.01 240);
-  --accent: oklch(0.14 0.02 240);
-  --accent-foreground: oklch(0.9 0.01 240);
-  --destructive: oklch(0.55 0.2 15);
-  --destructive-foreground: oklch(0.95 0.01 15);
-  --border: oklch(0.16 0.015 240);
-  --input: oklch(0.12 0.02 240);
-  --ring: oklch(0.55 0.18 240);
-  --chart-1: oklch(0.6 0.2 260);
-  --chart-2: oklch(0.7 0.15 180);
-  --chart-3: oklch(0.75 0.18 80);
-  --chart-4: oklch(0.65 0.22 320);
-  --chart-5: oklch(0.68 0.2 30);
-  --sidebar: oklch(0.07 0.015 240);
-  --sidebar-foreground: oklch(0.92 0.01 240);
-  --sidebar-primary: oklch(0.55 0.18 240);
-  --sidebar-primary-foreground: oklch(0.98 0.005 240);
-  --sidebar-accent: oklch(0.11 0.015 240);
-  --sidebar-accent-foreground: oklch(0.88 0.01 240);
-  --sidebar-border: oklch(0.14 0.015 240);
-  --sidebar-ring: oklch(0.55 0.18 240);
+  color-scheme: dark;
+
+  /* Echelle de surfaces : chaque niveau se detache du precedent
+     (fond -> carte -> popover/muted -> accent), et --border reste assez clair
+     pour dessiner le contour des cartes. Ratios vises : carte/fond 1.3:1,
+     bordure/carte 2.1:1, texte secondaire/carte 5.8:1, texte principal 13:1. */
+  --background: oklch(0.205 0.012 258);
+  --foreground: oklch(0.98 0.005 258);
+  --card: oklch(0.295 0.013 258);
+  --card-foreground: oklch(0.98 0.005 258);
+  --popover: oklch(0.325 0.014 258);
+  --popover-foreground: oklch(0.98 0.005 258);
+  --primary: oklch(0.575 0.18 258);
+  --primary-foreground: oklch(0.99 0.005 258);
+  --secondary: oklch(0.365 0.016 258);
+  --secondary-foreground: oklch(0.95 0.008 258);
+  --muted: oklch(0.34 0.014 258);
+  --muted-foreground: oklch(0.73 0.02 258);
+  --accent: oklch(0.39 0.02 258);
+  --accent-foreground: oklch(0.96 0.008 258);
+  --destructive: oklch(0.62 0.19 22);
+  --destructive-foreground: oklch(0.98 0.01 22);
+  --border: oklch(0.48 0.018 258);
+  --input: oklch(0.335 0.016 258);
+  --ring: oklch(0.68 0.16 258);
+  --chart-1: oklch(0.65 0.18 258);
+  --chart-2: oklch(0.72 0.14 180);
+  --chart-3: oklch(0.76 0.16 80);
+  --chart-4: oklch(0.68 0.2 320);
+  --chart-5: oklch(0.7 0.18 30);
+  --sidebar: oklch(0.225 0.013 258);
+  --sidebar-foreground: oklch(0.96 0.008 258);
+  --sidebar-primary: oklch(0.575 0.18 258);
+  --sidebar-primary-foreground: oklch(0.99 0.005 258);
+  --sidebar-accent: oklch(0.365 0.016 258);
+  --sidebar-accent-foreground: oklch(0.95 0.008 258);
+  --sidebar-border: oklch(0.455 0.018 258);
+  --sidebar-ring: oklch(0.68 0.16 258);
+
+  /* Utilises par theme-dark-bridge.css pour les couleurs ecrites en dur dans
+     les pages : aplats bleu pale, bordures d'etat selectionne, texte de marque
+     (le bleu de marque brut n'a que 3:1 sur fond sombre, d'ou --ink-brand). */
+  --surface-brand: color-mix(in oklab, var(--primary) 22%, var(--card));
+  --line-brand: color-mix(in oklab, var(--primary) 55%, var(--border));
+  --ink-brand: oklch(0.79 0.12 252);
 }
 
 @theme inline {
@@ -205,7 +220,7 @@
 
   .dark {
     scrollbar-width: thin;
-    scrollbar-color: oklch(0.25 0.02 240) oklch(0.08 0.015 240);
+    scrollbar-color: var(--border) var(--background);
   }
 
   .dark ::-webkit-scrollbar {
@@ -213,25 +228,25 @@
   }
 
   .dark ::-webkit-scrollbar-track {
-    background: oklch(0.08 0.015 240);
+    background: var(--background);
   }
 
   .dark ::-webkit-scrollbar-thumb {
-    background: oklch(0.25 0.02 240);
+    background: var(--border);
     border-radius: 4px;
   }
 
   .dark ::-webkit-scrollbar-thumb:hover {
-    background: oklch(0.35 0.02 240);
+    background: var(--muted-foreground);
   }
 
   .dark *:focus-visible {
-    outline: 2px solid oklch(0.55 0.18 240);
+    outline: 2px solid var(--ring);
     outline-offset: 2px;
   }
 
   .dark ::selection {
-    background: oklch(0.55 0.18 240 / 0.3);
-    color: oklch(0.96 0.005 240);
+    background: color-mix(in oklab, var(--primary) 35%, transparent);
+    color: var(--foreground);
   }
 }
