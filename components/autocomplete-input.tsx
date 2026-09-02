@@ -11,7 +11,17 @@ interface AutocompleteInputProps {
     placeholder?: string
     className?: string
     maxSuggestions?: number
+    /** Repris tels quels sur l'`<input>` (association au `<Label>`, formulaires). */
+    id?: string
+    name?: string
     "aria-label"?: string
+}
+
+/**
+ * Minuscules sans diacritiques : « Côte d'Ivoire » doit sortir sur « cote ».
+ */
+function normalise(v: string) {
+    return v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
 }
 
 /**
@@ -26,6 +36,8 @@ export function AutocompleteInput({
     placeholder,
     className,
     maxSuggestions = 8,
+    id,
+    name,
     ...aria
 }: AutocompleteInputProps) {
     const [open, setOpen] = useState(false)
@@ -33,10 +45,10 @@ export function AutocompleteInput({
     const wrapper = useRef<HTMLDivElement>(null)
 
     const suggestions = useMemo(() => {
-        const q = value.trim().toLowerCase()
-        const pool = q ? options.filter((o) => o.toLowerCase().includes(q)) : options
+        const q = normalise(value.trim())
+        const pool = q ? options.filter((o) => normalise(o).includes(q)) : options
         // Saisie déjà égale à l'unique correspondance : plus rien à proposer.
-        if (pool.length === 1 && pool[0].toLowerCase() === q) return []
+        if (pool.length === 1 && normalise(pool[0]) === q) return []
         return pool.slice(0, maxSuggestions)
     }, [value, options, maxSuggestions])
 
@@ -75,6 +87,8 @@ export function AutocompleteInput({
     return (
         <div ref={wrapper} className="relative">
             <Input
+                id={id}
+                name={name}
                 value={value}
                 placeholder={placeholder}
                 className={className}
@@ -95,7 +109,7 @@ export function AutocompleteInput({
             {open && suggestions.length > 0 && (
                 <ul
                     role="listbox"
-                    className="absolute z-50 mt-1 max-h-52 w-full overflow-auto rounded-[7px] border border-[#e4e8f1] bg-white py-1 shadow-lg"
+                    className="absolute z-50 mt-1 max-h-52 w-full overflow-auto rounded-[7px] border border-border bg-popover py-1 shadow-lg"
                 >
                     {suggestions.map((s, i) => (
                         <li key={s} role="option" aria-selected={i === highlight}>
@@ -106,7 +120,9 @@ export function AutocompleteInput({
                                 onMouseEnter={() => setHighlight(i)}
                                 onClick={() => commit(s)}
                                 className={`block w-full px-3 py-1.5 text-left text-[12px] transition-colors ${
-                                    i === highlight ? "bg-[#eef2fb] text-[#2a3242]" : "text-[#5b6474]"
+                                    i === highlight
+                                        ? "bg-accent text-accent-foreground"
+                                        : "text-muted-foreground"
                                 }`}
                             >
                                 {s}

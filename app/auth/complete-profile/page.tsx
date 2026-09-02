@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { AutocompleteInput } from "@/components/autocomplete-input"
+import { LOCALISATIONS } from "@/lib/data/afrique"
 import { Label } from "@/components/ui/label"
 import { AppLogo } from "@/components/app-logo"
 import { toast } from "sonner"
@@ -81,12 +83,13 @@ export default function CompleteProfilePage() {
                         <Label htmlFor="ville" className="text-sm font-medium text-foreground">
                             Ville / Localisation
                         </Label>
-                        <Input
+                        <AutocompleteInput
                             id="ville"
                             name="ville"
-                            placeholder="Ex: Abidjan, Dakar, Paris…"
                             value={form.ville}
-                            onChange={handleChange}
+                            onChange={(v) => setForm((prev) => ({ ...prev, ville: v }))}
+                            options={LOCALISATIONS}
+                            placeholder="Ex: Abidjan, Dakar, Paris…"
                             className="h-10 text-sm"
                         />
                     </div>

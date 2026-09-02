@@ -6,6 +6,8 @@ import { toast } from "sonner"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { AutocompleteInput } from "@/components/autocomplete-input"
+import { LOCALISATIONS } from "@/lib/data/afrique"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
@@ -281,11 +283,12 @@ export default function ParametresPage() {
 
                 <div>
                   <Label htmlFor="location">Localisation</Label>
-                  <Input
+                  <AutocompleteInput
                     id="location"
                     value={profile.location}
+                    onChange={(v) => setProfile((prev) => ({ ...prev, location: v }))}
+                    options={LOCALISATIONS}
                     placeholder="Ville, pays (ex: Abidjan, Côte d'Ivoire)"
-                    onChange={(e) => setProfile((prev) => ({ ...prev, location: e.target.value }))}
                   />
                 </div>
 

@@ -6,7 +6,8 @@ import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
+import { AutocompleteInput } from "@/components/autocomplete-input"
+import { LOCALISATIONS } from "@/lib/data/afrique"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { MapPin, Clock, Building2, Filter, Loader2, Heart } from "lucide-react"
 import { jobService } from "@/lib/api/job.service"
@@ -98,10 +99,12 @@ function SearchResults() {
                 <div className="space-y-6">
                   <div>
                     <label className="text-sm font-medium mb-2 block">Localisation</label>
-                    <Input
-                      placeholder="Ville, région..."
+                    <AutocompleteInput
                       value={locationFilter}
-                      onChange={(e) => setLocationFilter(e.target.value)}
+                      onChange={setLocationFilter}
+                      options={LOCALISATIONS}
+                      placeholder="Ville, région..."
+                      aria-label="Localisation"
                     />
                   </div>
 

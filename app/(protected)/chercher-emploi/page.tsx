@@ -5,6 +5,8 @@ import { useState, useEffect, useCallback, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { AutocompleteInput } from "@/components/autocomplete-input"
+import { LOCALISATIONS } from "@/lib/data/afrique"
 import { Search, SlidersHorizontal, MapPin, BriefcaseBusiness, Clock3, Hourglass, Heart, Plus, Loader2, Building2, Building, GraduationCap } from "lucide-react"
 import { jobService } from "@/lib/api/job.service"
 import { companyService } from "@/lib/api/company.service"
@@ -230,12 +232,16 @@ function ChercherEmploiContent() {
 
                 {showAllFilters && (
                     <div className="mt-4 flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-[#d8deeb] dark:border-border bg-white dark:bg-card p-3">
-                        <Input
-                            value={locationFilter}
-                            onChange={(e) => setLocationFilter(e.target.value)}
-                            placeholder="Localisation"
-                            className="h-9 w-full sm:w-[180px] rounded-full text-[12px]"
-                        />
+                        <div className="w-full sm:w-[180px]">
+                            <AutocompleteInput
+                                value={locationFilter}
+                                onChange={setLocationFilter}
+                                options={LOCALISATIONS}
+                                placeholder="Localisation"
+                                className="h-9 w-full rounded-full text-[12px]"
+                                aria-label="Localisation"
+                            />
+                        </div>
                         <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}
                             className="h-9 rounded-full border border-input bg-transparent px-3 text-[12px]">
                             <option value="">Type de contrat</option>

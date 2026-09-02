@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { AutocompleteInput } from "@/components/autocomplete-input"
+import { LOCALISATIONS } from "@/lib/data/afrique"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ChevronRight, Loader2 } from "lucide-react"
@@ -158,12 +160,16 @@ function CreerPortfolioContent() {
                             <div className="space-y-3">
                                 <div>
                                     <Label className="text-[12px] font-semibold text-[#1b2331]">Localisation</Label>
-                                    <Input
-                                        placeholder="Ville, Pays"
-                                        value={profileData.location}
-                                        onChange={(e) => setProfileData({ ...profileData, location: e.target.value })}
-                                        className="mt-1 h-9 text-[13px] border-[#e8edf6]"
-                                    />
+                                    <div className="mt-1">
+                                        <AutocompleteInput
+                                            value={profileData.location}
+                                            onChange={(v) => setProfileData({ ...profileData, location: v })}
+                                            options={LOCALISATIONS}
+                                            placeholder="Ville, Pays"
+                                            className="h-9 text-[13px] border-[#e8edf6]"
+                                            aria-label="Localisation"
+                                        />
+                                    </div>
                                 </div>
                                 <div>
                                     <Label className="text-[12px] font-semibold text-[#1b2331]">Email</Label>
