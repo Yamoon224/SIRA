@@ -243,12 +243,16 @@ export default function Page() {
 
                         {(GOOGLE_CLIENT_ID || LINKEDIN_CLIENT_ID) && (
                         <>
+                        {/* `flex-1` plutôt qu'une grille : si un seul fournisseur est
+                            configuré, son bouton reprend toute la largeur. */}
+                        <div className="flex items-center gap-3">
                         {GOOGLE_CLIENT_ID && (
                         <Button
                             onClick={handleGoogleAuth}
                             variant="outline"
-                            className="w-full rounded-full flex items-center justify-center space-x-2 py-3 bg-card hover:bg-accent transition-colors"
+                            className="flex-1 min-w-0 rounded-full flex items-center justify-center space-x-2 py-3 bg-card hover:bg-accent transition-colors"
                             disabled={isGoogleLoading || !googleInitialized}
+                            aria-label={activeTab === "signup" ? "S'inscrire avec Google" : "Se connecter avec Google"}
                         >
                             {isGoogleLoading ? (
                                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -260,7 +264,7 @@ export default function Page() {
                                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                                 </svg>
                             )}
-                            <span>{activeTab === "signup" ? "S'inscrire avec Google" : "Se connecter avec Google"}</span>
+                            <span className="truncate">Google</span>
                         </Button>
                         )}
 
@@ -268,8 +272,9 @@ export default function Page() {
                         <Button
                             onClick={handleLinkedInAuth}
                             variant="outline"
-                            className="w-full rounded-full flex items-center justify-center space-x-2 py-3 bg-card hover:bg-accent transition-colors"
+                            className="flex-1 min-w-0 rounded-full flex items-center justify-center space-x-2 py-3 bg-card hover:bg-accent transition-colors"
                             disabled={isLinkedInLoading}
+                            aria-label={activeTab === "signup" ? "S'inscrire avec LinkedIn" : "Se connecter avec LinkedIn"}
                         >
                             {isLinkedInLoading ? (
                                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -278,9 +283,10 @@ export default function Page() {
                                     <path fill="#0A66C2" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z" />
                                 </svg>
                             )}
-                            <span>{activeTab === "signup" ? "S'inscrire avec LinkedIn" : "Se connecter avec LinkedIn"}</span>
+                            <span className="truncate">LinkedIn</span>
                         </Button>
                         )}
+                        </div>
 
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center">
