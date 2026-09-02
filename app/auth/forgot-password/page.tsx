@@ -159,12 +159,14 @@ export default function Page() {
                                             id="code"
                                             inputMode="numeric"
                                             autoComplete="one-time-code"
-                                            placeholder="123456"
+                                            placeholder="Code OTP"
                                             maxLength={6}
                                             value={code}
                                             onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                                             required
-                                            className="mt-1 text-center tracking-[0.5em]"
+                                            // L'interlettrage n'est là que pour aérer les 6 chiffres : appliqué
+                                            // au placeholder, il le déséquilibrait sur la droite.
+                                            className={`mt-1 text-center ${code ? "tracking-[0.5em]" : ""}`}
                                         />
                                     </div>
 

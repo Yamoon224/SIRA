@@ -1,14 +1,20 @@
 "use client"
 import { useEffect, useState } from "react"
-import { Moon, Sun } from "lucide-react"
+import { Check, Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
+const THEMES = [
+  { value: "light", label: "Clair" },
+  { value: "dark", label: "Sombre" },
+  { value: "system", label: "Système" },
+] as const
+
 export function ThemeToggle() {
   const [mounted, setMounted] = useState(false)
-  const { setTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
 
   useEffect(() => {
     setMounted(true)
@@ -28,9 +34,12 @@ export function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>Clair</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>Sombre</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>Système</DropdownMenuItem>
+        {THEMES.map(({ value, label }) => (
+          <DropdownMenuItem key={value} onClick={() => setTheme(value)} className="justify-between gap-4">
+            {label}
+            {theme === value && <Check className="h-4 w-4" />}
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   )
