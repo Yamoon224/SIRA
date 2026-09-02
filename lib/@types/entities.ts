@@ -8,6 +8,9 @@ export interface IUser {
     status: UserStatus;
     avatar: string | null;
     location?: string | null;
+    /** Titre professionnel, saisi à l'inscription (auth/complete-profile). */
+    title?: string | null;
+    bio?: string | null;
     registrationDate: Date;
     company?: { id: string; name: string } | null;
     createdAt: Date;

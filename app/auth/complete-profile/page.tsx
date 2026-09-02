@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { AutocompleteInput } from "@/components/autocomplete-input"
 import { LOCALISATIONS } from "@/lib/data/afrique"
 import { Label } from "@/components/ui/label"
-import { AppLogo } from "@/components/app-logo"
+import { userService } from "@/lib/api/user.service"
 import { toast } from "sonner"
 
 export default function CompleteProfilePage() {
@@ -27,19 +27,26 @@ export default function CompleteProfilePage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        // Formulaire vide : rien à enregistrer, on passe à la suite.
+        if (!form.titre.trim() && !form.ville.trim() && !form.bio.trim()) {
+            router.push("/auth/plan")
+            return
+        }
+
         setLoading(true)
-        // Ces informations seront exploitées dans le profil ultérieurement
-        // Pour l'instant, on les stocke localement et on passe au choix du plan
         try {
-            // Stockage temporaire dans sessionStorage pour usage ultérieur
-            if (form.titre || form.ville || form.bio) {
-                sessionStorage.setItem("profileExtras", JSON.stringify(form))
-            }
-            toast.success("Profil complété !")
+            await userService.updateMyProfile({
+                title: form.titre.trim(),
+                location: form.ville.trim(),
+                bio: form.bio.trim(),
+            })
+            toast.success("Profil enregistré")
             router.push("/auth/plan")
         } catch {
-            toast.error("Une erreur est survenue")
-        } finally {
+            // Sans persistance, la saisie serait perdue : on garde l'utilisateur
+            // sur l'écran plutôt que d'avancer en silence.
+            toast.error("Impossible d'enregistrer ton profil. Réessaie.")
             setLoading(false)
         }
     }
@@ -52,10 +59,7 @@ export default function CompleteProfilePage() {
         <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-12">
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
-                    <AppLogo className="justify-center mb-4" />
-                    <div className="w-14 h-14 bg-[#2f6de6] rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span className="text-white text-2xl">👋</span>
-                    </div>
+                    <img src="/goriya-logo-mark.png" alt="" aria-hidden className="mx-auto mb-4 h-14 w-14 object-contain" />
                     <h1 className="text-2xl font-bold text-foreground mb-1">
                         Bienvenue{user?.name ? `, ${user.name.split(" ")[0]}` : ""} !
                     </h1>
