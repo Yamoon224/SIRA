@@ -172,7 +172,7 @@ export default function PlanPage() {
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
                                 placeholder="Numéro de téléphone (Mobile Money)"
-                                className="mt-3 w-full rounded-xl border border-gray-200 px-4 py-2 text-sm outline-none focus:border-[#2f6de6]"
+                                className="mt-3 w-full rounded-full border border-gray-200 px-4 py-2 text-sm outline-none focus:border-[#2f6de6]"
                             />
                         )}
                     </div>

@@ -81,7 +81,7 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                                 href={link.href}
                                                 aria-current={isActiveLink(link.href) ? "page" : undefined}
                                                 className={cn(
-                                                    "rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
+                                                    "rounded-full px-4 py-2.5 text-sm font-medium transition-colors",
                                                     isActiveLink(link.href)
                                                         ? "bg-muted text-foreground"
                                                         : "text-foreground hover:bg-muted",
@@ -134,10 +134,11 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                 href={link.href}
                                 aria-current={isActiveLink(link.href) ? "page" : undefined}
                                 className={cn(
-                                    "text-sm transition-colors border-b-2 pb-0.5",
+                                    "relative text-sm transition-colors pb-1.5",
+                                    "after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:rounded-full after:transition-colors after:content-['']",
                                     isActiveLink(link.href)
-                                        ? "border-primary text-foreground font-medium"
-                                        : "border-transparent text-muted-foreground hover:text-foreground",
+                                        ? "text-foreground font-medium after:bg-primary"
+                                        : "text-muted-foreground hover:text-foreground after:bg-transparent",
                                 )}
                             >
                                 {link.label}

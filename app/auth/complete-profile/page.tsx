@@ -102,7 +102,7 @@ export default function CompleteProfilePage() {
                             placeholder="Parle brièvement de toi et de tes objectifs…"
                             value={form.bio}
                             onChange={handleChange}
-                            className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-[#2f6de6] resize-none"
+                            className="w-full rounded-full border border-input bg-transparent px-4 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-[#2f6de6] resize-none"
                         />
                     </div>
 
