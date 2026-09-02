@@ -165,7 +165,7 @@ function AnalyserCVContent() {
     return (
         <div className="min-h-[calc(100vh-80px)]">
             <div className="border-b border-[#d9dfea] px-4 py-4 sm:px-6">
-                <h1 className="text-2xl sm:text-[32px] font-semibold leading-none text-[#1b2331]">Analyser ton CV</h1>
+                <h1 className="text-2xl sm:text-[32px] font-semibold leading-none text-[#1b2331]">Analyse ton CV</h1>
             </div>
 
             <div className="mx-auto w-full max-w-[840px] px-4 py-8 sm:px-6 sm:py-10">
