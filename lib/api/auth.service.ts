@@ -62,4 +62,14 @@ export const authService = {
             data: { credential },
         })
     },
+
+    // LinkedIn : on n'envoie que le code d'autorisation, le backend l'échange
+    // contre le profil (voir lib/linkedin-auth.ts).
+    linkedinAuth: async (code: string, redirectUri: string) => {
+        return apiRequest<{ access_token: string; user: IUser; isNewUser: boolean }>({
+            endpoint: "/auth/linkedin",
+            method: "POST",
+            data: { code, redirectUri },
+        })
+    },
 }

@@ -56,13 +56,6 @@ export default function Page() {
                     <h1 className="text-xl sm:text-2xl font-bold text-[#1b2331] dark:text-foreground">Mon portfolio</h1>
                     <p className="text-[13px] text-[#7f8796] dark:text-muted-foreground mt-1">Gère les portfolios que tu partages avec les recruteurs.</p>
                 </div>
-                <Button
-                    onClick={() => router.push("/creer-portfolio")}
-                    className="bg-[#2f6de6] hover:bg-[#2554b8] text-white font-medium rounded-full px-4 py-2 text-sm flex items-center justify-center gap-2 w-full sm:w-auto"
-                >
-                    <Plus className="w-4 h-4" />
-                    Ajouter
-                </Button>
             </div>
 
             <div className="bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-xl p-4 sm:p-6">
@@ -72,7 +65,7 @@ export default function Page() {
                     </div>
                 ) : portfolios.length === 0 ? (
                     <div className="text-center py-10">
-                        <p className="text-[13px] text-[#7f8796] dark:text-muted-foreground">
+                        <p className="text-[13px] text-[#7f8796] text-center dark:text-muted-foreground">
                             Aucun portfolio créé. Clique sur « Ajouter » pour commencer.
                         </p>
                         <Button onClick={() => router.push("/creer-portfolio")} className="mt-4 rounded-full bg-[#2f6de6] hover:bg-[#2554b8]">
