@@ -5,7 +5,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 export const metadata = {
     title: "Politique de confidentialité - Goriya",
     description:
-        "Politique de confidentialité et de protection des données à caractère personnel de l'application GORIYA : données collectées, finalités, sécurité, transferts, conservation et droits des utilisateurs.",
+        "Politique de confidentialité et de protection des données à caractère personnel de l'application GORIYA : données collectées, connexion via Google, finalités, sécurité, transferts, conservation et droits des utilisateurs.",
 }
 
 type Block = {
@@ -82,6 +82,7 @@ const sections: Section[] = [
         ],
         list: [
             "La création et la gestion des comptes utilisateurs",
+            "L’authentification des utilisateurs, y compris la connexion facultative au moyen d’un compte Google",
             "La constitution et la gestion des profils professionnels",
             "La publication et la consultation des offres d'emploi",
             "La gestion des candidatures",
@@ -313,6 +314,53 @@ const sections: Section[] = [
                     "À l'expiration de cette période, elles sont supprimées de manière sécurisée conformément à l'Annexe A.",
                 ],
             },
+            {
+                heading: "6. Données issues de la connexion via un service d'authentification tiers (Google Sign-In)",
+                body: [
+                    "L'application GORIYA propose à l'utilisateur, à titre facultatif, de créer son compte ou de se connecter au moyen de son compte Google, via le service d'authentification « Se connecter avec Google » (Google Sign-In) fourni par Google LLC. Ce mode de connexion constitue une alternative à la création d'un compte par adresse e-mail et mot de passe : l'utilisateur reste libre de ne pas l'utiliser.",
+                    "Lorsque l'utilisateur choisit ce mode de connexion, il donne son consentement au partage, par Google, d'un ensemble limité d'informations de son profil Google avec l'application GORIYA. Les données transmises par Google et traitées par l'Exploitant sont exclusivement les suivantes :",
+                ],
+                list: [
+                    "L'adresse e-mail associée au compte Google, ainsi que l'indication technique de sa vérification par Google",
+                    "Le nom et le prénom associés au compte Google",
+                    "L'adresse de la photo de profil (avatar) associée au compte Google, lorsqu'elle existe",
+                    "L'identifiant technique unique attribué par Google au compte, utilisé uniquement le temps de la vérification de l'authenticité de la connexion",
+                ],
+            },
+            {
+                heading: "Origine des données",
+                body: [
+                    "Ces données sont transmises directement par Google à l'application GORIYA, sur action volontaire de l'utilisateur, au moment de la création du compte ou de la connexion.",
+                    "L'authentification repose sur un jeton d'identité (ID token) émis par Google, dont l'authenticité est vérifiée par les serveurs de l'Exploitant. Aucun mot de passe du compte Google n'est communiqué à l'Exploitant, ni collecté, ni conservé.",
+                    "L'application ne demande que les autorisations d'authentification de base (identité, adresse e-mail et informations de profil publiques). Elle ne demande, n'obtient et n'utilise aucune autorisation d'accès aux autres services Google de l'utilisateur, notamment Gmail, Google Drive, Google Agenda, Google Contacts ou Google Photos.",
+                ],
+            },
+            {
+                heading: "Finalités du traitement",
+                body: ["Les données transmises par Google sont traitées exclusivement afin de :"],
+                list: [
+                    "Créer le compte utilisateur sur l'application GORIYA lorsqu'aucun compte n'existe pour l'adresse e-mail concernée",
+                    "Authentifier l'utilisateur et ouvrir sa session lors des connexions ultérieures",
+                    "Préremplir les informations de base du profil utilisateur (nom, prénom, photo de profil)",
+                    "Considérer l'adresse e-mail comme vérifiée, l'utilisateur étant alors dispensé de la procédure de vérification par code à usage unique (OTP)",
+                    "Assurer la sécurité de l'accès au compte et prévenir les usurpations d'identité",
+                ],
+            },
+            {
+                body: [
+                    "Les données issues du compte Google ne sont utilisées pour aucune autre finalité. Elles ne sont ni vendues, ni louées, ni cédées à des tiers, ne font l'objet d'aucun usage publicitaire, d'aucun profilage commercial et ne sont transmises à aucun courtier en données.",
+                    "Elles ne sont accessibles qu'aux personnes habilitées de l'Exploitant intervenant dans la gestion, l'administration et la maintenance de l'application, ainsi qu'aux prestataires techniques d'hébergement mentionnés à l'article VII et à l'Annexe C, agissant pour le compte de l'Exploitant et tenus à des obligations de confidentialité et de sécurité.",
+                    "Les données de profil ainsi transmises suivent, une fois le compte créé, le même régime que les données d'identification et de profil visées au point 2 de la présente section : elles sont hébergées sur les infrastructures décrites à l'Annexe C et protégées par les mesures techniques et organisationnelles décrites à l'article VI et à l'Annexe D.",
+                ],
+            },
+            {
+                heading: "Durée de conservation",
+                body: [
+                    "Les données issues du compte Google sont conservées pendant toute la durée de vie du compte utilisateur sur l'application GORIYA.",
+                    "En cas de suppression du compte, elles sont supprimées ou anonymisées dans les conditions et délais prévus à l'article IX et à l'Annexe A, au même titre que les autres données d'identification et de profil.",
+                    "L'utilisateur peut à tout moment demander la suppression de son compte et des données associées selon les modalités prévues à l'article XII. Il peut également, indépendamment de toute demande adressée à l'Exploitant, révoquer l'accès accordé à l'application GORIYA depuis les paramètres de sécurité de son compte Google, à l'adresse https://myaccount.google.com/permissions ; cette révocation empêche toute connexion ultérieure par ce moyen mais n'emporte pas, à elle seule, suppression du compte GORIYA ni des données déjà enregistrées, laquelle doit être demandée selon les modalités prévues à l'article XII.",
+                ],
+            },
         ],
     },
     {
@@ -320,6 +368,7 @@ const sections: Section[] = [
         body: ["Les données à caractère personnel collectées dans le cadre de l'utilisation de l'application GORIYA sont traitées pour des finalités déterminées, explicites et légitimes, notamment :"],
         list: [
             "Créer, gérer et sécuriser les comptes utilisateurs",
+            "Permettre la création de compte et la connexion au moyen d’un compte Google, lorsque l’utilisateur choisit ce mode d’authentification facultatif",
             "Permettre l'accès aux fonctionnalités proposées par l'application",
             "Gérer les profils professionnels des candidats",
             "Faciliter la mise en relation entre candidats et recruteurs",
@@ -559,6 +608,7 @@ const sections: Section[] = [
                     "Pour assurer le fonctionnement de l'application, l'Exploitant peut recourir à des prestataires techniques spécialisés intervenant notamment dans l'hébergement des infrastructures, le stockage des données, la fourniture d'outils techniques nécessaires au fonctionnement de l'application ou la maintenance et l'assistance technique.",
                     "Lorsque ces prestataires agissent pour le compte de l'Exploitant et traitent des données à caractère personnel, ils sont tenus de respecter des obligations appropriées en matière de confidentialité, de sécurité, de limitation des finalités et de protection des données traitées.",
                     "L'Exploitant veille à sélectionner des prestataires présentant des garanties suffisantes au regard des exigences applicables en matière de protection des données à caractère personnel.",
+                    "L'Exploitant recourt par ailleurs au service d'authentification « Se connecter avec Google » fourni par Google LLC, dans les conditions décrites au point 6 de l'article III. Dans ce cadre, Google agit en qualité de fournisseur d'identité : il transmet à l'Exploitant les seules données de profil nécessaires à l'authentification, l'Exploitant ne lui communiquant en retour aucune donnée relative à l'utilisation de l'application.",
                 ],
             },
             {
@@ -1004,6 +1054,7 @@ const sections: Section[] = [
                     "La fourniture de services cloud",
                     "La maintenance technique",
                     "Les outils nécessaires au fonctionnement des fonctionnalités intégrées à l'application",
+                    "Les services d'authentification tiers utilisés à la demande de l'utilisateur, notamment Google Sign-In",
                 ],
             },
             {
@@ -1028,6 +1079,7 @@ const sections: Section[] = [
                 heading: "6. Hébergement et infrastructures techniques",
                 body: [
                     "L'application GORIYA utilise des infrastructures techniques fournies par des prestataires spécialisés, notamment Hostinger pour l'hébergement du backend et de certains composants techniques, et Vercel pour l'hébergement des interfaces applicatives.",
+                    "Lorsque l'utilisateur choisit de se connecter au moyen de son compte Google, la vérification de son identité est réalisée auprès de Google LLC, société établie aux États-Unis d'Amérique. Ce traitement se limite à la transmission, par Google vers l'application, des données de profil décrites au point 6 de l'article III, et repose sur le consentement préalable de l'utilisateur.",
                     "Ces infrastructures peuvent impliquer que certaines données soient traitées ou rendues accessibles depuis des environnements situés hors de l'espace CEDEAO.",
                     "L'Exploitant veille à ce que ces opérations soient limitées aux besoins strictement nécessaires au fonctionnement de l'application et encadrées par des mesures appropriées de sécurité.",
                 ],

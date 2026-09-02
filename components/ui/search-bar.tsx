@@ -152,7 +152,7 @@ export function SearchBar() {
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
         <Input
           placeholder="Rechercher emplois, entreprises, lieux..."
-          className="pl-10 w-full min-w-0"
+          className="pl-10 w-full rounded-full min-w-0"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
