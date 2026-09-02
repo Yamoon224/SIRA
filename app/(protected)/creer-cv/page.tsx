@@ -6,22 +6,35 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { FileBadge2, Download, Plus, Save, Sparkles, Trash2 } from "lucide-react"
 import { generatePDF } from "@/lib/document-generator"
 import { SubscriptionGate } from "@/components/subscription-gate"
+import { AutocompleteInput } from "@/components/autocomplete-input"
 import { useAuth } from "@/contexts/auth-context"
 import { cvService, type CvCompetence, type CvContent, type CvExperience, type CvFormation } from "@/lib/api/cv.service"
+import {
+    INDICATIF_PAR_DEFAUT,
+    LOCALISATIONS,
+    PAYS_AFRICAINS,
+    PAYS_PAR_DEFAUT,
+    drapeau,
+    separerIndicatif,
+} from "@/lib/data/afrique"
+import { POSTES } from "@/lib/data/postes"
 
-const EMPTY_EXPERIENCE: CvExperience = { entreprise: "", poste: "", dateDebut: "", dateFin: "", description: "" }
+const EMPTY_EXPERIENCE: CvExperience = { entreprise: "", poste: "", dateDebut: "", dateFin: "", enCours: false, description: "" }
 const EMPTY_FORMATION: CvFormation = { etablissement: "", diplome: "", dateDebut: "", dateFin: "" }
 const EMPTY_COMPETENCE: CvCompetence = { nom: "", niveau: "Débutant" }
 
 const NIVEAUX = ["Débutant", "Intermédiaire", "Avancé", "Expert"]
+const DIPLOMES = ["Bac", "BTS", "Licence", "Master", "Doctorat", "Professorat"]
 
 const EMPTY_CV: CvContent = {
     nom: "",
     email: "",
+    indicatif: INDICATIF_PAR_DEFAUT,
     telephone: "",
     adresse: "",
     profil: "",
@@ -41,6 +54,21 @@ type ListKey = "experiences" | "formations" | "competences"
 
 const str = (v: unknown) => (typeof v === "string" ? v : "")
 
+const bool = (v: unknown) => v === true || v === 1 || v === "1" || v === "true"
+
+/**
+ * Ramène une date au format attendu par `<input type="date">`. Les anciens
+ * brouillons contenaient du texte libre ; ce qui n'est pas reconnu est perdu
+ * plutôt que d'afficher un champ date vide sur une valeur invisible.
+ */
+const toIsoDate = (v: unknown): string => {
+    const raw = str(v).trim()
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw
+    const fr = raw.match(/^(\d{2})\/(\d{2})\/(\d{4})$/)
+    if (fr) return `${fr[3]}-${fr[2]}-${fr[1]}`
+    return ""
+}
+
 const rows = (value: unknown): Record<string, unknown>[] =>
     Array.isArray(value) ? value.filter((r): r is Record<string, unknown> => !!r && typeof r === "object") : []
 
@@ -52,18 +80,23 @@ const rows = (value: unknown): Record<string, unknown>[] =>
 function normalize(raw: Record<string, unknown> | null | undefined): CvContent {
     const src = raw ?? {}
 
-    const experiences: CvExperience[] = rows(src.experiences).map((row) => ({
-        entreprise: str(row.entreprise),
-        poste: str(row.poste),
-        dateDebut: str(row.dateDebut),
-        dateFin: str(row.dateFin),
-        description: str(row.description),
-    }))
+    const experiences: CvExperience[] = rows(src.experiences).map((row) => {
+        const enCours = bool(row.enCours)
+        return {
+            entreprise: str(row.entreprise),
+            poste: str(row.poste),
+            dateDebut: toIsoDate(row.dateDebut),
+            dateFin: enCours ? "" : toIsoDate(row.dateFin),
+            enCours,
+            description: str(row.description),
+        }
+    })
     const formations: CvFormation[] = rows(src.formations).map((row) => ({
         etablissement: str(row.etablissement),
-        diplome: str(row.diplome),
-        dateDebut: str(row.dateDebut),
-        dateFin: str(row.dateFin),
+        // Le diplôme est désormais contraint : une valeur hors liste est ignorée.
+        diplome: DIPLOMES.includes(str(row.diplome)) ? str(row.diplome) : "",
+        dateDebut: toIsoDate(row.dateDebut),
+        dateFin: toIsoDate(row.dateFin),
     }))
     const competences: CvCompetence[] = rows(src.competences).map((row) => ({
         nom: str(row.nom),
@@ -75,7 +108,9 @@ function normalize(raw: Record<string, unknown> | null | undefined): CvContent {
         experiences.push({ ...EMPTY_EXPERIENCE, description: str(src.experience).trim() })
     }
     if (!formations.length && str(src.formation).trim()) {
-        formations.push({ ...EMPTY_FORMATION, diplome: str(src.formation).trim() })
+        // Le diplôme étant maintenant une liste fermée, le texte libre hérité
+        // atterrit dans l'établissement plutôt que d'être perdu.
+        formations.push({ ...EMPTY_FORMATION, etablissement: str(src.formation).trim() })
     }
     if (!competences.length && typeof src.competences === "string") {
         for (const nom of src.competences.split(/[,\n;]/).map((c) => c.trim()).filter(Boolean)) {
@@ -83,10 +118,15 @@ function normalize(raw: Record<string, unknown> | null | undefined): CvContent {
         }
     }
 
+    // Anciens brouillons : le numéro était saisi d'un bloc, indicatif compris.
+    const separe = separerIndicatif(str(src.telephone))
+    const indicatif = str(src.indicatif) || separe.indicatif || INDICATIF_PAR_DEFAUT
+
     return {
         nom: str(src.nom),
         email: str(src.email),
-        telephone: str(src.telephone),
+        indicatif,
+        telephone: str(src.indicatif) ? str(src.telephone) : separe.numero,
         adresse: str(src.adresse),
         profil: str(src.profil),
         experiences,
@@ -279,7 +319,10 @@ function CreerCVContent() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [formData, step, writeLocal])
 
-    const handleInputChange = (field: "nom" | "email" | "telephone" | "adresse" | "profil", value: string) => {
+    const handleInputChange = (
+        field: "nom" | "email" | "indicatif" | "telephone" | "adresse" | "profil",
+        value: string,
+    ) => {
         setFormData((prev) => ({ ...prev, [field]: value }))
     }
 
@@ -296,10 +339,19 @@ function CreerCVContent() {
             return { ...p, competences: drop(p.competences) }
         })
 
-    const updateExperience = (i: number, field: keyof CvExperience, value: string) =>
+    const updateExperience = (i: number, field: keyof CvExperience, value: string | boolean) =>
         setFormData((p) => ({
             ...p,
             experiences: p.experiences.map((row, idx) => (idx === i ? { ...row, [field]: value } : row)),
+        }))
+
+    /** « Je travaille actuellement ici » : coché, la date de fin est vidée. */
+    const toggleExperienceEnCours = (i: number, enCours: boolean) =>
+        setFormData((p) => ({
+            ...p,
+            experiences: p.experiences.map((row, idx) =>
+                idx === i ? { ...row, enCours, dateFin: enCours ? "" : row.dateFin } : row,
+            ),
         }))
 
     const updateFormation = (i: number, field: keyof CvFormation, value: string) =>
@@ -337,14 +389,26 @@ function CreerCVContent() {
         }, 180)
     }
 
+    const indicatif = formData.indicatif || INDICATIF_PAR_DEFAUT
+    const paysIndicatif = PAYS_AFRICAINS.find((p) => p.indicatif === indicatif) ?? PAYS_PAR_DEFAUT
+
     const handleDownloadPDF = () => {
         const filename = `cv-${formData.nom.toLowerCase().replace(/\s+/g, "-") || "document"}.pdf`
-        const periode = (debut: string, fin: string) => [debut, fin].filter(Boolean).join(" – ")
+        // Les dates sont stockées en ISO ; le PDF les rend au format français.
+        const fr = (iso: string) => {
+            const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+            return m ? `${m[3]}/${m[2]}/${m[1]}` : iso
+        }
+        const periode = (debut: string, fin: string) => [fr(debut), fr(fin)].filter(Boolean).join(" – ")
         const section = (title: string, body: string) => (body.trim() ? `\n${title.toUpperCase()}\n${body.trim()}\n` : "")
 
         const experiences = formData.experiences
             .map((e) =>
-                [[e.poste, e.entreprise].filter(Boolean).join(" — "), periode(e.dateDebut, e.dateFin), e.description]
+                [
+                    [e.poste, e.entreprise].filter(Boolean).join(" — "),
+                    e.enCours ? periode(e.dateDebut, "") + (e.dateDebut ? " – En cours" : "En cours") : periode(e.dateDebut, e.dateFin),
+                    e.description,
+                ]
                     .filter(Boolean)
                     .join("\n"),
             )
@@ -367,7 +431,7 @@ function CreerCVContent() {
 
         const content =
             `${formData.nom || "Votre nom"}\n` +
-            `${[formData.email, formData.telephone, formData.adresse].filter(Boolean).join(" · ")}\n` +
+            `${[formData.email, formData.telephone ? `${indicatif} ${formData.telephone}` : "", formData.adresse].filter(Boolean).join(" · ")}\n` +
             section("Profil", formData.profil) +
             section("Expérience professionnelle", experiences) +
             section("Formation", formations) +
@@ -465,10 +529,48 @@ function CreerCVContent() {
                                                 <Input value={formData.email} onChange={(e) => handleInputChange("email", e.target.value)} placeholder="votre.email@exemple.com" className={inputCls} />
                                             </Field>
                                             <Field label="Téléphone">
-                                                <Input value={formData.telephone} onChange={(e) => handleInputChange("telephone", e.target.value)} placeholder="+229 XX XX XX XX" className={inputCls} />
+                                                <div className="flex gap-2">
+                                                    <Select
+                                                        value={formData.indicatif || INDICATIF_PAR_DEFAUT}
+                                                        onValueChange={(v) => handleInputChange("indicatif", v)}
+                                                    >
+                                                        {/* Contenu du déclencheur écrit à la main : SelectValue reprendrait
+                                                            le libellé complet de l'item (drapeau + indicatif + pays). */}
+                                                        <SelectTrigger className={`${inputCls} w-[104px] shrink-0 px-2`} aria-label="Indicatif pays">
+                                                            <span className="flex items-center gap-1">
+                                                                <span>{drapeau(paysIndicatif.iso)}</span>
+                                                                <span>{paysIndicatif.indicatif}</span>
+                                                            </span>
+                                                        </SelectTrigger>
+                                                        <SelectContent className="max-h-64">
+                                                            {PAYS_AFRICAINS.map((p) => (
+                                                                <SelectItem key={p.iso} value={p.indicatif} className="text-[12px]">
+                                                                    <span className="mr-1.5">{drapeau(p.iso)}</span>
+                                                                    {p.indicatif}
+                                                                    <span className="ml-1.5 text-[#8b93a3]">{p.nom}</span>
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <Input
+                                                        type="tel"
+                                                        inputMode="tel"
+                                                        value={formData.telephone}
+                                                        onChange={(e) => handleInputChange("telephone", e.target.value)}
+                                                        placeholder="07 39 47 82"
+                                                        className={inputCls}
+                                                    />
+                                                </div>
                                             </Field>
                                             <Field label="Adresse">
-                                                <Input value={formData.adresse} onChange={(e) => handleInputChange("adresse", e.target.value)} placeholder="Ville, Pays" className={inputCls} />
+                                                <AutocompleteInput
+                                                    value={formData.adresse}
+                                                    onChange={(v) => handleInputChange("adresse", v)}
+                                                    options={LOCALISATIONS}
+                                                    placeholder="Ville, Pays"
+                                                    className={inputCls}
+                                                    aria-label="Adresse ou localisation"
+                                                />
                                             </Field>
                                         </div>
                                         <div className="mt-3">
@@ -492,15 +594,47 @@ function CreerCVContent() {
                                                             <Input value={exp.entreprise} onChange={(e) => updateExperience(i, "entreprise", e.target.value)} placeholder="Nom de l'entreprise" className={inputCls} />
                                                         </Field>
                                                         <Field label="Poste">
-                                                            <Input value={exp.poste} onChange={(e) => updateExperience(i, "poste", e.target.value)} placeholder="Intitulé du poste" className={inputCls} />
+                                                            <AutocompleteInput
+                                                                value={exp.poste}
+                                                                onChange={(v) => updateExperience(i, "poste", v)}
+                                                                options={POSTES}
+                                                                placeholder="Intitulé du poste"
+                                                                className={inputCls}
+                                                                aria-label="Intitulé du poste"
+                                                            />
                                                         </Field>
                                                         <Field label="Date de début">
-                                                            <Input value={exp.dateDebut} onChange={(e) => updateExperience(i, "dateDebut", e.target.value)} placeholder="jj/mm/aaaa" className={inputCls} />
+                                                            <Input
+                                                                type="date"
+                                                                value={exp.dateDebut}
+                                                                max={exp.dateFin || undefined}
+                                                                onChange={(e) => updateExperience(i, "dateDebut", e.target.value)}
+                                                                className={inputCls}
+                                                            />
                                                         </Field>
                                                         <Field label="Date de fin">
-                                                            <Input value={exp.dateFin} onChange={(e) => updateExperience(i, "dateFin", e.target.value)} placeholder="jj/mm/aaaa" className={inputCls} />
+                                                            {exp.enCours ? (
+                                                                <div className="flex h-8 items-center rounded-[7px] bg-[#f1f2f5] px-3 text-[12px] text-[#8b93a3]">
+                                                                    En cours
+                                                                </div>
+                                                            ) : (
+                                                                <Input
+                                                                    type="date"
+                                                                    value={exp.dateFin}
+                                                                    min={exp.dateDebut || undefined}
+                                                                    onChange={(e) => updateExperience(i, "dateFin", e.target.value)}
+                                                                    className={inputCls}
+                                                                />
+                                                            )}
                                                         </Field>
                                                     </div>
+                                                    <label className="mt-2 flex cursor-pointer items-center gap-2 text-[12px] text-[#5b6474]">
+                                                        <Checkbox
+                                                            checked={exp.enCours}
+                                                            onCheckedChange={(c) => toggleExperienceEnCours(i, c === true)}
+                                                        />
+                                                        J&apos;occupe actuellement ce poste
+                                                    </label>
                                                     <div className="mt-3">
                                                         <Field label="Description">
                                                             <Textarea value={exp.description} onChange={(e) => updateExperience(i, "description", e.target.value)} placeholder="Décrivez vos missions et vos réalisations..." className={`min-h-[92px] ${areaCls}`} />
@@ -524,13 +658,37 @@ function CreerCVContent() {
                                                             <Input value={f.etablissement} onChange={(e) => updateFormation(i, "etablissement", e.target.value)} placeholder="Nom de l'établissement" className={inputCls} />
                                                         </Field>
                                                         <Field label="Diplome/Formation">
-                                                            <Input value={f.diplome} onChange={(e) => updateFormation(i, "diplome", e.target.value)} placeholder="Intitulé du diplôme" className={inputCls} />
+                                                            {/* Radix affiche le placeholder tant que la valeur vaut "". */}
+                                                            <Select value={f.diplome} onValueChange={(v) => updateFormation(i, "diplome", v)}>
+                                                                <SelectTrigger className={`${inputCls} px-3`} aria-label="Diplôme">
+                                                                    <SelectValue placeholder="Sélectionnez un diplôme" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {DIPLOMES.map((d) => (
+                                                                        <SelectItem key={d} value={d} className="text-[12px]">
+                                                                            {d}
+                                                                        </SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
                                                         </Field>
                                                         <Field label="Date de début">
-                                                            <Input value={f.dateDebut} onChange={(e) => updateFormation(i, "dateDebut", e.target.value)} placeholder="jj/mm/aaaa" className={inputCls} />
+                                                            <Input
+                                                                type="date"
+                                                                value={f.dateDebut}
+                                                                max={f.dateFin || undefined}
+                                                                onChange={(e) => updateFormation(i, "dateDebut", e.target.value)}
+                                                                className={inputCls}
+                                                            />
                                                         </Field>
                                                         <Field label="Date de fin">
-                                                            <Input value={f.dateFin} onChange={(e) => updateFormation(i, "dateFin", e.target.value)} placeholder="jj/mm/aaaa" className={inputCls} />
+                                                            <Input
+                                                                type="date"
+                                                                value={f.dateFin}
+                                                                min={f.dateDebut || undefined}
+                                                                onChange={(e) => updateFormation(i, "dateFin", e.target.value)}
+                                                                className={inputCls}
+                                                            />
                                                         </Field>
                                                     </div>
                                                 </div>

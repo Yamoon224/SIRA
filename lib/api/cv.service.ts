@@ -4,14 +4,19 @@ import { apiRequest } from "@/lib/api-client-http"
 export interface CvExperience {
     entreprise: string
     poste: string
+    /** Date ISO `YYYY-MM-DD` (valeur d'un `<input type="date">`). */
     dateDebut: string
+    /** Vide lorsque `enCours` est vrai. */
     dateFin: string
+    /** Poste toujours occupé : la date de fin devient « En cours ». */
+    enCours: boolean
     description: string
 }
 
 /** Une entrée de la liste « Formation ». */
 export interface CvFormation {
     etablissement: string
+    /** Niveau de diplôme, contraint par la liste DIPLOMES du formulaire. */
     diplome: string
     dateDebut: string
     dateFin: string
@@ -26,6 +31,9 @@ export interface CvCompetence {
 export interface CvContent {
     nom: string
     email: string
+    /** Indicatif pays sélectionné, ex. « +225 ». */
+    indicatif: string
+    /** Numéro local, sans indicatif. */
     telephone: string
     adresse: string
     profil: string
