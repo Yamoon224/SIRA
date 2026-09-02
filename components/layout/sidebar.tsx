@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils"
 import {
     Home,
     MessageSquare,
+    Library,
     Briefcase,
     Building2,
     User,
@@ -40,6 +41,7 @@ const navSections: NavSection[] = [
         items: [
             { title: "Tableau de bord", href: "/dashboard", icon: Home },
             { title: "Messages", href: "/messages", icon: MessageSquare },
+            { title: "Bibliothèque", href: "/bibliotheque", icon: Library },
             { title: "GORIYA Connect", href: "/connect", icon: Users2 },
             { title: "Appels vidéo", href: "/appels", icon: Video },
         ],

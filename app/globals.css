@@ -150,6 +150,35 @@
     font: inherit;
   }
 
+  /* Les champs date/heure natifs s'imposent une largeur intrinsèque et, sur
+     iOS, centrent leur valeur avec leurs propres marges : dans une colonne
+     étroite (mobile) ils débordent, et `body { overflow-x: hidden }` les rogne
+     au lieu de les faire défiler. On les ramène au comportement d'un champ
+     texte ordinaire, libre de rétrécir. */
+  input[type="date"],
+  input[type="time"],
+  input[type="datetime-local"] {
+    -webkit-appearance: none;
+    appearance: none;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  input[type="date"]::-webkit-date-and-time-value,
+  input[type="time"]::-webkit-date-and-time-value,
+  input[type="datetime-local"]::-webkit-date-and-time-value {
+    text-align: left;
+    margin: 0;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator,
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    flex-shrink: 0;
+    margin-inline-start: 0;
+    padding-inline: 0;
+  }
+
   /* Curseur « main » sur tout élément interactif */
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),

@@ -165,8 +165,10 @@ const isEmptyCv = (cv: CvContent) =>
     !cv.competences.length
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
+    // `min-w-0` : sans ça un champ à largeur intrinsèque (date natif) refuse de
+    // rétrécir sous la largeur de sa colonne et déborde sur mobile.
     return (
-        <div>
+        <div className="min-w-0">
             <label className="mb-1 block text-[11px] text-[#8b93a3]">{label}</label>
             {children}
         </div>
