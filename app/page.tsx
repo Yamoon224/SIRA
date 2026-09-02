@@ -16,6 +16,7 @@ import { CompanyLogo } from "@/components/company-logo"
 import { articleService, type IArticle } from "@/lib/api/article.service"
 import { useAuth } from "@/contexts/auth-context"
 import { getDeviceId } from "@/lib/device"
+import { BACKEND_URL } from "@/lib/backend-url"
 import type { CVAnalysis } from "@/lib/@types/openai"
 
 type GateState = "idle" | "requires_auth" | "requires_subscription"
@@ -122,7 +123,7 @@ export default function Page() {
     useEffect(() => {
         if (authLoading || isLoggedIn) return
         const deviceId = getDeviceId()
-        fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || "https://goriya-backend-production.up.railway.app"}/anonymous-usage/status?deviceId=${deviceId}&featureKey=cv_analysis`)
+        fetch(`${BACKEND_URL}/anonymous-usage/status?deviceId=${deviceId}&featureKey=cv_analysis`)
             .then(r => r.json())
             .then(data => setFreeUsage(data))
             .catch(() => {})

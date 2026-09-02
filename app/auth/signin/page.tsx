@@ -211,11 +211,8 @@ export default function Page() {
                                 <ChevronLeft className="w-3 h-3 mr-1" />
                                 Retour
                             </Link>
-                            <AppLogo />
                         </div>
-                        <h1 className="text-2xl font-bold text-foreground text-center">
-                            Bienvenue
-                        </h1>
+                        <AppLogo width={120} className="mx-auto" />
                     </div>
 
                     <div className="space-y-4">

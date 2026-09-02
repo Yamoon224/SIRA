@@ -24,6 +24,10 @@ export default function LinkedInCallbackPage() {
     const router = useRouter()
     const exchanged = useRef(false)
     const [errorMsg, setErrorMsg] = useState("")
+    // Nomme l'étape en cours : un spinner qui tourne sans rien dire ne permet
+    // pas de savoir si c'est l'échange du code ou l'ouverture de session qui
+    // traîne.
+    const [step, setStep] = useState("Vérification du retour LinkedIn…")
 
     useEffect(() => {
         if (exchanged.current) return
@@ -45,10 +49,19 @@ export default function LinkedInCallbackPage() {
             return
         }
 
+        // Aucun paramètre : la page a été ouverte directement, ou la query
+        // string a été perdue en route (redirection apex → www, proxy…).
+        if (!code && !state) {
+            setErrorMsg("Aucun retour LinkedIn dans l'URL. Relance la connexion depuis la page de connexion.")
+            return
+        }
+
         // `state` rejoué : protège du CSRF (un tiers qui ferait échanger son
-        // propre code dans la session de la victime).
+        // propre code dans la session de la victime). Échoue aussi si l'onglet
+        // qui a lancé la connexion n'est pas celui qui reçoit le retour :
+        // sessionStorage est lié à l'onglet.
         if (!consumeLinkedInState(state)) {
-            setErrorMsg("Session LinkedIn expirée ou invalide. Relance la connexion.")
+            setErrorMsg("Session LinkedIn expirée ou ouverte dans un autre onglet. Relance la connexion.")
             return
         }
 
@@ -59,6 +72,7 @@ export default function LinkedInCallbackPage() {
 
         const run = async () => {
             try {
+                setStep("Échange du code LinkedIn…")
                 const response = await authService.linkedinAuth(code, getLinkedInRedirectUri())
                 const payload = (response as any)?.data ?? response
                 const userData = payload?.user
@@ -67,6 +81,7 @@ export default function LinkedInCallbackPage() {
 
                 if (!userData || !token) throw new Error("Réponse invalide du serveur")
 
+                setStep("Ouverture de la session…")
                 const tokenResult = await signIn("token", { token, redirect: false })
                 if (tokenResult?.error) throw new Error("Erreur lors de la connexion avec LinkedIn")
 
@@ -78,7 +93,15 @@ export default function LinkedInCallbackPage() {
                     router.replace("/dashboard")
                 }
             } catch (error: any) {
-                setErrorMsg(error?.message || "Erreur lors de la connexion avec LinkedIn. Réessaie.")
+                // Le message du backend arrive tel quel (apiRequest relaie le
+                // corps de la réponse) ; sans corps, c'est une panne réseau ou
+                // une URL de backend injoignable — on le dit plutôt que
+                // d'afficher un message générique qui masque la cause.
+                console.error("[linkedin] échec de l'échange:", error)
+                setErrorMsg(
+                    error?.message ||
+                    "Le backend n'a pas répondu. Vérifie NEXT_PUBLIC_BACKEND_URL et que /auth/linkedin est joignable."
+                )
             }
         }
 
@@ -100,7 +123,7 @@ export default function LinkedInCallbackPage() {
             ) : (
                 <>
                     <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">Connexion à LinkedIn en cours…</p>
+                    <p className="text-sm text-muted-foreground">{step}</p>
                 </>
             )}
         </div>

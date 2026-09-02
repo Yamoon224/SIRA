@@ -1,12 +1,18 @@
 import { resolveToken } from './utils';
 import { RequestOptions } from '@/lib/@types/api';
+import { BACKEND_URL, BACKEND_TIMEOUT_MS } from '@/lib/backend-url';
 import axios, { AxiosRequestConfig } from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://goriya-api.lunion-lab.com';
+const API_BASE_URL = BACKEND_URL;
 
-export async function apiRequest<T>({ endpoint, method = 'GET', data, params, silent = false }: RequestOptions): Promise<T> {
+export async function apiRequest<T>({ endpoint, method = 'GET', data, params, silent = false, skipAuth = false }: RequestOptions): Promise<T> {
     try {
-        const resolvedToken = await resolveToken();
+        // Les endpoints publics (connexion, inscription, retour Google/LinkedIn)
+        // n'ont pas de token à joindre. Y appeler resolveToken() n'est pas
+        // seulement inutile : ça déclenche /api/auth/session, donc le callback
+        // `jwt` de NextAuth et potentiellement un refresh côté serveur — une
+        // dépendance qui n'a rien à faire dans un parcours de connexion.
+        const resolvedToken = skipAuth ? undefined : await resolveToken();
 
         const config: AxiosRequestConfig = {
             url: `${API_BASE_URL}${endpoint}`,
@@ -14,6 +20,7 @@ export async function apiRequest<T>({ endpoint, method = 'GET', data, params, si
             headers: {},
             data,
             params,
+            timeout: BACKEND_TIMEOUT_MS,
         };
 
         if (resolvedToken) {

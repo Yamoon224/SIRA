@@ -63,8 +63,10 @@ export default function Page() {
                 <div className="mx-auto mb-3 flex h-7 w-7 items-center justify-center rounded-md bg-[#7f39fb] text-white">
                   <Icon className="h-4 w-4" strokeWidth={2} />
                 </div>
-                <p className="mx-auto max-w-[145px] text-[14px] font-medium leading-[1.25] text-[#161d2d]">{card.title}</p>
-                <p className="mx-auto mt-2 max-w-[160px] text-[11px] leading-[1.35] text-[#8b93a3]">{card.description}</p>
+                {/* `text-center` explicite : globals.css justifie tous les `main p`,
+                    ce qui déchirait les libellés courts des cartes. */}
+                <p className="mx-auto max-w-[145px] text-center text-[14px] font-medium leading-[1.25] text-[#161d2d]">{card.title}</p>
+                <p className="mx-auto mt-2 max-w-[160px] text-center text-[11px] leading-[1.35] text-[#8b93a3]">{card.description}</p>
               </button>
             )
           })}

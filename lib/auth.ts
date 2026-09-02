@@ -1,11 +1,11 @@
 import { JWT } from "next-auth/jwt"
 import { authService } from "./api/auth.service";
+import { BACKEND_URL, BACKEND_TIMEOUT_MS } from "./backend-url";
 import CredentialsProvider from "next-auth/providers/credentials";
 import type { NextAuthOptions } from "next-auth";
 import { DefaultUser, DefaultSession, User, Session } from "next-auth";
 
 const authSecret = process.env.NEXTAUTH_SECRET ?? process.env.NEXT_AUTH_SECRET;
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://goriya-backend-production.up.railway.app";
 
 // 🔹 Étendre les types NextAuth
 declare module "next-auth" {
@@ -59,9 +59,12 @@ function jwtExpiresAtMs(jwt?: string): number {
 }
 
 async function refreshBackendToken(currentToken: string): Promise<string> {
+    // Sans timeout, un backend injoignable suspend /api/auth/session — et donc
+    // tout ce qui attend la session, y compris les parcours de connexion.
     const res = await fetch(`${BACKEND_URL}/auth/refresh`, {
         method: "POST",
         headers: { Authorization: `Bearer ${currentToken}` },
+        signal: AbortSignal.timeout(BACKEND_TIMEOUT_MS),
     })
     if (!res.ok) throw new Error(`refresh failed with status ${res.status}`)
     const data = await res.json()
@@ -139,6 +142,7 @@ export const authOptions: NextAuthOptions = {
                     // n'existe pas côté backend.
                     const res = await fetch(`${BACKEND_URL}/admin/auth/profile`, {
                         headers: { Authorization: `Bearer ${token}` },
+                        signal: AbortSignal.timeout(BACKEND_TIMEOUT_MS),
                     });
                     if (!res.ok) return null;
 

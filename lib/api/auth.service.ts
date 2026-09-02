@@ -2,12 +2,17 @@ import { apiRequest } from "@/lib/api-client-http"
 import { ApiResponse } from "@/lib/@types/api"
 import { IUser } from "@/lib/@types/entities";
 
+// `skipAuth: true` sur tout ce qui s'exécute avant qu'une session existe : ces
+// endpoints sont publics, et passer par resolveToken() ferait dépendre la
+// connexion de /api/auth/session — donc du backend — avant même d'avoir tenté
+// de se connecter.
 export const authService = {
     login: async (credentials: { email: string; password: string }) => {
         return apiRequest<{ access_token: string; user: IUser }>({
             endpoint: "/auth/login",
             method: "POST",
             data: credentials,
+            skipAuth: true,
         })
     },
 
@@ -22,6 +27,7 @@ export const authService = {
             endpoint: "/users",
             method: "POST",
             data: userData,
+            skipAuth: true,
         })
     },
 
@@ -44,6 +50,7 @@ export const authService = {
             endpoint: "/auth/otp/request",
             method: "POST",
             data: { email, purpose },
+            skipAuth: true,
         })
     },
 
@@ -52,6 +59,7 @@ export const authService = {
             endpoint: "/auth/otp/verify",
             method: "POST",
             data: { email, code, purpose },
+            skipAuth: true,
         })
     },
 
@@ -60,6 +68,7 @@ export const authService = {
             endpoint: "/auth/google",
             method: "POST",
             data: { credential },
+            skipAuth: true,
         })
     },
 
@@ -70,6 +79,7 @@ export const authService = {
             endpoint: "/auth/linkedin",
             method: "POST",
             data: { code, redirectUri },
+            skipAuth: true,
         })
     },
 }

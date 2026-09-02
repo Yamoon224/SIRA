@@ -88,7 +88,7 @@ export default function PlanPage() {
         <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-12">
             <div className="w-full max-w-5xl">
                 <div className="text-center mb-10">
-                    <img src="/favicon.png" alt="" aria-hidden className="mx-auto mb-4 h-12 w-12 object-contain" />
+                    <img src="/goriya-logo-mark.png" alt="" aria-hidden className="mx-auto mb-4 h-12 w-12 object-contain" />
                     <h1 className="text-3xl font-bold text-foreground mb-2">Choisis ton forfait</h1>
                     <p className="text-muted-foreground text-sm">Commence gratuitement, passe au Premium quand tu veux</p>
                 </div>

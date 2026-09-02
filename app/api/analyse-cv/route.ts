@@ -3,10 +3,11 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import type { CVAnalysis } from "@/lib/@types/openai"
+import { BACKEND_URL } from "@/lib/backend-url"
 
 export const runtime = "nodejs"
 
-const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || "https://goriya-backend-production.up.railway.app"
+const BACKEND = BACKEND_URL
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

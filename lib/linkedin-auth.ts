@@ -41,15 +41,19 @@ export const signInWithLinkedIn = () => {
     const state = createState()
     sessionStorage.setItem(STATE_KEY, state)
 
-    const params = new URLSearchParams({
-        response_type: "code",
-        client_id: LINKEDIN_CLIENT_ID,
-        redirect_uri: getLinkedInRedirectUri(),
-        state,
-        scope: SCOPES,
-    })
+    // URLSearchParams encode l'espace en `+` ; LinkedIn attend `%20` dans
+    // `scope`. On encode donc chaque paramètre à la main.
+    const params = [
+        ["response_type", "code"],
+        ["client_id", LINKEDIN_CLIENT_ID],
+        ["redirect_uri", getLinkedInRedirectUri()],
+        ["state", state],
+        ["scope", SCOPES],
+    ]
+        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+        .join("&")
 
-    window.location.href = `${AUTHORIZE_URL}?${params.toString()}`
+    window.location.href = `${AUTHORIZE_URL}?${params}`
 }
 
 /**

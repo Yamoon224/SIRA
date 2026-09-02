@@ -25,4 +25,5 @@ export interface RequestOptions {
     data?: any;      // body data pour POST/PUT/PATCH
     params?: any;    // query params pour GET
     silent?: boolean; // désactive les logs d'erreur pour les tentatives de fallback
+    skipAuth?: boolean; // endpoint public : n'essaie pas de résoudre la session NextAuth
 }
