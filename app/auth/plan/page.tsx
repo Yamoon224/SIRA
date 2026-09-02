@@ -88,11 +88,7 @@ export default function PlanPage() {
         <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-12">
             <div className="w-full max-w-5xl">
                 <div className="text-center mb-10">
-                    {/* Le favicon est un « g » bleu sur fond clair : on le pose en
-                        médaillon, l'aplat bleu restant visible en anneau autour. */}
-                    <div className="w-12 h-12 bg-[#2f6de6] rounded-full flex items-center justify-center mx-auto mb-4">
-                        <img src="/favicon.png" alt="" aria-hidden className="h-9 w-9 rounded-full object-cover" />
-                    </div>
+                    <img src="/favicon.png" alt="" aria-hidden className="mx-auto mb-4 h-12 w-12 object-contain" />
                     <h1 className="text-3xl font-bold text-foreground mb-2">Choisis ton forfait</h1>
                     <p className="text-muted-foreground text-sm">Commence gratuitement, passe au Premium quand tu veux</p>
                 </div>
