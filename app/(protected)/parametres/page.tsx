@@ -6,8 +6,10 @@ import { toast } from "sonner"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { AutocompleteInput } from "@/components/autocomplete-input"
 import { LOCALISATIONS } from "@/lib/data/afrique"
+import { POSTES } from "@/lib/data/postes"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
@@ -97,7 +99,16 @@ export default function ParametresPage() {
     }
   }
 
-  const [profile, setProfile] = useState({ firstName: "", lastName: "", email: "", location: "", avatar: "" as string | null })
+  const [profile, setProfile] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    title: "",
+    location: "",
+    bio: "",
+    avatar: "" as string | null,
+  })
   const [savingProfile, setSavingProfile] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
 
@@ -110,7 +121,10 @@ export default function ParametresPage() {
           firstName: parts[0] ?? "",
           lastName: parts.slice(1).join(" "),
           email: data?.email ?? "",
+          phone: data?.phone ?? "",
+          title: data?.title ?? "",
           location: data?.location ?? "",
+          bio: data?.bio ?? "",
           avatar: data?.avatar ?? null,
         })
       })
@@ -123,7 +137,10 @@ export default function ParametresPage() {
       await userService.updateProfile({
         name: `${profile.firstName} ${profile.lastName}`.trim(),
         email: profile.email,
+        phone: profile.phone.trim(),
+        title: profile.title.trim(),
         location: profile.location.trim(),
+        bio: profile.bio.trim(),
       } as any)
       refreshProfile()
       toast.success("Profil mis à jour")
@@ -270,14 +287,38 @@ export default function ParametresPage() {
                   </div>
                 </div>
 
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={profile.email}
+                      placeholder="Adresse e-mail"
+                      onChange={(e) => setProfile((prev) => ({ ...prev, email: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone">Téléphone</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      inputMode="tel"
+                      value={profile.phone}
+                      placeholder="+225 07 39 47 82"
+                      onChange={(e) => setProfile((prev) => ({ ...prev, phone: e.target.value }))}
+                    />
+                  </div>
+                </div>
+
                 <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={profile.email}
-                    placeholder="Adresse e-mail"
-                    onChange={(e) => setProfile((prev) => ({ ...prev, email: e.target.value }))}
+                  <Label htmlFor="title">Titre professionnel</Label>
+                  <AutocompleteInput
+                    id="title"
+                    value={profile.title}
+                    onChange={(v) => setProfile((prev) => ({ ...prev, title: v }))}
+                    options={POSTES}
+                    placeholder="Ex : Développeur Full Stack"
                   />
                 </div>
 
@@ -289,6 +330,18 @@ export default function ParametresPage() {
                     onChange={(v) => setProfile((prev) => ({ ...prev, location: v }))}
                     options={LOCALISATIONS}
                     placeholder="Ville, pays (ex: Abidjan, Côte d'Ivoire)"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="bio">Bio</Label>
+                  <Textarea
+                    id="bio"
+                    rows={4}
+                    value={profile.bio}
+                    placeholder="Présente-toi en quelques lignes : ton parcours, ce que tu cherches…"
+                    onChange={(e) => setProfile((prev) => ({ ...prev, bio: e.target.value }))}
+                    className="resize-none"
                   />
                 </div>
 
@@ -466,8 +519,10 @@ export default function ParametresPage() {
             </Card>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
+          {/* Sidebar : `self-start` pour ne pas s'étirer sur la hauteur de la
+              colonne de gauche (bien plus longue), `sticky` pour rester visible
+              au lieu de laisser un grand vide au bas du défilement. */}
+          <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
