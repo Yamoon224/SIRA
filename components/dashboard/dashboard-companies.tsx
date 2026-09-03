@@ -20,7 +20,7 @@ export function DashboardCompanies({ companies }: DashboardCompaniesProps) {
                     {companies.map((company) => (
                         <div
                             key={company.id}
-                            className="border border-border rounded-sm p-4 hover:shadow-md transition-shadow"
+                            className="border border-border rounded-md p-4 hover:shadow-md transition-shadow"
                         >
                             <div className="flex items-start justify-between mb-3">
                                 <div className="flex items-center space-x-3">

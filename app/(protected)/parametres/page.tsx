@@ -19,14 +19,13 @@ import { User, Bell, Shield, CreditCard, HelpCircle, LogOut, Palette, Globe } fr
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { useTheme } from "next-themes"
 import { useAuth } from "@/contexts/auth-context"
-import { localeService, type Locale } from "@/lib/api/locale.service"
+import { LOCALE_LABELS, SUPPORTED_LOCALES, type SupportedLocale } from "@/lib/api/locale.service"
+import { useI18n } from "@/contexts/i18n-context"
 import { userService } from "@/lib/api/user.service"
 import { notificationService } from "@/lib/api/notification.service"
 import { subscriptionService } from "@/lib/api/subscription.service"
 import { formatFileUrl } from "@/lib/utils"
 import { PageHeader } from "@/components/layout/page-header"
-
-const LOCALE_LABELS: Record<Locale, string> = { fr: "Français", en: "English", pt: "Português", ar: "العربية" }
 
 interface Subscription {
     status: "ACTIVE" | "EXPIRED" | "CANCELLED"
@@ -66,20 +65,15 @@ export default function ParametresPage() {
       .catch((err) => console.error("[parametres] notification settings load error:", err))
   }, [])
 
-  const [locale, setLocale] = useState<Locale>("fr")
+  // La locale est portée par le contexte i18n : la changer ici bascule
+  // immédiatement toute l'interface, en plus de la persister sur le compte.
+  const { locale, setLocale, t } = useI18n()
   const [savingLocale, setSavingLocale] = useState(false)
 
-  useEffect(() => {
-    localeService.get()
-      .then((res) => setLocale(((res as any)?.data ?? res)?.locale ?? "fr"))
-      .catch((err) => console.error("[parametres] locale load error:", err))
-  }, [])
-
-  const handleLocaleChange = async (value: Locale) => {
-    setLocale(value)
+  const handleLocaleChange = async (value: SupportedLocale) => {
     setSavingLocale(true)
     try {
-      await localeService.update(value)
+      await setLocale(value)
     } catch (err) {
       console.error("[parametres] locale update error:", err)
     } finally {
@@ -229,8 +223,8 @@ export default function ParametresPage() {
       <div className="space-y-6">
         <PageHeader
           className="mb-0"
-          title="Paramètres"
-          description="Gère tes préférences et paramètres de compte"
+          title={t("settings.title")}
+          description={t("settings.subtitle")}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -240,7 +234,7 @@ export default function ParametresPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <User className="w-5 h-5" />
-                  Informations personnelles
+                  {t("settings.personalInfo")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -325,13 +319,13 @@ export default function ParametresPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="location">Localisation</Label>
+                  <Label htmlFor="location">{t("settings.location")}</Label>
                   <AutocompleteInput
                     id="location"
                     value={profile.location}
                     onChange={(v) => setProfile((prev) => ({ ...prev, location: v }))}
                     options={LOCALISATIONS}
-                    placeholder="Ville, pays (ex: Abidjan, Côte d'Ivoire)"
+                    placeholder={t("settings.locationPlaceholder")}
                   />
                 </div>
 
@@ -348,7 +342,7 @@ export default function ParametresPage() {
                 </div>
 
                 <Button disabled={savingProfile} onClick={handleSaveProfile}>
-                  {savingProfile ? "Enregistrement..." : "Sauvegarder les modifications"}
+                  {savingProfile ? t("common.saving") : t("settings.saveProfile")}
                 </Button>
               </CardContent>
             </Card>
@@ -357,14 +351,14 @@ export default function ParametresPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bell className="w-5 h-5" />
-                  Notifications
+                  {t("settings.notifications")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Mes candidatures</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Suivi de tes candidatures envoyées</p>
+                    <p className="font-medium">{t("settings.myApplications")}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t("settings.myApplicationsHint")}</p>
                   </div>
                   <Switch
                     checked={notifications.applications}
@@ -377,9 +371,9 @@ export default function ParametresPage() {
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Nouvelles offres d'emploi</p>
+                    <p className="font-medium">{t("settings.newJobs")}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Sois alerté des nouvelles offres correspondant à ton profil
+                      {t("settings.newJobsHint")}
                     </p>
                   </div>
                   <Switch
@@ -393,8 +387,8 @@ export default function ParametresPage() {
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Recommandations</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Suggestions personnalisées pour ta carrière</p>
+                    <p className="font-medium">{t("settings.recommendations")}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t("settings.recommendationsHint")}</p>
                   </div>
                   <Switch
                     checked={notifications.recommandations}
@@ -409,12 +403,12 @@ export default function ParametresPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="w-5 h-5" />
-                  Sécurité
+                  {t("settings.security")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="newPassword">Nouveau mot de passe</Label>
+                  <Label htmlFor="newPassword">{t("settings.newPassword")}</Label>
                   <Input
                     id="newPassword"
                     type="password"
@@ -424,7 +418,7 @@ export default function ParametresPage() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+                  <Label htmlFor="confirmPassword">{t("settings.confirmPassword")}</Label>
                   <Input
                     id="confirmPassword"
                     type="password"
@@ -434,7 +428,7 @@ export default function ParametresPage() {
                   />
                 </div>
                 <Button disabled={changingPassword} onClick={handleChangePassword}>
-                  {changingPassword ? "Modification..." : "Changer le mot de passe"}
+                  {changingPassword ? t("settings.changingPassword") : t("settings.changePassword")}
                 </Button>
               </CardContent>
             </Card>
@@ -449,7 +443,7 @@ export default function ParametresPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CreditCard className="w-5 h-5" />
-                  Abonnement
+                  {t("settings.subscription")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -461,20 +455,22 @@ export default function ParametresPage() {
                   <div className="text-center">
                     <div className="text-2xl font-bold text-blue-600 mb-1">{subscription.plan?.name ?? "Premium"}</div>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                      {subscription.plan ? `${Number(subscription.plan.price).toLocaleString("fr-FR")} FCFA / ${subscription.plan.billingPeriod === "ANNUAL" ? "an" : "mois"}` : ""}
+                      {subscription.plan
+                        ? `${Number(subscription.plan.price).toLocaleString(locale)} FCFA / ${subscription.plan.billingPeriod === "ANNUAL" ? t("settings.perYear") : t("settings.perMonth")}`
+                        : ""}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-500 mb-4">
-                      Renouvellement le {new Date(subscription.endDate).toLocaleDateString("fr-FR")}
+                      {t("settings.renewsOn", { date: new Date(subscription.endDate).toLocaleDateString(locale) })}
                     </p>
                     <Button variant="outline" className="w-full text-red-600 hover:text-red-700" onClick={handleCancelSubscription}>
-                      Annuler l'abonnement
+                      {t("settings.cancelSubscription")}
                     </Button>
                   </div>
                 ) : (
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600 mb-1">Gratuit</div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Plan actuel</p>
-                    <Button className="w-full" onClick={() => router.push("/auth/plan")}>Passer au Premium</Button>
+                    <div className="text-2xl font-bold text-blue-600 mb-1">{t("settings.freePlan")}</div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{t("settings.currentPlan")}</p>
+                    <Button className="w-full" onClick={() => router.push("/auth/plan")}>{t("settings.upgrade")}</Button>
                   </div>
                 )}
               </CardContent>
@@ -485,14 +481,14 @@ export default function ParametresPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Palette className="w-5 h-5" />
-                  Apparence
+                  {t("settings.appearance")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Thème de l'application</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Choisis l'apparence de l'interface</p>
+                    <p className="font-medium">{t("settings.appTheme")}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t("settings.appThemeHint")}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <ThemeToggle />
@@ -540,7 +536,7 @@ export default function ParametresPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Globe className="w-5 h-5" />
-                  Langue
+                  {t("settings.language")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -548,13 +544,13 @@ export default function ParametresPage() {
                     trop étroite pour un libellé et un select côte à côte. */}
                 <div className="space-y-3">
                   <div>
-                    <p className="font-medium">Langue de l'interface</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Utilisée pour les emails, messages de validation et réponses de l'assistant IA</p>
+                    <p className="font-medium">{t("settings.interfaceLanguage")}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t("settings.interfaceLanguageHint")}</p>
                   </div>
-                  <Select value={locale} onValueChange={(v) => handleLocaleChange(v as Locale)} disabled={savingLocale}>
+                  <Select value={locale} onValueChange={(v) => handleLocaleChange(v as SupportedLocale)} disabled={savingLocale}>
                     <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      {(Object.keys(LOCALE_LABELS) as Locale[]).map((l) => (
+                      {SUPPORTED_LOCALES.map((l) => (
                         <SelectItem key={l} value={l}>{LOCALE_LABELS[l]}</SelectItem>
                       ))}
                     </SelectContent>
@@ -571,7 +567,7 @@ export default function ParametresPage() {
                 </Button>
                 <Button variant="ghost" className="w-full justify-start text-red-600 hover:text-red-700" onClick={() => logout()}>
                   <LogOut className="w-4 h-4 mr-2" />
-                  Se déconnecter
+                  {t("nav.signOut")}
                 </Button>
               </CardContent>
             </Card>

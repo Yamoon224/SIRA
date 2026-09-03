@@ -8,6 +8,7 @@ import { PwaRegister } from "@/components/pwa-register"
 import { SessionProvider } from "@/components/session-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/contexts/auth-context"
+import { I18nProvider } from "@/contexts/i18n-context"
 import { Toaster } from "sonner"
 
 const inter = Inter({
@@ -65,9 +66,11 @@ export default function RootLayout({
                 >
                     <SessionProvider>
                         <AuthProvider>
-                            <Suspense fallback={null}>
-                                {children}
-                            </Suspense>
+                            <I18nProvider>
+                                <Suspense fallback={null}>
+                                    {children}
+                                </Suspense>
+                            </I18nProvider>
                         </AuthProvider>
                     </SessionProvider>
                 </ThemeProvider>

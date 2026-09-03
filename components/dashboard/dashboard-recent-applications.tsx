@@ -38,7 +38,7 @@ export function DashboardRecentApplications({ applications }: DashboardRecentApp
                 {applications.map((application) => (
                     <div
                         key={application.id}
-                        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 border border-border rounded-sm"
+                        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 border border-border rounded-md"
                     >
                         <div className="flex items-center space-x-4 flex-1 min-w-0">
                             <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">

@@ -5,6 +5,7 @@ import Link from "next/link"
 import { AppLogo } from "@/components/app-logo"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { useT, type TranslationKey } from "@/contexts/i18n-context"
 import {
     Home,
     MessageSquare,
@@ -30,8 +31,8 @@ import {
     type LucideIcon,
 } from "lucide-react"
 
-type NavItem = { title: string; href: string; icon: LucideIcon }
-type NavSection = { label?: string; items: NavItem[] }
+type NavItem = { key: TranslationKey; href: string; icon: LucideIcon }
+type NavSection = { labelKey?: TranslationKey; items: NavItem[] }
 
 // Regroupé par thématique plutôt qu'une longue liste plate : la première
 // section (accueil) reste toujours visible, les suivantes sont des accordéons
@@ -39,71 +40,74 @@ type NavSection = { label?: string; items: NavItem[] }
 const navSections: NavSection[] = [
     {
         items: [
-            { title: "Tableau de bord", href: "/dashboard", icon: Home },
-            { title: "Messages", href: "/messages", icon: MessageSquare },
-            { title: "Bibliothèque", href: "/bibliotheque", icon: Library },
-            { title: "GORIYA Connect", href: "/connect", icon: Users2 },
-            { title: "Appels vidéo", href: "/appels", icon: Video },
+            { key: "nav.dashboard", href: "/dashboard", icon: Home },
+            { key: "nav.messages", href: "/messages", icon: MessageSquare },
+            { key: "nav.library", href: "/bibliotheque", icon: Library },
+            { key: "nav.connect", href: "/connect", icon: Users2 },
+            { key: "nav.videoCalls", href: "/appels", icon: Video },
         ],
     },
     {
-        label: "Emploi",
+        labelKey: "nav.sectionJob",
         items: [
-            { title: "Chercher un emploi", href: "/chercher-emploi", icon: Search },
-            { title: "Mes candidatures", href: "/mes-offres", icon: Briefcase },
-            { title: "Parcourir les entreprises", href: "/entreprises", icon: Building2 },
-            { title: "Recherche entreprise IA", href: "/recherche-entreprise", icon: Sparkles },
+            { key: "nav.searchJob", href: "/chercher-emploi", icon: Search },
+            { key: "nav.myApplications", href: "/mes-offres", icon: Briefcase },
+            { key: "nav.browseCompanies", href: "/entreprises", icon: Building2 },
+            { key: "nav.aiCompanySearch", href: "/recherche-entreprise", icon: Sparkles },
         ],
     },
     {
-        label: "Profil & CV",
+        labelKey: "nav.sectionProfile",
         items: [
-            { title: "Mon Profil", href: "/profil", icon: User },
-            { title: "Créer CV", href: "/creer-cv", icon: FileText },
-            { title: "Analyse CV", href: "/analyse-cv", icon: FileText },
-            { title: "Mon portfolio", href: "/portfolio", icon: FolderPlus },
-            { title: "Nouveau document", href: "/nouveau-document", icon: FileText },
+            { key: "nav.myProfile", href: "/profil", icon: User },
+            { key: "nav.createCv", href: "/creer-cv", icon: FileText },
+            { key: "nav.analyzeCv", href: "/analyse-cv", icon: FileText },
+            { key: "nav.myPortfolio", href: "/portfolio", icon: FolderPlus },
+            { key: "nav.newDocument", href: "/nouveau-document", icon: FileText },
         ],
     },
     {
-        label: "Préparation",
+        labelKey: "nav.sectionPrep",
         items: [
-            { title: "Simulation d'entretien", href: "/simulation-entretien-config", icon: Bot },
-            { title: "Pitch Goriya", href: "/pitch-goriya", icon: Mic },
-            { title: "Présentations IA", href: "/presentations-ia", icon: Presentation },
-            { title: "Formations", href: "/formations", icon: GraduationCap },
+            { key: "nav.interviewSimulation", href: "/simulation-entretien-config", icon: Bot },
+            { key: "nav.goriyaPitch", href: "/pitch-goriya", icon: Mic },
+            { key: "nav.aiPresentations", href: "/presentations-ia", icon: Presentation },
+            { key: "nav.training", href: "/formations", icon: GraduationCap },
         ],
     },
     {
-        label: "Assistant & outils",
+        labelKey: "nav.sectionTools",
         items: [
-            { title: "GORIYA Chat", href: "/goriya-chat", icon: MessageCircle },
-            { title: "Enquêtes internes", href: "/enquetes-employe", icon: ClipboardList },
+            { key: "nav.goriyaChat", href: "/goriya-chat", icon: MessageCircle },
+            { key: "nav.internalSurveys", href: "/enquetes-employe", icon: ClipboardList },
         ],
     },
 ]
 
 const parameterItems: NavItem[] = [
-    { title: "Centre d'assistance", href: "/centre-assistance", icon: HelpCircle },
-    { title: "Paramètres", href: "/parametres", icon: Settings },
+    { key: "nav.helpCenter", href: "/centre-assistance", icon: HelpCircle },
+    { key: "nav.settings", href: "/parametres", icon: Settings },
 ]
 
 export function Sidebar() {
     const pathname = usePathname()
+    const t = useT()
 
     const sectionHasActive = (section: NavSection) => section.items.some((it) => it.href === pathname)
 
     // Ouvre d'emblée la première catégorie + celle qui contient la page courante.
-    const [openLabels, setOpenLabels] = useState<string[]>(() => {
-        const labeled = navSections.filter((s) => s.label) as (NavSection & { label: string })[]
-        const initial = new Set<string>()
-        if (labeled[0]) initial.add(labeled[0].label)
-        labeled.forEach((s) => sectionHasActive(s) && initial.add(s.label))
+    // Les sections sont repérées par leur clé de traduction, stable d'une
+    // langue à l'autre : changer de langue ne referme pas les accordéons.
+    const [openSections, setOpenSections] = useState<TranslationKey[]>(() => {
+        const labeled = navSections.filter((s) => s.labelKey) as (NavSection & { labelKey: TranslationKey })[]
+        const initial = new Set<TranslationKey>()
+        if (labeled[0]) initial.add(labeled[0].labelKey)
+        labeled.forEach((s) => sectionHasActive(s) && initial.add(s.labelKey))
         return [...initial]
     })
 
-    const toggle = (label: string) =>
-        setOpenLabels((prev) => (prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label]))
+    const toggle = (key: TranslationKey) =>
+        setOpenSections((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]))
 
     const renderItem = (item: NavItem) => {
         const Icon = item.icon
@@ -119,7 +123,7 @@ export function Sidebar() {
                 )}
             >
                 <Icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                <span className="truncate">{item.title}</span>
+                <span className="truncate">{t(item.key)}</span>
             </Link>
         )
     }
@@ -134,7 +138,7 @@ export function Sidebar() {
 
             <nav className="flex-1 px-2 sm:px-4 py-4 overflow-y-auto scrollbar-thin">
                 {navSections.map((section, i) => {
-                    if (!section.label) {
+                    if (!section.labelKey) {
                         return (
                             <div key={`section-${i}`} className="space-y-1">
                                 {section.items.map(renderItem)}
@@ -142,21 +146,21 @@ export function Sidebar() {
                         )
                     }
 
-                    const isOpen = openLabels.includes(section.label)
+                    const isOpen = openSections.includes(section.labelKey)
                     const hasActive = sectionHasActive(section)
 
                     return (
-                        <div key={section.label} className="mt-4">
+                        <div key={section.labelKey} className="mt-4">
                             <button
                                 type="button"
-                                onClick={() => toggle(section.label as string)}
+                                onClick={() => toggle(section.labelKey as TranslationKey)}
                                 aria-expanded={isOpen}
                                 className={cn(
                                     "flex w-full items-center justify-between px-3 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-colors",
                                     hasActive ? "text-foreground" : "text-muted-foreground hover:text-foreground",
                                 )}
                             >
-                                <span className="truncate">{section.label}</span>
+                                <span className="truncate">{t(section.labelKey)}</span>
                                 <ChevronDown
                                     className={cn("w-4 h-4 flex-shrink-0 transition-transform", isOpen && "rotate-180")}
                                 />

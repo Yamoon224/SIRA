@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useT } from "@/contexts/i18n-context"
 
 /** Tailles de page proposées partout dans l'application. */
 export const PAGE_SIZE_OPTIONS = [10, 20, 30, 50, 100] as const
@@ -43,6 +44,7 @@ export function DataPagination({
     disabled = false,
     className,
 }: DataPaginationProps) {
+    const t = useT()
     // Une liste vide n'a rien à paginer, mais on garde le sélecteur dès qu'il y
     // a des données : l'utilisateur doit pouvoir élargir la page.
     if (total === 0) return null
@@ -61,7 +63,7 @@ export function DataPagination({
                 className,
             )}
         >
-            <span aria-label={`${currentCount} éléments affichés sur ${total}`}>
+            <span aria-label={t("pagination.shownOfTotal", { shown: currentCount, total })}>
                 <span className="font-medium text-foreground">{currentCount}</span> / {total}
             </span>
 
@@ -70,21 +72,21 @@ export function DataPagination({
                     type="button"
                     onClick={() => onPageChange(page - 1)}
                     disabled={disabled || atFirst}
-                    aria-label="Page précédente"
+                    aria-label={t("pagination.previousPage")}
                     className={navButton}
                 >
                     <ChevronLeft className="h-4 w-4" />
                 </button>
 
                 <span aria-live="polite">
-                    Page <span className="font-medium text-foreground">{page}</span>/{safeTotalPages}
+                    {t("pagination.page")} <span className="font-medium text-foreground">{page}</span>/{safeTotalPages}
                 </span>
 
                 <button
                     type="button"
                     onClick={() => onPageChange(page + 1)}
                     disabled={disabled || atLast}
-                    aria-label="Page suivante"
+                    aria-label={t("pagination.nextPage")}
                     className={navButton}
                 >
                     <ChevronRight className="h-4 w-4" />
@@ -96,7 +98,7 @@ export function DataPagination({
                 onValueChange={(v) => onPageSizeChange(Number(v))}
                 disabled={disabled}
             >
-                <SelectTrigger className="h-8 w-[76px] text-[12px]" aria-label="Éléments par page">
+                <SelectTrigger className="h-8 w-[76px] text-[12px]" aria-label={t("pagination.itemsPerPage")}>
                     <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

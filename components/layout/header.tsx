@@ -20,14 +20,15 @@ import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { SearchBar } from "@/components/ui/search-bar"
 import { NotificationBell } from "@/components/notification-bell"
 import { useAuth } from "@/contexts/auth-context"
+import { useT } from "@/contexts/i18n-context"
 import { AppLogo } from "../app-logo"
 
 const PUBLIC_NAV_LINKS = [
-    { href: "/", label: "Accueil" },
-    { href: "/explorer-emplois", label: "Emplois" },
-    { href: "/explorer-entreprises", label: "Entreprises" },
-    { href: "/blog", label: "Blog" },
-]
+    { href: "/", key: "nav.home" },
+    { href: "/explorer-emplois", key: "nav.jobs" },
+    { href: "/explorer-entreprises", key: "nav.companies" },
+    { href: "/blog", key: "nav.blog" },
+] as const
 
 interface HeaderProps {
     onToggleSidebar?: () => void
@@ -38,6 +39,7 @@ interface HeaderProps {
 export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo = true }: HeaderProps) {
     const [mounted, setMounted] = useState(false)
     const { user, logout, isAuthenticated } = useAuth()
+    const t = useT()
     const pathname = usePathname()
 
     const isActiveLink = (href: string) => {
@@ -87,7 +89,7 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                                         : "text-foreground hover:bg-muted",
                                                 )}
                                             >
-                                                {link.label}
+                                                {t(link.key)}
                                             </Link>
                                         </SheetClose>
                                     ))}
@@ -98,7 +100,7 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                             <Link href="/dashboard">
                                                 <Button className="w-full rounded-full gap-2">
                                                     <LayoutDashboard className="w-4 h-4" />
-                                                    Tableau de Bord
+                                                    {t("nav.dashboard")}
                                                 </Button>
                                             </Link>
                                         </SheetClose>
@@ -108,12 +110,12 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                     <div className="mt-4 flex flex-col gap-2 px-4">
                                         <SheetClose asChild>
                                             <Link href="/auth/signin">
-                                                <Button variant="outline" className="w-full rounded-full">Se connecter</Button>
+                                                <Button variant="outline" className="w-full rounded-full">{t("nav.signIn")}</Button>
                                             </Link>
                                         </SheetClose>
                                         <SheetClose asChild>
                                             <Link href="https://entreprise.goriya.net">
-                                                <Button className="w-full rounded-full">Espace Entreprise</Button>
+                                                <Button className="w-full rounded-full">{t("nav.companySpace")}</Button>
                                             </Link>
                                         </SheetClose>
                                     </div>
@@ -141,7 +143,7 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                         : "text-muted-foreground hover:text-foreground after:bg-transparent",
                                 )}
                             >
-                                {link.label}
+                                {t(link.key)}
                             </Link>
                         ))}
                     </nav>
@@ -157,7 +159,7 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                             <Link href="/dashboard">
                                 <Button size="sm" className="rounded-full gap-2">
                                     <LayoutDashboard className="w-4 h-4" />
-                                    <span className="hidden sm:inline">Tableau de Bord</span>
+                                    <span className="hidden sm:inline">{t("nav.dashboard")}</span>
                                 </Button>
                             </Link>
                             <ThemeToggle />
@@ -185,19 +187,19 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                     <DropdownMenuItem asChild>
                                         <Link href="/dashboard" className="flex items-center">
                                             <LayoutDashboard className="mr-2 h-4 w-4" />
-                                            Tableau de Bord
+                                            {t("nav.dashboard")}
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem asChild>
                                         <Link href="/notifications" className="flex items-center">
                                             <Bell className="mr-2 h-4 w-4" />
-                                            Notifications
+                                            {t("settings.notifications")}
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem asChild>
                                         <Link href="/parametres" className="flex items-center">
                                             <Settings className="mr-2 h-4 w-4" />
-                                            Paramètres
+                                            {t("nav.settings")}
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
@@ -206,7 +208,7 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                         className="flex items-center text-destructive focus:text-destructive"
                                     >
                                         <User className="mr-2 h-4 w-4" />
-                                        Se déconnecter
+                                        {t("nav.signOut")}
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
@@ -217,15 +219,15 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                         <div className="flex items-center gap-2">
                             <ThemeToggle />
                             <Link href="/auth/signin">
-                                <Button variant="outline" size="sm" className="sm:text-sm bg-transparent w-9 px-0 sm:w-auto sm:px-3 rounded-full" aria-label="Se connecter">
+                                <Button variant="outline" size="sm" className="sm:text-sm bg-transparent w-9 px-0 sm:w-auto sm:px-3 rounded-full" aria-label={t("nav.signIn")}>
                                     <LogIn className="w-4 h-4 sm:hidden" />
-                                    <span className="hidden sm:inline">Se connecter</span>
+                                    <span className="hidden sm:inline">{t("nav.signIn")}</span>
                                 </Button>
                             </Link>
                             <Link href="https://entreprise.goriya.net">
-                                <Button size="sm" className="sm:text-sm w-9 px-0 sm:w-auto sm:px-3 rounded-full bg-[#2f6de6] hover:bg-[#2458ba]" aria-label="Espace Entreprise">
+                                <Button size="sm" className="sm:text-sm w-9 px-0 sm:w-auto sm:px-3 rounded-full bg-[#2f6de6] hover:bg-[#2458ba]" aria-label={t("nav.companySpace")}>
                                     <Briefcase className="w-4 h-4 sm:hidden" />
-                                    <span className="hidden sm:inline">Espace Entreprise</span>
+                                    <span className="hidden sm:inline">{t("nav.companySpace")}</span>
                                 </Button>
                             </Link>
                         </div>

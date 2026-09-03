@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import Script from "next/script"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { MessageCircle, Mail, Phone, ChevronDown, ChevronRight, Check, Zap, Loader2 } from "lucide-react"
+import { MessageCircle, Mail, Phone, ChevronDown, ChevronRight, Check, Zap, Loader2, Briefcase, FileUser, Building2, CreditCard } from "lucide-react"
 import { TawkToChat } from "@/components/tawk-to-chat"
 import { subscriptionService } from "@/lib/api/subscription.service"
 import { KKIAPAY_WIDGET_SRC, openKkiapayWidget } from "@/lib/kkiapay"
@@ -149,10 +149,10 @@ export default function Page() {
     ]
 
     const categories = [
-        { name: "Candidatures", color: "bg-blue-500", count: "4 articles" },
-        { name: "CV & Profil", color: "bg-green-500", count: "5 articles" },
-        { name: "Entreprises", color: "bg-orange-500", count: "3 articles" },
-        { name: "Facturation", color: "bg-red-500", count: "2 articles" },
+        { name: "Candidatures", icon: Briefcase, color: "bg-blue-500", count: "4 articles" },
+        { name: "CV & Profil", icon: FileUser, color: "bg-green-500", count: "5 articles" },
+        { name: "Entreprises", icon: Building2, color: "bg-orange-500", count: "3 articles" },
+        { name: "Facturation", icon: CreditCard, color: "bg-red-500", count: "2 articles" },
     ]
 
     const faqItems = [
@@ -238,19 +238,28 @@ export default function Page() {
                             {/* Categories */}
                             <div className="mb-8">
                                 <h3 className="text-lg font-bold text-[#1b2331] dark:text-foreground mb-4">Parcourir par catégorie</h3>
-                                <div className="flex justify-center gap-6 flex-wrap">
-                                    {categories.map((cat, i) => (
-                                        <button
-                                            key={i}
-                                            className="flex flex-col items-center gap-2 hover:opacity-75 transition-opacity"
-                                        >
-                                            <div className={`w-14 h-14 ${cat.color} rounded-full flex items-center justify-center text-white font-bold text-xl hover:shadow-lg transition-shadow cursor-pointer`}>
-                                                {cat.name.charAt(0)}
-                                            </div>
-                                            <p className="text-[12px] font-medium text-[#1b2331] dark:text-foreground">{cat.name}</p>
-                                            <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground">{cat.count}</p>
-                                        </button>
-                                    ))}
+                                {/* Une carte par catégorie : l'icône en haut, le libellé
+                                    juste en dessous, le nombre d'articles ancré en bas
+                                    (`mt-auto`) pour qu'il s'aligne d'une carte à l'autre
+                                    quel que soit le libellé. */}
+                                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+                                    {categories.map((cat, i) => {
+                                        const Icon = cat.icon
+
+                                        return (
+                                            <button
+                                                key={i}
+                                                type="button"
+                                                className="flex h-full flex-col items-center rounded-xl border border-[#e8edf6] dark:border-border bg-white dark:bg-card p-4 text-center transition-colors hover:border-[#2f6de6]"
+                                            >
+                                                <div className={`mb-3 flex h-12 w-12 items-center justify-center rounded-full ${cat.color} text-white`}>
+                                                    <Icon className="h-6 w-6" strokeWidth={1.9} />
+                                                </div>
+                                                <p className="text-[13px] font-medium leading-tight text-[#1b2331] dark:text-foreground">{cat.name}</p>
+                                                <p className="mt-auto pt-2 text-[11px] text-[#9aa3b2] dark:text-muted-foreground">{cat.count}</p>
+                                            </button>
+                                        )
+                                    })}
                                 </div>
                             </div>
 

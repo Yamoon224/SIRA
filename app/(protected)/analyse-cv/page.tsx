@@ -6,7 +6,7 @@ import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import type { CVAnalysis } from "@/lib/@types/openai"
-import { AlertCircle, ArrowUpFromLine, Check, FileText, Sparkles, Target, X } from "lucide-react"
+import { AlertCircle, Check, FileText, Sparkles, Target, UploadCloud, X } from "lucide-react"
 import { SubscriptionGate } from "@/components/subscription-gate"
 
 const ACCEPTED_TYPES = [
@@ -19,7 +19,8 @@ const ACCEPTED_TYPES = [
     "image/webp",
 ]
 
-const MAX_SIZE = 10 * 1024 * 1024
+/** Aligné sur la maquette : « Maximum de 12 MB pour les PDFs ». */
+const MAX_SIZE = 12 * 1024 * 1024
 
 /** Verdict porté par le score : une couleur, un mot. */
 function verdict(score: number) {
@@ -109,7 +110,7 @@ function AnalyserCVContent() {
             return
         }
         if (file.size > MAX_SIZE) {
-            setError(`Ce fichier pèse ${formatSize(file.size)}. La limite est de 10 Mo.`)
+            setError(`Ce fichier pèse ${formatSize(file.size)}. La limite est de 12 MB.`)
             return
         }
         setCvFile(file)
@@ -173,51 +174,61 @@ function AnalyserCVContent() {
                     Dépose ton CV, Goriya le note et te dit précisément quoi corriger.
                 </p>
 
-                {/* ── Dépôt ─────────────────────────────────────────────────── */}
-                <div className="mt-6">
-                    {cvFile ? (
-                        <div className="flex items-center gap-3 rounded-[12px] border border-[#dfe5f1] dark:border-border bg-white dark:bg-card px-4 py-3">
-                            <FileText className="h-5 w-5 shrink-0 text-[#2f6de6] dark:text-primary" strokeWidth={1.8} />
-                            <div className="min-w-0 flex-1">
-                                <p className="truncate text-[13px] font-medium text-[#1b2331] dark:text-foreground">{cvFile.name}</p>
-                                <p className="text-[11px] text-[#8b93a3] dark:text-muted-foreground">{formatSize(cvFile.size)}</p>
+                {/* ── Dépôt : reprend la présentation du modal « Soumettez
+                    votre CV » — libellé, cadre pointillé, actions à droite. ── */}
+                <div className="mt-6 rounded-[14px] border border-[#dfe5f1] dark:border-border bg-white dark:bg-card p-5 sm:p-6">
+                    <p className="mb-3 text-[13px] text-[#5b6474] dark:text-muted-foreground">Importer votre CV</p>
+
+                    <div
+                        onDragOver={(e) => {
+                            e.preventDefault()
+                            setIsDragging(true)
+                        }}
+                        onDragLeave={() => setIsDragging(false)}
+                        onDrop={handleDrop}
+                        className={`rounded-[10px] border border-dashed px-6 py-10 text-center transition-colors ${
+                            isDragging
+                                ? "border-[#2f6de6] bg-[#eef2fd] dark:bg-primary/10"
+                                : "border-[#c8d0e0] dark:border-border bg-[#fbfcfe] dark:bg-background"
+                        }`}
+                    >
+                        {cvFile ? (
+                            <div className="flex items-center justify-center gap-3">
+                                <FileText className="h-5 w-5 shrink-0 text-[#2f6de6] dark:text-primary" strokeWidth={1.8} />
+                                <div className="min-w-0 text-left">
+                                    <p className="truncate text-[13px] font-medium text-[#1b2331] dark:text-foreground">{cvFile.name}</p>
+                                    <p className="text-[11px] text-[#8b93a3] dark:text-muted-foreground">{formatSize(cvFile.size)}</p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={clearFile}
+                                    aria-label="Retirer le fichier"
+                                    className="rounded-full p-1 text-[#aab2c2] dark:text-muted-foreground transition-colors hover:bg-[#f1f3f8] dark:hover:bg-muted hover:text-[#d9544d]"
+                                >
+                                    <X className="h-4 w-4" />
+                                </button>
                             </div>
-                            <button
-                                type="button"
-                                onClick={clearFile}
-                                aria-label="Retirer le fichier"
-                                className="rounded-full p-1 text-[#aab2c2] dark:text-muted-foreground transition-colors hover:bg-[#f1f3f8] dark:hover:bg-muted hover:text-[#d9544d]"
-                            >
-                                <X className="h-4 w-4" />
-                            </button>
-                        </div>
-                    ) : (
-                        <div
-                            onDragOver={(e) => {
-                                e.preventDefault()
-                                setIsDragging(true)
-                            }}
-                            onDragLeave={() => setIsDragging(false)}
-                            onDrop={handleDrop}
-                            className={`rounded-[14px] border-2 border-dashed px-6 py-12 text-center transition-colors ${
-                                isDragging ? "border-[#2f6de6] bg-[#eef2fd] dark:bg-primary/10" : "border-[#dbe2ef] dark:border-border bg-white dark:bg-card"
-                            }`}
-                        >
-                            <ArrowUpFromLine
-                                className={`mx-auto mb-4 h-8 w-8 transition-colors ${isDragging ? "text-[#2f6de6] dark:text-primary" : "text-[#b6bfd2] dark:text-muted-foreground"}`}
-                                strokeWidth={1.6}
-                            />
-                            <p className="text-[15px] font-medium text-[#1b2331] dark:text-foreground">Dépose ton CV ici</p>
+                        ) : (
                             <button
                                 type="button"
                                 onClick={() => inputRef.current?.click()}
-                                className="mt-1 text-[13px] text-[#2f6de6] dark:text-primary underline-offset-2 hover:underline"
+                                className="mx-auto block w-full"
                             >
-                                ou choisis un fichier
+                                <UploadCloud
+                                    className={`mx-auto mb-4 h-10 w-10 transition-colors ${
+                                        isDragging ? "text-[#2f6de6] dark:text-primary" : "text-[#b6bfd2] dark:text-muted-foreground"
+                                    }`}
+                                    strokeWidth={1.5}
+                                />
+                                <p className="text-[13px] text-[#5b6474] dark:text-muted-foreground">
+                                    Téléchargez votre CV ou faites glisser-déposer le fichier ici
+                                </p>
+                                <p className="mt-1.5 text-[12px] text-[#9aa3b5] dark:text-muted-foreground">
+                                    Maximum de 12 MB pour les PDFs
+                                </p>
                             </button>
-                            <p className="mt-5 text-[11px] text-[#9aa3b5] dark:text-muted-foreground">PDF, Word ou image. 10 Mo maximum.</p>
-                        </div>
-                    )}
+                        )}
+                    </div>
 
                     <input
                         ref={inputRef}
@@ -226,30 +237,33 @@ function AnalyserCVContent() {
                         onChange={handleInputChange}
                         className="hidden"
                     />
-                </div>
 
-                {error && (
-                    <p
-                        role="alert"
-                        className="mt-4 flex items-start gap-2 text-[13px] leading-relaxed text-[#d9544d]"
-                    >
-                        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                        {error}
-                    </p>
-                )}
+                    {error && (
+                        <p role="alert" className="mt-4 flex items-start gap-2 text-[13px] leading-relaxed text-[#d9544d]">
+                            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                            {error}
+                        </p>
+                    )}
 
-                {cvFile && !analysis && (
-                    <div className="mt-6">
+                    <div className="mt-5 flex justify-end gap-3">
+                        <Button
+                            variant="ghost"
+                            onClick={clearFile}
+                            disabled={!cvFile || isAnalyzing}
+                            className="h-10 px-6 text-[13px] text-[#5b6474] dark:text-muted-foreground hover:bg-[#f1f3f8] dark:hover:bg-muted"
+                        >
+                            Annuler
+                        </Button>
                         <Button
                             onClick={handleAnalyze}
-                            disabled={isAnalyzing}
-                            className="h-11 w-full rounded-full bg-[#2f6de6] text-[14px] font-medium hover:bg-[#2157d3] sm:w-auto sm:px-8"
+                            disabled={!cvFile || isAnalyzing}
+                            className="h-10 bg-[#2f6de6] px-6 text-[13px] font-medium hover:bg-[#2157d3]"
                         >
                             <Sparkles className="mr-2 h-4 w-4" />
-                            {isAnalyzing ? "Goriya lit ton CV…" : "Analyser mon CV"}
+                            {isAnalyzing ? "Goriya lit votre CV…" : "Analyser mon CV"}
                         </Button>
                     </div>
-                )}
+                </div>
 
                 <div aria-live="polite" className="sr-only">
                     {isAnalyzing ? "Analyse en cours" : analysis ? "Analyse terminée" : ""}
