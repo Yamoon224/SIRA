@@ -224,7 +224,7 @@ function SimulationEntretienContent() {
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                                <div className="rounded-xl border border-[#e8edf6] dark:border-border p-4">
+                                <div className="rounded-2xl border border-[#e8edf6] dark:border-border p-4">
                                     <div className="font-semibold text-[#2ecc71] mb-2 text-[14px]">Points forts</div>
                                     <ul className="text-[13px] text-[#1b2331] dark:text-foreground space-y-1">
                                         <li>Excellente présentation personnelle</li>
@@ -233,7 +233,7 @@ function SimulationEntretienContent() {
                                         <li>Confiance et professionnalisme</li>
                                     </ul>
                                 </div>
-                                <div className="rounded-xl border border-[#e8edf6] dark:border-border p-4">
+                                <div className="rounded-2xl border border-[#e8edf6] dark:border-border p-4">
                                     <div className="font-semibold text-[#ff9800] mb-2 text-[14px]">Points d'amélioration</div>
                                     <ul className="text-[13px] text-[#1b2331] dark:text-foreground space-y-1">
                                         <li>Développer davantage les exemples concrets</li>

@@ -30,7 +30,7 @@ export default function SectorsPage() {
                         {sectors.map((sector) => {
                             const Icon = sector.icon
                             return (
-                                <article key={sector.name} className="rounded-xl border border-[#dbe3ef] dark:border-border bg-[#f8fbff] dark:bg-muted p-5">
+                                <article key={sector.name} className="rounded-2xl border border-[#dbe3ef] dark:border-border bg-[#f8fbff] dark:bg-muted p-5">
                                     <div className="flex items-center gap-3">
                                         <div className="rounded-xl bg-[#eaf2ff] dark:bg-primary/10 p-3 text-[#2f6de6] dark:text-primary">
                                             <Icon className="w-5 h-5" />

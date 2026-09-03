@@ -331,14 +331,14 @@ export default function EntrepriseDetailPage() {
                     <div className="space-y-6">
                         {/* About / Présentation */}
                         {company.about && (
-                            <div className="bg-white dark:bg-card rounded-xl border border-[#e8edf6] dark:border-border p-6">
+                            <div className="bg-white dark:bg-card rounded-2xl border border-[#e8edf6] dark:border-border p-6">
                                 <h2 className="text-[18px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Présentation</h2>
                                 <p className="text-[13px] text-[#4e5a6e] dark:text-foreground leading-[1.8] whitespace-pre-line">{capitalizeFirst(company.about)}</p>
                             </div>
                         )}
 
                         {/* Ce qu'ils recherchent */}
-                        <div className="bg-white dark:bg-card rounded-xl border border-[#e8edf6] dark:border-border p-6">
+                        <div className="bg-white dark:bg-card rounded-2xl border border-[#e8edf6] dark:border-border p-6">
                             <h2 className="text-[18px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Ce qu'ils recherchent</h2>
                             <div className="space-y-2">
                                 {["Des candidats passionnés et motivés", "Des profils avec une expérience pertinente", "Des personnes capables de s'adapter rapidement"].map((item, i) => (
@@ -351,7 +351,7 @@ export default function EntrepriseDetailPage() {
                         </div>
 
                         {/* Culture et valeur */}
-                        <div className="bg-white dark:bg-card rounded-xl border border-[#e8edf6] dark:border-border p-6">
+                        <div className="bg-white dark:bg-card rounded-2xl border border-[#e8edf6] dark:border-border p-6">
                             <h2 className="text-[18px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Culture et valeurs</h2>
                             <div className="space-y-2">
                                 {["Innovation et créativité", "Collaboration et esprit d'équipe", "Engagement envers la satisfaction client", "Développement continu des compétences"].map((val, i) => (
@@ -364,7 +364,7 @@ export default function EntrepriseDetailPage() {
                         </div>
 
                         {/* Contact + Stats grid */}
-                        <div className="bg-white dark:bg-card rounded-xl border border-[#e8edf6] dark:border-border p-6">
+                        <div className="bg-white dark:bg-card rounded-2xl border border-[#e8edf6] dark:border-border p-6">
                             <h2 className="text-[18px] font-extrabold text-[#1b2331] dark:text-foreground mb-5">Informations</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 <div className="space-y-4">
@@ -449,7 +449,7 @@ export default function EntrepriseDetailPage() {
 
                         {/* Galerie photos */}
                         {(company.gallery?.length ?? 0) > 0 && (
-                            <div className="bg-white dark:bg-card rounded-xl border border-[#e8edf6] dark:border-border p-6">
+                            <div className="bg-white dark:bg-card rounded-2xl border border-[#e8edf6] dark:border-border p-6">
                                 <h2 className="text-[18px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Galerie</h2>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                                     {company.gallery!.map((src, i) => (
@@ -468,12 +468,12 @@ export default function EntrepriseDetailPage() {
 
                         {/* Similar companies */}
                         {similarCompanies.length > 0 && (
-                            <div className="bg-white dark:bg-card rounded-xl border border-[#e8edf6] dark:border-border p-6">
+                            <div className="bg-white dark:bg-card rounded-2xl border border-[#e8edf6] dark:border-border p-6">
                                 <h2 className="text-[18px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Autres entreprises que tu peux consulter</h2>
                                 <div className="flex gap-3 overflow-x-auto pb-2">
                                     {similarCompanies.map(sim => (
                                         <Link key={sim.id} href={`/explorer-entreprises/${sim.id}`} className="flex-shrink-0">
-                                            <div className="w-[140px] rounded-xl border border-[#e8edf6] dark:border-border p-3 hover:border-[#2f6de6] hover:shadow-sm transition-all">
+                                            <div className="w-[140px] rounded-2xl border border-[#e8edf6] dark:border-border p-3 hover:border-[#2f6de6] hover:shadow-sm transition-all">
                                                 <CompanyLogo name={sim.name} logo={sim.logo} className="w-9 h-9 rounded-lg text-[11px] mb-2" />
                                                 <p className="text-[11px] font-bold text-[#1b2331] dark:text-foreground truncate">{sim.name}</p>
                                                 <p className="text-[10px] text-[#9aa3b2] dark:text-muted-foreground truncate">{sim.sector}</p>
@@ -534,7 +534,7 @@ export default function EntrepriseDetailPage() {
 
                         {/* Job list */}
                         {filteredJobs.length === 0 ? (
-                            <div className="bg-white dark:bg-card rounded-xl border border-[#e8edf6] dark:border-border flex flex-col items-center justify-center py-14 text-center px-4">
+                            <div className="bg-white dark:bg-card rounded-2xl border border-[#e8edf6] dark:border-border flex flex-col items-center justify-center py-14 text-center px-4">
                                 <Building2 className="w-8 h-8 text-[#c8d0df] mb-3" />
                                 <p className="text-[13px] font-semibold text-[#1b2331] dark:text-foreground">Aucune offre disponible</p>
                                 <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground mt-1">
@@ -550,7 +550,7 @@ export default function EntrepriseDetailPage() {
                             <div className="space-y-5">
                                 {filteredJobs.map((job) => (
                                     <Link key={job.id} href={`/explorer-emplois/${job.id}`}>
-                                        <div className="bg-white dark:bg-card rounded-xl border border-[#e8edf6] dark:border-border flex items-stretch overflow-hidden hover:border-[#2f6de6] hover:shadow-sm transition-all">
+                                        <div className="bg-white dark:bg-card rounded-2xl border border-[#e8edf6] dark:border-border flex items-stretch overflow-hidden hover:border-[#2f6de6] hover:shadow-sm transition-all">
                                             <div className="flex-1 p-4">
                                                 <div className="flex items-start justify-between gap-4">
                                                     <div className="flex-1">

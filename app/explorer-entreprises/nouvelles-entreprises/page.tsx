@@ -46,7 +46,7 @@ export default function NewCompaniesPage() {
                         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                             {companies.map((company) => (
                                 <Link key={company.id} href={`/explorer-entreprises/${company.id}`}>
-                                    <article className="rounded-xl border border-[#dbe3ef] dark:border-border bg-[#f8fbff] dark:bg-muted p-5 hover:border-[#2f6de6] hover:shadow-sm transition-all">
+                                    <article className="rounded-2xl border border-[#dbe3ef] dark:border-border bg-[#f8fbff] dark:bg-muted p-5 hover:border-[#2f6de6] hover:shadow-sm transition-all">
                                         <div className="flex items-center justify-between gap-3">
                                             <div className="flex items-center gap-3">
                                                 <CompanyLogo name={company.name} logo={company.logo} className="w-8 h-8 text-[10px] flex-shrink-0" />

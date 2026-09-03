@@ -67,7 +67,7 @@ export default function AboutPage() {
                         <h2 className="text-xl sm:text-3xl font-extrabold text-center text-[#121826] dark:text-foreground">Ce qui nous guide</h2>
                         <div className="mt-10 grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-5">
                             {values.map(({ icon: Icon, title, desc }) => (
-                                <div key={title} className="rounded-xl bg-white dark:bg-card border border-[#e2e8f5] dark:border-border p-5 text-center">
+                                <div key={title} className="rounded-2xl bg-white dark:bg-card border border-[#e2e8f5] dark:border-border p-5 text-center">
                                     <div className="mx-auto w-10 h-10 rounded-full bg-[#edf4ff] dark:bg-primary/10 flex items-center justify-center text-[#2f6de6] dark:text-primary">
                                         <Icon className="w-5 h-5" />
                                     </div>

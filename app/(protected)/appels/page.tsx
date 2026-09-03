@@ -116,7 +116,7 @@ export default function Page() {
             ) : (
                 <div className="space-y-3">
                     {sessions.map((callSession) => (
-                        <div key={callSession.id} className="rounded-xl border border-border bg-white dark:bg-card px-4 py-4">
+                        <div key={callSession.id} className="rounded-2xl border border-border bg-white dark:bg-card px-4 py-4">
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
                                     <div className="flex items-center gap-2">

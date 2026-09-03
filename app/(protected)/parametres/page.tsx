@@ -81,6 +81,10 @@ export default function ParametresPage() {
     }
   }
 
+  /** Notifie avec un message traduit ; `isError` choisit le style du toast. */
+  const t2 = (key: Parameters<typeof t>[0], isError = false) =>
+    isError ? toast.error(t(key)) : toast.success(t(key))
+
   const handleNotificationChange = async (key: keyof typeof notifications, checked: boolean) => {
     const next = { ...notifications, [key]: checked }
     setNotifications(next)
@@ -138,10 +142,10 @@ export default function ParametresPage() {
         bio: profile.bio.trim(),
       } as any)
       refreshProfile()
-      toast.success("Profil mis à jour")
+      t2("settings.profileUpdated")
     } catch (err) {
       console.error("[parametres] profile save error:", err)
-      toast.error("Échec de la mise à jour du profil")
+      t2("settings.profileUpdateFailed", true)
     } finally {
       setSavingProfile(false)
     }
@@ -149,11 +153,11 @@ export default function ParametresPage() {
 
   const handleAvatarChange = async (file: File) => {
     if (!["image/png", "image/jpeg", "image/jpg", "image/webp"].includes(file.type)) {
-      toast.error("Format non supporté (PNG, JPG ou WebP).")
+      t2("settings.photoFormatError", true)
       return
     }
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("L'image est trop volumineuse (max 5MB).")
+      t2("settings.photoSizeError", true)
       return
     }
     setUploadingAvatar(true)
@@ -162,10 +166,10 @@ export default function ParametresPage() {
       const avatarUrl = res?.data?.avatarUrl ?? res?.avatarUrl
       if (avatarUrl) setProfile((prev) => ({ ...prev, avatar: avatarUrl }))
       refreshProfile()
-      toast.success("Photo de profil mise à jour")
+      t2("settings.photoUpdated")
     } catch (err: any) {
       console.error("[parametres] avatar upload error:", err)
-      toast.error(err?.message ?? err?.error ?? "Échec de l'envoi de la photo")
+      toast.error(err?.message ?? err?.error ?? t("settings.photoUploadFailed"))
     } finally {
       setUploadingAvatar(false)
     }
@@ -176,21 +180,21 @@ export default function ParametresPage() {
 
   const handleChangePassword = async () => {
     if (!passwords.next || passwords.next.length < 6) {
-      toast.error("Le mot de passe doit contenir au moins 6 caractères")
+      t2("settings.passwordTooShort", true)
       return
     }
     if (passwords.next !== passwords.confirm) {
-      toast.error("Les mots de passe ne correspondent pas")
+      t2("settings.passwordMismatch", true)
       return
     }
     setChangingPassword(true)
     try {
       await userService.updateProfile({ password: passwords.next } as any)
       setPasswords({ next: "", confirm: "" })
-      toast.success("Mot de passe modifié")
+      t2("settings.passwordChanged")
     } catch (err) {
       console.error("[parametres] password change error:", err)
-      toast.error("Échec du changement de mot de passe")
+      t2("settings.passwordChangeFailed", true)
     } finally {
       setChangingPassword(false)
     }
@@ -212,10 +216,10 @@ export default function ParametresPage() {
     try {
       await subscriptionService.cancelSubscription(user.id)
       setSubscription(null)
-      toast.success("Abonnement annulé")
+      t2("settings.subscriptionCancelled")
     } catch (err) {
       console.error("[parametres] cancel subscription error:", err)
-      toast.error("Échec de l'annulation")
+      t2("settings.subscriptionCancelFailed", true)
     }
   }
 
@@ -256,28 +260,28 @@ export default function ParametresPage() {
                       }}
                     />
                     <Button variant="outline" size="sm" disabled={uploadingAvatar} onClick={() => fileInputRef.current?.click()}>
-                      {uploadingAvatar ? "Envoi..." : "Changer la photo"}
+                      {uploadingAvatar ? t("settings.uploadingPhoto") : t("settings.changePhoto")}
                     </Button>
-                    <p className="text-sm text-gray-500 dark:text-muted-foreground mt-1">JPG, PNG jusqu'à 5MB</p>
+                    <p className="text-sm text-gray-500 dark:text-muted-foreground mt-1">{t("settings.photoHint")}</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="firstName">Prénom</Label>
+                    <Label htmlFor="firstName">{t("settings.firstName")}</Label>
                     <Input
                       id="firstName"
                       value={profile.firstName}
-                      placeholder="Ton prénom"
+                      placeholder={t("settings.firstNamePlaceholder")}
                       onChange={(e) => setProfile((prev) => ({ ...prev, firstName: e.target.value }))}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="lastName">Nom</Label>
+                    <Label htmlFor="lastName">{t("settings.lastName")}</Label>
                     <Input
                       id="lastName"
                       value={profile.lastName}
-                      placeholder="Ton nom"
+                      placeholder={t("settings.lastNamePlaceholder")}
                       onChange={(e) => setProfile((prev) => ({ ...prev, lastName: e.target.value }))}
                     />
                   </div>
@@ -285,17 +289,17 @@ export default function ParametresPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">{t("settings.emailLabel")}</Label>
                     <Input
                       id="email"
                       type="email"
                       value={profile.email}
-                      placeholder="Adresse e-mail"
+                      placeholder={t("settings.emailPlaceholder")}
                       onChange={(e) => setProfile((prev) => ({ ...prev, email: e.target.value }))}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="phone">Téléphone</Label>
+                    <Label htmlFor="phone">{t("settings.phoneLabel")}</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -308,13 +312,13 @@ export default function ParametresPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="title">Titre professionnel</Label>
+                  <Label htmlFor="title">{t("settings.professionalTitle")}</Label>
                   <AutocompleteInput
                     id="title"
                     value={profile.title}
                     onChange={(v) => setProfile((prev) => ({ ...prev, title: v }))}
                     options={POSTES}
-                    placeholder="Ex : Développeur Full Stack"
+                    placeholder={t("settings.professionalTitlePlaceholder")}
                   />
                 </div>
 
@@ -330,12 +334,12 @@ export default function ParametresPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="bio">Bio</Label>
+                  <Label htmlFor="bio">{t("settings.bio")}</Label>
                   <Textarea
                     id="bio"
                     rows={4}
                     value={profile.bio}
-                    placeholder="Présente-toi en quelques lignes : ton parcours, ce que tu cherches…"
+                    placeholder={t("settings.bioPlaceholder")}
                     onChange={(e) => setProfile((prev) => ({ ...prev, bio: e.target.value }))}
                     className="resize-none"
                   />
@@ -367,9 +371,9 @@ export default function ParametresPage() {
                   />
                 </div>
 
-                <Separator />
+                <Separator className="mt-2" />
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between pt-2">
                   <div>
                     <p className="font-medium">{t("settings.newJobs")}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -383,9 +387,9 @@ export default function ParametresPage() {
                   />
                 </div>
 
-                <Separator />
+                <Separator className="mt-2" />
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between pt-2">
                   <div>
                     <p className="font-medium">{t("settings.recommendations")}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-400">{t("settings.recommendationsHint")}</p>
@@ -412,7 +416,7 @@ export default function ParametresPage() {
                   <Input
                     id="newPassword"
                     type="password"
-                    placeholder="Nouveau mot de passe"
+                    placeholder={t("settings.newPasswordPlaceholder")}
                     value={passwords.next}
                     onChange={(e) => setPasswords((prev) => ({ ...prev, next: e.target.value }))}
                   />
@@ -422,7 +426,7 @@ export default function ParametresPage() {
                   <Input
                     id="confirmPassword"
                     type="password"
-                    placeholder="Confirmer le mot de passe"
+                    placeholder={t("settings.confirmPasswordPlaceholder")}
                     value={passwords.confirm}
                     onChange={(e) => setPasswords((prev) => ({ ...prev, confirm: e.target.value }))}
                   />
@@ -495,9 +499,9 @@ export default function ParametresPage() {
                   </div>
                 </div>
 
-                <Separator />
+                <Separator className="mt-2" />
 
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 gap-3 pt-2">
                   <Button
                     variant={theme === "light" ? "default" : "outline"}
                     size="sm"
@@ -505,7 +509,7 @@ export default function ParametresPage() {
                     className="flex flex-col items-center gap-2 h-auto py-3 rounded-2xl"
                   >
                     <div className="w-6 h-6 bg-white dark:bg-card border-2 border-gray-300 dark:border-border rounded"></div>
-                    <span className="text-xs">Clair</span>
+                    <span className="text-xs">{t("settings.themeLight")}</span>
                   </Button>
 
                   <Button
@@ -515,7 +519,7 @@ export default function ParametresPage() {
                     className="flex flex-col items-center gap-2 h-auto py-3 rounded-2xl"
                   >
                     <div className="w-6 h-6 bg-gray-800 border-2 border-gray-600 rounded"></div>
-                    <span className="text-xs">Sombre</span>
+                    <span className="text-xs">{t("settings.themeDark")}</span>
                   </Button>
 
                   <Button
@@ -525,7 +529,7 @@ export default function ParametresPage() {
                     className="flex flex-col items-center gap-2 h-auto py-3 rounded-2xl"
                   >
                     <div className="w-6 h-6 bg-gradient-to-r from-white to-gray-800 border-2 border-gray-400 rounded"></div>
-                    <span className="text-xs">Système</span>
+                    <span className="text-xs">{t("settings.themeSystem")}</span>
                   </Button>
                 </div>
               </CardContent>
@@ -563,7 +567,7 @@ export default function ParametresPage() {
               <CardContent className="p-4 space-y-3">
                 <Button variant="ghost" className="w-full justify-start" onClick={() => router.push("/centre-assistance")}>
                   <HelpCircle className="w-4 h-4 mr-2" />
-                  Centre d'aide
+                  {t("settings.helpCenter")}
                 </Button>
                 <Button variant="ghost" className="w-full justify-start text-red-600 hover:text-red-700" onClick={() => logout()}>
                   <LogOut className="w-4 h-4 mr-2" />

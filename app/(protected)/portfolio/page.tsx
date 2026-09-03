@@ -57,7 +57,7 @@ export default function Page() {
                 description="Gère les portfolios que tu partages avec les recruteurs."
             />
 
-            <div className="bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-xl p-4 sm:p-6">
+            <div className="bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-2xl p-4 sm:p-6">
                 {loading ? (
                     <div className="flex items-center justify-center py-10">
                         <Loader2 className="h-7 w-7 animate-spin text-[#2f6de6] dark:text-primary" />

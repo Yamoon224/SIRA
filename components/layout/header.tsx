@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { LanguageToggle } from "@/components/ui/language-toggle"
 import { SearchBar } from "@/components/ui/search-bar"
 import { NotificationBell } from "@/components/notification-bell"
 import { useAuth } from "@/contexts/auth-context"
@@ -157,11 +158,11 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                     {mounted && isAuthenticated && (
                         <>
                             <Link href="/dashboard">
-                                <Button size="sm" className="rounded-full gap-2">
+                                <Button size="icon" className="rounded-full" aria-label={t("nav.dashboard")} title={t("nav.dashboard")}>
                                     <LayoutDashboard className="w-4 h-4" />
-                                    <span className="hidden sm:inline">{t("nav.dashboard")}</span>
                                 </Button>
                             </Link>
+                            <LanguageToggle />
                             <ThemeToggle />
                             <NotificationBell />
 
@@ -217,6 +218,7 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
 
                     {mounted && !isAuthenticated && (
                         <div className="flex items-center gap-2">
+                            <LanguageToggle />
                             <ThemeToggle />
                             <Link href="/auth/signin">
                                 <Button variant="outline" size="sm" className="sm:text-sm bg-transparent w-9 px-0 sm:w-auto sm:px-3 rounded-full" aria-label={t("nav.signIn")}>

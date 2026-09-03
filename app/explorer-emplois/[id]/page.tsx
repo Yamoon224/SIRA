@@ -79,7 +79,7 @@ function MatchingScoreWidget({ jobId }: { jobId: string }) {
 
     if (!isAuthenticated) {
         return (
-            <div className="bg-white dark:bg-card rounded-xl border border-[#e8eef6] dark:border-border p-5">
+            <div className="bg-white dark:bg-card rounded-2xl border border-[#e8eef6] dark:border-border p-5">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-[13px] font-extrabold text-[#1b2331] dark:text-foreground">Ton profil correspond à cette offre</h3>
                     <Lock className="w-4 h-4 text-[#9aa3b2] dark:text-muted-foreground" />
@@ -97,7 +97,7 @@ function MatchingScoreWidget({ jobId }: { jobId: string }) {
     }
 
     return (
-        <div className="bg-white dark:bg-card rounded-xl border border-[#e8eef6] dark:border-border p-5">
+        <div className="bg-white dark:bg-card rounded-2xl border border-[#e8eef6] dark:border-border p-5">
             <h3 className="text-[13px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Ton profil correspond à cette offre</h3>
 
             {loading ? (
@@ -202,7 +202,7 @@ export default function JobDetailPage() {
                         {/* LEFT - main content */}
                         <div className="lg:col-span-2 space-y-5">
                             {/* Job header card */}
-                            <div className="bg-white dark:bg-card rounded-xl border border-[#e8eef6] dark:border-border p-6">
+                            <div className="bg-white dark:bg-card rounded-2xl border border-[#e8eef6] dark:border-border p-6">
                                 {/* Company breadcrumb */}
                                 <div className="flex items-center gap-2 mb-4">
                                     <CompanyLogo name={job.company?.name ?? "?"} logo={job.company?.logo} className="w-7 h-7 text-[10px] flex-shrink-0" />
@@ -278,7 +278,7 @@ export default function JobDetailPage() {
 
                             {/* Description */}
                             {job.description && (
-                                <div className="bg-white dark:bg-card rounded-xl border border-[#e8eef6] dark:border-border p-6">
+                                <div className="bg-white dark:bg-card rounded-2xl border border-[#e8eef6] dark:border-border p-6">
                                     <h2 className="text-[20px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Le poste</h2>
                                     <div className="space-y-4">
                                         <div>
@@ -291,7 +291,7 @@ export default function JobDetailPage() {
 
                             {/* Requirements */}
                             {job.requirements?.length > 0 && (
-                                <div className="bg-white dark:bg-card rounded-xl border border-[#e8eef6] dark:border-border p-6">
+                                <div className="bg-white dark:bg-card rounded-2xl border border-[#e8eef6] dark:border-border p-6">
                                     <h2 className="text-[20px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Profil recherché</h2>
                                     <ul className="space-y-2">
                                         {job.requirements.map((req, i) => (
@@ -306,7 +306,7 @@ export default function JobDetailPage() {
 
                             {/* Benefits */}
                             {job.benefits && (
-                                <div className="bg-white dark:bg-card rounded-xl border border-[#e8eef6] dark:border-border p-6">
+                                <div className="bg-white dark:bg-card rounded-2xl border border-[#e8eef6] dark:border-border p-6">
                                     <h2 className="text-[20px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Avantages</h2>
                                     {(() => {
                                         const items = job.benefits.split(/\r?\n|;|•|·|- /).map((s) => s.trim()).filter(Boolean)
@@ -331,7 +331,7 @@ export default function JobDetailPage() {
                         <div className="space-y-4">
                             {/* Company card */}
                             {job.company && (
-                                <div className="bg-white dark:bg-card rounded-xl border border-[#e8eef6] dark:border-border overflow-hidden">
+                                <div className="bg-white dark:bg-card rounded-2xl border border-[#e8eef6] dark:border-border overflow-hidden">
                                     {(job.image || job.company.coverImage) && (
                                         <img
                                             src={formatFileUrl(job.image || job.company.coverImage)}
@@ -374,7 +374,7 @@ export default function JobDetailPage() {
                             </div>
 
                             {/* Apply sticky */}
-                            <div className="bg-white dark:bg-card rounded-xl border border-[#e8eef6] dark:border-border p-5">
+                            <div className="bg-white dark:bg-card rounded-2xl border border-[#e8eef6] dark:border-border p-5">
                                 <p className="text-[13px] font-bold text-[#1b2331] dark:text-foreground mb-1">Postule dès maintenant</p>
                                 <p className="text-[11px] text-[#7f8796] dark:text-muted-foreground mb-4">
                                     Rejoins les {job.applicants ?? 0} candidat{(job.applicants ?? 0) !== 1 ? "s" : ""} qui ont déjà postulé.
@@ -394,11 +394,11 @@ export default function JobDetailPage() {
                         </div>
 
                         {/* FAQ - pleine largeur, en dernier (juste avant le footer sur mobile) */}
-                        <div className="lg:col-span-3 bg-white dark:bg-card rounded-xl border border-[#e8eef6] dark:border-border p-6">
+                        <div className="lg:col-span-3 bg-white dark:bg-card rounded-2xl border border-[#e8eef6] dark:border-border p-6">
                             <h2 className="text-[20px] font-extrabold text-[#1b2331] dark:text-foreground mb-5">Questions et réponses sur l'offre</h2>
                             <div className="space-y-2">
                                 {faqs.map((faq, index) => (
-                                    <div key={index} className="border border-[#e8eef6] dark:border-border rounded-xl overflow-hidden">
+                                    <div key={index} className="border border-[#e8eef6] dark:border-border rounded-2xl overflow-hidden">
                                         <button
                                             onClick={() => setOpenFaq(openFaq === index ? null : index)}
                                             className="w-full px-5 py-4 flex items-center justify-between text-left"

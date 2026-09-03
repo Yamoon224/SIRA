@@ -435,7 +435,7 @@ export default function Page() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5">
                             {homeCareerJobs.map((job) => (
                                 <Link key={job.id} href={`/explorer-emplois/${job.id}`}>
-                                    <article className="rounded-xl border border-[#e9eef8] dark:border-border p-3 hover:shadow-md transition-shadow h-full">
+                                    <article className="rounded-2xl border border-[#e9eef8] dark:border-border p-3 hover:shadow-md transition-shadow h-full">
                                         <div className="h-32 sm:h-40 w-full rounded-md overflow-hidden bg-gradient-to-br from-[#2f6de6] to-[#1539be] flex items-center justify-center">
                                             {job.image
                                                 ? <img src={formatFileUrl(job.image)} alt={job.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
@@ -490,7 +490,7 @@ export default function Page() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                             {articles.map((article) => (
                                 <Link key={article.id} href={`/blog/${article.slug}`}>
-                                    <article className="rounded-xl border border-[#e9eef8] dark:border-border bg-white dark:bg-card overflow-hidden h-full hover:shadow-md transition-shadow">
+                                    <article className="rounded-2xl border border-[#e9eef8] dark:border-border bg-white dark:bg-card overflow-hidden h-full hover:shadow-md transition-shadow">
                                         <div className="h-40 w-full bg-gradient-to-br from-[#2f6de6] to-[#1539be]">
                                             {article.coverImage && (
                                                 <img src={formatFileUrl(article.coverImage)} alt={article.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />

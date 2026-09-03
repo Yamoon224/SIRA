@@ -89,7 +89,7 @@ export default function BlogPage() {
                         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                             {articles.map((article) => (
                                 <Link key={article.id} href={`/blog/${article.slug}`} className="cursor-pointer">
-                                    <article className="rounded-xl border border-[#e9eef8] dark:border-border bg-white dark:bg-card overflow-hidden h-full hover:shadow-md transition-shadow">
+                                    <article className="rounded-2xl border border-[#e9eef8] dark:border-border bg-white dark:bg-card overflow-hidden h-full hover:shadow-md transition-shadow">
                                         <div className="h-40 w-full bg-gradient-to-br from-[#2f6de6] to-[#1539be]">
                                             {article.coverImage && (
                                                 <img src={article.coverImage} alt={article.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />

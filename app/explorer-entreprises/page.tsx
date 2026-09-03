@@ -141,7 +141,7 @@ export default function ExploreCompaniesPage() {
                             const isActive = activeSector === sector.name
                             return (
                                 <button key={sector.name} type="button" onClick={() => handleSectorClick(sector)}
-                                    className={`rounded-xl border overflow-hidden text-left transition-all ${isActive ? "border-[#2f6de6] shadow-md" : "border-[#d7ddea] dark:border-border"} bg-white dark:bg-card`}>
+                                    className={`rounded-2xl border overflow-hidden text-left transition-all ${isActive ? "border-[#2f6de6] shadow-md" : "border-[#d7ddea] dark:border-border"} bg-white dark:bg-card`}>
                                     <div className="px-4 pt-5 pb-3 text-center">
                                         <Icon className="w-4 h-4 mx-auto text-[#2f6de6] dark:text-primary" />
                                         <p className="mt-3 text-[10px] font-semibold text-[#2f5099] dark:text-primary">{sector.name}</p>

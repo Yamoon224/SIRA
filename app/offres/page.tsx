@@ -7,7 +7,7 @@ import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Check, Star, Loader2 } from "lucide-react"
+import { Check, Loader2 } from "lucide-react"
 import { subscriptionService } from "@/lib/api/subscription.service"
 
 interface IPlan {
@@ -36,8 +36,6 @@ export default function OffresPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  const popularIndex = plans.length > 1 ? 1 : -1
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -58,16 +56,28 @@ export default function OffresPage() {
         ) : plans.length === 0 ? (
           <p className="text-center text-muted-foreground py-16">Les plans ne sont pas disponibles pour le moment.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
-            {plans.map((plan, index) => {
-              const isPopular = index === popularIndex
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16 items-stretch">
+            {plans.map((plan) => {
+              const planKey = plan.name?.toLowerCase() ?? ""
+              // Standard est le « choix populaire » (contour bleu + badge) ;
+              // Premium se distingue par son seul contour noir, sans badge.
+              const isPopular = planKey === "standard"
+              const isPremium = planKey === "premium"
               return (
-                <Card key={plan.id} className={`relative ${isPopular ? "border-blue-500 ring-2 ring-blue-500 scale-105" : "border-border"}`}>
+                <Card
+                  key={plan.id}
+                  className={`relative h-full ${
+                    isPopular
+                      ? "border-blue-500 ring-2 ring-blue-500"
+                      : isPremium
+                        ? "border-2 border-black dark:border-white"
+                        : "border-border"
+                  }`}
+                >
                   {isPopular && (
                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                       <Badge className="bg-blue-600 text-white px-4 py-1">
-                        <Star className="w-3 h-3 mr-1" />
-                        Populaire
+                        Choix populaire
                       </Badge>
                     </div>
                   )}
