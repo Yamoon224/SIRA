@@ -198,12 +198,12 @@ export default function Page() {
                     <PageHeader title="Centre d'assistance" />
 
                     <Tabs defaultValue="assistance" className="w-full">
-                        <TabsList className="mb-8 w-full justify-start rounded-full bg-[#f4f7ff] dark:bg-muted p-1">
+                        <TabsList className="mb-8 grid w-full grid-cols-2 rounded-full bg-[#f4f7ff] p-1 dark:bg-muted">
                             {TABS.map((tab) => (
                                 <TabsTrigger
                                     key={tab.id}
                                     value={tab.id}
-                                    className="rounded-full px-5 py-2.5 text-sm font-medium
+                                    className="w-full rounded-full px-5 py-2.5 text-sm font-medium
           text-[#7f8796]
           data-[state=active]:bg-white
           data-[state=active]:text-[#2f6de6]
@@ -402,30 +402,39 @@ export default function Page() {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto items-stretch">
                                         {plans.map((plan) => {
                                             const isPremium = Number(plan.price) > 0
+                                            const isPopular = plan.name?.toLowerCase() === "standard"
 
                                             return (
                                                 <div
                                                     key={plan.id}
-                                                    className={`relative flex h-full min-h-[460px] flex-col rounded-md border-2 p-6 ${isPremium
-                                                            ? "border-black dark:border-white shadow-lg shadow-blue-100"
-                                                            : "border-[#e8edf6] dark:border-border"
+                                                    className={`relative flex h-full min-h-[460px] flex-col rounded-2xl border-2 p-6 ${isPopular
+                                                        ? "border-[#2f6de6] shadow-lg shadow-blue-100"
+                                                        : "border-[#e8edf6] dark:border-border"
                                                         }`}
                                                 >
+                                                    {isPopular && (
+                                                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                                                            <span className="rounded-full bg-[#2f6de6] px-3 py-1 text-xs font-semibold text-white">
+                                                                Choix populaire
+                                                            </span>
+                                                        </div>
+                                                    )}
+
                                                     <div className="mb-4">
                                                         <div className="mb-3">
                                                             {isPremium ? (
-                                                                <Zap className="w-8 h-8 text-[#2f6de6] dark:text-primary" />
+                                                                <Zap className="h-8 w-8 text-[#2f6de6] dark:text-primary" />
                                                             ) : (
-                                                                <div className="w-8 h-8 rounded-full bg-[#f4f7ff] dark:bg-muted flex items-center justify-center text-[#2f6de6] dark:text-primary text-sm font-bold">
+                                                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f7ff] text-sm font-bold text-[#2f6de6] dark:bg-muted dark:text-primary">
                                                                     G
                                                                 </div>
                                                             )}
                                                         </div>
 
                                                         <h3
-                                                            className={`text-xl font-bold mb-1 ${isPremium
-                                                                    ? "text-[#2f6de6] dark:text-primary"
-                                                                    : "text-[#1b2331] dark:text-foreground"
+                                                            className={`mb-1 text-xl font-bold ${isPopular || isPremium
+                                                                ? "text-[#2f6de6] dark:text-primary"
+                                                                : "text-[#1b2331] dark:text-foreground"
                                                                 }`}
                                                         >
                                                             {plan.name}
@@ -438,10 +447,8 @@ export default function Page() {
                                                         </p>
 
                                                         {Number(plan.price) > 0 && (
-                                                            <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground mt-0.5">
-                                                                {plan.billingPeriod === "ANNUAL"
-                                                                    ? "par an"
-                                                                    : "par mois"}
+                                                            <p className="mt-0.5 text-[11px] text-[#9aa3b2] dark:text-muted-foreground">
+                                                                {plan.billingPeriod === "ANNUAL" ? "par an" : "par mois"}
                                                             </p>
                                                         )}
                                                     </div>
@@ -453,9 +460,9 @@ export default function Page() {
                                                                 className="flex items-center gap-2 text-sm text-[#4e5a6e] dark:text-foreground"
                                                             >
                                                                 <Check
-                                                                    className={`w-4 h-4 shrink-0 ${isPremium
-                                                                            ? "text-[#2f6de6] dark:text-primary"
-                                                                            : "text-[#9aa3b2] dark:text-muted-foreground"
+                                                                    className={`h-4 w-4 shrink-0 ${isPopular || isPremium
+                                                                        ? "text-[#2f6de6] dark:text-primary"
+                                                                        : "text-[#9aa3b2] dark:text-muted-foreground"
                                                                         }`}
                                                                 />
                                                                 {f}
@@ -466,9 +473,9 @@ export default function Page() {
                                                     <Button
                                                         onClick={() => handleSelectPlan(plan)}
                                                         disabled={subscribing === plan.id}
-                                                        className={`mt-auto w-full rounded-full font-semibold ${isPremium
-                                                                ? "bg-[#2f6de6] hover:bg-[#2157d3] text-white"
-                                                                : "bg-[#f4f7ff] dark:bg-muted hover:bg-[#e8edf6] dark:hover:bg-muted text-[#1b2331] dark:text-foreground"
+                                                        className={`mt-auto w-full rounded-full font-semibold ${isPopular || isPremium
+                                                            ? "bg-[#2f6de6] text-white hover:bg-[#2157d3]"
+                                                            : "bg-[#f4f7ff] text-[#1b2331] hover:bg-[#e8edf6] dark:bg-muted dark:text-foreground dark:hover:bg-muted"
                                                             }`}
                                                     >
                                                         {subscribing === plan.id ? (
