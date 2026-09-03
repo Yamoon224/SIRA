@@ -88,7 +88,6 @@ function SearchResults() {
     <div className="bg-background">
       <div className="container mx-auto">
         <PageHeader
-          className="mb-8"
           title={`Résultats de recherche pour "${query}"`}
           description={`${total} résultat${total > 1 ? "s" : ""} trouvé${total > 1 ? "s" : ""}`}
         />

@@ -101,7 +101,6 @@ function PresentationsIaContent() {
     return (
         <div className="space-y-4">
             <PageHeader
-                className="mb-0"
                 title="Présentations & Schémas IA"
                 description="Générez la structure d'une présentation ou d'un schéma à partir d'un simple brief."
             />

@@ -118,7 +118,6 @@ export default function NotificationsPage() {
     <div className="bg-background">
       <div className="container mx-auto">
         <PageHeader
-          className="mb-8"
           title="Notifications"
           description={`Tu as ${unreadCount} notification${unreadCount !== 1 ? "s" : ""} non lue${unreadCount !== 1 ? "s" : ""}`}
           actions={

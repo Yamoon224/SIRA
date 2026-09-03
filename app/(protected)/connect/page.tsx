@@ -393,7 +393,6 @@ export default function Page() {
     return (
         <div className="space-y-4">
             <PageHeader
-                className="mb-0"
                 title="GORIYA Connect"
                 description="Votre réseau professionnel et vos communautés."
             />

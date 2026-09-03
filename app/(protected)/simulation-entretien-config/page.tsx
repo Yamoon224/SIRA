@@ -27,7 +27,6 @@ export default function SimulationEntretienConfigPage() {
     <div className="bg-background">
       <div className="mx-auto max-w-2xl">
         <PageHeader
-          className="mb-6 sm:mb-8"
           title="Simulation d'Entretien avec Goriya"
           actions={
             <Button variant="ghost" size="sm" onClick={() => router.back()}>

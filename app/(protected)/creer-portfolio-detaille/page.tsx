@@ -33,7 +33,7 @@ export default function Page() {
     return (
         <div className="bg-gray-50 dark:bg-background">
             <div className="mx-auto max-w-7xl">
-                <PageHeader title="Créer un portfolio" className="mb-8" />
+                <PageHeader title="Créer un portfolio" />
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Form */}

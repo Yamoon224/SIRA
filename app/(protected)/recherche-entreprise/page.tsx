@@ -83,7 +83,6 @@ function RechercheEntrepriseContent() {
     return (
         <div className="space-y-4">
             <PageHeader
-                className="mb-0"
                 title="Goriya IA Research"
                 description="Recherchez une entreprise avant un entretien : histoire, valeurs, culture, actualités."
             />

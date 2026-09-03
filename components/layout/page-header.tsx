@@ -19,12 +19,19 @@ type PageHeaderProps = {
  * Le filet court sur toute la largeur du contenu et le titre s'aligne dessus :
  * contrairement à /nouveau-document, l'en-tête ne rajoute pas de retrait
  * horizontal, sinon le titre serait décalé par rapport au contenu en dessous.
+ *
+ * L'espace SOUS le filet appartient à ce composant : ne le remplacez pas
+ * depuis une page (`mb-0`, `mb-3`…). Plusieurs pages le faisaient pour s'en
+ * remettre au `space-y-4` de leur conteneur, et le contenu se retrouvait collé
+ * au trait — 16px au lieu des 24/32px des autres pages. Les conteneurs de ces
+ * pages sont des blocs : leur marge se fusionne avec celle-ci au lieu de s'y
+ * ajouter, le rendu reste donc identique partout.
  */
 export function PageHeader({ title, description, actions, className }: PageHeaderProps) {
     return (
         <div
             className={cn(
-                "mb-6 flex flex-col gap-3 border-b border-[#d9dfea] dark:border-border pb-4 sm:flex-row sm:items-center sm:justify-between",
+                "mb-6 flex flex-col gap-3 border-b border-[#d9dfea] dark:border-border pb-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between",
                 className,
             )}
         >

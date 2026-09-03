@@ -67,7 +67,7 @@ export default function Page() {
     if (unavailable || surveys.length === 0) {
         return (
             <div className="space-y-4">
-                <PageHeader title="Enquêtes internes" className="mb-0" />
+                <PageHeader title="Enquêtes internes" />
                 <Card className="border border-border">
                     <CardContent className="p-12 text-center text-muted-foreground">
                         <ClipboardList className="mx-auto mb-3 h-12 w-12 opacity-30" />
@@ -81,7 +81,6 @@ export default function Page() {
     return (
         <div className="space-y-4">
             <PageHeader
-                className="mb-0"
                 title="Enquêtes internes"
                 description="Vos réponses sont anonymes - jamais associées à votre identité par votre entreprise."
             />

@@ -116,7 +116,9 @@ export default function EmploisPage() {
     }
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="space-y-4">
+            {/* Bloc et non `flex` : la marge basse de PageHeader doit pouvoir
+                fusionner avec l'espacement du conteneur au lieu de s'y ajouter. */}
             {/* Top search bar */}
             <form onSubmit={handleSearch} className="flex items-center justify-between gap-4">
                 <div className="relative flex-1 max-w-md">
@@ -134,7 +136,7 @@ export default function EmploisPage() {
                 </button>
             </form>
 
-            <PageHeader title="Trouve un emploi" className="mb-0" />
+            <PageHeader title="Trouve un emploi" />
 
             <div className="flex gap-5 items-start">
                 {/* Filters sidebar */}

@@ -57,7 +57,7 @@ export default function CreerPortfolioDetailPage() {
 
     return (
         <div className="mx-auto max-w-7xl">
-            <PageHeader title="Créer un portfolio" className="mb-8" />
+            <PageHeader title="Créer un portfolio" />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Left Column - Form */}

@@ -167,7 +167,6 @@ function PitchGoriyaContent() {
     return (
         <div className="space-y-4">
             <PageHeader
-                className="mb-0"
                 title="Pitch Goriya"
                 description="Générez et scorez votre pitch - texte, vidéo ou avatar animé."
             />

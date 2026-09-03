@@ -103,7 +103,7 @@ export default function Page() {
         <ProtectedRoute>
             <div className="bg-white dark:bg-background">
                 <div className="mx-auto max-w-7xl">
-                    <PageHeader title={t("dashboard.title")} className="mb-8" />
+                    <PageHeader title={t("dashboard.title")} />
 
                     <div className="mb-8 flex items-start justify-between">
                         <div>

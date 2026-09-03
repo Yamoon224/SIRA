@@ -96,7 +96,6 @@ export default function Page() {
     return (
         <div className="space-y-4">
             <PageHeader
-                className="mb-0"
                 title="Appels vidéo"
                 description="Entretiens et sessions de coaching en visioconférence (GORIYA Call)"
                 actions={

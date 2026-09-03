@@ -142,7 +142,7 @@ export default function BibliothequePage() {
     return (
         <div className="bg-white dark:bg-background">
             <div className="mx-auto max-w-6xl">
-                <PageHeader title="Bibliothèque" className="mb-8" />
+                <PageHeader title="Bibliothèque" />
 
                 {/* Quick Actions */}
                 <div className="mb-8">

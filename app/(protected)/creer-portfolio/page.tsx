@@ -115,7 +115,7 @@ function CreerPortfolioContent() {
     return (
         <div className="bg-white dark:bg-background">
             <div className="mx-auto max-w-5xl">
-                <PageHeader title={editId ? "Modifier le portfolio" : "Créer un portfolio"} className="mb-8" />
+                <PageHeader title={editId ? "Modifier le portfolio" : "Créer un portfolio"} />
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Left Column */}
