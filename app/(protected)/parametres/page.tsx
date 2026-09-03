@@ -222,7 +222,7 @@ export default function ParametresPage() {
   return (
       <div className="space-y-6">
         <PageHeader
-          className="mb-0"
+          className="mb-2"
           title={t("settings.title")}
           description={t("settings.subtitle")}
         />
@@ -502,7 +502,7 @@ export default function ParametresPage() {
                     variant={theme === "light" ? "default" : "outline"}
                     size="sm"
                     onClick={() => setTheme("light")}
-                    className="flex flex-col items-center gap-2 h-auto py-3"
+                    className="flex flex-col items-center gap-2 h-auto py-3 rounded-md"
                   >
                     <div className="w-6 h-6 bg-white dark:bg-card border-2 border-gray-300 dark:border-border rounded"></div>
                     <span className="text-xs">Clair</span>
@@ -512,7 +512,7 @@ export default function ParametresPage() {
                     variant={theme === "dark" ? "default" : "outline"}
                     size="sm"
                     onClick={() => setTheme("dark")}
-                    className="flex flex-col items-center gap-2 h-auto py-3"
+                    className="flex flex-col items-center gap-2 h-auto py-3 rounded-md"
                   >
                     <div className="w-6 h-6 bg-gray-800 border-2 border-gray-600 rounded"></div>
                     <span className="text-xs">Sombre</span>
@@ -522,7 +522,7 @@ export default function ParametresPage() {
                     variant={theme === "system" ? "default" : "outline"}
                     size="sm"
                     onClick={() => setTheme("system")}
-                    className="flex flex-col items-center gap-2 h-auto py-3"
+                    className="flex flex-col items-center gap-2 h-auto py-3 rounded-md"
                   >
                     <div className="w-6 h-6 bg-gradient-to-r from-white to-gray-800 border-2 border-gray-400 rounded"></div>
                     <span className="text-xs">Système</span>
