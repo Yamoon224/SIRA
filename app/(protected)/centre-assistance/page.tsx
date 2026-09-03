@@ -151,19 +151,12 @@ export default function Page() {
                     <PageHeader title={t("nav.helpCenter")} />
 
                     <Tabs defaultValue="assistance" className="w-full">
-                        <TabsList className="mb-8 grid w-full grid-cols-2 rounded-full bg-[#f4f7ff] p-3 dark:bg-muted">
+                        <TabsList className="mb-8 grid h-auto w-full grid-cols-2 rounded-full bg-[#f4f7ff] p-1.5 dark:bg-muted">
                             {TABS.map((tab) => (
                                 <TabsTrigger
                                     key={tab.id}
                                     value={tab.id}
-                                    className="w-full rounded-full px-5 py-2.5 text-sm font-medium
-          text-[#7f8796]
-          data-[state=active]:bg-white
-          data-[state=active]:text-[#2f6de6]
-          data-[state=active]:shadow-sm
-          dark:text-muted-foreground
-          dark:data-[state=active]:bg-background
-          dark:data-[state=active]:text-primary"
+                                    className="w-full rounded-full px-5 py-2.5 text-sm font-medium leading-none text-[#7f8796] data-[state=active]:bg-white data-[state=active]:text-[#2f6de6] data-[state=active]:shadow-sm dark:text-muted-foreground dark:data-[state=active]:bg-background dark:data-[state=active]:text-primary"
                                 >
                                     {t(tab.labelKey)}
                                 </TabsTrigger>
