@@ -11,6 +11,12 @@ import { KKIAPAY_WIDGET_SRC, openKkiapayWidget } from "@/lib/kkiapay"
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/ui/tabs"
 import { PageHeader } from "@/components/layout/page-header"
 
 interface Plan {
@@ -50,7 +56,7 @@ export default function Page() {
                 const data = (res as any)?.data ?? res ?? []
                 setPlans(Array.isArray(data) ? data : [])
             })
-            .catch(() => {})
+            .catch(() => { })
             .finally(() => setLoadingPlans(false))
     }, [])
 
@@ -61,7 +67,7 @@ export default function Page() {
                 setGateways(data?.enabledGateways ?? [])
                 if (data?.defaultGateway) setGateway(data.defaultGateway)
             })
-            .catch(() => {})
+            .catch(() => { })
     }, [])
 
     const showGatewayPicker = gateways.includes("kkiapay") && gateways.includes("paiementpro")
@@ -191,35 +197,42 @@ export default function Page() {
                 <div className="mx-auto max-w-5xl">
                     <PageHeader title="Centre d'assistance" />
 
-                    {/* Tabs */}
-                    <div className="flex gap-1 border-b border-[#e8edf6] dark:border-border mb-8">
-                        {TABS.map((tab) => (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
-                                    activeTab === tab.id
-                                        ? "border-[#2f6de6] text-[#2f6de6] dark:text-primary"
-                                        : "border-transparent text-[#7f8796] dark:text-muted-foreground hover:text-[#1b2331] dark:hover:text-foreground"
-                                }`}
-                            >
-                                {tab.label}
-                            </button>
-                        ))}
-                    </div>
+                    <Tabs defaultValue="assistance" className="w-full">
+                        <TabsList className="mb-8 w-full justify-start rounded-full bg-[#f4f7ff] dark:bg-muted p-1">
+                            {TABS.map((tab) => (
+                                <TabsTrigger
+                                    key={tab.id}
+                                    value={tab.id}
+                                    className="rounded-full px-5 py-2.5 text-sm font-medium
+          text-[#7f8796]
+          data-[state=active]:bg-white
+          data-[state=active]:text-[#2f6de6]
+          data-[state=active]:shadow-sm
+          dark:text-muted-foreground
+          dark:data-[state=active]:bg-background
+          dark:data-[state=active]:text-primary"
+                                >
+                                    {tab.label}
+                                </TabsTrigger>
+                            ))}
+                        </TabsList>
 
-                    {/* ── TAB: Centre d'assistance ── */}
-                    {activeTab === "assistance" && (
-                        <>
+                        {/* ── TAB: Centre d'assistance ── */}
+                        <TabsContent value="assistance" className="mt-0">
                             {/* Hero */}
                             <div className="bg-gradient-to-r from-[#1d4db8] to-[#2566d9] rounded-2xl p-6 text-white mb-8">
-                                <h2 className="text-3xl font-bold mb-2">Comment pouvons-nous t'aider ?</h2>
+                                <h2 className="text-3xl font-bold mb-2">
+                                    Comment pouvons-nous t'aider ?
+                                </h2>
+
                                 <p className="text-white/90 mb-6">
                                     Trouve rapidement des réponses à tes questions ou consulte nos ressources
                                 </p>
+
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     {contactMethods.map((method, i) => {
                                         const Icon = method.icon
+
                                         return (
                                             <a
                                                 key={i}
@@ -227,8 +240,14 @@ export default function Page() {
                                                 className={`${method.color} rounded-xl p-4 text-left hover:opacity-90 transition-opacity block`}
                                             >
                                                 <Icon className="w-6 h-6 mb-2" />
-                                                <h3 className="font-semibold text-[13px]">{method.title}</h3>
-                                                <p className="text-[11px] opacity-75 break-all">{method.description}</p>
+
+                                                <h3 className="font-semibold text-[13px]">
+                                                    {method.title}
+                                                </h3>
+
+                                                <p className="text-[11px] opacity-75 break-all">
+                                                    {method.description}
+                                                </p>
                                             </a>
                                         )
                                     })}
@@ -237,11 +256,10 @@ export default function Page() {
 
                             {/* Categories */}
                             <div className="mb-8">
-                                <h3 className="text-lg font-bold text-[#1b2331] dark:text-foreground mb-4">Parcourir par catégorie</h3>
-                                {/* Une carte par catégorie : l'icône en haut, le libellé
-                                    juste en dessous, le nombre d'articles ancré en bas
-                                    (`mt-auto`) pour qu'il s'aligne d'une carte à l'autre
-                                    quel que soit le libellé. */}
+                                <h3 className="text-lg font-bold text-[#1b2331] dark:text-foreground mb-4">
+                                    Parcourir par catégorie
+                                </h3>
+
                                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
                                     {categories.map((cat, i) => {
                                         const Icon = cat.icon
@@ -250,13 +268,21 @@ export default function Page() {
                                             <button
                                                 key={i}
                                                 type="button"
-                                                className="flex h-full flex-col items-center rounded-xl border border-[#e8edf6] dark:border-border bg-white dark:bg-card p-4 text-center transition-colors hover:border-[#2f6de6]"
+                                                className="flex h-full flex-col items-center rounded-md border border-[#e8edf6] dark:border-border bg-white dark:bg-card p-4 text-center transition-colors hover:border-[#2f6de6]"
                                             >
-                                                <div className={`mb-3 flex h-12 w-12 items-center justify-center rounded-full ${cat.color} text-white`}>
+                                                <div
+                                                    className={`mb-3 flex h-12 w-12 items-center justify-center rounded-full ${cat.color} text-white`}
+                                                >
                                                     <Icon className="h-6 w-6" strokeWidth={1.9} />
                                                 </div>
-                                                <p className="text-[13px] font-medium leading-tight text-[#1b2331] dark:text-foreground">{cat.name}</p>
-                                                <p className="mt-auto pt-2 text-[11px] text-[#9aa3b2] dark:text-muted-foreground">{cat.count}</p>
+
+                                                <p className="text-[13px] font-medium leading-tight text-[#1b2331] dark:text-foreground">
+                                                    {cat.name}
+                                                </p>
+
+                                                <p className="mt-auto pt-2 text-[11px] text-[#9aa3b2] dark:text-muted-foreground">
+                                                    {cat.count}
+                                                </p>
                                             </button>
                                         )
                                     })}
@@ -265,21 +291,36 @@ export default function Page() {
 
                             {/* FAQ */}
                             <div className="mb-8">
-                                <h3 className="text-lg font-bold text-[#1b2331] dark:text-foreground mb-4">Réponses aux questions</h3>
+                                <h3 className="text-lg font-bold text-[#1b2331] dark:text-foreground mb-4">
+                                    Réponses aux questions
+                                </h3>
+
                                 <div className="space-y-3">
                                     {faqItems.map((item, i) => (
                                         <button
                                             key={i}
-                                            onClick={() => setOpenFaqIndex(openFaqIndex === i ? null : i)}
-                                            className="w-full bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-xl p-4 hover:border-[#2f6de6] transition-colors text-left"
+                                            onClick={() =>
+                                                setOpenFaqIndex(openFaqIndex === i ? null : i)
+                                            }
+                                            className="w-full bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-md p-4 hover:border-[#2f6de6] transition-colors text-left"
                                         >
                                             <div className="flex items-center justify-between">
                                                 <div className="flex-1">
-                                                    <p className="font-medium text-[13px] text-[#1b2331] dark:text-foreground mb-1">{item.question}</p>
-                                                    <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground">{item.views}</p>
+                                                    <p className="font-medium text-[13px] text-[#1b2331] dark:text-foreground mb-1">
+                                                        {item.question}
+                                                    </p>
+
+                                                    <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground">
+                                                        {item.views}
+                                                    </p>
                                                 </div>
-                                                <ChevronDown className={`w-5 h-5 text-[#9aa3b2] dark:text-muted-foreground transition-transform ${openFaqIndex === i ? "rotate-180" : ""}`} />
+
+                                                <ChevronDown
+                                                    className={`w-5 h-5 text-[#9aa3b2] dark:text-muted-foreground transition-transform ${openFaqIndex === i ? "rotate-180" : ""
+                                                        }`}
+                                                />
                                             </div>
+
                                             {openFaqIndex === i && (
                                                 <div className="mt-4 pt-4 border-t border-[#e8edf6] dark:border-border">
                                                     <p className="text-[12px] text-[#4e5a6e] dark:text-foreground leading-relaxed">
@@ -294,158 +335,158 @@ export default function Page() {
 
                             {/* Resources */}
                             <div className="mb-8">
-                                <h3 className="text-lg font-bold text-[#1b2331] dark:text-foreground mb-4">Ressources utiles</h3>
+                                <h3 className="text-lg font-bold text-[#1b2331] dark:text-foreground mb-4">
+                                    Ressources utiles
+                                </h3>
+
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {resources.map((resource, i) => (
-                                        <Card key={i} className="border border-[#e8edf6] dark:border-border hover:shadow-md transition-shadow">
+                                        <Card
+                                            key={i}
+                                            className="rounded-md border border-[#e8edf6] dark:border-border hover:shadow-md transition-shadow"
+                                        >
                                             <CardContent className="p-4 flex items-start gap-3">
                                                 <div className="flex-1">
-                                                    <h4 className="font-semibold text-[13px] text-[#1b2331] dark:text-foreground mb-1">{resource.title}</h4>
-                                                    <p className="text-[12px] text-[#7f8796] dark:text-muted-foreground mb-2">{resource.description}</p>
+                                                    <h4 className="font-semibold text-[13px] text-[#1b2331] dark:text-foreground mb-1">
+                                                        {resource.title}
+                                                    </h4>
+
+                                                    <p className="text-[12px] text-[#7f8796] dark:text-muted-foreground mb-2">
+                                                        {resource.description}
+                                                    </p>
+
                                                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#eff4ff] dark:bg-primary/10 text-[#5b6f98] dark:text-muted-foreground">
                                                         {resource.badge}
                                                     </span>
                                                 </div>
+
                                                 <ChevronRight className="w-5 h-5 text-[#9aa3b2] dark:text-muted-foreground flex-shrink-0" />
                                             </CardContent>
                                         </Card>
                                     ))}
                                 </div>
                             </div>
-                        </>
-                    )}
+                        </TabsContent>
 
-                    {/* ── TAB: Tarifs d'abonnement ── */}
-                    {activeTab === "tarifs" && (
-                        <div className="mb-8">
-                            <div className="text-center mb-6">
-                                <h2 className="text-3xl font-bold text-[#1b2331] dark:text-foreground mb-3">Choisis ton forfait</h2>
-                                <p className="text-[#7f8796] dark:text-muted-foreground text-sm max-w-md mx-auto">
-                                    Choisis le plan qui correspond à tes ambitions professionnelles.
-                                    Commence gratuitement et évolue selon tes besoins.
-                                </p>
-                            </div>
+                        {/* ── TAB: Tarifs d'abonnement ── */}
+                        <TabsContent value="tarifs" className="mt-0">
+                            <div className="mb-8">
+                                <div className="text-center mb-6">
+                                    <h2 className="text-3xl font-bold text-[#1b2331] dark:text-foreground mb-3">
+                                        Choisis ton forfait
+                                    </h2>
 
-                            {(showGatewayPicker || gateway === "paiementpro") && (
+                                    <p className="text-[#7f8796] dark:text-muted-foreground text-sm max-w-md mx-auto">
+                                        Choisis le plan qui correspond à tes ambitions professionnelles.
+                                        Commence gratuitement et évolue selon tes besoins.
+                                    </p>
+                                </div>
+
+                                {/* PaiementPro uniquement */}
                                 <div className="mx-auto mb-6 max-w-md">
-                                    {showGatewayPicker && (
-                                        <>
-                                            <p className="mb-2 text-center text-xs font-medium text-[#7f8796] dark:text-muted-foreground">Moyen de paiement</p>
-                                            <div className="grid grid-cols-2 gap-2">
-                                                {[
-                                                    { id: "paiementpro", label: "Paiement Pro" },
-                                                    { id: "kkiapay", label: "Kkiapay" },
-                                                ].map((g) => (
-                                                    <button
-                                                        key={g.id}
-                                                        type="button"
-                                                        onClick={() => setGateway(g.id)}
-                                                        className={`rounded-xl border-2 px-4 py-2 text-sm font-semibold transition-colors ${
-                                                            gateway === g.id
-                                                                ? "border-[#2f6de6] bg-[#eff4ff] dark:bg-primary/10 text-[#2f6de6] dark:text-primary"
-                                                                : "border-[#e8edf6] dark:border-border text-[#7f8796] dark:text-muted-foreground hover:border-[#d8deeb] dark:hover:border-border"
+                                    <input
+                                        type="tel"
+                                        inputMode="tel"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                        placeholder="Numéro de téléphone (Mobile Money)"
+                                        className="w-full rounded-full border border-[#e8edf6] dark:border-border px-4 py-2 text-sm outline-none focus:border-[#2f6de6]"
+                                    />
+                                </div>
+
+                                {loadingPlans ? (
+                                    <div className="flex justify-center py-16">
+                                        <Loader2 className="h-8 w-8 animate-spin text-[#2f6de6] dark:text-primary" />
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto items-stretch">
+                                        {plans.map((plan) => {
+                                            const isPremium = Number(plan.price) > 0
+
+                                            return (
+                                                <div
+                                                    key={plan.id}
+                                                    className={`relative flex h-full min-h-[460px] flex-col rounded-md border-2 p-6 ${isPremium
+                                                            ? "border-black dark:border-white shadow-lg shadow-blue-100"
+                                                            : "border-[#e8edf6] dark:border-border"
                                                         }`}
-                                                    >
-                                                        {g.label}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </>
-                                    )}
-                                    {gateway === "paiementpro" && (
-                                        <input
-                                            type="tel"
-                                            inputMode="tel"
-                                            value={phone}
-                                            onChange={(e) => setPhone(e.target.value)}
-                                            placeholder="Numéro de téléphone (Mobile Money)"
-                                            className="mt-3 w-full rounded-full border border-[#e8edf6] dark:border-border px-4 py-2 text-sm outline-none focus:border-[#2f6de6]"
-                                        />
-                                    )}
-                                </div>
-                            )}
+                                                >
+                                                    <div className="mb-4">
+                                                        <div className="mb-3">
+                                                            {isPremium ? (
+                                                                <Zap className="w-8 h-8 text-[#2f6de6] dark:text-primary" />
+                                                            ) : (
+                                                                <div className="w-8 h-8 rounded-full bg-[#f4f7ff] dark:bg-muted flex items-center justify-center text-[#2f6de6] dark:text-primary text-sm font-bold">
+                                                                    G
+                                                                </div>
+                                                            )}
+                                                        </div>
 
-                            {loadingPlans ? (
-                                <div className="flex justify-center py-16">
-                                    <Loader2 className="h-8 w-8 animate-spin text-[#2f6de6] dark:text-primary" />
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                                    {plans.map((plan) => {
-                                        const isPremium = Number(plan.price) > 0
-                                        return (
-                                            <div
-                                                key={plan.id}
-                                                className={`relative rounded-2xl border-2 p-6 flex flex-col ${
-                                                    isPremium
-                                                        ? "border-[#2f6de6] shadow-lg shadow-blue-100"
-                                                        : "border-[#e8edf6] dark:border-border"
-                                                }`}
-                                            >
-                                                {isPremium && (
-                                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                                                        <span className="bg-[#2f6de6] text-white text-xs font-semibold px-3 py-1 rounded-full">
-                                                            Plan populaire
-                                                        </span>
-                                                    </div>
-                                                )}
+                                                        <h3
+                                                            className={`text-xl font-bold mb-1 ${isPremium
+                                                                    ? "text-[#2f6de6] dark:text-primary"
+                                                                    : "text-[#1b2331] dark:text-foreground"
+                                                                }`}
+                                                        >
+                                                            {plan.name}
+                                                        </h3>
 
-                                                <div className="mb-4">
-                                                    <div className="mb-3">
-                                                        {isPremium ? (
-                                                            <Zap className="w-8 h-8 text-[#2f6de6] dark:text-primary" />
-                                                        ) : (
-                                                            <div className="w-8 h-8 rounded-full bg-[#f4f7ff] dark:bg-muted flex items-center justify-center text-[#2f6de6] dark:text-primary text-sm font-bold">G</div>
+                                                        <p className="text-2xl font-bold text-[#1b2331] dark:text-foreground">
+                                                            {Number(plan.price) === 0
+                                                                ? "Gratuit"
+                                                                : `${Number(plan.price).toLocaleString("fr-FR")} FCFA`}
+                                                        </p>
+
+                                                        {Number(plan.price) > 0 && (
+                                                            <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground mt-0.5">
+                                                                {plan.billingPeriod === "ANNUAL"
+                                                                    ? "par an"
+                                                                    : "par mois"}
+                                                            </p>
                                                         )}
                                                     </div>
-                                                    <h3 className={`text-xl font-bold mb-1 ${isPremium ? "text-[#2f6de6] dark:text-primary" : "text-[#1b2331] dark:text-foreground"}`}>
-                                                        {plan.name}
-                                                    </h3>
-                                                    <p className="text-2xl font-bold text-[#1b2331] dark:text-foreground">
-                                                        {Number(plan.price) === 0
-                                                            ? "Gratuit"
-                                                            : `${Number(plan.price).toLocaleString("fr-FR")} FCFA`}
-                                                    </p>
-                                                    {Number(plan.price) > 0 && (
-                                                        <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground mt-0.5">
-                                                            {plan.billingPeriod === "ANNUAL" ? "par an" : "par mois"}
-                                                        </p>
-                                                    )}
+
+                                                    <ul className="mb-6 flex-1 space-y-2.5">
+                                                        {plan.features.map((f, i) => (
+                                                            <li
+                                                                key={i}
+                                                                className="flex items-center gap-2 text-sm text-[#4e5a6e] dark:text-foreground"
+                                                            >
+                                                                <Check
+                                                                    className={`w-4 h-4 shrink-0 ${isPremium
+                                                                            ? "text-[#2f6de6] dark:text-primary"
+                                                                            : "text-[#9aa3b2] dark:text-muted-foreground"
+                                                                        }`}
+                                                                />
+                                                                {f}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+
+                                                    <Button
+                                                        onClick={() => handleSelectPlan(plan)}
+                                                        disabled={subscribing === plan.id}
+                                                        className={`mt-auto w-full rounded-full font-semibold ${isPremium
+                                                                ? "bg-[#2f6de6] hover:bg-[#2157d3] text-white"
+                                                                : "bg-[#f4f7ff] dark:bg-muted hover:bg-[#e8edf6] dark:hover:bg-muted text-[#1b2331] dark:text-foreground"
+                                                            }`}
+                                                    >
+                                                        {subscribing === plan.id ? (
+                                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                                        ) : Number(plan.price) === 0 ? (
+                                                            "Commencer gratuitement"
+                                                        ) : (
+                                                            "Opter pour ça"
+                                                        )}
+                                                    </Button>
                                                 </div>
-
-                                                <ul className="space-y-2.5 mb-6 flex-1">
-                                                    {plan.features.map((f, i) => (
-                                                        <li key={i} className="flex items-center gap-2 text-sm text-[#4e5a6e] dark:text-foreground">
-                                                            <Check className={`w-4 h-4 shrink-0 ${isPremium ? "text-[#2f6de6] dark:text-primary" : "text-[#9aa3b2] dark:text-muted-foreground"}`} />
-                                                            {f}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-
-                                                <Button
-                                                    onClick={() => handleSelectPlan(plan)}
-                                                    disabled={subscribing === plan.id}
-                                                    className={`w-full rounded-full font-semibold ${
-                                                        isPremium
-                                                            ? "bg-[#2f6de6] hover:bg-[#2157d3] text-white"
-                                                            : "bg-[#f4f7ff] dark:bg-muted hover:bg-[#e8edf6] dark:hover:bg-muted text-[#1b2331] dark:text-foreground"
-                                                    }`}
-                                                >
-                                                    {subscribing === plan.id ? (
-                                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                                    ) : Number(plan.price) === 0 ? (
-                                                        "Commencer gratuitement"
-                                                    ) : (
-                                                        "Opter pour ça"
-                                                    )}
-                                                </Button>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            )}
-                        </div>
-                    )}
+                                            )
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+                        </TabsContent>
+                    </Tabs>
 
                     {/* CTA - visible sur les deux onglets */}
                     <div className="bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-2xl p-8 text-center">

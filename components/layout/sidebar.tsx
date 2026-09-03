@@ -129,7 +129,7 @@ export function Sidebar() {
     }
 
     return (
-        <div className="w-72 max-w-[85vw] bg-background border-r border-border h-screen flex flex-col overflow-hidden md:w-64">
+        <div className="w-72 max-w-[85vw]  bg-secondary border-r border-border h-screen flex flex-col overflow-hidden md:w-64">
             <div className="px-6 py-4 border-b border-border flex items-center justify-center">
                 <Link href="/">
                     <AppLogo width={100} />
@@ -156,7 +156,7 @@ export function Sidebar() {
                                 onClick={() => toggle(section.labelKey as TranslationKey)}
                                 aria-expanded={isOpen}
                                 className={cn(
-                                    "flex w-full items-center justify-between px-3 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-colors",
+                                    "flex w-full items-center justify-between px-3 py-2 rounded-full text-xs font-semibold capitalize tracking-wider transition-colors",
                                     hasActive ? "text-foreground" : "text-muted-foreground hover:text-foreground",
                                 )}
                             >
