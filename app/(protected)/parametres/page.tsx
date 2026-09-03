@@ -222,7 +222,7 @@ export default function ParametresPage() {
   return (
       <div className="space-y-6">
         <PageHeader
-          className="mb-2"
+          className="mb-3"
           title={t("settings.title")}
           description={t("settings.subtitle")}
         />
