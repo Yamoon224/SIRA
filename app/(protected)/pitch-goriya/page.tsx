@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress"
 import { Mic, Plus, Trash2, Upload, Video, Sparkles, Eye, EyeOff } from "lucide-react"
 import { SubscriptionGate } from "@/components/subscription-gate"
 import { pitchService, type IPitch, type PitchType } from "@/lib/api/pitch.service"
+import { PageHeader } from "@/components/layout/page-header"
 
 const TYPE_LABELS: Record<PitchType, string> = {
     EMPLOI: "Candidature emploi",
@@ -165,10 +166,11 @@ function PitchGoriyaContent() {
 
     return (
         <div className="space-y-4">
-            <div>
-                <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">Pitch Goriya</h1>
-                <p className="mt-1 text-sm text-muted-foreground">Générez et scorez votre pitch - texte, vidéo ou avatar animé.</p>
-            </div>
+            <PageHeader
+                className="mb-0"
+                title="Pitch Goriya"
+                description="Générez et scorez votre pitch - texte, vidéo ou avatar animé."
+            />
 
             <Card className="border border-border">
                 <CardContent className="space-y-3 p-4">

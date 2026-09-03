@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Search, Star, Trash2, Building2, Sparkles } from "lucide-react"
 import { SubscriptionGate } from "@/components/subscription-gate"
 import { researchService, type IResearchQuery } from "@/lib/api/research.service"
+import { PageHeader } from "@/components/layout/page-header"
 
 function RechercheEntrepriseContent() {
     const [queries, setQueries] = useState<IResearchQuery[]>([])
@@ -81,10 +82,11 @@ function RechercheEntrepriseContent() {
 
     return (
         <div className="space-y-4">
-            <div>
-                <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">Goriya IA Research</h1>
-                <p className="mt-1 text-sm text-muted-foreground">Recherchez une entreprise avant un entretien : histoire, valeurs, culture, actualités.</p>
-            </div>
+            <PageHeader
+                className="mb-0"
+                title="Goriya IA Research"
+                description="Recherchez une entreprise avant un entretien : histoire, valeurs, culture, actualités."
+            />
 
             <Card className="border border-border">
                 <CardContent className="p-4">

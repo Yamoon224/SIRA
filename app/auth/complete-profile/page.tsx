@@ -59,7 +59,7 @@ export default function CompleteProfilePage() {
         <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-12">
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
-                    <img src="/goriya-logo-mark.png" alt="" aria-hidden className="mx-auto mb-4 h-14 w-14 object-contain" />
+                    <img src="/goriya-logo-mark.png" alt="" aria-hidden className="mx-auto mb-4 h-14 w-14 object-contain dark:brightness-0 dark:invert" />
                     <h1 className="text-2xl font-bold text-foreground mb-1">
                         Bienvenue{user?.name ? `, ${user.name.split(" ")[0]}` : ""} !
                     </h1>

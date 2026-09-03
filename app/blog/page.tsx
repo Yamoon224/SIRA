@@ -1,15 +1,13 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useMemo, useState } from "react"
-import { Loader2, Search, ChevronLeft, ChevronRight } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Loader2, Search } from "lucide-react"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
 import { articleService, type IArticle } from "@/lib/api/article.service"
-
-const PAGE_SIZE = 9
+import { DataPagination, DEFAULT_PAGE_SIZE } from "@/components/ui/data-pagination"
 
 function formatDate(date: string | null) {
     if (!date) return ""
@@ -21,6 +19,8 @@ export default function BlogPage() {
     const [loading, setLoading] = useState(true)
     const [page, setPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
+    const [total, setTotal] = useState(0)
+    const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
     const [searchInput, setSearchInput] = useState("")
     const [search, setSearch] = useState("")
 
@@ -36,25 +36,25 @@ export default function BlogPage() {
     useEffect(() => {
         setLoading(true)
         articleService
-            .getArticles({ page, limit: PAGE_SIZE, search: search || undefined })
+            .getArticles({ page, limit: pageSize, search: search || undefined })
             .then((res: any) => {
-                setArticles(res?.data ?? [])
+                const list = res?.data ?? []
+                setArticles(list)
                 setTotalPages(Math.max(1, res?.meta?.totalPages ?? 1))
+                setTotal(res?.meta?.total ?? list.length)
             })
             .catch(() => {
                 setArticles([])
                 setTotalPages(1)
+                setTotal(0)
             })
             .finally(() => setLoading(false))
-    }, [page, search])
+    }, [page, pageSize, search])
 
-    const pageNumbers = useMemo(() => {
-        const pages: number[] = []
-        const start = Math.max(1, page - 2)
-        const end = Math.min(totalPages, start + 4)
-        for (let i = start; i <= end; i++) pages.push(i)
-        return pages
-    }, [page, totalPages])
+    const changePageSize = (size: number) => {
+        setPageSize(size)
+        setPage(1)
+    }
 
     return (
         <div className="min-h-screen bg-background text-foreground">
@@ -109,41 +109,17 @@ export default function BlogPage() {
                             ))}
                         </div>
 
-                        {totalPages > 1 && (
-                            <div className="mt-12 flex items-center justify-center gap-1.5">
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="rounded-full cursor-pointer disabled:cursor-not-allowed"
-                                    disabled={page <= 1}
-                                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                                >
-                                    <ChevronLeft className="w-4 h-4" />
-                                </Button>
-
-                                {pageNumbers.map((n) => (
-                                    <Button
-                                        key={n}
-                                        variant={n === page ? "default" : "outline"}
-                                        size="icon"
-                                        className="rounded-full cursor-pointer"
-                                        onClick={() => setPage(n)}
-                                    >
-                                        {n}
-                                    </Button>
-                                ))}
-
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="rounded-full cursor-pointer disabled:cursor-not-allowed"
-                                    disabled={page >= totalPages}
-                                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                                >
-                                    <ChevronRight className="w-4 h-4" />
-                                </Button>
-                            </div>
-                        )}
+                        <DataPagination
+                            page={page}
+                            totalPages={totalPages}
+                            total={total}
+                            currentCount={articles.length}
+                            pageSize={pageSize}
+                            onPageChange={setPage}
+                            onPageSizeChange={changePageSize}
+                            disabled={loading}
+                            className="mt-12"
+                        />
                     </>
                 )}
             </main>

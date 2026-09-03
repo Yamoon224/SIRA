@@ -16,6 +16,7 @@ import {
     type ISchemaNode,
     type ISchemaEdge,
 } from "@/lib/api/presentation.service"
+import { PageHeader } from "@/components/layout/page-header"
 
 function isSlidesContent(content: IPresentation["content"]): content is { slides: ISlide[] } {
     return Array.isArray((content as any)?.slides)
@@ -99,10 +100,11 @@ function PresentationsIaContent() {
 
     return (
         <div className="space-y-4">
-            <div>
-                <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">Présentations & Schémas IA</h1>
-                <p className="mt-1 text-sm text-muted-foreground">Générez la structure d'une présentation ou d'un schéma à partir d'un simple brief.</p>
-            </div>
+            <PageHeader
+                className="mb-0"
+                title="Présentations & Schémas IA"
+                description="Générez la structure d'une présentation ou d'un schéma à partir d'un simple brief."
+            />
 
             <Card className="border border-border">
                 <CardContent className="space-y-3 p-4">

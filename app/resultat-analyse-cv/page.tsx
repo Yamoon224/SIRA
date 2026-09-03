@@ -36,7 +36,7 @@ export default function ResultatAnalyseCVPage() {
 
   if (!result) {
     return (
-      <div className="min-h-screen bg-[#f7f8fb] dark:bg-muted px-4 py-10">
+      <div className="min-h-screen bg-[#f7f8fb] dark:bg-background px-4 py-10">
         <div className="mx-auto max-w-3xl rounded-2xl border border-[#e5e9f2] dark:border-border bg-white dark:bg-card p-6 text-center">
           <h1 className="text-2xl font-bold text-[#1b2331] dark:text-foreground">Aucun résultat trouvé</h1>
           <p className="mt-2 text-sm text-[#7f8796] dark:text-muted-foreground">Téléverse ton CV depuis la page d'accueil pour lancer l'analyse.</p>
@@ -49,7 +49,7 @@ export default function ResultatAnalyseCVPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f8fb] dark:bg-muted">
+    <div className="min-h-screen bg-[#f7f8fb] dark:bg-background">
       <div className="mx-auto max-w-5xl px-4 py-8">
         <div className="rounded-2xl border border-[#e5e9f2] dark:border-border bg-white dark:bg-card p-5 sm:p-8">
           <h1 className="text-center text-xl sm:text-3xl leading-tight font-extrabold text-[#1b2331] dark:text-foreground">Super! Etoile, ton score est de {result.analysis.score}%</h1>

@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
-import { Search, Settings, ChevronDown, ChevronLeft, ChevronRight, Building2, Loader2, MapPin, Briefcase } from "lucide-react"
+import { Search, Settings, ChevronDown, Building2, Loader2, MapPin, Briefcase } from "lucide-react"
 import { jobService } from "@/lib/api/job.service"
 import { IJobOffer } from "@/lib/@types/entities"
 import { capitalizeFirst } from "@/lib/utils"
+import { DataPagination, DEFAULT_PAGE_SIZE } from "@/components/ui/data-pagination"
+import { PageHeader } from "@/components/layout/page-header"
 
 const jobTypeOptions = ["À temps plein", "À temps partiel", "Stage", "Contrat", "Freelance"]
 const categoryOptions = ["Design", "Ventes", "Marketing", "Commerce", "Ressources humaines", "Finance", "Ingénierie", "Technologie"]
@@ -61,7 +63,7 @@ export default function EmploisPage() {
     const [selectedJobTypes, setSelectedJobTypes] = useState<string[]>([])
     const [selectedCategories, setSelectedCategories] = useState<string[]>([])
     const [selectedLevels, setSelectedLevels] = useState<string[]>([])
-    const LIMIT = 12
+    const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
 
     const fetchJobs = useCallback(async (p: number) => {
         setLoading(true)
@@ -73,19 +75,19 @@ export default function EmploisPage() {
                 jobType: jobType.length ? jobType : undefined,
                 experience: experience.length ? experience : undefined,
                 page: p,
-                limit: LIMIT,
+                limit: pageSize,
             }) as any
             const data = res?.data?.data ?? res?.data ?? []
             const meta = res?.data?.meta ?? {}
             setJobs(Array.isArray(data) ? data : [])
             setTotal(meta.total ?? data.length)
-            setTotalPages(meta.totalPages ?? Math.ceil((meta.total ?? data.length) / LIMIT))
+            setTotalPages(meta.totalPages ?? Math.ceil((meta.total ?? data.length) / pageSize))
         } catch {
             setJobs([])
         } finally {
             setLoading(false)
         }
-    }, [searchTerm, selectedJobTypes, selectedLevels])
+    }, [searchTerm, selectedJobTypes, selectedLevels, pageSize])
 
     useEffect(() => {
         setPage(1)
@@ -106,10 +108,11 @@ export default function EmploisPage() {
         fetchJobs(p)
     }
 
-    const pagesWindow = () => {
-        const start = Math.max(1, page - 2)
-        const end = Math.min(totalPages, start + 4)
-        return Array.from({ length: end - start + 1 }, (_, i) => start + i)
+    // Changer la taille de page invalide l'index courant : on repart de la
+    // première page, le rechargement étant porté par l'effet sur `fetchJobs`.
+    const changePageSize = (size: number) => {
+        setPageSize(size)
+        setPage(1)
     }
 
     return (
@@ -131,7 +134,7 @@ export default function EmploisPage() {
                 </button>
             </form>
 
-            <h1 className="text-[22px] font-extrabold text-[#1b2331] dark:text-foreground">Trouve un emploi</h1>
+            <PageHeader title="Trouve un emploi" className="mb-0" />
 
             <div className="flex gap-5 items-start">
                 {/* Filters sidebar */}
@@ -205,14 +208,11 @@ export default function EmploisPage() {
                                 {loading ? "Chargement..." : `${total} offre${total !== 1 ? "s" : ""} trouvée${total !== 1 ? "s" : ""}`}
                             </p>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <span className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground">Page {page}/{totalPages}</span>
-                        </div>
                     </div>
 
                     {loading ? (
                         <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
-                            {Array.from({ length: LIMIT }).map((_, i) => <JobSkeleton key={i} />)}
+                            {Array.from({ length: pageSize }).map((_, i) => <JobSkeleton key={i} />)}
                         </div>
                     ) : jobs.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -262,36 +262,16 @@ export default function EmploisPage() {
                         </div>
                     )}
 
-                    {/* Pagination */}
-                    {!loading && totalPages > 1 && (
-                        <div className="flex items-center justify-center gap-1 mt-6">
-                            <button
-                                type="button"
-                                onClick={() => goToPage(Math.max(1, page - 1))}
-                                disabled={page === 1}
-                                className="w-7 h-7 rounded-full border border-[#d8deeb] dark:border-border bg-white dark:bg-card flex items-center justify-center text-[#9aa3b2] dark:text-muted-foreground hover:border-[#2f6de6] hover:text-[#2f6de6] dark:hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed"
-                            >
-                                <ChevronLeft className="w-3.5 h-3.5" />
-                            </button>
-                            {pagesWindow().map(p => (
-                                <button
-                                    key={p}
-                                    type="button"
-                                    onClick={() => goToPage(p)}
-                                    className={`w-7 h-7 rounded-full text-[11px] font-medium ${p === page ? "bg-[#2f6de6] text-white" : "border border-[#d8deeb] dark:border-border bg-white dark:bg-card text-[#9aa3b2] dark:text-muted-foreground hover:border-[#2f6de6] hover:text-[#2f6de6] dark:hover:text-primary"}`}
-                                >
-                                    {p}
-                                </button>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={() => goToPage(Math.min(totalPages, page + 1))}
-                                disabled={page === totalPages}
-                                className="w-7 h-7 rounded-full border border-[#d8deeb] dark:border-border bg-white dark:bg-card flex items-center justify-center text-[#9aa3b2] dark:text-muted-foreground hover:border-[#2f6de6] hover:text-[#2f6de6] dark:hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed"
-                            >
-                                <ChevronRight className="w-3.5 h-3.5" />
-                            </button>
-                        </div>
+                    {!loading && (
+                        <DataPagination
+                            page={page}
+                            totalPages={totalPages}
+                            total={total}
+                            currentCount={jobs.length}
+                            pageSize={pageSize}
+                            onPageChange={goToPage}
+                            onPageSizeChange={changePageSize}
+                        />
                     )}
                 </div>
             </div>

@@ -60,7 +60,7 @@ const navSections: NavSection[] = [
         items: [
             { title: "Mon Profil", href: "/profil", icon: User },
             { title: "Créer CV", href: "/creer-cv", icon: FileText },
-            { title: "Analyser CV", href: "/analyser-cv", icon: FileText },
+            { title: "Analyse CV", href: "/analyse-cv", icon: FileText },
             { title: "Mon portfolio", href: "/portfolio", icon: FolderPlus },
             { title: "Nouveau document", href: "/nouveau-document", icon: FileText },
         ],
@@ -112,7 +112,7 @@ export function Sidebar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                    "flex items-center space-x-3 px-3 py-2 rounded-sm text-sm font-medium transition-colors",
+                    "flex items-center space-x-3 px-3 py-2 rounded-full text-sm font-medium transition-colors",
                     pathname === item.href
                         ? "bg-blue-700 text-white border border-blue-700"
                         : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
@@ -152,7 +152,7 @@ export function Sidebar() {
                                 onClick={() => toggle(section.label as string)}
                                 aria-expanded={isOpen}
                                 className={cn(
-                                    "flex w-full items-center justify-between px-3 py-2 rounded-sm text-xs font-semibold uppercase tracking-wider transition-colors",
+                                    "flex w-full items-center justify-between px-3 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-colors",
                                     hasActive ? "text-foreground" : "text-muted-foreground hover:text-foreground",
                                 )}
                             >
@@ -161,7 +161,13 @@ export function Sidebar() {
                                     className={cn("w-4 h-4 flex-shrink-0 transition-transform", isOpen && "rotate-180")}
                                 />
                             </button>
-                            {isOpen && <div className="mt-1 space-y-1">{section.items.map(renderItem)}</div>}
+                            {/* Filet vertical derrière les sous-entrées, comme la
+                                sidebar de l'app entreprise. */}
+                            {isOpen && (
+                                <div className="mt-1 ml-3 space-y-1 border-l border-border pl-3">
+                                    {section.items.map(renderItem)}
+                                </div>
+                            )}
                         </div>
                     )
                 })}

@@ -16,6 +16,17 @@ const escapeHtml = (value: unknown): string =>
     }
   })
 
+/**
+ * Les champs date du formulaire renvoient désormais du "AAAA-MM-JJ" (sélecteur
+ * natif) : on le repasse en JJ/MM/AAAA pour le corps de la lettre. Toute autre
+ * saisie est laissée telle quelle.
+ */
+const formatDateFr = (valeur: string | undefined): string => {
+  if (!valeur) return ""
+  const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(valeur)
+  return iso ? `${iso[3]}/${iso[2]}/${iso[1]}` : valeur
+}
+
 export const generatePDF = (content: string, filename = "document.pdf"): void => {
   const pdf = new jsPDF()
 
@@ -72,7 +83,7 @@ ${data.titre || "[Ton titre]"}
 [Téléphone]
 [Email]
 
-${data.date || today}
+${formatDateFr(data.date) || today}
 
 ${data.destinataire || "[Nom du destinataire]"}
 ${data.entreprise || "[Nom de l'entreprise]"}
@@ -105,7 +116,7 @@ ${data.poste || "[Ton poste actuel]"}
 [Ton adresse]
 [Ville, Code postal]
 
-${data.date || today}
+${formatDateFr(data.date) || today}
 
 ${data.manager || "[Nom du manager]"}
 ${data.entreprise || "[Nom de l'entreprise]"}
@@ -117,7 +128,7 @@ ${data.manager ? `Madame, Monsieur ${data.manager}` : "Madame, Monsieur"},
 
 Par la présente, je vous informe de ma décision de démissionner de mon poste de ${data.poste || "[ton poste]"} au sein de ${data.entreprise || "[entreprise]"}.
 
-Conformément aux dispositions de mon contrat de travail et aux conventions collectives en vigueur, je respecterai la période de préavis légale. Mon dernier jour de travail sera donc le ${data.dateFin || "[date de fin]"}.
+Conformément aux dispositions de mon contrat de travail et aux conventions collectives en vigueur, je respecterai la période de préavis légale. Mon dernier jour de travail sera donc le ${formatDateFr(data.dateFin) || "[date de fin]"}.
 
 Cette décision, mûrement réfléchie, s'inscrit dans le cadre de mon évolution professionnelle. Je tiens à vous assurer que je mettrai tout en œuvre pour assurer une transition harmonieuse de mes responsabilités et former, si nécessaire, la personne qui me succédera.
 
@@ -139,7 +150,7 @@ ${data.poste || "[Ton poste]"}
 [Téléphone]
 [Email]
 
-${data.date || today}
+${formatDateFr(data.date) || today}
 
 LETTRE DE RECOMMANDATION
 

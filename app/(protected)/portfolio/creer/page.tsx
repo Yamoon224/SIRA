@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { User, Github, Plus, Upload, Eye, TrendingUp, Users } from "lucide-react"
+import { PageHeader } from "@/components/layout/page-header"
 
 export default function CreerPortfolioDetailPage() {
     const [formData, setFormData] = useState({
@@ -56,10 +57,7 @@ export default function CreerPortfolioDetailPage() {
 
     return (
         <div className="mx-auto max-w-7xl">
-            {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-2xl font-semibold text-gray-900 dark:text-foreground">Créer un portfolio</h1>
-            </div>
+            <PageHeader title="Créer un portfolio" className="mb-8" />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Left Column - Form */}

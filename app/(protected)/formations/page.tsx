@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { GraduationCap, Download, Award, Plus } from "lucide-react"
 import { courseService, enrollmentService, type ICourse, type IEnrollment } from "@/lib/api/course.service"
+import { PageHeader } from "@/components/layout/page-header"
 
 function CatalogueTab({ enrolledCourseIds, onEnroll }: { enrolledCourseIds: Set<string>; onEnroll: (courseId: string) => Promise<void> }) {
     const [courses, setCourses] = useState<ICourse[]>([])
@@ -180,10 +181,11 @@ export default function Page() {
 
     return (
         <div className="space-y-4">
-            <div>
-                <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">Formations</h1>
-                <p className="mt-1 text-sm text-muted-foreground">Développez vos compétences et obtenez des certificats.</p>
-            </div>
+            <PageHeader
+                className="mb-0"
+                title="Formations"
+                description="Développez vos compétences et obtenez des certificats."
+            />
 
             <Tabs defaultValue="mes-formations">
                 <TabsList>

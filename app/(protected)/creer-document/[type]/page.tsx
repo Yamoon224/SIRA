@@ -12,6 +12,8 @@ type TemplateField = {
   label: string
   required: boolean
   split?: boolean
+  /** `date` bascule le champ sur le sélecteur natif (cf. components/ui/input.tsx). */
+  type?: "text" | "date"
 }
 
 type TemplateConfig = {
@@ -29,7 +31,7 @@ const documentTemplates: Record<string, TemplateConfig> = {
       { id: "titreDestinataire", label: "Titre du destinataire", required: false, split: true },
       { id: "entreprise", label: "Nom de l'entreprise", required: true },
       { id: "poste", label: "Poste visé", required: true },
-      { id: "date", label: "Date", required: false },
+      { id: "date", label: "Date", required: false, type: "date" },
     ],
   },
   demission: {
@@ -39,8 +41,8 @@ const documentTemplates: Record<string, TemplateConfig> = {
       { id: "poste", label: "Ton poste", required: true, split: true },
       { id: "manager", label: "Nom du destinataire", required: false, split: true },
       { id: "entreprise", label: "Nom de l'entreprise", required: true, split: true },
-      { id: "dateFin", label: "Date de fin souhaitée", required: true },
-      { id: "date", label: "Date", required: false },
+      { id: "dateFin", label: "Date de fin souhaitée", required: true, type: "date" },
+      { id: "date", label: "Date", required: false, type: "date" },
     ],
   },
   recommandation: {
@@ -51,7 +53,7 @@ const documentTemplates: Record<string, TemplateConfig> = {
       { id: "candidat", label: "Nom du destinataire", required: true, split: true },
       { id: "posteCandidatActuel", label: "Titre du destinataire", required: false, split: true },
       { id: "posteCandidatVise", label: "Poste visé", required: false },
-      { id: "date", label: "Date", required: false },
+      { id: "date", label: "Date", required: false, type: "date" },
     ],
   },
 }
@@ -160,6 +162,7 @@ export default function Page() {
               <div key={field.id}>
                 <label className="mb-1 block text-[11px] text-[#8b93a3] dark:text-muted-foreground">{field.label}</label>
                 <Input
+                  type={field.type ?? "text"}
                   value={formData[field.id] || ""}
                   onChange={(e) => handleInputChange(field.id, e.target.value)}
                   placeholder={field.label}
@@ -176,6 +179,7 @@ export default function Page() {
               <div key={field.id}>
                 <label className="mb-1 block text-[11px] text-[#8b93a3] dark:text-muted-foreground">{field.label}</label>
                 <Input
+                  type={field.type ?? "text"}
                   value={formData[field.id] || ""}
                   onChange={(e) => handleInputChange(field.id, e.target.value)}
                   placeholder={field.label}

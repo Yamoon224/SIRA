@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { ChevronRight, Loader2 } from "lucide-react"
 import { portfolioService } from "@/lib/api/portfolio.service"
 import { useAuth } from "@/contexts/auth-context"
+import { PageHeader } from "@/components/layout/page-header"
 
 function CreerPortfolioContent() {
     const router = useRouter()
@@ -112,10 +113,9 @@ function CreerPortfolioContent() {
     }
 
     return (
-        <div className="bg-white dark:bg-card">
+        <div className="bg-white dark:bg-background">
             <div className="mx-auto max-w-5xl">
-                {/* Page Title */}
-                <h1 className="text-2xl font-bold text-[#1b2331] dark:text-foreground mb-8">{editId ? "Modifier le portfolio" : "Créer un portfolio"}</h1>
+                <PageHeader title={editId ? "Modifier le portfolio" : "Créer un portfolio"} className="mb-8" />
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Left Column */}
@@ -206,7 +206,7 @@ function CreerPortfolioContent() {
                                     </div>
                                 ))}
                             </div>
-                            <button className="mt-3 w-full h-9 rounded-lg border border-[#d8deeb] dark:border-border text-[12px] font-medium text-[#2f6de6] dark:text-primary hover:bg-[#f4f7ff] dark:hover:bg-muted">
+                            <button className="mt-3 w-full h-9 rounded-full border border-[#d8deeb] dark:border-border text-[12px] font-medium text-[#2f6de6] dark:text-primary hover:bg-[#f4f7ff] dark:hover:bg-muted">
                                 + Ajouter un projet
                             </button>
                         </div>

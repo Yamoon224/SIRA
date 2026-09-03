@@ -8,7 +8,7 @@ export function Footer() {
             <div className="mx-auto max-w-[1180px] px-3 sm:px-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-10">
                     <div>
-                        <img src="/images/logo.png" alt="Goriya" className="h-10 sm:h-12 w-auto brightness-0 invert" />
+                        <img src="/images/logo-blanc.png" alt="Goriya" className="h-10 sm:h-12 w-auto" />
                         <p className="mt-4 text-sm text-[#9098a7] dark:text-muted-foreground">
                             GORIYA est la plateforme IA de référence pour optimiser tes documents professionnels,
                             te préparer à l'emploi et simplifier tes processus RH.

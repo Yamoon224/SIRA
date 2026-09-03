@@ -9,7 +9,8 @@ export const metadata: Metadata = {
 export default function OfflinePage() {
     return (
         <div className="flex min-h-screen flex-col items-center justify-center gap-6 px-6 text-center">
-            <Image src="/goriya-logo.png" alt="Goriya" width={140} height={40} priority />
+            <Image src="/images/logo.png" alt="Goriya" width={140} height={40} priority className="dark:hidden" />
+            <Image src="/images/logo-blanc.png" alt="Goriya" width={140} height={40} priority className="hidden dark:block" />
             <div className="space-y-2">
                 <h1 className="text-2xl font-semibold">Vous êtes hors ligne</h1>
                 <p className="text-muted-foreground max-w-md text-sm">

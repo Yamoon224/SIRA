@@ -729,7 +729,7 @@ function CreerCVContent() {
         <Card className="overflow-hidden rounded-[12px] border-[#e1e6f1] dark:border-border bg-[#f2f4fb] dark:bg-muted">
             <CardContent className="p-4">
                 <div className="mb-2 flex justify-center">
-                    <img src="/goriya-logo-mark.png" alt="" aria-hidden className="h-10 w-10 object-contain" />
+                    <img src="/goriya-logo-mark.png" alt="" aria-hidden className="h-10 w-10 object-contain dark:brightness-0 dark:invert" />
                 </div>
                 <p className="text-center text-[13px] font-semibold text-[#2e6fe9] dark:text-primary">Analyse avec Goriya</p>
                 <p className="mb-3 text-center text-[11px] text-[#8b94ab] dark:text-muted-foreground">Score d&apos;optimisation de votre CV</p>

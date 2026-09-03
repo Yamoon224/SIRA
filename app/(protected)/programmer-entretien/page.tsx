@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
 import { Calendar, Clock, MapPin, CheckCircle } from "lucide-react"
+import { PageHeader } from "@/components/layout/page-header"
 
 export default function ProgrammerEntretienPage() {
   const [formData, setFormData] = useState({
@@ -24,7 +25,7 @@ export default function ProgrammerEntretienPage() {
 
   return (
       <div>
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-foreground mb-6">Programmer un interview</h1>
+        <PageHeader title="Programmer un interview" />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Form Section */}

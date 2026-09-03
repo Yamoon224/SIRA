@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { MessageSquare, Video, X } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { PageHeader } from "@/components/layout/page-header"
 
 export default function SimulationEntretienConfigPage() {
   const router = useRouter()
@@ -25,13 +26,15 @@ export default function SimulationEntretienConfigPage() {
   return (
     <div className="bg-background">
       <div className="mx-auto max-w-2xl">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6 sm:mb-8">
-          <h1 className="text-xl sm:text-2xl font-semibold text-foreground">Simulation d'Entretien avec Goriya</h1>
-          <Button variant="ghost" size="sm" onClick={() => router.back()}>
-            <X className="w-4 h-4" />
-          </Button>
-        </div>
+        <PageHeader
+          className="mb-6 sm:mb-8"
+          title="Simulation d'Entretien avec Goriya"
+          actions={
+            <Button variant="ghost" size="sm" onClick={() => router.back()}>
+              <X className="w-4 h-4" />
+            </Button>
+          }
+        />
 
         <Card className="bg-card border-border">
           <CardContent className="p-6 sm:p-8">

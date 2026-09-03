@@ -210,8 +210,12 @@
     cursor: not-allowed;
   }
 
-  /* Justification des textes de contenu (surchargée par text-left/center/right) */
-  main p,
+  /* Justification réservée aux textes longs (articles de blog, contenu riche).
+     `main p` figurait ici : la règle s'appliquait alors à TOUS les paragraphes
+     de l'application — libellés, aides, états vides — et écrasait l'alignement
+     hérité d'un parent en `text-center`, une déclaration directe l'emportant
+     toujours sur l'héritage. Les paragraphes centrés via leur conteneur
+     s'affichaient donc justifiés. */
   article p,
   .prose p {
     text-align: justify;

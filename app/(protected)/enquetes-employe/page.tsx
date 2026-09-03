@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { ClipboardList, Star, CheckCircle2 } from "lucide-react"
 import { employeeSurveyService, type IEmployeeSurvey } from "@/lib/api/employee-survey.service"
 import { cn } from "@/lib/utils"
+import { PageHeader } from "@/components/layout/page-header"
 
 export default function Page() {
     const [surveys, setSurveys] = useState<IEmployeeSurvey[]>([])
@@ -66,7 +67,7 @@ export default function Page() {
     if (unavailable || surveys.length === 0) {
         return (
             <div className="space-y-4">
-                <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">Enquêtes internes</h1>
+                <PageHeader title="Enquêtes internes" className="mb-0" />
                 <Card className="border border-border">
                     <CardContent className="p-12 text-center text-muted-foreground">
                         <ClipboardList className="mx-auto mb-3 h-12 w-12 opacity-30" />
@@ -79,10 +80,11 @@ export default function Page() {
 
     return (
         <div className="space-y-4">
-            <div>
-                <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">Enquêtes internes</h1>
-                <p className="mt-1 text-sm text-muted-foreground">Vos réponses sont anonymes - jamais associées à votre identité par votre entreprise.</p>
-            </div>
+            <PageHeader
+                className="mb-0"
+                title="Enquêtes internes"
+                description="Vos réponses sont anonymes - jamais associées à votre identité par votre entreprise."
+            />
 
             {surveys.map((survey) => {
                 const isSubmitted = submitted.has(survey.id)

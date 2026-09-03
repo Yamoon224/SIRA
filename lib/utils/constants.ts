@@ -118,7 +118,7 @@ export const ROUTES = {
     PROFILE: "/profil",
     MESSAGES: "/messages",
     APPLICATIONS: "/mes-offres",
-    CV_ANALYZER: "/analyser-cv",
+    CV_ANALYZER: "/analyse-cv",
     SETTINGS: "/parametres",
     AUTH: {
         LOGIN: "/auth/signin",

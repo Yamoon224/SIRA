@@ -123,7 +123,7 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                     )}
 
                     {showLogo && (
-                        <Link href="/" className="flex items-center space-x-2">
+                        <Link href="/" className="flex items-center">
                             <AppLogo />
                         </Link>
                     )}

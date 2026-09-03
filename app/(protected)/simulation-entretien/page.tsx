@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Star, RotateCcw, X, Camera, Mic } from "lucide-react"
 import { SubscriptionGate } from "@/components/subscription-gate"
 import { interviewService } from "@/lib/api/interview.service"
+import { PageHeader } from "@/components/layout/page-header"
 
 interface Message {
     id: string
@@ -169,19 +170,21 @@ function SimulationEntretienContent() {
 
     return (
         <div className="p-6">
-            <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-semibold text-[#1b2331] dark:text-foreground">Simulation d'Entretien avec Goriya</h1>
-                <div className="flex gap-3">
-                    <Button variant="outline" className="flex items-center gap-2 bg-white dark:bg-card text-[#1b2331] dark:text-foreground border-[#d8deeb] dark:border-border hover:bg-[#f4f5f7] dark:hover:bg-muted" onClick={handleRestart}>
-                        <RotateCcw className="w-4 h-4" />
-                        Recommencer
-                    </Button>
-                    <Button className="flex items-center gap-2 bg-[#2f6de6] hover:bg-[#2157d3] text-white" onClick={handleShowFeedback}>
-                        <Star className="w-4 h-4" />
-                        Voir le Feedback
-                    </Button>
-                </div>
-            </div>
+            <PageHeader
+                title="Simulation d'Entretien avec Goriya"
+                actions={
+                    <>
+                        <Button variant="outline" className="flex items-center gap-2 bg-white dark:bg-card text-[#1b2331] dark:text-foreground border-[#d8deeb] dark:border-border hover:bg-[#f4f5f7] dark:hover:bg-muted" onClick={handleRestart}>
+                            <RotateCcw className="w-4 h-4" />
+                            Recommencer
+                        </Button>
+                        <Button className="flex items-center gap-2 bg-[#2f6de6] hover:bg-[#2157d3] text-white" onClick={handleShowFeedback}>
+                            <Star className="w-4 h-4" />
+                            Voir le Feedback
+                        </Button>
+                    </>
+                }
+            />
 
             <div className="flex justify-center items-center min-h-[500px]">
                 <VideoInterviewBox />

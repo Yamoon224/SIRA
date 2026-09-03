@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Video, Plus, PhoneOff, LogIn, Calendar } from "lucide-react"
 import { callSessionService, type ICallSession, type CallSessionStatus } from "@/lib/api/call-session.service"
 import { CallEmbed } from "@/components/call-embed"
+import { PageHeader } from "@/components/layout/page-header"
 
 const STATUS_META: Record<CallSessionStatus, { label: string; className: string }> = {
     SCHEDULED: { label: "Planifié", className: "bg-blue-100 text-blue-600" },
@@ -94,15 +95,16 @@ export default function Page() {
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">Appels vidéo</h1>
-                    <p className="mt-1 text-sm text-muted-foreground">Entretiens et sessions de coaching en visioconférence (GORIYA Call)</p>
-                </div>
-                <Button className="gap-1.5 bg-blue-600 hover:bg-blue-700" onClick={() => setCreateOpen(true)}>
-                    <Plus className="h-4 w-4" />Planifier un appel
-                </Button>
-            </div>
+            <PageHeader
+                className="mb-0"
+                title="Appels vidéo"
+                description="Entretiens et sessions de coaching en visioconférence (GORIYA Call)"
+                actions={
+                    <Button className="gap-1.5 bg-blue-600 hover:bg-blue-700" onClick={() => setCreateOpen(true)}>
+                        <Plus className="h-4 w-4" />Planifier un appel
+                    </Button>
+                }
+            />
 
             {sessions.length === 0 ? (
                 <Card className="border border-border">

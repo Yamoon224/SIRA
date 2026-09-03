@@ -24,6 +24,7 @@ import { userService } from "@/lib/api/user.service"
 import { notificationService } from "@/lib/api/notification.service"
 import { subscriptionService } from "@/lib/api/subscription.service"
 import { formatFileUrl } from "@/lib/utils"
+import { PageHeader } from "@/components/layout/page-header"
 
 const LOCALE_LABELS: Record<Locale, string> = { fr: "Français", en: "English", pt: "Português", ar: "العربية" }
 
@@ -226,10 +227,11 @@ export default function ParametresPage() {
 
   return (
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Paramètres</h1>
-          <p className="text-gray-600 dark:text-gray-400">Gère tes préférences et paramètres de compte</p>
-        </div>
+        <PageHeader
+          className="mb-0"
+          title="Paramètres"
+          description="Gère tes préférences et paramètres de compte"
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Profile Settings */}
@@ -437,6 +439,47 @@ export default function ParametresPage() {
               </CardContent>
             </Card>
 
+          </div>
+
+          {/* Sidebar : `self-start` pour ne pas s'étirer sur la hauteur de la
+              colonne de gauche (bien plus longue), `sticky` pour rester visible
+              au lieu de laisser un grand vide au bas du défilement. */}
+          <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CreditCard className="w-5 h-5" />
+                  Abonnement
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {subscriptionLoading ? (
+                  <div className="flex justify-center py-4">
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+                  </div>
+                ) : subscription?.status === "ACTIVE" ? (
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600 mb-1">{subscription.plan?.name ?? "Premium"}</div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                      {subscription.plan ? `${Number(subscription.plan.price).toLocaleString("fr-FR")} FCFA / ${subscription.plan.billingPeriod === "ANNUAL" ? "an" : "mois"}` : ""}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-500 mb-4">
+                      Renouvellement le {new Date(subscription.endDate).toLocaleDateString("fr-FR")}
+                    </p>
+                    <Button variant="outline" className="w-full text-red-600 hover:text-red-700" onClick={handleCancelSubscription}>
+                      Annuler l'abonnement
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600 mb-1">Gratuit</div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Plan actuel</p>
+                    <Button className="w-full" onClick={() => router.push("/auth/plan")}>Passer au Premium</Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
             {/* Theme/Appearance Section */}
             <Card>
               <CardHeader>
@@ -501,13 +544,15 @@ export default function ParametresPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center justify-between">
+                {/* Empilé : la carte vit désormais dans la colonne latérale,
+                    trop étroite pour un libellé et un select côte à côte. */}
+                <div className="space-y-3">
                   <div>
                     <p className="font-medium">Langue de l'interface</p>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Utilisée pour les emails, messages de validation et réponses de l'assistant IA</p>
                   </div>
                   <Select value={locale} onValueChange={(v) => handleLocaleChange(v as Locale)} disabled={savingLocale}>
-                    <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {(Object.keys(LOCALE_LABELS) as Locale[]).map((l) => (
                         <SelectItem key={l} value={l}>{LOCALE_LABELS[l]}</SelectItem>
@@ -515,46 +560,6 @@ export default function ParametresPage() {
                     </SelectContent>
                   </Select>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Sidebar : `self-start` pour ne pas s'étirer sur la hauteur de la
-              colonne de gauche (bien plus longue), `sticky` pour rester visible
-              au lieu de laisser un grand vide au bas du défilement. */}
-          <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CreditCard className="w-5 h-5" />
-                  Abonnement
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {subscriptionLoading ? (
-                  <div className="flex justify-center py-4">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
-                  </div>
-                ) : subscription?.status === "ACTIVE" ? (
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600 mb-1">{subscription.plan?.name ?? "Premium"}</div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                      {subscription.plan ? `${Number(subscription.plan.price).toLocaleString("fr-FR")} FCFA / ${subscription.plan.billingPeriod === "ANNUAL" ? "an" : "mois"}` : ""}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-500 mb-4">
-                      Renouvellement le {new Date(subscription.endDate).toLocaleDateString("fr-FR")}
-                    </p>
-                    <Button variant="outline" className="w-full text-red-600 hover:text-red-700" onClick={handleCancelSubscription}>
-                      Annuler l'abonnement
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600 mb-1">Gratuit</div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Plan actuel</p>
-                    <Button className="w-full" onClick={() => router.push("/auth/plan")}>Passer au Premium</Button>
-                  </div>
-                )}
               </CardContent>
             </Card>
 

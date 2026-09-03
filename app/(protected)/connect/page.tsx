@@ -23,6 +23,7 @@ import {
     type CommunityType,
 } from "@/lib/api/connect.service"
 import type { IJobOffer } from "@/lib/@types/entities"
+import { PageHeader } from "@/components/layout/page-header"
 
 const TYPE_LABELS: Record<CommunityType, string> = { SECTOR: "Secteur", COUNTRY: "Pays", EXPERTISE: "Expertise" }
 
@@ -391,10 +392,11 @@ function UserRow({ connectUser, following, onToggle }: { connectUser: IConnectUs
 export default function Page() {
     return (
         <div className="space-y-4">
-            <div>
-                <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">GORIYA Connect</h1>
-                <p className="mt-1 text-sm text-muted-foreground">Votre réseau professionnel et vos communautés.</p>
-            </div>
+            <PageHeader
+                className="mb-0"
+                title="GORIYA Connect"
+                description="Votre réseau professionnel et vos communautés."
+            />
             <Tabs defaultValue="feed">
                 <TabsList>
                     <TabsTrigger value="feed">Fil d'actualité</TabsTrigger>

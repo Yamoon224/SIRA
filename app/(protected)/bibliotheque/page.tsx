@@ -6,14 +6,17 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { FileText, Zap, Download, MoreVertical, Search, Filter, ChevronLeft, ChevronRight } from "lucide-react"
+import { FileText, Zap, Download, MoreVertical, Search, Filter } from "lucide-react"
 import { cvService } from "@/lib/api/cv.service"
 import { brouillonNonVide, formatDerniereSauvegarde } from "@/lib/cv-draft"
+import { DataPagination, DEFAULT_PAGE_SIZE } from "@/components/ui/data-pagination"
+import { PageHeader } from "@/components/layout/page-header"
 
 export default function BibliothequePage() {
     const router = useRouter()
     const [selectedTab, setSelectedTab] = useState("all")
     const [currentPage, setCurrentPage] = useState(1)
+    const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
     /** Date de dernière modification du brouillon de CV, `null` s'il n'y en a pas. */
     const [cvDraftAt, setCvDraftAt] = useState<string | null>(null)
 
@@ -131,13 +134,15 @@ export default function BibliothequePage() {
         },
     ]
 
+    // La liste est servie d'un bloc : la pagination se fait côté client.
+    const totalApplications = applications.length
+    const totalPages = Math.max(1, Math.ceil(totalApplications / pageSize))
+    const pagedApplications = applications.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+
     return (
-        <div className="bg-white dark:bg-card">
+        <div className="bg-white dark:bg-background">
             <div className="mx-auto max-w-6xl">
-                {/* Page Title */}
-                <div className="mb-8">
-                    <h1 className="text-2xl font-bold text-[#1b2331] dark:text-foreground">Bibliothèque</h1>
-                </div>
+                <PageHeader title="Bibliothèque" className="mb-8" />
 
                 {/* Quick Actions */}
                 <div className="mb-8">
@@ -191,7 +196,7 @@ export default function BibliothequePage() {
                                 className="pl-9 h-9 text-[13px] border-[#e8edf6] dark:border-border bg-white dark:bg-card"
                             />
                         </div>
-                        <button className="h-9 px-3 rounded-lg border border-[#e8edf6] dark:border-border text-[#1b2331] dark:text-foreground hover:bg-[#f4f5f7] dark:hover:bg-muted flex items-center gap-2 text-[12px]">
+                        <button className="h-9 px-3 rounded-full border border-[#e8edf6] dark:border-border text-[#1b2331] dark:text-foreground hover:bg-[#f4f5f7] dark:hover:bg-muted flex items-center gap-2 text-[12px]">
                             <Filter className="w-4 h-4" />
                             Filtrer
                         </button>
@@ -212,9 +217,9 @@ export default function BibliothequePage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {applications.map((app, index) => (
+                            {pagedApplications.map((app, index) => (
                                 <tr key={app.id} className="border-b border-[#e8edf6] dark:border-border hover:bg-[#f9fafb] dark:hover:bg-muted transition-colors">
-                                    <td className="px-4 py-4 text-[13px] text-[#1b2331] dark:text-foreground font-medium">{index + 1}</td>
+                                    <td className="px-4 py-4 text-[13px] text-[#1b2331] dark:text-foreground font-medium">{(currentPage - 1) * pageSize + index + 1}</td>
                                     <td className="px-4 py-4 text-[13px]">
                                         <div className="flex items-center gap-2">
                                             <div className="w-8 h-8 rounded-full bg-[#e8edf6] dark:bg-muted flex items-center justify-center text-[14px]">
@@ -248,27 +253,18 @@ export default function BibliothequePage() {
                     </table>
                 </div>
 
-                {/* Pagination */}
-                <div className="mt-6 flex items-center justify-center gap-2">
-                    <button className="h-8 w-8 rounded-lg border border-[#e8edf6] dark:border-border flex items-center justify-center hover:bg-[#f4f5f7] dark:hover:bg-muted">
-                        <ChevronLeft className="w-4 h-4 text-[#7f8796] dark:text-muted-foreground" />
-                    </button>
-                    {[1, 2, 3, 4, 5].map((page) => (
-                        <button
-                            key={page}
-                            className={`h-8 w-8 rounded-lg flex items-center justify-center text-[12px] font-medium transition-colors ${
-                                page === 1
-                                    ? "bg-[#2f6de6] text-white"
-                                    : "border border-[#e8edf6] dark:border-border text-[#1b2331] dark:text-foreground hover:bg-[#f4f5f7] dark:hover:bg-muted"
-                            }`}
-                        >
-                            {page}
-                        </button>
-                    ))}
-                    <button className="h-8 w-8 rounded-lg border border-[#e8edf6] dark:border-border flex items-center justify-center hover:bg-[#f4f5f7] dark:hover:bg-muted">
-                        <ChevronRight className="w-4 h-4 text-[#7f8796] dark:text-muted-foreground" />
-                    </button>
-                </div>
+                <DataPagination
+                    page={currentPage}
+                    totalPages={totalPages}
+                    total={totalApplications}
+                    currentCount={pagedApplications.length}
+                    pageSize={pageSize}
+                    onPageChange={setCurrentPage}
+                    onPageSizeChange={(size) => {
+                        setPageSize(size)
+                        setCurrentPage(1)
+                    }}
+                />
             </div>
         </div>
     )

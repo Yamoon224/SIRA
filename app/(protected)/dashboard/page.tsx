@@ -14,6 +14,7 @@ import { careerDashboardService, type ICareerDashboard } from "@/lib/api/career-
 import { CompanyLogo } from "@/components/company-logo"
 import { capitalizeFirst } from "@/lib/utils"
 import type { ICandidature, ICompany } from "@/lib/@types/entities"
+import { PageHeader } from "@/components/layout/page-header"
 
 const STATUS_LABEL: Record<string, string> = {
     EN_ATTENTE: "En attente",
@@ -62,11 +63,9 @@ export default function Page() {
 
     return (
         <ProtectedRoute>
-            <div className="bg-white dark:bg-card">
+            <div className="bg-white dark:bg-background">
                 <div className="mx-auto max-w-7xl">
-                    <div className="mb-8">
-                        <h1 className="text-[24px] font-bold text-[#1b2331] dark:text-foreground">Tableau de bord</h1>
-                    </div>
+                    <PageHeader title="Tableau de bord" className="mb-8" />
 
                     <div className="mb-8 flex items-start justify-between">
                         <div>

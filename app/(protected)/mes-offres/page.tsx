@@ -14,6 +14,7 @@ import { useApi } from "@/lib/hooks/useApi"
 import { capitalizeFirst, formatFileUrl } from "@/lib/utils"
 import { CompanyLogo } from "@/components/company-logo"
 import type { ICandidature } from "@/lib/@types/entities"
+import { PageHeader } from "@/components/layout/page-header"
 
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
   EN_ATTENTE: { label: "En attente", className: "bg-yellow-100 text-yellow-800" },
@@ -81,16 +82,18 @@ export default function MyApplicationsPage() {
 
   return (
       <div>
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground mb-2">Mes candidatures</h1>
-          <p className="text-gray-600 dark:text-muted-foreground">Suis l'état de tes candidatures et gère tes offres</p>
-        </div>
+        <PageHeader
+          title="Mes candidatures"
+          description="Suis l'état de tes candidatures et gère tes offres"
+        />
 
         <Tabs value={selectedStatus} onValueChange={setSelectedStatus} className="space-y-6">
           <div className="overflow-x-auto pb-1">
             <TabsList className="flex min-w-max h-auto flex-wrap sm:grid sm:w-full sm:grid-cols-5">
               {TABS.map((tab) => (
-                <TabsTrigger key={tab.value} value={tab.value} className="flex-1 text-xs sm:text-sm">{tab.label}</TabsTrigger>
+                <TabsTrigger key={tab.value} value={tab.value} className="flex-1 text-xs sm:text-sm">
+                  {tab.label}
+                </TabsTrigger>
               ))}
             </TabsList>
           </div>

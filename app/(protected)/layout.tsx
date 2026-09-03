@@ -18,13 +18,30 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         setSidebarOpen(false)
     }, [pathname])
 
+    // L'ossature applicative gère son propre défilement (<main> en
+    // overflow-y-auto). Sans ce verrou, le document défilait lui aussi et deux
+    // barres de défilement se retrouvaient côte à côte à droite. Restauré au
+    // démontage : les pages publiques, elles, ont besoin du défilement du
+    // document.
+    useEffect(() => {
+        const { style } = document.documentElement
+        const precedent = style.overflow
+        style.overflow = "hidden"
+        return () => {
+            style.overflow = precedent
+        }
+    }, [])
+
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen)
     }
 
     return (
         <ProtectedRoute>
-        <div className="flex h-screen overflow-hidden bg-background">
+        {/* `h-dvh` et non `h-screen` : 100vh dépasse la zone visible tant que le
+            navigateur mobile affiche sa barre d'adresse, et le bas de
+            l'ossature devenait alors inatteignable une fois le document figé. */}
+        <div className="flex h-dvh overflow-hidden bg-background">
             {sidebarOpen && (
                 <div className="fixed inset-0 z-[55] bg-black/50 lg:hidden" onClick={() => setSidebarOpen(false)} />
             )}

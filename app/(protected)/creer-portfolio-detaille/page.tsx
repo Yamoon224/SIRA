@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Camera, Plus, X, Github, ExternalLink } from "lucide-react"
+import { PageHeader } from "@/components/layout/page-header"
 
 export default function Page() {
     const [selectedTheme, setSelectedTheme] = useState("default")
@@ -30,12 +31,9 @@ export default function Page() {
     const skills = ["JavaScript", "React", "Node.js", "Python", "TypeScript"]
 
     return (
-        <div className="bg-gray-50 dark:bg-muted">
+        <div className="bg-gray-50 dark:bg-background">
             <div className="mx-auto max-w-7xl">
-                {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-2xl font-semibold text-gray-900 dark:text-foreground">Créer un portfolio</h1>
-                </div>
+                <PageHeader title="Créer un portfolio" className="mb-8" />
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Form */}

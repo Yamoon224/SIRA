@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Bell, Briefcase, MessageSquare, Settings, Check, Trash2 } from "lucide-react"
 import { notificationService } from "@/lib/api/notification.service"
+import { PageHeader } from "@/components/layout/page-header"
 
 interface Notification {
   id: string
@@ -116,27 +117,25 @@ export default function NotificationsPage() {
   return (
     <div className="bg-background">
       <div className="container mx-auto">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Notifications</h1>
-            <p className="text-muted-foreground">
-              Tu as {unreadCount} notification{unreadCount !== 1 ? "s" : ""} non lue{unreadCount !== 1 ? "s" : ""}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            {selectedNotifications.length > 0 && (
-              <Button variant="destructive" size="sm" onClick={deleteSelected}>
-                <Trash2 className="w-4 h-4 mr-2" />
-                Supprimer ({selectedNotifications.length})
+        <PageHeader
+          className="mb-8"
+          title="Notifications"
+          description={`Tu as ${unreadCount} notification${unreadCount !== 1 ? "s" : ""} non lue${unreadCount !== 1 ? "s" : ""}`}
+          actions={
+            <>
+              {selectedNotifications.length > 0 && (
+                <Button variant="destructive" size="sm" onClick={deleteSelected}>
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Supprimer ({selectedNotifications.length})
+                </Button>
+              )}
+              <Button variant="outline" size="sm" onClick={markAllAsRead} disabled={unreadCount === 0}>
+                <Check className="w-4 h-4 mr-2" />
+                Tout marquer comme lu
               </Button>
-            )}
-            <Button variant="outline" size="sm" onClick={markAllAsRead} disabled={unreadCount === 0}>
-              <Check className="w-4 h-4 mr-2" />
-              Tout marquer comme lu
-            </Button>
-          </div>
-        </div>
+            </>
+          }
+        />
 
         <Tabs defaultValue="all" className="w-full">
           <TabsList className="grid w-full grid-cols-4">

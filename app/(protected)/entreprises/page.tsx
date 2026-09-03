@@ -3,11 +3,12 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { Input } from "@/components/ui/input"
-import { ChevronDown, ChevronLeft, ChevronRight, Search } from "lucide-react"
+import { ChevronDown, Search } from "lucide-react"
 import { companyService } from "@/lib/api/company.service"
 import type { ICompany } from "@/lib/@types/entities"
 import { capitalizeFirst } from "@/lib/utils"
 import { CompanyLogo } from "@/components/company-logo"
+import { DataPagination, DEFAULT_PAGE_SIZE } from "@/components/ui/data-pagination"
 
 const SORT_OPTIONS = [
     { value: "pertinence", label: "Le plus pertinent" },
@@ -24,6 +25,8 @@ export default function CompaniesPage() {
     const [page, setPage] = useState(1)
     const [companies, setCompanies] = useState<ICompany[]>([])
     const [totalPages, setTotalPages] = useState(1)
+    const [total, setTotal] = useState(0)
+    const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
     const [loading, setLoading] = useState(true)
 
     const [sectors, setSectors] = useState<{ name: string; count: number }[]>([])
@@ -54,7 +57,7 @@ export default function CompaniesPage() {
 
     useEffect(() => {
         setPage(1)
-    }, [debouncedSearch, activeSector])
+    }, [debouncedSearch, activeSector, pageSize])
 
     useEffect(() => {
         const load = async () => {
@@ -62,7 +65,7 @@ export default function CompaniesPage() {
             try {
                 const res: any = await companyService.getCompanies({
                     page,
-                    limit: 12,
+                    limit: pageSize,
                     search: debouncedSearch || undefined,
                     sector: activeSector || undefined,
                 } as any)
@@ -71,6 +74,7 @@ export default function CompaniesPage() {
                 const meta = res?.meta ?? res?.data?.meta
                 setCompanies(Array.isArray(list) ? list : [])
                 setTotalPages(meta?.totalPages ?? 1)
+                setTotal(meta?.total ?? (Array.isArray(list) ? list.length : 0))
             } catch (err) {
                 console.error("[entreprises] load error:", err)
             } finally {
@@ -78,7 +82,7 @@ export default function CompaniesPage() {
             }
         }
         load()
-    }, [page, debouncedSearch, activeSector])
+    }, [page, pageSize, debouncedSearch, activeSector])
 
     const sortedCompanies = useMemo(() => {
         const list = [...companies]
@@ -89,16 +93,6 @@ export default function CompaniesPage() {
         }
         return list
     }, [companies, sortBy])
-
-    const pageNumbers = useMemo(() => {
-        const span = 5
-        let start = Math.max(1, page - Math.floor(span / 2))
-        const end = Math.min(totalPages, start + span - 1)
-        start = Math.max(1, end - span + 1)
-        const pages: number[] = []
-        for (let i = start; i <= end; i++) pages.push(i)
-        return pages
-    }, [totalPages, page])
 
     return (
         <div className="min-h-[calc(100vh-80px)]">
@@ -196,47 +190,16 @@ export default function CompaniesPage() {
                             </div>
                         )}
 
-                        {!loading && totalPages > 1 && (
-                            <div className="mt-6 flex items-center justify-center gap-1.5 text-[12px]">
-                                <button
-                                    onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-                                    disabled={page === 1}
-                                    className="flex h-8 items-center gap-1 rounded-full border border-[#dce3ef] dark:border-border px-3 text-[#4e5a6e] dark:text-foreground hover:border-[#2f6de6] hover:text-[#2f6de6] dark:hover:text-primary disabled:opacity-40 disabled:hover:border-[#dce3ef] dark:disabled:hover:border-border disabled:hover:text-[#4e5a6e] dark:disabled:hover:text-foreground"
-                                >
-                                    <ChevronLeft className="h-3.5 w-3.5" /> Préc.
-                                </button>
-                                {pageNumbers.map((n) => (
-                                    <button
-                                        key={n}
-                                        onClick={() => setPage(n)}
-                                        className={`flex h-8 w-8 items-center justify-center rounded-full border transition-colors ${
-                                            page === n
-                                                ? "border-[#2f6de6] bg-[#2f6de6] text-white"
-                                                : "border-[#dce3ef] dark:border-border text-[#4e5a6e] dark:text-foreground hover:border-[#2f6de6] hover:text-[#2f6de6] dark:hover:text-primary"
-                                        }`}
-                                    >
-                                        {n}
-                                    </button>
-                                ))}
-                                {pageNumbers[pageNumbers.length - 1] < totalPages && (
-                                    <>
-                                        <span className="px-0.5 text-[#9aa3b2] dark:text-muted-foreground">…</span>
-                                        <button
-                                            onClick={() => setPage(totalPages)}
-                                            className="flex h-8 w-8 items-center justify-center rounded-full border border-[#dce3ef] dark:border-border text-[#4e5a6e] dark:text-foreground hover:border-[#2f6de6] hover:text-[#2f6de6] dark:hover:text-primary"
-                                        >
-                                            {totalPages}
-                                        </button>
-                                    </>
-                                )}
-                                <button
-                                    onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
-                                    disabled={page >= totalPages}
-                                    className="flex h-8 items-center gap-1 rounded-full border border-[#dce3ef] dark:border-border px-3 text-[#4e5a6e] dark:text-foreground hover:border-[#2f6de6] hover:text-[#2f6de6] dark:hover:text-primary disabled:opacity-40 disabled:hover:border-[#dce3ef] dark:disabled:hover:border-border disabled:hover:text-[#4e5a6e] dark:disabled:hover:text-foreground"
-                                >
-                                    Suiv. <ChevronRight className="h-3.5 w-3.5" />
-                                </button>
-                            </div>
+                        {!loading && (
+                            <DataPagination
+                                page={page}
+                                totalPages={totalPages}
+                                total={total}
+                                currentCount={sortedCompanies.length}
+                                pageSize={pageSize}
+                                onPageChange={setPage}
+                                onPageSizeChange={setPageSize}
+                            />
                         )}
                 </div>
             </div>

@@ -11,6 +11,7 @@ import { KKIAPAY_WIDGET_SRC, openKkiapayWidget } from "@/lib/kkiapay"
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { PageHeader } from "@/components/layout/page-header"
 
 interface Plan {
     id: string
@@ -186,10 +187,9 @@ export default function Page() {
                 }}
             />
 
-            <div className="bg-white dark:bg-card">
+            <div className="bg-white dark:bg-background">
                 <div className="mx-auto max-w-5xl">
-                    {/* Header */}
-                    <h1 className="text-xl font-bold text-[#1b2331] dark:text-foreground mb-6">Centre d'assistance</h1>
+                    <PageHeader title="Centre d'assistance" />
 
                     {/* Tabs */}
                     <div className="flex gap-1 border-b border-[#e8edf6] dark:border-border mb-8">

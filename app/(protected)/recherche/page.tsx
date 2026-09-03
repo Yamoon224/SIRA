@@ -8,11 +8,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { AutocompleteInput } from "@/components/autocomplete-input"
 import { LOCALISATIONS } from "@/lib/data/afrique"
+import { DataPagination, DEFAULT_PAGE_SIZE } from "@/components/ui/data-pagination"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { MapPin, Clock, Building2, Filter, Loader2, Heart } from "lucide-react"
 import { jobService } from "@/lib/api/job.service"
 import { IJobOffer } from "@/lib/@types/entities"
 import { capitalizeFirst } from "@/lib/utils"
+import { PageHeader } from "@/components/layout/page-header"
 
 function formatPosted(date: Date | string) {
   const d = new Date(date)
@@ -36,6 +38,7 @@ function SearchResults() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [total, setTotal] = useState(0)
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
   const [bookmarkedJobs, setBookmarkedJobs] = useState<string[]>([])
 
   const fetchResults = useCallback(async (p: number) => {
@@ -46,7 +49,7 @@ function SearchResults() {
         location: locationFilter || undefined,
         jobType: typeFilter !== "all" ? typeFilter : undefined,
         page: p,
-        limit: 10,
+        limit: pageSize,
       }) as any
       const data: IJobOffer[] = res?.data?.data ?? res?.data ?? []
       const meta = res?.data?.meta ?? res?.meta
@@ -59,11 +62,14 @@ function SearchResults() {
     } finally {
       setLoading(false)
     }
-  }, [query, locationFilter, typeFilter])
+  }, [query, locationFilter, typeFilter, pageSize])
 
   useEffect(() => {
     fetchResults(1)
-  }, [query])
+    // Les filtres ne s'appliquent qu'au clic sur « Appliquer les filtres » ;
+    // seuls la requête et la taille de page rechargent d'eux-mêmes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, pageSize])
 
   useEffect(() => {
     jobService.getSavedJobIds()
@@ -81,10 +87,11 @@ function SearchResults() {
   return (
     <div className="bg-background">
       <div className="container mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Résultats de recherche pour "{query}"</h1>
-          <p className="text-muted-foreground">{total} résultat{total > 1 ? "s" : ""} trouvé{total > 1 ? "s" : ""}</p>
-        </div>
+        <PageHeader
+          className="mb-8"
+          title={`Résultats de recherche pour "${query}"`}
+          description={`${total} résultat${total > 1 ? "s" : ""} trouvé${total > 1 ? "s" : ""}`}
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Filters Sidebar */}
@@ -193,24 +200,16 @@ function SearchResults() {
               </div>
             )}
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex justify-center mt-8">
-                <div className="flex space-x-2">
-                  <Button variant="outline" size="sm" disabled={page <= 1 || loading} onClick={() => fetchResults(page - 1)}>
-                    Précédent
-                  </Button>
-                  {Array.from({ length: totalPages }).slice(0, 5).map((_, i) => (
-                    <Button key={i} size="sm" variant={page === i + 1 ? "default" : "outline"} onClick={() => fetchResults(i + 1)}>
-                      {i + 1}
-                    </Button>
-                  ))}
-                  <Button variant="outline" size="sm" disabled={page >= totalPages || loading} onClick={() => fetchResults(page + 1)}>
-                    Suivant
-                  </Button>
-                </div>
-              </div>
-            )}
+            <DataPagination
+              page={page}
+              totalPages={totalPages}
+              total={total}
+              currentCount={jobs.length}
+              pageSize={pageSize}
+              onPageChange={fetchResults}
+              onPageSizeChange={setPageSize}
+              disabled={loading}
+            />
           </div>
         </div>
       </div>

@@ -8,6 +8,7 @@ import { Plus, Pencil, Trash2, Loader2 } from "lucide-react"
 import { portfolioService } from "@/lib/api/portfolio.service"
 import { useAuth } from "@/contexts/auth-context"
 import type { IPortfolio } from "@/lib/@types/entities"
+import { PageHeader } from "@/components/layout/page-header"
 
 export default function Page() {
     const router = useRouter()
@@ -51,12 +52,10 @@ export default function Page() {
 
     return (
         <div className="mx-auto w-full max-w-4xl">
-            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 className="text-xl sm:text-2xl font-bold text-[#1b2331] dark:text-foreground">Mon portfolio</h1>
-                    <p className="text-[13px] text-[#7f8796] dark:text-muted-foreground mt-1">Gère les portfolios que tu partages avec les recruteurs.</p>
-                </div>
-            </div>
+            <PageHeader
+                title="Mon portfolio"
+                description="Gère les portfolios que tu partages avec les recruteurs."
+            />
 
             <div className="bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-xl p-4 sm:p-6">
                 {loading ? (

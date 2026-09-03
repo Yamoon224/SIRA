@@ -90,7 +90,7 @@ function FilterModal({
                 {/* Profession */}
                 <div className="mb-5">
                     <p className="text-[12px] font-bold text-[#1b2331] dark:text-foreground mb-3">Profession</p>
-                    <button className="w-full text-left px-4 py-2.5 rounded-xl border border-[#d8deeb] dark:border-border text-[12px] text-[#9aa3b2] dark:text-muted-foreground hover:border-[#2f6de6] transition-colors">
+                    <button className="w-full text-left px-4 py-2.5 rounded-full border border-[#d8deeb] dark:border-border text-[12px] text-[#9aa3b2] dark:text-muted-foreground hover:border-[#2f6de6] transition-colors">
                         Sélectionner des professions
                     </button>
                 </div>

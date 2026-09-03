@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback, useRef, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { DataPagination, DEFAULT_PAGE_SIZE } from "@/components/ui/data-pagination"
 import { AutocompleteInput } from "@/components/autocomplete-input"
 import { LOCALISATIONS } from "@/lib/data/afrique"
 import { Search, SlidersHorizontal, MapPin, BriefcaseBusiness, Clock3, Hourglass, Heart, Plus, Loader2, Building2, Building, GraduationCap } from "lucide-react"
@@ -95,10 +96,10 @@ function ExploreJobsContent() {
     const [jobs, setJobs] = useState<IJobOffer[]>([])
     const [companies, setCompanies] = useState<ICompany[]>([])
     const [loading, setLoading] = useState(true)
-    const [loadingMore, setLoadingMore] = useState(false)
     const [page, setPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
     const [total, setTotal] = useState(0)
+    const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
 
     useEffect(() => {
         jobService.getSavedJobIds()
@@ -112,10 +113,9 @@ function ExploreJobsContent() {
             .catch(() => setJobCategories([]))
     }, [])
 
-    const fetchJobs = useCallback(async (p: number, append = false) => {
+    const fetchJobs = useCallback(async (p: number) => {
         try {
-            if (append) setLoadingMore(true)
-            else setLoading(true)
+            setLoading(true)
 
             const isCategory = jobCategories.includes(activeCategory)
             const keyword = activeCategory !== "Tous" && !isCategory ? activeCategory : searchTerm || undefined
@@ -131,30 +131,28 @@ function ExploreJobsContent() {
                 jobType: typeFilter || undefined,
                 experience: experienceFilter ? [experienceFilter] : undefined,
                 page: p,
-                limit: 8,
+                limit: pageSize,
                 ...chipParams,
             }) as any
             const newJobs: IJobOffer[] = res?.data?.data ?? res?.data ?? []
             const meta = res?.data?.meta ?? res?.meta
 
-            if (append) setJobs(prev => [...prev, ...newJobs])
-            else setJobs(newJobs)
+            setJobs(newJobs)
 
             if (meta) {
                 setTotalPages(meta.totalPages ?? 1)
                 setTotal(meta.total ?? newJobs.length)
             }
         } catch {
-            if (!append) setJobs([])
+            setJobs([])
         } finally {
             setLoading(false)
-            setLoadingMore(false)
         }
-    }, [searchTerm, activeCategory, selectedFilters, jobCategories, locationFilter, typeFilter, experienceFilter])
+    }, [searchTerm, activeCategory, selectedFilters, jobCategories, locationFilter, typeFilter, experienceFilter, pageSize])
 
     useEffect(() => {
         setPage(1)
-        fetchJobs(1, false)
+        fetchJobs(1)
     }, [fetchJobs])
 
     useEffect(() => {
@@ -167,10 +165,9 @@ function ExploreJobsContent() {
             .catch(() => setCompanies([]))
     }, [searchTerm])
 
-    const handleLoadMore = () => {
-        const next = page + 1
-        setPage(next)
-        fetchJobs(next, true)
+    const goToPage = (p: number) => {
+        setPage(p)
+        fetchJobs(p)
     }
 
     const handleSearch = (e: React.FormEvent) => {
@@ -265,7 +262,7 @@ function ExploreJobsContent() {
                                     <option key={exp} value={exp}>{EXPERIENCE_LABELS[exp] ?? exp}</option>
                                 ))}
                             </select>
-                            <Button type="button" onClick={() => { setPage(1); fetchJobs(1, false) }} className="h-9 rounded-full bg-[#2f6de6] hover:bg-[#2458ba] px-5 text-[12px]">
+                            <Button type="button" onClick={() => { setPage(1); fetchJobs(1) }} className="h-9 rounded-full bg-[#2f6de6] hover:bg-[#2458ba] px-5 text-[12px]">
                                 Appliquer
                             </Button>
                             {(locationFilter || typeFilter || experienceFilter) && (
@@ -339,17 +336,16 @@ function ExploreJobsContent() {
                         <div className="text-center py-12 text-[#7f8796] dark:text-muted-foreground">Aucune offre d'emploi trouvée pour cette recherche.</div>
                     )}
 
-                    {page < totalPages && (
-                        <div className="text-center mt-6">
-                            <Button onClick={handleLoadMore} disabled={loadingMore} className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] px-8 h-10 text-[12px]">
-                                {loadingMore ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Plus className="w-4 h-4 mr-1" />}
-                                Voir plus
-                            </Button>
-                        </div>
-                    )}
-                    {total > 0 && (
-                        <p className="text-center text-[12px] text-[#9aa3b2] dark:text-muted-foreground mt-2">{jobs.length} offre{jobs.length > 1 ? "s" : ""} affichée{jobs.length > 1 ? "s" : ""} sur {total}</p>
-                    )}
+                    <DataPagination
+                        page={page}
+                        totalPages={totalPages}
+                        total={total}
+                        currentCount={jobs.length}
+                        pageSize={pageSize}
+                        onPageChange={goToPage}
+                        onPageSizeChange={setPageSize}
+                        disabled={loading}
+                    />
                 </section>
 
                 {/* Companies (populaires, ou correspondant à la recherche) */}

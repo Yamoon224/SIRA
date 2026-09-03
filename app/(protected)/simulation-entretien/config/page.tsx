@@ -10,6 +10,7 @@ import { SubscriptionGate } from "@/components/subscription-gate"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { MessageSquare, Video, X } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { PageHeader } from "@/components/layout/page-header"
 
 function SimulationConfigContent() {
     const router = useRouter()
@@ -26,7 +27,7 @@ function SimulationConfigContent() {
 
     return (
         <div>
-            <h1 className="text-2xl font-semibold text-gray-900 dark:text-foreground mb-6">Simulation d'Entretien avec Goriya</h1>
+            <PageHeader title="Simulation d'Entretien avec Goriya" />
 
             {/* Modal-like container */}
             <div className="flex items-center justify-center min-h-[600px]">
