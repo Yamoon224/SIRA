@@ -158,7 +158,7 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                     {mounted && isAuthenticated && (
                         <>
                             <Link href="/dashboard">
-                                <Button size="icon" className="rounded-full" aria-label={t("nav.dashboard")} title={t("nav.dashboard")}>
+                                <Button size="icon" className="rounded-full bg-[#2f6de6] text-white hover:bg-[#2458ba]" aria-label={t("nav.dashboard")} title={t("nav.dashboard")}>
                                     <LayoutDashboard className="w-4 h-4" />
                                 </Button>
                             </Link>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { MessageCircle, Mail, Phone, ChevronDown, ChevronRight, Check, Zap, Loader2, Briefcase, FileUser, Building2, CreditCard } from "lucide-react"
+import { MessageCircle, Mail, Phone, ChevronDown, ChevronRight, Check, Crown, Zap, Loader2, Briefcase, FileUser, Building2, CreditCard } from "lucide-react"
 import { TawkToChat } from "@/components/tawk-to-chat"
 import { subscriptionService } from "@/lib/api/subscription.service"
 import { useAuth } from "@/contexts/auth-context"
@@ -372,12 +372,17 @@ export default function Page() {
 
                                                     <div className="mb-4">
                                                         <div className="mb-3">
-                                                            {isPaid ? (
+                                                            {isPremium ? (
+                                                                <Crown className="h-8 w-8 text-amber-400" />
+                                                            ) : isPaid ? (
                                                                 <Zap className="h-8 w-8 text-[#2f6de6] dark:text-primary" />
                                                             ) : (
-                                                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f7ff] text-sm font-bold text-[#2f6de6] dark:bg-muted dark:text-primary">
-                                                                    G
-                                                                </div>
+                                                                <img
+                                                                    src="/goriya-symbol.png"
+                                                                    alt=""
+                                                                    aria-hidden
+                                                                    className="h-8 w-8 object-contain"
+                                                                />
                                                             )}
                                                         </div>
 
