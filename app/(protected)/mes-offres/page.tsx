@@ -15,6 +15,7 @@ import { capitalizeFirst, formatFileUrl } from "@/lib/utils"
 import { CompanyLogo } from "@/components/company-logo"
 import type { ICandidature } from "@/lib/@types/entities"
 import { PageHeader } from "@/components/layout/page-header"
+import { jobHref } from "@/lib/public-links"
 
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
   EN_ATTENTE: { label: "En attente", className: "bg-yellow-100 text-yellow-800" },
@@ -119,7 +120,7 @@ export default function MyApplicationsPage() {
                   return (
                     <Link
                       key={application.id}
-                      href={job?.id ? `/explorer-emplois/${job.id}` : "/mes-offres"}
+                      href={job ? jobHref(job) : "/mes-offres"}
                       className="group block rounded-[14px] border border-[#b9c8ec] dark:border-border bg-white dark:bg-card p-3 sm:p-4 hover:border-[#8eb4ff] dark:hover:border-primary transition-colors"
                     >
                       <div className="flex flex-col sm:flex-row gap-3 md:gap-4">

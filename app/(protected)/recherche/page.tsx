@@ -15,6 +15,7 @@ import { jobService } from "@/lib/api/job.service"
 import { IJobOffer } from "@/lib/@types/entities"
 import { capitalizeFirst } from "@/lib/utils"
 import { PageHeader } from "@/components/layout/page-header"
+import { jobHref } from "@/lib/public-links"
 
 function formatPosted(date: Date | string) {
   const d = new Date(date)
@@ -158,7 +159,7 @@ function SearchResults() {
                             }
                           </div>
                           <div>
-                            <Link href={`/explorer-emplois/${job.id}`} className="hover:underline">
+                            <Link href={jobHref(job)} className="hover:underline">
                               <h3 className="font-semibold text-lg mb-1">{job.title}</h3>
                             </Link>
                             <p className="text-muted-foreground mb-2">{job.company?.name ?? "-"}</p>
@@ -188,7 +189,7 @@ function SearchResults() {
                             <Heart className={`w-4 h-4 mr-1 ${bookmarkedJobs.includes(job.id) ? "fill-current text-primary" : ""}`} />
                             Sauvegarder
                           </Button>
-                          <Link href={`/explorer-emplois/${job.id}`}>
+                          <Link href={jobHref(job)}>
                             <Button size="sm">Postuler</Button>
                           </Link>
                         </div>

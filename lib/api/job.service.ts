@@ -2,6 +2,15 @@ import { apiRequest } from "@/lib/api-client-http"
 import { ICandidature, IJobOffer } from "@/lib/@types/entities"
 import { ApiResponse, IPaginatedResponse } from "@/lib/@types/api"
 
+/** Corps envoyé par le wizard de candidature (cf. ApplyToJobRequest backend). */
+export interface JobApplicationPayload {
+    phone?: string
+    location?: string
+    coverLetter?: string
+    resumeId?: string | null
+    answers?: { questionId: string; value: string | string[] | boolean | null }[]
+}
+
 export const jobService = {
     getJobs: async (
         filters?: {
@@ -47,10 +56,7 @@ export const jobService = {
         })
     },
 
-    applyToJob: async (
-        jobId: string,
-        applicationData: { coverLetter?: string; resumeUrl?: string },
-    ) => {
+    applyToJob: async (jobId: string, applicationData: JobApplicationPayload) => {
         return apiRequest<ApiResponse<ICandidature>>({
             endpoint: `/job-offers/${jobId}/apply`,
             method: "POST",

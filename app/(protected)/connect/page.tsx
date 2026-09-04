@@ -24,6 +24,7 @@ import {
 } from "@/lib/api/connect.service"
 import type { IJobOffer } from "@/lib/@types/entities"
 import { PageHeader } from "@/components/layout/page-header"
+import { jobHref } from "@/lib/public-links"
 
 const TYPE_LABELS: Record<CommunityType, string> = { SECTOR: "Secteur", COUNTRY: "Pays", EXPERTISE: "Expertise" }
 
@@ -350,7 +351,7 @@ function ReseauTab() {
                 <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">Offres à ne pas manquer</p>
                 <div className="space-y-2">
                     {jobRecs.length === 0 ? <p className="text-sm text-muted-foreground">Aucune offre suggérée.</p> : jobRecs.map((job) => (
-                        <Link key={job.id} href={`/explorer-emplois/${job.id}`}>
+                        <Link key={job.id} href={jobHref(job)}>
                             <Card className="border border-border transition-colors hover:border-blue-600">
                                 <CardContent className="flex items-center gap-3 p-3">
                                     <Briefcase className="h-4 w-4 shrink-0 text-blue-600" />

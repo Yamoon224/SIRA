@@ -10,6 +10,7 @@ import { companyService } from "@/lib/api/company.service"
 import { ICompany } from "@/lib/@types/entities"
 import { CompanyLogo } from "@/components/company-logo"
 import { capitalizeFirst, dedupeByName } from "@/lib/utils"
+import { companyHref } from "@/lib/public-links"
 
 const SECTOR_ICONS: Record<string, typeof Globe> = {
     "Santé": HeartPulse,
@@ -35,7 +36,7 @@ const SECTOR_ICONS: Record<string, typeof Globe> = {
 
 function CompanyCard({ company }: { company: ICompany }) {
     return (
-        <Link href={`/explorer-entreprises/${company.id}`}>
+        <Link href={companyHref(company)}>
             <article className="rounded-[14px] border border-[#d8deeb] dark:border-border bg-white dark:bg-card p-3 hover:border-[#2f6de6] hover:shadow-md transition-all">
                 <div className="flex items-center justify-between">
                     <CompanyLogo name={company.name} logo={company.logo} className="w-6 h-6 text-[9px] flex-shrink-0" />

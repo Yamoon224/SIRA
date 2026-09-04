@@ -22,6 +22,8 @@ export interface IUser {
 export interface ICompany {
     id: string;
     name: string;
+    /** Identifiant lisible utilisé dans les URLs publiques (/explorer-entreprises/{slug}). */
+    slug?: string;
     sector: string;
     logo: string | null;
     coverImage: string | null;
@@ -46,6 +48,8 @@ export interface ICompany {
 export interface IJobOffer {
     id: string;
     title: string;
+    /** Identifiant lisible utilisé dans les URLs publiques (/explorer-emplois/{slug}). */
+    slug?: string;
     location: string;
     type: JobType;
     experience: JobExperienceType;
@@ -60,8 +64,29 @@ export interface IJobOffer {
     image?: string | null;
     remote?: boolean;
     company?: ICompany | null;
+    /** Questions de présélection configurées par l'entreprise sur l'offre. */
+    questions?: IJobOfferQuestion[];
     createdAt: Date;
     updatedAt: Date;
+}
+
+// ─────────────────────────────────────────────
+export type JobQuestionType =
+    | "TEXT"
+    | "TEXTAREA"
+    | "NUMBER"
+    | "BOOLEAN"
+    | "SINGLE_CHOICE"
+    | "MULTI_CHOICE";
+
+export interface IJobOfferQuestion {
+    id: string;
+    label: string;
+    type: JobQuestionType;
+    /** Renseigné pour SINGLE_CHOICE / MULTI_CHOICE uniquement. */
+    options: string[] | null;
+    required: boolean;
+    position: number;
 }
 
 // ─────────────────────────────────────────────

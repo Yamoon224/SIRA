@@ -11,6 +11,7 @@ export interface MyProfile {
     title: string | null
     location: string | null
     bio: string | null
+    phone: string | null
 }
 
 export const userService = {

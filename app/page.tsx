@@ -18,6 +18,7 @@ import { useAuth } from "@/contexts/auth-context"
 import { getDeviceId } from "@/lib/device"
 import { BACKEND_URL } from "@/lib/backend-url"
 import type { CVAnalysis } from "@/lib/@types/openai"
+import { companyHref, jobHref } from "@/lib/public-links"
 
 type GateState = "idle" | "requires_auth" | "requires_subscription"
 
@@ -291,7 +292,7 @@ export default function Page() {
                     {companies.length > 0 ? (
                         <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-8 sm:mt-10">
                             {companies.map((company) => (
-                                <Link key={company.id} href={`/explorer-entreprises/${company.id}`}>
+                                <Link key={company.id} href={companyHref(company)}>
                                     <article className="rounded-2xl border border-[#e8edf6] dark:border-border bg-white dark:bg-card p-4 min-h-[140px] xs:min-h-[166px] hover:shadow-md transition-shadow">
                                         <div className="flex items-center justify-between mb-2 sm:mb-3">
                                             <CompanyLogo name={company.name} logo={company.logo} className="w-7 h-7 sm:w-9 sm:h-9 text-[10px]" />
@@ -434,7 +435,7 @@ export default function Page() {
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5">
                             {homeCareerJobs.map((job) => (
-                                <Link key={job.id} href={`/explorer-emplois/${job.id}`}>
+                                <Link key={job.id} href={jobHref(job)}>
                                     <article className="rounded-2xl border border-[#e9eef8] dark:border-border p-3 hover:shadow-md transition-shadow h-full">
                                         <div className="h-32 sm:h-40 w-full rounded-md overflow-hidden bg-gradient-to-br from-[#2f6de6] to-[#1539be] flex items-center justify-center">
                                             {job.image

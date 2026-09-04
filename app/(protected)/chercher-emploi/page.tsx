@@ -15,6 +15,7 @@ import { IJobOffer, ICompany } from "@/lib/@types/entities"
 import { JobType, JobExperienceType } from "@/lib/@types/enums"
 import { CompanyLogo } from "@/components/company-logo"
 import { capitalizeFirst, dedupeByName, formatFileUrl } from "@/lib/utils"
+import { companyHref, jobHref } from "@/lib/public-links"
 
 const filterChips = [
     { label: "Salaire affiché", icon: SlidersHorizontal },
@@ -283,7 +284,7 @@ function ChercherEmploiContent() {
                 ) : jobs.length > 0 ? (
                     <div className="mt-3 grid grid-cols-1 lg:grid-cols-2 gap-3">
                         {jobs.map((job) => (
-                            <Link key={job.id} href={`/explorer-emplois/${job.id}`} className="group block rounded-[14px] border border-[#b9c8ec] dark:border-border bg-white dark:bg-card p-3 sm:p-4 hover:border-[#8eb4ff] dark:hover:border-primary transition-colors">
+                            <Link key={job.id} href={jobHref(job)} className="group block rounded-[14px] border border-[#b9c8ec] dark:border-border bg-white dark:bg-card p-3 sm:p-4 hover:border-[#8eb4ff] dark:hover:border-primary transition-colors">
                                 <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                                     <div className="flex-1 min-w-0">
                                         <h3 className="text-[17px] font-extrabold text-[#1b2331] dark:text-foreground group-hover:underline">{job.title}</h3>
@@ -349,7 +350,7 @@ function ChercherEmploiContent() {
                     ) : (
                         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-3 relative z-10">
                             {companies.map((company) => (
-                                <Link key={company.id} href={`/explorer-entreprises/${company.id}`}>
+                                <Link key={company.id} href={companyHref(company)}>
                                     <article className="rounded-[12px] border border-[#c8d7fb] dark:border-border bg-white dark:bg-card text-[#1b2331] dark:text-foreground p-3 hover:shadow-md transition-shadow">
                                         <div className="flex items-center justify-between">
                                             <CompanyLogo name={company.name} logo={company.logo} className="w-9 h-9 text-[12px]" />

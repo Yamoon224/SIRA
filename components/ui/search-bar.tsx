@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { useRouter } from "next/navigation"
 import { jobService } from "@/lib/api/job.service"
 import { companyService } from "@/lib/api/company.service"
+import { companyHref } from "@/lib/public-links"
 
 interface SearchSuggestion {
   id: string
@@ -18,6 +19,8 @@ interface SearchSuggestion {
   title: string
   subtitle?: string
   icon: React.ReactNode
+  /** Destination directe de la suggestion (fiche entreprise), sinon recherche. */
+  href?: string
 }
 
 export function SearchBar() {
@@ -59,6 +62,7 @@ export function SearchBar() {
               title: company.name,
               subtitle: company.sector || "Entreprise",
               icon: <Building2 className="w-4 h-4" />,
+              href: companyHref(company),
             })),
           ]
 
@@ -103,8 +107,8 @@ export function SearchBar() {
     setIsOpen(false)
     setQuery("")
 
-    if (suggestion.type === "company") {
-      router.push(`/explorer-entreprises/${suggestion.id.replace("company-", "")}`)
+    if (suggestion.href) {
+      router.push(suggestion.href)
       return
     }
 

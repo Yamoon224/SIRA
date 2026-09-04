@@ -11,8 +11,10 @@ import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { CompanyLogo } from "@/components/company-logo"
 import { capitalizeFirst, formatFileUrl } from "@/lib/utils"
+import { companyHref } from "@/lib/public-links"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
+import { ApplyWizard } from "@/components/apply-wizard"
 
 function formatPosted(date: Date | string) {
     const d = new Date(date)
@@ -33,37 +35,55 @@ const faqs = [
     { q: "Quel est le délai de réponse après candidature ?", a: "Les recruteurs répondent généralement sous 2 à 4 semaines après la clôture de l'offre." },
 ]
 
-function ScoreGauge({ score }: { score: number }) {
+/**
+ * Jauge circulaire de « Créer CV » (app/(protected)/creer-cv/page.tsx) :
+ * même anneau, même graduation en %, remplie progressivement de 0 jusqu'au
+ * score plutôt que peinte d'un coup à sa valeur finale.
+ */
+function ScoreGauge({ value }: { value: number }) {
     const radius = 42
     const circumference = 2 * Math.PI * radius
-    const offset = circumference - (Math.max(0, Math.min(100, score)) / 100) * circumference
+    const cible = Math.min(Math.max(Math.round(value), 0), 100)
+    const [pct, setPct] = useState(0)
+
+    useEffect(() => {
+        setPct(0)
+        if (cible <= 0) return
+        let courant = 0
+        const pas = Math.max(1, Math.round(cible / 20))
+        const timer = setInterval(() => {
+            courant = Math.min(courant + pas, cible)
+            setPct(courant)
+            if (courant >= cible) clearInterval(timer)
+        }, 40)
+        return () => clearInterval(timer)
+    }, [cible])
 
     return (
-        <div className="relative w-[90px] h-[90px] flex-shrink-0">
-            <svg width="90" height="90" viewBox="0 0 90 90">
-                <circle cx="45" cy="45" r={radius} fill="none" stroke="#f0f3fb" strokeWidth="8" />
+        <div className="relative mx-auto h-[110px] w-[110px] flex-shrink-0">
+            <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
+                <circle cx="50" cy="50" r={radius} fill="none" stroke="#e2e7f3" strokeWidth="7" />
                 <circle
-                    cx="45" cy="45" r={radius}
+                    cx="50"
+                    cy="50"
+                    r={radius}
                     fill="none"
-                    stroke="#2f6de6"
-                    strokeWidth="8"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={offset}
+                    stroke="#2e6fe9"
+                    strokeWidth="7"
                     strokeLinecap="round"
-                    transform="rotate(-90 45 45)"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={circumference * (1 - pct / 100)}
+                    className="transition-[stroke-dashoffset] duration-300"
                 />
             </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-[22px] font-extrabold text-[#1b2331] dark:text-foreground leading-none">
-                    {score}
-                    <span className="text-[11px] font-semibold text-[#9aa3b2] dark:text-muted-foreground">/100</span>
-                </span>
+            <div className="absolute inset-0 flex items-center justify-center text-[22px] font-bold leading-none text-[#2e6fe9] dark:text-primary">
+                {pct}%
             </div>
         </div>
     )
 }
 
-function MatchingScoreWidget({ jobId }: { jobId: string }) {
+function MatchingScoreWidget({ jobId }: { jobId?: string }) {
     const { isAuthenticated } = useAuth()
     const [loading, setLoading] = useState(false)
     const [result, setResult] = useState<{ matchingScore: number; matchReasons: string[] } | null>(null)
@@ -77,11 +97,12 @@ function MatchingScoreWidget({ jobId }: { jobId: string }) {
             .finally(() => setLoading(false))
     }, [isAuthenticated, jobId])
 
+    // Déconnecté : pas de score, donc pas de titre « Ton profil correspond à
+    // cette offre » — il annoncerait un résultat que la carte ne montre pas.
     if (!isAuthenticated) {
         return (
             <div className="bg-white dark:bg-card rounded-2xl border border-[#e8eef6] dark:border-border p-5">
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-[13px] font-extrabold text-[#1b2331] dark:text-foreground">Ton profil correspond à cette offre</h3>
+                <div className="flex justify-end mb-3">
                     <Lock className="w-4 h-4 text-[#9aa3b2] dark:text-muted-foreground" />
                 </div>
                 <div className="rounded-lg bg-[#f4f7ff] dark:bg-muted border border-[#dce8ff] dark:border-border p-3 text-center">
@@ -104,7 +125,7 @@ function MatchingScoreWidget({ jobId }: { jobId: string }) {
                 <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 animate-spin text-[#2f6de6] dark:text-primary" /></div>
             ) : result ? (
                 <div className="flex items-center gap-4">
-                    <ScoreGauge score={result.matchingScore} />
+                    <ScoreGauge value={result.matchingScore} />
                     <ul className="space-y-1.5 flex-1">
                         {result.matchReasons.slice(0, 3).map((reason, i) => (
                             <li key={i} className="text-[10px] text-[#4e5a6e] dark:text-foreground leading-4 flex items-start gap-1.5">
@@ -125,26 +146,32 @@ export default function JobDetailPage() {
     const params = useParams()
     const router = useRouter()
     const { isAuthenticated } = useAuth()
-    const jobId = params?.id as string
+    // Segment d'URL : slug de préférence, uuid pour les liens antérieurs aux
+    // slugs — le backend résout les deux (voir HasSlug::scopeWhereKeyOrSlug).
+    const jobRef = params?.slug as string
 
     const [job, setJob] = useState<IJobOffer | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [bookmarked, setBookmarked] = useState(false)
-    const [applying, setApplying] = useState(false)
     const [alreadyApplied, setAlreadyApplied] = useState(false)
+    const [wizardOuvert, setWizardOuvert] = useState(false)
     const [openFaq, setOpenFaq] = useState<number | null>(null)
 
     useEffect(() => {
-        if (!jobId) return
-        jobService.getJobById(jobId)
+        if (!jobRef) return
+        jobService.getJobById(jobRef)
             .then((res: any) => {
                 const data = res?.data ?? res
                 setJob(data)
             })
             .catch(() => setError("Offre introuvable ou expirée."))
             .finally(() => setLoading(false))
-    }, [jobId])
+    }, [jobRef])
+
+    // Les routes favoris/candidatures s'adressent à l'uuid de l'offre : on
+    // attend donc qu'elle soit chargée plutôt que d'utiliser le segment d'URL.
+    const jobId = job?.id
 
     useEffect(() => {
         if (!jobId) return
@@ -163,40 +190,28 @@ export default function JobDetailPage() {
 
     const handleToggleBookmark = () => {
         if (!isAuthenticated) { toast.info("Connecte-toi pour sauvegarder une offre.") ; return }
+        if (!jobId) return
         const isSaved = bookmarked
         setBookmarked(!isSaved)
         const action = isSaved ? jobService.unsaveJob(jobId) : jobService.saveJob(jobId)
         action.catch(() => setBookmarked(isSaved))
     }
 
-    const handleApply = async () => {
+    // La candidature elle-même se fait dans le wizard (coordonnées, questions
+    // de l'entreprise, CV, récapitulatif) : ici on ne fait que l'ouvrir.
+    const handleApply = () => {
         if (alreadyApplied) return
         if (!isAuthenticated) {
-            router.push("/auth/signin?redirect=/explorer-emplois/" + jobId)
+            router.push("/auth/signin?redirect=/explorer-emplois/" + jobRef)
             return
         }
-        setApplying(true)
-        try {
-            await jobService.applyToJob(jobId, {})
-            router.push("/dashboard")
-        } catch (err: any) {
-            // Le backend renvoie {statusCode, message, error} (voir bootstrap/app.php).
-            const status: number | undefined = err?.statusCode ?? err?.status
-            const message: string = err?.message ?? ""
-            if (status === 401) {
-                router.push("/auth/signin?redirect=/explorer-emplois/" + jobId)
-                return
-            }
-            // 409 : le backend refuse une seconde candidature sur la même offre.
-            if (status === 409 || /déjà postulé/i.test(message)) {
-                setAlreadyApplied(true)
-                toast.info("Vous avez déjà postulé pour cette offre.")
-            } else {
-                toast.error(message || "Impossible d'envoyer ta candidature pour le moment.")
-            }
-        } finally {
-            setApplying(false)
-        }
+        setWizardOuvert(true)
+    }
+
+    const handleApplied = () => {
+        setWizardOuvert(false)
+        setAlreadyApplied(true)
+        setJob((prev) => (prev ? { ...prev, applicants: (prev.applicants ?? 0) + 1 } : prev))
     }
 
     const handleShare = () => {
@@ -234,7 +249,7 @@ export default function JobDetailPage() {
                                 <div className="flex items-center gap-2 mb-4">
                                     <CompanyLogo name={job.company?.name ?? "?"} logo={job.company?.logo} className="w-7 h-7 text-[10px] flex-shrink-0" />
                                     <span className="text-[11px] text-[#7f8796] dark:text-muted-foreground">/</span>
-                                    <Link href={job.company?.id ? `/explorer-entreprises/${job.company.id}` : "/explorer-entreprises"} className="text-[11px] text-[#2f6de6] dark:text-primary font-semibold hover:underline">
+                                    <Link href={companyHref(job.company)} className="text-[11px] text-[#2f6de6] dark:text-primary font-semibold hover:underline">
                                         {job.company?.name ?? "Entreprise"}
                                     </Link>
                                     <span className="text-[11px] text-[#7f8796] dark:text-muted-foreground">/</span>
@@ -282,10 +297,8 @@ export default function JobDetailPage() {
                                     ) : (
                                         <Button
                                             onClick={handleApply}
-                                            disabled={applying}
                                             className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-9 px-6 text-[12px] font-semibold"
                                         >
-                                            {applying ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                                             Postuler
                                         </Button>
                                     )}
@@ -383,7 +396,7 @@ export default function JobDetailPage() {
                                             </div>
                                         </div>
                                         <p className="text-[12px] font-semibold text-[#1b2331] dark:text-foreground mb-3">Cette offre t'intéresse ?</p>
-                                        <Link href={job.company.id ? `/explorer-entreprises/${job.company.id}` : "/explorer-entreprises"}>
+                                        <Link href={companyHref(job.company)}>
                                             <Button variant="outline" className="w-full rounded-full border-[#d8deeb] dark:border-border h-8 text-[11px] text-[#2f6de6] dark:text-primary">
                                                 Découvrir l'entreprise
                                             </Button>
@@ -432,11 +445,17 @@ export default function JobDetailPage() {
                                         </p>
                                         <Button
                                             onClick={handleApply}
-                                            disabled={applying}
                                             className="w-full rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-9 text-[12px] font-semibold mb-2"
                                         >
-                                            {applying ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}Postuler
+                                            Postuler
                                         </Button>
+                                        {(job.questions?.length ?? 0) > 0 && (
+                                            <p className="text-[10px] text-[#9aa3b2] dark:text-muted-foreground text-center mb-2">
+                                                {job.questions?.length} question
+                                                {(job.questions?.length ?? 0) > 1 ? "s" : ""} de
+                                                l&apos;entreprise à remplir.
+                                            </p>
+                                        )}
                                     </>
                                 )}
                                 <div className="text-[10px] text-[#9aa3b2] dark:text-muted-foreground text-center">
@@ -471,6 +490,17 @@ export default function JobDetailPage() {
                     </div>
                 )}
             </main>
+
+            {/* Monté seulement une fois l'offre chargée : le wizard a besoin de
+                ses questions et de son titre. */}
+            {job && (
+                <ApplyWizard
+                    open={wizardOuvert}
+                    onOpenChange={setWizardOuvert}
+                    job={job}
+                    onApplied={handleApplied}
+                />
+            )}
 
             <Footer />
         </div>

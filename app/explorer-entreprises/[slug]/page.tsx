@@ -13,6 +13,7 @@ import { jobService } from "@/lib/api/job.service"
 import { ICompany, IJobOffer } from "@/lib/@types/entities"
 import { CompanyLogo } from "@/components/company-logo"
 import { capitalizeFirst, formatFileUrl } from "@/lib/utils"
+import { companyHref, jobHref } from "@/lib/public-links"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
@@ -154,7 +155,9 @@ function FilterModal({
 
 export default function EntrepriseDetailPage() {
     const params = useParams()
-    const companyId = params?.id as string
+    // Segment d'URL : slug de préférence, uuid pour les liens antérieurs aux
+    // slugs — le backend résout les deux (voir HasSlug::scopeWhereKeyOrSlug).
+    const companyRef = params?.slug as string
 
     const [company, setCompany] = useState<ICompany | null>(null)
     const [jobs, setJobs] = useState<IJobOffer[]>([])
@@ -177,12 +180,17 @@ export default function EntrepriseDetailPage() {
     const [selectedExperiences, setSelectedExperiences] = useState<string[]>([])
 
     useEffect(() => {
-        if (!companyId) return
+        if (!companyRef) return
         setLoading(true)
-        companyService.getCompanyById(companyId)
+        // Le segment d'URL pouvant être un slug, l'uuid de l'entreprise n'est
+        // connu qu'une fois la fiche chargée : on le retient pour la suite de
+        // la chaîne (offres, entreprises similaires).
+        let chargee: ICompany | null = null
+        companyService.getCompanyById(companyRef)
             .then((res: any) => {
                 const data = res?.data?.data ?? res?.data ?? res
                 if (!data || !data.id) { setError(true); return }
+                chargee = data
                 setCompany(data)
                 return Promise.all([
                     companyService.getCompanyJobs(data.id),
@@ -195,11 +203,11 @@ export default function EntrepriseDetailPage() {
                 const jobData = jobsRes?.data?.data ?? jobsRes?.data ?? []
                 const simData = similarsRes?.data?.data ?? similarsRes?.data ?? []
                 setJobs(Array.isArray(jobData) ? jobData : [])
-                setSimilarCompanies((Array.isArray(simData) ? simData : []).filter((c: ICompany) => c.id !== companyId).slice(0, 5))
+                setSimilarCompanies((Array.isArray(simData) ? simData : []).filter((c: ICompany) => c.id !== chargee?.id).slice(0, 5))
             })
             .catch(() => setError(true))
             .finally(() => setLoading(false))
-    }, [companyId])
+    }, [companyRef])
 
     useEffect(() => {
         companyService.getFollowedCompanyIds()
@@ -210,10 +218,14 @@ export default function EntrepriseDetailPage() {
             .catch(() => {})
     }, [])
 
+    // Les favoris sont indexés par uuid : on part de l'entreprise chargée, pas
+    // du segment d'URL qui peut être un slug.
+    const companyId = company?.id ?? ""
     const isFollowing = followedIds.includes(companyId)
 
     const handleToggleFollow = () => {
         if (!isAuthenticated) { toast.info("Connecte-toi pour suivre une entreprise.") ; return }
+        if (!companyId) return
         setFollowedIds((prev) => (isFollowing ? prev.filter((id) => id !== companyId) : [...prev, companyId]))
         const action = isFollowing ? companyService.unfollowCompany(companyId) : companyService.followCompany(companyId)
         action.catch(() => setFollowedIds((prev) => (isFollowing ? [...prev, companyId] : prev.filter((id) => id !== companyId))))
@@ -472,7 +484,7 @@ export default function EntrepriseDetailPage() {
                                 <h2 className="text-[18px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Autres entreprises que tu peux consulter</h2>
                                 <div className="flex gap-3 overflow-x-auto pb-2">
                                     {similarCompanies.map(sim => (
-                                        <Link key={sim.id} href={`/explorer-entreprises/${sim.id}`} className="flex-shrink-0">
+                                        <Link key={sim.id} href={companyHref(sim)} className="flex-shrink-0">
                                             <div className="w-[140px] rounded-2xl border border-[#e8edf6] dark:border-border p-3 hover:border-[#2f6de6] hover:shadow-sm transition-all">
                                                 <CompanyLogo name={sim.name} logo={sim.logo} className="w-9 h-9 rounded-lg text-[11px] mb-2" />
                                                 <p className="text-[11px] font-bold text-[#1b2331] dark:text-foreground truncate">{sim.name}</p>
@@ -549,7 +561,7 @@ export default function EntrepriseDetailPage() {
                         ) : (
                             <div className="space-y-5">
                                 {filteredJobs.map((job) => (
-                                    <Link key={job.id} href={`/explorer-emplois/${job.id}`}>
+                                    <Link key={job.id} href={jobHref(job)}>
                                         <div className="bg-white dark:bg-card rounded-2xl border border-[#e8edf6] dark:border-border flex items-stretch overflow-hidden hover:border-[#2f6de6] hover:shadow-sm transition-all my-2">
                                             <div className="flex-1 p-4">
                                                 <div className="flex items-start justify-between gap-4">

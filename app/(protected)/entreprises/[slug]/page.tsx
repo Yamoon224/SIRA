@@ -12,6 +12,7 @@ import { toast } from "sonner"
 import { companyService } from "@/lib/api/company.service"
 import { jobService } from "@/lib/api/job.service"
 import { capitalizeFirst, formatFileUrl } from "@/lib/utils"
+import { jobHref } from "@/lib/public-links"
 
 export default function CompanyProfilePage() {
   const params = useParams()
@@ -316,7 +317,7 @@ export default function CompanyProfilePage() {
                         <div className="flex-1">
                           <div className="flex items-start justify-between mb-4">
                             <div>
-                              <Link href={`/explorer-emplois/${job.id}`} className="hover:underline">
+                              <Link href={jobHref(job)} className="hover:underline">
                                 <h3 className="font-semibold text-lg text-foreground mb-1">{job.title}</h3>
                               </Link>
                               <div className="flex items-center gap-4 text-sm text-muted-foreground">

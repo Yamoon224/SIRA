@@ -18,6 +18,7 @@ import { capitalizeFirst } from "@/lib/utils"
 import type { ICandidature, ICompany } from "@/lib/@types/entities"
 import { PageHeader } from "@/components/layout/page-header"
 import { useI18n, type TranslationKey } from "@/contexts/i18n-context"
+import { jobHref } from "@/lib/public-links"
 
 const STATUS_LABEL_KEY: Record<string, TranslationKey> = {
     EN_ATTENTE: "dashboard.statusPending",
@@ -268,7 +269,7 @@ export default function Page() {
                                 {recentApplications.map((app) => (
                                     <button
                                         key={app.id}
-                                        onClick={() => app.jobOffer?.id && router.push(`/explorer-emplois/${app.jobOffer.id}`)}
+                                        onClick={() => app.jobOffer && router.push(jobHref(app.jobOffer))}
                                         className="w-full bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-2xl p-4 flex items-center justify-between hover:border-[#2f6de6] transition-colors text-left"
                                     >
                                         <div className="flex items-center gap-3 flex-1">
