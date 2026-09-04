@@ -534,7 +534,7 @@ export default function EntrepriseDetailPage() {
 
                         {/* Job list */}
                         {filteredJobs.length === 0 ? (
-                            <div className="bg-white dark:bg-card rounded-2xl border border-[#e8edf6] dark:border-border flex flex-col items-center justify-center py-14 text-center px-4">
+                            <div className="bg-white dark:bg-card rounded-2xl border border-[#e8edf6] dark:border-border flex flex-col items-center justify-center py-14 text-center px-4 my-2">
                                 <Building2 className="w-8 h-8 text-[#c8d0df] mb-3" />
                                 <p className="text-[13px] font-semibold text-[#1b2331] dark:text-foreground">Aucune offre disponible</p>
                                 <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground mt-1">
