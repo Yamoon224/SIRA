@@ -58,6 +58,26 @@ export const messageService = {
         )
     },
 
+    /**
+     * Meme endpoint que sendMessage, mais en multipart : axios pose lui-meme
+     * le Content-Type et sa boundary a partir du FormData.
+     */
+    sendAttachment: async (conversationId: string, file: File, content = "") => {
+        const body = new FormData()
+        body.append("attachment", file)
+        if (content) body.append("content", content)
+
+        return requestWithFallback<ApiResponse<any>>(
+            [
+                `/messages/conversations/${conversationId}/messages`,
+                `/conversations/${conversationId}/messages`,
+                `/message/conversations/${conversationId}/messages`,
+            ],
+            "POST",
+            body,
+        )
+    },
+
     markAsRead: async (conversationId: string) => {
         return requestWithFallback<ApiResponse<null>>(
             [

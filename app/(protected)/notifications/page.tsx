@@ -3,13 +3,15 @@
 import type React from "react"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Bell, Briefcase, MessageSquare, Settings, Check, Trash2 } from "lucide-react"
+import { Bell, Briefcase, MessageSquare, Settings, Check, Trash2, ChevronRight } from "lucide-react"
 import { notificationService } from "@/lib/api/notification.service"
+import { notificationHref } from "@/lib/notification-link"
 import { PageHeader } from "@/components/layout/page-header"
 
 interface Notification {
@@ -19,6 +21,8 @@ interface Notification {
   description: string
   timestamp: string
   isRead: boolean
+  /** Page a ouvrir au clic — null quand la notification ne designe rien. */
+  href: string | null
 }
 
 function mapType(t: string): "job" | "message" | "system" {
@@ -38,10 +42,12 @@ function mapNotification(raw: any): Notification {
       ? new Date(raw.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })
       : raw.timestamp ?? "",
     isRead: raw.isRead ?? raw.read ?? false,
+    href: notificationHref(raw),
   }
 }
 
 export default function NotificationsPage() {
+  const router = useRouter()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [selectedNotifications, setSelectedNotifications] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
@@ -82,6 +88,15 @@ export default function NotificationsPage() {
   const markAsRead = (id: string) => {
     notificationService.markAsRead(id).catch(() => {})
     setNotifications((prev) => prev.map((notif) => (notif.id === id ? { ...notif, isRead: true } : notif)))
+  }
+
+  /**
+   * Un clic ouvre la page concernee (conversation, candidature...) en plus de
+   * marquer la notification comme lue. Sans destination, il ne fait que lire.
+   */
+  const openNotification = (notification: Notification) => {
+    if (!notification.isRead) markAsRead(notification.id)
+    if (notification.href) router.push(notification.href)
   }
 
   const markAllAsRead = () => {
@@ -149,7 +164,7 @@ export default function NotificationsPage() {
               notifications={notifications}
               selectedNotifications={selectedNotifications}
               onToggleSelection={toggleSelection}
-              onMarkAsRead={markAsRead}
+              onOpen={openNotification}
               getNotificationIcon={getNotificationIcon}
               getNotificationTypeLabel={getNotificationTypeLabel}
             />
@@ -160,7 +175,7 @@ export default function NotificationsPage() {
               notifications={filterNotifications("job")}
               selectedNotifications={selectedNotifications}
               onToggleSelection={toggleSelection}
-              onMarkAsRead={markAsRead}
+              onOpen={openNotification}
               getNotificationIcon={getNotificationIcon}
               getNotificationTypeLabel={getNotificationTypeLabel}
             />
@@ -171,7 +186,7 @@ export default function NotificationsPage() {
               notifications={filterNotifications("message")}
               selectedNotifications={selectedNotifications}
               onToggleSelection={toggleSelection}
-              onMarkAsRead={markAsRead}
+              onOpen={openNotification}
               getNotificationIcon={getNotificationIcon}
               getNotificationTypeLabel={getNotificationTypeLabel}
             />
@@ -182,7 +197,7 @@ export default function NotificationsPage() {
               notifications={filterNotifications("system")}
               selectedNotifications={selectedNotifications}
               onToggleSelection={toggleSelection}
-              onMarkAsRead={markAsRead}
+              onOpen={openNotification}
               getNotificationIcon={getNotificationIcon}
               getNotificationTypeLabel={getNotificationTypeLabel}
             />
@@ -197,7 +212,7 @@ interface NotificationsListProps {
   notifications: Notification[]
   selectedNotifications: string[]
   onToggleSelection: (id: string) => void
-  onMarkAsRead: (id: string) => void
+  onOpen: (notification: Notification) => void
   getNotificationIcon: (type: string) => React.ReactNode
   getNotificationTypeLabel: (type: string) => string
 }
@@ -206,7 +221,7 @@ function NotificationsList({
   notifications,
   selectedNotifications,
   onToggleSelection,
-  onMarkAsRead,
+  onOpen,
   getNotificationIcon,
   getNotificationTypeLabel,
 }: NotificationsListProps) {
@@ -228,7 +243,7 @@ function NotificationsList({
           className={`transition-all hover:shadow-md cursor-pointer ${
             !notification.isRead ? "border-l-4 border-l-accent bg-accent/5" : ""
           }`}
-          onClick={() => onMarkAsRead(notification.id)}
+          onClick={() => onOpen(notification)}
         >
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
@@ -254,6 +269,7 @@ function NotificationsList({
                       {getNotificationTypeLabel(notification.type)}
                     </Badge>
                     {!notification.isRead && <div className="w-2 h-2 bg-accent rounded-full"></div>}
+                    {notification.href && <ChevronRight className="w-4 h-4 text-muted-foreground" />}
                   </div>
                 </div>
 

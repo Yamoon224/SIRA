@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Bell } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -13,16 +14,21 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { notificationService } from "@/lib/api/notification.service"
+import { notificationHref } from "@/lib/notification-link"
 
 interface INotification {
     id: string
+    type?: string | null
     title: string
     body?: string | null
+    /** Chemin relatif de la page concernee (cf. lib/notification-link). */
+    link?: string | null
     isRead: boolean
     createdAt: string
 }
 
 export function NotificationBell() {
+    const router = useRouter()
     const [notifications, setNotifications] = useState<INotification[]>([])
     const [loaded, setLoaded] = useState(false)
 
@@ -41,6 +47,18 @@ export function NotificationBell() {
     const handleMarkAsRead = async (id: string) => {
         setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n))
         notificationService.markAsRead(id).catch(() => {})
+    }
+
+    /**
+     * Un clic ouvre ce dont la notification parle : la conversation, la
+     * candidature... Le marquage comme lu reste, mais n'est plus la seule
+     * chose qui se passe.
+     */
+    const handleOpen = (notification: INotification) => {
+        if (!notification.isRead) handleMarkAsRead(notification.id)
+
+        const href = notificationHref(notification)
+        if (href) router.push(href)
     }
 
     return (
@@ -65,7 +83,7 @@ export function NotificationBell() {
                         <DropdownMenuItem
                             key={n.id}
                             className="flex flex-col items-start gap-0.5 whitespace-normal py-2"
-                            onClick={() => !n.isRead && handleMarkAsRead(n.id)}
+                            onClick={() => handleOpen(n)}
                         >
                             <span className={`text-sm ${n.isRead ? "text-muted-foreground" : "font-medium"}`}>{n.title}</span>
                             {n.body && <span className="text-xs text-muted-foreground line-clamp-2">{n.body}</span>}

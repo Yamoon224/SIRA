@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge"
 import { Search, Send, Paperclip, Star, MoreHorizontal, Bell, ChevronLeft } from "lucide-react"
 import { messageService } from "@/lib/api/message.service"
 import { useAuth } from "@/contexts/auth-context"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, Suspense } from "react"
+import { useSearchParams } from "next/navigation"
 
 interface Message {
     id: string
@@ -30,8 +31,12 @@ function formatRelative(iso: string | null): string {
     return new Date(iso).toLocaleString("fr-FR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
 }
 
-export default function MessagesPage() {
+function MessagesContent() {
     const { user } = useAuth()
+    const searchParams = useSearchParams()
+    // Deep link des notifications : /messages?conversation=<uuid> ouvre
+    // directement le fil concerne plutot que le premier de la liste.
+    const conversationParam = searchParams.get("conversation")
     const currentUserId = user?.id ?? ""
     const [conversations, setConversations] = useState<Conversation[]>([])
     const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
@@ -43,7 +48,8 @@ export default function MessagesPage() {
 
     useEffect(() => {
         fetchConversations()
-    }, [])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [conversationParam])
 
     useEffect(() => {
         if (messagesEndRef.current) {
@@ -57,8 +63,9 @@ export default function MessagesPage() {
             const items = (response as any)?.data ?? response ?? []
             const convs: Conversation[] = Array.isArray(items) ? items : []
             setConversations(convs)
-            if (convs.length > 0) {
-                selectConversation(convs[0])
+            const aOuvrir = (conversationParam && convs.find((c) => c.id === conversationParam)) || convs[0]
+            if (aOuvrir) {
+                selectConversation(aOuvrir)
             }
         } catch (error) {
             console.error("Erreur lors du chargement des conversations:", error)
@@ -281,5 +288,17 @@ export default function MessagesPage() {
                 )}
             </div>
         </div>
+    )
+}
+
+export default function MessagesPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center p-16">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            </div>
+        }>
+            <MessagesContent />
+        </Suspense>
     )
 }
