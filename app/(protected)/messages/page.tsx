@@ -4,17 +4,38 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Search, Send, Paperclip, Star, MoreHorizontal, Bell, ChevronLeft } from "lucide-react"
+import { Search, Send, Paperclip, Star, MoreHorizontal, Bell, ChevronLeft, FileText, X, Loader2 } from "lucide-react"
+import { toast } from "sonner"
 import { messageService } from "@/lib/api/message.service"
 import { useAuth } from "@/contexts/auth-context"
 import { useState, useEffect, useRef, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
+
+interface Attachment {
+    name: string
+    url: string
+    mimeType: string | null
+    size: number | null
+}
 
 interface Message {
     id: string
     content: string
     createdAt: string
     senderId: string
+    /** Fichier joint au message, null quand il n'y en a pas. */
+    attachment?: Attachment | null
+    /** Vrai tant que l'envoi optimiste n'a pas ete confirme. */
+    pending?: boolean
+}
+
+const MAX_ATTACHMENT_BYTES = 8 * 1024 * 1024
+
+function formatSize(bytes: number | null | undefined): string {
+    if (!bytes || bytes <= 0) return ""
+    if (bytes < 1024) return `${bytes} o`
+    if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} Ko`
+    return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`
 }
 
 interface Conversation {
@@ -45,6 +66,11 @@ function MessagesContent() {
     const [searchQuery, setSearchQuery] = useState("")
     const [showMobileList, setShowMobileList] = useState(true)
     const messagesEndRef = useRef<HTMLDivElement>(null)
+
+    // Piece jointe : choisie puis envoyee avec (ou sans) le texte en cours.
+    const fileInputRef = useRef<HTMLInputElement>(null)
+    const [pendingFile, setPendingFile] = useState<File | null>(null)
+    const [sending, setSending] = useState(false)
 
     useEffect(() => {
         fetchConversations()
@@ -88,27 +114,56 @@ function MessagesContent() {
         }
     }
 
-    const sendMessage = async () => {
-        if (!newMessage.trim() || !selectedConversation) return
+    const pickFile = (file: File | undefined) => {
+        if (!file) return
+        if (file.size > MAX_ATTACHMENT_BYTES) {
+            toast.error(`« ${file.name} » dépasse 8 Mo. Choisis un fichier plus léger.`)
+            return
+        }
+        setPendingFile(file)
+    }
 
-        const content = newMessage
+    const sendMessage = async () => {
+        const content = newMessage.trim()
+        if ((!content && !pendingFile) || !selectedConversation || sending) return
+
+        const fichier = pendingFile
         setNewMessage("")
+        setPendingFile(null)
+        setSending(true)
 
         const optimistic: Message = {
             id: `opt-${Date.now()}`,
             content,
             createdAt: new Date().toISOString(),
             senderId: currentUserId,
+            attachment: fichier ? { name: fichier.name, url: "", mimeType: fichier.type, size: fichier.size } : null,
+            pending: !!fichier,
         }
+        const apercu = content || (fichier ? `Pièce jointe : ${fichier.name}` : "")
         setMessages((prev) => [...prev, optimistic])
         setConversations((prev) =>
-            prev.map((c) => (c.id === selectedConversation.id ? { ...c, lastMessage: content, lastMessageAt: optimistic.createdAt } : c)),
+            prev.map((c) => (c.id === selectedConversation.id ? { ...c, lastMessage: apercu, lastMessageAt: optimistic.createdAt } : c)),
         )
 
         try {
-            await messageService.sendMessage(selectedConversation.id, content)
+            const res = fichier
+                ? await messageService.sendAttachment(selectedConversation.id, fichier, content)
+                : await messageService.sendMessage(selectedConversation.id, content)
+            // Le message renvoye porte l'URL reelle de la piece jointe : on
+            // remplace l'optimiste plutot que de laisser un lien mort.
+            const envoye = (res as any)?.data ?? res
+            if (envoye?.id) {
+                setMessages((prev) => prev.map((m) => (m.id === optimistic.id ? envoye : m)))
+            }
         } catch (error) {
             console.error("Erreur lors de l'envoi du message:", error)
+            setMessages((prev) => prev.filter((m) => m.id !== optimistic.id))
+            setNewMessage(content)
+            setPendingFile(fichier)
+            toast.error("L'envoi du message a échoué.")
+        } finally {
+            setSending(false)
         }
     }
 
@@ -230,7 +285,26 @@ function MessagesContent() {
                                                 : "bg-muted text-foreground"
                                             }`}
                                     >
-                                        <p className="text-sm">{message.content}</p>
+                                        {message.content && <p className="text-sm">{message.content}</p>}
+                                        {message.attachment && (
+                                            <a
+                                                href={message.attachment.url || undefined}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className={`mt-1.5 flex items-center gap-2 rounded-lg px-2.5 py-2 transition-colors ${message.pending ? "pointer-events-none opacity-70" : ""} ${message.senderId === currentUserId ? "bg-primary-foreground/15 hover:bg-primary-foreground/25" : "bg-background hover:bg-background/70"
+                                                    }`}
+                                            >
+                                                {message.pending
+                                                    ? <Loader2 className="w-4 h-4 shrink-0 animate-spin" />
+                                                    : <FileText className="w-4 h-4 shrink-0" />}
+                                                <span className="min-w-0 flex-1">
+                                                    <span className="block truncate text-xs font-medium">{message.attachment.name}</span>
+                                                    <span className={`block text-[10px] ${message.senderId === currentUserId ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                                                        {message.pending ? "Envoi…" : formatSize(message.attachment.size)}
+                                                    </span>
+                                                </span>
+                                            </a>
+                                        )}
                                         <p
                                             className={`text-xs mt-1 ${message.senderId === currentUserId ? "text-primary-foreground/70" : "text-muted-foreground"
                                                 }`}
@@ -245,13 +319,44 @@ function MessagesContent() {
 
                         {/* Message Input */}
                         <div className="p-4 border-t border-border bg-background">
+                            {pendingFile && (
+                                <div className="mb-2 flex items-center gap-2 rounded-md bg-muted px-3 py-2">
+                                    <FileText className="w-4 h-4 shrink-0 text-primary" />
+                                    <span className="min-w-0 flex-1 truncate text-xs text-foreground">{pendingFile.name}</span>
+                                    <span className="shrink-0 text-[11px] text-muted-foreground">{formatSize(pendingFile.size)}</span>
+                                    <button
+                                        onClick={() => setPendingFile(null)}
+                                        aria-label="Retirer la pièce jointe"
+                                        className="shrink-0 rounded p-1 text-muted-foreground hover:bg-background"
+                                    >
+                                        <X className="w-3.5 h-3.5" />
+                                    </button>
+                                </div>
+                            )}
                             <div className="flex items-center space-x-2">
-                                <Button variant="ghost" size="sm">
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    className="hidden"
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.png,.jpg,.jpeg,.webp"
+                                    onChange={(e) => {
+                                        pickFile(e.target.files?.[0])
+                                        // Permet de re-selectionner le meme fichier apres un retrait.
+                                        e.target.value = ""
+                                    }}
+                                />
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    title="Joindre un fichier (PDF, Word, Excel, texte ou image — 8 Mo max)"
+                                    aria-label="Joindre un fichier"
+                                >
                                     <Paperclip className="w-4 h-4" />
                                 </Button>
                                 <div className="flex-1 relative">
                                     <Input
-                                        placeholder="Message de réponse"
+                                        placeholder={pendingFile ? "Ajouter un message (facultatif)…" : "Message de réponse"}
                                         value={newMessage}
                                         onChange={(e) => setNewMessage(e.target.value)}
                                         onKeyPress={(e) => {
@@ -266,9 +371,9 @@ function MessagesContent() {
                                 <Button
                                     onClick={sendMessage}
                                     className="bg-primary hover:bg-primary/90"
-                                    disabled={!newMessage.trim()}
+                                    disabled={sending || (!newMessage.trim() && !pendingFile)}
                                 >
-                                    <Send className="w-4 h-4" />
+                                    {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                                 </Button>
                             </div>
                         </div>
