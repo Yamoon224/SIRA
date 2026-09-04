@@ -78,4 +78,12 @@ export const jobService = {
             method: "GET",
         })
     },
+
+    getAppliedJobIds: async () => {
+        return apiRequest<ApiResponse<{ jobIds: string[] }>>({
+            endpoint: "/me/applied-jobs",
+            method: "GET",
+            silent: true,
+        })
+    },
 }

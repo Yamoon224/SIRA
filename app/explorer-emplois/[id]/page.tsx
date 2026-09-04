@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Bookmark, Share2, ChevronDown, Loader2, MapPin, Calendar, AlertCircle, Lock, Sparkles, Check } from "lucide-react"
+import { Bookmark, Share2, ChevronDown, Loader2, MapPin, Calendar, AlertCircle, Lock, Sparkles, Check, CheckCircle2 } from "lucide-react"
 import { jobService } from "@/lib/api/job.service"
 import { IJobOffer } from "@/lib/@types/entities"
 import { Header } from "@/components/layout/header"
@@ -132,6 +132,7 @@ export default function JobDetailPage() {
     const [error, setError] = useState<string | null>(null)
     const [bookmarked, setBookmarked] = useState(false)
     const [applying, setApplying] = useState(false)
+    const [alreadyApplied, setAlreadyApplied] = useState(false)
     const [openFaq, setOpenFaq] = useState<number | null>(null)
 
     useEffect(() => {
@@ -152,6 +153,14 @@ export default function JobDetailPage() {
             .catch(() => {})
     }, [jobId])
 
+    // Une offre à laquelle on a déjà postulé ne doit plus proposer le bouton "Postuler".
+    useEffect(() => {
+        if (!jobId || !isAuthenticated) { setAlreadyApplied(false); return }
+        jobService.getAppliedJobIds()
+            .then((res: any) => setAlreadyApplied((res?.data?.jobIds ?? res?.jobIds ?? []).includes(jobId)))
+            .catch(() => {})
+    }, [jobId, isAuthenticated])
+
     const handleToggleBookmark = () => {
         if (!isAuthenticated) { toast.info("Connecte-toi pour sauvegarder une offre.") ; return }
         const isSaved = bookmarked
@@ -161,12 +170,30 @@ export default function JobDetailPage() {
     }
 
     const handleApply = async () => {
+        if (alreadyApplied) return
+        if (!isAuthenticated) {
+            router.push("/auth/signin?redirect=/explorer-emplois/" + jobId)
+            return
+        }
         setApplying(true)
         try {
             await jobService.applyToJob(jobId, {})
             router.push("/dashboard")
-        } catch {
-            router.push("/auth/signin?redirect=/explorer-emplois/" + jobId)
+        } catch (err: any) {
+            // Le backend renvoie {statusCode, message, error} (voir bootstrap/app.php).
+            const status: number | undefined = err?.statusCode ?? err?.status
+            const message: string = err?.message ?? ""
+            if (status === 401) {
+                router.push("/auth/signin?redirect=/explorer-emplois/" + jobId)
+                return
+            }
+            // 409 : le backend refuse une seconde candidature sur la même offre.
+            if (status === 409 || /déjà postulé/i.test(message)) {
+                setAlreadyApplied(true)
+                toast.info("Vous avez déjà postulé pour cette offre.")
+            } else {
+                toast.error(message || "Impossible d'envoyer ta candidature pour le moment.")
+            }
         } finally {
             setApplying(false)
         }
@@ -247,14 +274,21 @@ export default function JobDetailPage() {
 
                                 {/* Action buttons */}
                                 <div className="flex gap-3 flex-wrap">
-                                    <Button
-                                        onClick={handleApply}
-                                        disabled={applying}
-                                        className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-9 px-6 text-[12px] font-semibold"
-                                    >
-                                        {applying ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                                        Postuler
-                                    </Button>
+                                    {alreadyApplied ? (
+                                        <div className="flex items-center gap-2 rounded-full bg-[#f0fbf5] dark:bg-muted border border-[#d0f0e0] dark:border-[#415c4f] h-9 px-5 text-[12px] font-semibold text-[#22a05b]">
+                                            <CheckCircle2 className="w-4 h-4" />
+                                            Vous avez déjà postulé pour cette offre
+                                        </div>
+                                    ) : (
+                                        <Button
+                                            onClick={handleApply}
+                                            disabled={applying}
+                                            className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-9 px-6 text-[12px] font-semibold"
+                                        >
+                                            {applying ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                                            Postuler
+                                        </Button>
+                                    )}
                                     {isAuthenticated && (
                                     <Button
                                         variant="outline"
@@ -375,17 +409,36 @@ export default function JobDetailPage() {
 
                             {/* Apply sticky */}
                             <div className="bg-white dark:bg-card rounded-2xl border border-[#e8eef6] dark:border-border p-5">
-                                <p className="text-[13px] font-bold text-[#1b2331] dark:text-foreground mb-1">Postule dès maintenant</p>
-                                <p className="text-[11px] text-[#7f8796] dark:text-muted-foreground mb-4">
-                                    Rejoins les {job.applicants ?? 0} candidat{(job.applicants ?? 0) !== 1 ? "s" : ""} qui ont déjà postulé.
-                                </p>
-                                <Button
-                                    onClick={handleApply}
-                                    disabled={applying}
-                                    className="w-full rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-9 text-[12px] font-semibold mb-2"
-                                >
-                                    {applying ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}Postuler
-                                </Button>
+                                {alreadyApplied ? (
+                                    <>
+                                        <p className="text-[13px] font-bold text-[#1b2331] dark:text-foreground mb-1 flex items-center gap-1.5">
+                                            <CheckCircle2 className="w-4 h-4 text-[#22a05b]" />
+                                            Candidature envoyée
+                                        </p>
+                                        <p className="text-[11px] text-[#7f8796] dark:text-muted-foreground mb-4">
+                                            Vous avez déjà postulé pour cette offre. Suis son avancement depuis ton tableau de bord.
+                                        </p>
+                                        <Link href="/dashboard">
+                                            <Button variant="outline" className="w-full rounded-full border-[#d8deeb] dark:border-border h-9 text-[12px] font-semibold mb-2 text-[#2f6de6] dark:text-primary">
+                                                Voir mes candidatures
+                                            </Button>
+                                        </Link>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p className="text-[13px] font-bold text-[#1b2331] dark:text-foreground mb-1">Postule dès maintenant</p>
+                                        <p className="text-[11px] text-[#7f8796] dark:text-muted-foreground mb-4">
+                                            Rejoins les {job.applicants ?? 0} candidat{(job.applicants ?? 0) !== 1 ? "s" : ""} qui ont déjà postulé.
+                                        </p>
+                                        <Button
+                                            onClick={handleApply}
+                                            disabled={applying}
+                                            className="w-full rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-9 text-[12px] font-semibold mb-2"
+                                        >
+                                            {applying ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}Postuler
+                                        </Button>
+                                    </>
+                                )}
                                 <div className="text-[10px] text-[#9aa3b2] dark:text-muted-foreground text-center">
                                     Offre publiée {formatPosted(job.publishDate)}
                                     {job.endDate && <span className="ml-2">· Clôture le {new Date(job.endDate).toLocaleDateString("fr-FR")}</span>}
