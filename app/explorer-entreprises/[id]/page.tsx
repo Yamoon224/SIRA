@@ -550,7 +550,7 @@ export default function EntrepriseDetailPage() {
                             <div className="space-y-5">
                                 {filteredJobs.map((job) => (
                                     <Link key={job.id} href={`/explorer-emplois/${job.id}`}>
-                                        <div className="bg-white dark:bg-card rounded-2xl border border-[#e8edf6] dark:border-border flex items-stretch overflow-hidden hover:border-[#2f6de6] hover:shadow-sm transition-all">
+                                        <div className="bg-white dark:bg-card rounded-2xl border border-[#e8edf6] dark:border-border flex items-stretch overflow-hidden hover:border-[#2f6de6] hover:shadow-sm transition-all my-2">
                                             <div className="flex-1 p-4">
                                                 <div className="flex items-start justify-between gap-4">
                                                     <div className="flex-1">
