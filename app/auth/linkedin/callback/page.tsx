@@ -95,7 +95,7 @@ export default function LinkedInCallbackPage() {
             } catch (error: any) {
                 // Le message du backend arrive tel quel (apiRequest relaie le
                 // corps de la réponse) ; sans corps, c'est une panne réseau ou
-                // une URL de backend injoignable — on le dit plutôt que
+                // une URL de backend injoignable - on le dit plutôt que
                 // d'afficher un message générique qui masque la cause.
                 console.error("[linkedin] échec de l'échange:", error)
                 setErrorMsg(

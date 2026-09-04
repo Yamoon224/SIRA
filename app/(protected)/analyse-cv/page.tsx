@@ -175,7 +175,7 @@ function AnalyserCVContent() {
                 </p>
 
                 {/* ── Dépôt : reprend la présentation du modal « Soumettez
-                    votre CV » — libellé, cadre pointillé, actions à droite. ── */}
+                    votre CV » - libellé, cadre pointillé, actions à droite. ── */}
                 <div className="mt-6 rounded-[14px] border border-[#dfe5f1] dark:border-border bg-white dark:bg-card p-5 sm:p-6">
                     <p className="mb-3 text-[13px] text-[#5b6474] dark:text-muted-foreground">Importer votre CV</p>
 

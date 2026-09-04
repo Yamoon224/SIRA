@@ -13,8 +13,8 @@ type PageHeaderProps = {
 
 /**
  * En-tête des pages de l'espace connecté : un titre souligné d'un filet, comme
- * sur /nouveau-document. Chaque page redéclarait son titre à sa façon — filet
- * pour certaines, rien pour les autres — d'où ce composant unique.
+ * sur /nouveau-document. Chaque page redéclarait son titre à sa façon - filet
+ * pour certaines, rien pour les autres - d'où ce composant unique.
  *
  * Le filet court sur toute la largeur du contenu et le titre s'aligne dessus :
  * contrairement à /nouveau-document, l'en-tête ne rajoute pas de retrait
@@ -23,7 +23,7 @@ type PageHeaderProps = {
  * L'espace SOUS le filet appartient à ce composant : ne le remplacez pas
  * depuis une page (`mb-0`, `mb-3`…). Plusieurs pages le faisaient pour s'en
  * remettre au `space-y-4` de leur conteneur, et le contenu se retrouvait collé
- * au trait — 16px au lieu des 24/32px des autres pages. Les conteneurs de ces
+ * au trait - 16px au lieu des 24/32px des autres pages. Les conteneurs de ces
  * pages sont des blocs : leur marge se fusionne avec celle-ci au lieu de s'y
  * ajouter, le rendu reste donc identique partout.
  */

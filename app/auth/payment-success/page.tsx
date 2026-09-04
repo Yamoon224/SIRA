@@ -33,7 +33,7 @@ export default function PaymentSuccessPage() {
 
         let cancelled = false
         // Paiement Pro confirme via une notification serveur-à-serveur qui peut
-        // arriver après le retour du navigateur — on re-tente quelques fois.
+        // arriver après le retour du navigateur - on re-tente quelques fois.
         const maxAttempts = gateway === "paiementpro" ? 5 : 1
 
         const attempt = (n: number) => {

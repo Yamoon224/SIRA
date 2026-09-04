@@ -269,7 +269,7 @@ export function ApplyWizard({ open, onOpenChange, job, onApplied }: Props) {
             <DialogContent className="max-h-[88vh] max-w-xl overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="text-[16px]">
-                        Postuler — {job.title}
+                        Postuler - {job.title}
                     </DialogTitle>
                     <p className="text-[12px] text-muted-foreground">
                         {job.company?.name ?? "Entreprise"}
@@ -748,7 +748,7 @@ function EtapeRecapitulatif({
                     </p>
                 ) : (
                     <p className="text-[12px] text-muted-foreground">
-                        Aucun CV joint — reviens à l&apos;étape précédente pour en ajouter un.
+                        Aucun CV joint - reviens à l&apos;étape précédente pour en ajouter un.
                     </p>
                 )}
             </Bloc>

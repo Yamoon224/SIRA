@@ -417,7 +417,7 @@ function CreerCVContent() {
         } catch {
             setSavedAt(at)
             setSaveState("local")
-            toast.error("Enregistré localement — la synchronisation avec le serveur a échoué")
+            toast.error("Enregistré localement - la synchronisation avec le serveur a échoué")
         }
     }
 
@@ -439,7 +439,7 @@ function CreerCVContent() {
             await cvService.remove()
             toast.success("Brouillon supprimé")
         } catch {
-            toast.error("Brouillon effacé sur cet appareil — la suppression côté serveur a échoué")
+            toast.error("Brouillon effacé sur cet appareil - la suppression côté serveur a échoué")
         }
     }
 
@@ -469,7 +469,7 @@ function CreerCVContent() {
         const experiences = formData.experiences
             .map((e) =>
                 [
-                    [e.poste, e.entreprise].filter(Boolean).join(" — "),
+                    [e.poste, e.entreprise].filter(Boolean).join(" - "),
                     e.enCours ? periode(e.dateDebut, "") + (e.dateDebut ? " – En cours" : "En cours") : periode(e.dateDebut, e.dateFin),
                     e.description,
                 ]
@@ -481,7 +481,7 @@ function CreerCVContent() {
 
         const formations = formData.formations
             .map((f) =>
-                [[f.diplome, f.etablissement].filter(Boolean).join(" — "), periode(f.dateDebut, f.dateFin)]
+                [[f.diplome, f.etablissement].filter(Boolean).join(" - "), periode(f.dateDebut, f.dateFin)]
                     .filter(Boolean)
                     .join("\n"),
             )
@@ -885,7 +885,7 @@ function CreerCVContent() {
                     {saveState === "local" && (
                         <p className="flex items-center gap-1.5 text-[11px] text-[#b8860b]">
                             <CloudOff className="h-3.5 w-3.5 shrink-0" />
-                            Enregistré sur cet appareil uniquement — synchronisation impossible
+                            Enregistré sur cet appareil uniquement - synchronisation impossible
                         </p>
                     )}
 
@@ -906,7 +906,7 @@ function CreerCVContent() {
                             <AlertDialogTitle>Supprimer le brouillon ?</AlertDialogTitle>
                             <AlertDialogDescription>
                                 Le contenu saisi sera effacé de ce navigateur et de votre compte. Cette action est
-                                irréversible — pensez à télécharger votre CV avant si vous souhaitez le conserver.
+                                irréversible - pensez à télécharger votre CV avant si vous souhaitez le conserver.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

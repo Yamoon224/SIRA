@@ -191,7 +191,7 @@ function PitchGoriyaContent() {
                         <Textarea
                             value={newDescription}
                             onChange={(e) => setNewDescription(e.target.value)}
-                            placeholder="De quoi parle ton pitch ? (ex : mon projet, ce qui me démarque, l'objectif visé...) — sert de base à la génération IA"
+                            placeholder="De quoi parle ton pitch ? (ex : mon projet, ce qui me démarque, l'objectif visé...) - sert de base à la génération IA"
                             className="min-h-[80px]"
                         />
                     </div>

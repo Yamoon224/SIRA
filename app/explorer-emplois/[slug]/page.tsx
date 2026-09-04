@@ -98,7 +98,7 @@ function MatchingScoreWidget({ jobId }: { jobId?: string }) {
     }, [isAuthenticated, jobId])
 
     // Déconnecté : pas de score, donc pas de titre « Ton profil correspond à
-    // cette offre » — il annoncerait un résultat que la carte ne montre pas.
+    // cette offre » - il annoncerait un résultat que la carte ne montre pas.
     if (!isAuthenticated) {
         return (
             <div className="bg-white dark:bg-card rounded-2xl border border-[#e8eef6] dark:border-border p-5">
@@ -147,7 +147,7 @@ export default function JobDetailPage() {
     const router = useRouter()
     const { isAuthenticated } = useAuth()
     // Segment d'URL : slug de préférence, uuid pour les liens antérieurs aux
-    // slugs — le backend résout les deux (voir HasSlug::scopeWhereKeyOrSlug).
+    // slugs - le backend résout les deux (voir HasSlug::scopeWhereKeyOrSlug).
     const jobRef = params?.slug as string
 
     const [job, setJob] = useState<IJobOffer | null>(null)

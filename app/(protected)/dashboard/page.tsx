@@ -29,7 +29,7 @@ const STATUS_LABEL_KEY: Record<string, TranslationKey> = {
     REFUSEE: "dashboard.statusRejected",
 }
 
-/** Nombre de rendez-vous affichés dans l'agenda Meet — au-delà, on renvoie
+/** Nombre de rendez-vous affichés dans l'agenda Meet - au-delà, on renvoie
  *  vers la page Appels pour ne pas déséquilibrer la hauteur de la ligne. */
 const AGENDA_LIMIT = 4
 

@@ -156,7 +156,7 @@ function FilterModal({
 export default function EntrepriseDetailPage() {
     const params = useParams()
     // Segment d'URL : slug de préférence, uuid pour les liens antérieurs aux
-    // slugs — le backend résout les deux (voir HasSlug::scopeWhereKeyOrSlug).
+    // slugs - le backend résout les deux (voir HasSlug::scopeWhereKeyOrSlug).
     const companyRef = params?.slug as string
 
     const [company, setCompany] = useState<ICompany | null>(null)
