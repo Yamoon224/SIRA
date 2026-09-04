@@ -138,14 +138,12 @@ export const signInWithGoogle = (): Promise<string> => {
         return
       }
       if (!leftPage || graceTimer) return
-      graceTimer = setTimeout(() => {
-        // Impossible de distinguer ici une annulation volontaire d'un échec
-        // origin_mismatch : les deux ramènent l'utilisateur sans credential. On
-        // reste silencieux côté UI (message « cancelled », filtré par l'appelant)
-        // et on laisse le diagnostic actionnable dans la console.
-        console.error(`[google-auth] ${originHelp()}`)
-        fail("Google Sign-In was cancelled or not completed")
-      }, 4_000)
+      // Impossible de distinguer ici une annulation volontaire d'un échec
+      // origin_mismatch : les deux ramènent l'utilisateur sans credential. Le
+      // message reste donc neutre — mais visible : après un aller-retour vers
+      // une page d'erreur Google, ne rien afficher laisserait l'utilisateur sans
+      // le moindre signal. Le diagnostic actionnable, lui, part en console.
+      graceTimer = setTimeout(() => fail("Connexion Google interrompue. Réessaie."), 4_000)
     }
 
     const cleanup = () => {
@@ -171,6 +169,9 @@ export const signInWithGoogle = (): Promise<string> => {
       if (settled) return
       settled = true
       cleanup()
+      // Le message affiché reste volontairement neutre : la cause exacte n'est
+      // connue que de la fenêtre Google. La console, elle, porte de quoi agir.
+      console.warn(`[google-auth] ${message}\n${originHelp()}`)
       reject(new Error(message))
     }
 
