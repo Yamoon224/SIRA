@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
+import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -19,12 +20,13 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { useIsMobile } from "@/components/ui/use-mobile"
-import { FileBadge2, ChevronDown, CloudOff, Download, Plus, Save, Sparkles, Trash2 } from "lucide-react"
-import { generatePDF } from "@/lib/document-generator"
+import { FileBadge2, ChevronDown, CloudOff, Download, FolderPlus, Loader2, Plus, Save, Sparkles, Trash2 } from "lucide-react"
+import { generatePDF, generatePDFFile } from "@/lib/document-generator"
 import { SubscriptionGate } from "@/components/subscription-gate"
 import { AutocompleteInput } from "@/components/autocomplete-input"
 import { useAuth } from "@/contexts/auth-context"
 import { cvService, type CvCompetence, type CvContent, type CvExperience, type CvFormation } from "@/lib/api/cv.service"
+import { resumeService } from "@/lib/api/resume.service"
 import { formatDerniereSauvegarde } from "@/lib/cv-draft"
 import {
     INDICATIF_PAR_DEFAUT,
@@ -261,6 +263,8 @@ function CreerCVContent() {
     const [savedAt, setSavedAt] = useState<string | null>(null)
     const [saveState, setSaveState] = useState<SaveState>("idle")
     const [confirmDelete, setConfirmDelete] = useState(false)
+    const [enregistrementBibliotheque, setEnregistrementBibliotheque] = useState(false)
+    const router = useRouter()
     const hydrated = useRef(false)
 
     const writeLocal = useCallback(
@@ -456,7 +460,11 @@ function CreerCVContent() {
     const indicatif = formData.indicatif || INDICATIF_PAR_DEFAUT
     const paysIndicatif = PAYS_AFRICAINS.find((p) => p.indicatif === indicatif) ?? PAYS_PAR_DEFAUT
 
-    const handleDownloadPDF = () => {
+    /**
+     * Texte du CV et nom de fichier, partagés par le téléchargement et par
+     * l'enregistrement dans « Mes CV » : les deux doivent produire le même PDF.
+     */
+    const construireCv = () => {
         const filename = `cv-${formData.nom.toLowerCase().replace(/\s+/g, "-") || "document"}.pdf`
         // Les dates sont stockées en ISO ; le PDF les rend au format français.
         const fr = (iso: string) => {
@@ -500,7 +508,40 @@ function CreerCVContent() {
             section("Expérience professionnelle", experiences) +
             section("Formation", formations) +
             section("Compétences", competences)
+
+        return { content, filename }
+    }
+
+    const handleDownloadPDF = () => {
+        const { content, filename } = construireCv()
         generatePDF(content, filename)
+    }
+
+    /**
+     * Dépose le CV du formulaire dans la bibliothèque « Mes CV », d'où il peut
+     * être joint à une candidature. Le backend remplace le PDF déjà produit par
+     * le créateur plutôt que d'en empiler une nouvelle version.
+     */
+    const handleSaveToLibrary = async () => {
+        if (!formData.nom.trim()) {
+            toast.error("Indiquez votre nom avant d'enregistrer le CV.")
+            setStep(0)
+            return
+        }
+
+        setEnregistrementBibliotheque(true)
+        try {
+            const { content, filename } = construireCv()
+            const nom = `CV ${formData.nom.trim()}`
+            await resumeService.upload(generatePDFFile(content, filename), nom, "builder")
+            toast.success("CV enregistré dans « Mes CV »", {
+                action: { label: "Voir", onClick: () => router.push("/mes-cv") },
+            })
+        } catch (err: any) {
+            toast.error(err?.message ?? "L'enregistrement du CV a échoué.")
+        } finally {
+            setEnregistrementBibliotheque(false)
+        }
     }
 
     /**
@@ -863,6 +904,19 @@ function CreerCVContent() {
                     >
                         <Save className="mr-1.5 h-3.5 w-3.5" />
                         Sauvegarder
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        onClick={handleSaveToLibrary}
+                        disabled={enregistrementBibliotheque}
+                        className="h-9 w-full sm:min-w-[230px] sm:w-auto rounded-full bg-[#f0f2f8] dark:bg-muted text-[12px] text-[#5b6474] dark:text-muted-foreground hover:bg-[#e6eaf4] dark:hover:bg-muted"
+                    >
+                        {enregistrementBibliotheque ? (
+                            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                            <FolderPlus className="mr-1.5 h-3.5 w-3.5" />
+                        )}
+                        Enregistrer dans Mes CV
                     </Button>
                     <Button
                         onClick={handleDownloadPDF}

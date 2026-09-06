@@ -40,6 +40,7 @@ export const en: Dictionary = {
         aiCompanySearch: "AI company search",
         myProfile: "My profile",
         createCv: "Create CV",
+        myCvs: "My CVs",
         analyzeCv: "Analyse CV",
         myPortfolio: "My portfolio",
         newDocument: "New document",

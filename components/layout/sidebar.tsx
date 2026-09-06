@@ -16,6 +16,7 @@ import {
     Settings,
     Search,
     FileText,
+    Files,
     Bot,
     FolderPlus,
     HelpCircle,
@@ -61,6 +62,7 @@ const navSections: NavSection[] = [
         items: [
             { key: "nav.myProfile", href: "/profil", icon: User },
             { key: "nav.createCv", href: "/creer-cv", icon: FileText },
+            { key: "nav.myCvs", href: "/mes-cv", icon: Files },
             { key: "nav.analyzeCv", href: "/analyse-cv", icon: FileText },
             { key: "nav.myPortfolio", href: "/portfolio", icon: FolderPlus },
             { key: "nav.newDocument", href: "/nouveau-document", icon: FileText },

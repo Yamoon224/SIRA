@@ -25,6 +25,7 @@ import {
     resumeService,
     type IResume,
 } from "@/lib/api/resume.service"
+import { formatTailleFichier } from "@/lib/resume"
 import { userService } from "@/lib/api/user.service"
 import type { IJobOffer, IJobOfferQuestion } from "@/lib/@types/entities"
 
@@ -52,13 +53,6 @@ const CHOIX_MULTIPLE = "MULTI_CHOICE"
 
 const valeurVide = (valeur: AnswerDraft | undefined) =>
     valeur === undefined || (Array.isArray(valeur) ? valeur.length === 0 : valeur.trim() === "")
-
-/** Octets → « 1,2 Mo », pour la ligne d'un CV dans la liste. */
-function formatTaille(octets: number) {
-    if (!octets) return ""
-    const mo = octets / (1024 * 1024)
-    return mo >= 1 ? `${mo.toFixed(1)} Mo` : `${Math.round(octets / 1024)} Ko`
-}
 
 /**
  * Candidature en plusieurs étapes, façon LinkedIn : coordonnées pré-remplies,
@@ -637,7 +631,7 @@ function EtapeCv({
                                     {cv.name}
                                 </span>
                                 <span className="text-[11px] text-muted-foreground">
-                                    {formatTaille(cv.size)}
+                                    {formatTailleFichier(cv.size)}
                                     {cv.isDefault && (
                                         <span className="ml-2 inline-flex items-center gap-0.5 text-[#2f6de6] dark:text-primary">
                                             <Star className="h-3 w-3 fill-current" />

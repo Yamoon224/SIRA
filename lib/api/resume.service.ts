@@ -1,10 +1,17 @@
 import { ApiResponse } from "@/lib/@types/api"
 import { apiRequest } from "@/lib/api-client-http"
 
-/** Un CV téléversé par le candidat (`/me/resumes`). */
+/**
+ * Origine d'un CV : « builder » pour un PDF produit par le créateur de CV,
+ * « upload » pour un fichier déposé par le candidat.
+ */
+export type ResumeSource = "upload" | "builder"
+
+/** Un CV de la bibliothèque du candidat (`/me/resumes`). */
 export interface IResume {
     id: string
     name: string
+    source: ResumeSource
     url: string | null
     mimeType: string | null
     size: number
@@ -25,10 +32,11 @@ export const resumeService = {
         })
     },
 
-    upload: async (file: File, name?: string) => {
+    upload: async (file: File, name?: string, source: ResumeSource = "upload") => {
         const form = new FormData()
         form.append("file", file)
         if (name) form.append("name", name)
+        form.append("source", source)
 
         // POST et non PATCH : PHP ne parse pas les corps multipart en PATCH/PUT.
         return apiRequest<ApiResponse<IResume>>({

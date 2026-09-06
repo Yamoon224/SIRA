@@ -41,6 +41,7 @@ export const fr = {
         aiCompanySearch: "Recherche entreprise IA",
         myProfile: "Mon Profil",
         createCv: "Créer CV",
+        myCvs: "Mes CV",
         analyzeCv: "Analyse CV",
         myPortfolio: "Mon portfolio",
         newDocument: "Nouveau document",

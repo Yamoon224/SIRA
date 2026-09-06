@@ -27,7 +27,12 @@ const formatDateFr = (valeur: string | undefined): string => {
   return iso ? `${iso[3]}/${iso[2]}/${iso[1]}` : valeur
 }
 
-export const generatePDF = (content: string, filename = "document.pdf"): void => {
+/**
+ * Rend le texte du document dans un jsPDF. Partagé par le téléchargement et par
+ * l'enregistrement dans la bibliothèque de CV, qui a besoin du binaire plutôt
+ * que d'une sauvegarde navigateur.
+ */
+const renderPDF = (content: string): jsPDF => {
   const pdf = new jsPDF()
 
   // Set font
@@ -56,9 +61,16 @@ export const generatePDF = (content: string, filename = "document.pdf"): void =>
     yPosition += lineHeight
   })
 
-  // Download the PDF
-  pdf.save(filename)
+  return pdf
 }
+
+export const generatePDF = (content: string, filename = "document.pdf"): void => {
+  renderPDF(content).save(filename)
+}
+
+/** Le même PDF, en fichier prêt à être téléversé (`POST /me/resumes`). */
+export const generatePDFFile = (content: string, filename = "document.pdf"): File =>
+  new File([renderPDF(content).output("blob")], filename, { type: "application/pdf" })
 
 export const generateDocumentContent = (type: string, data: DocumentData): string => {
   switch (type) {
