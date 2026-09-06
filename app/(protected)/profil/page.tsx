@@ -251,7 +251,7 @@ export default function ProfilePage() {
             </Card>
 
             {/* Portfolio Section */}
-            <Card>
+            <Card className="mb-4">
                 <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                         <span>Portfolio</span>

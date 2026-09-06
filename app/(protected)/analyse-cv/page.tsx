@@ -170,13 +170,9 @@ function AnalyserCVContent() {
             </div>
 
             <div className="mx-auto w-full max-w-[840px] px-4 py-8 sm:px-6 sm:py-10">
-                <p className="max-w-[52ch] text-[14px] leading-relaxed text-[#7b8496] dark:text-muted-foreground">
-                    Dépose ton CV, Goriya le note et te dit précisément quoi corriger.
-                </p>
-
                 {/* ── Dépôt : reprend la présentation du modal « Soumettez
                     votre CV » - libellé, cadre pointillé, actions à droite. ── */}
-                <div className="mt-6 rounded-[14px] border border-[#dfe5f1] dark:border-border bg-white dark:bg-card p-5 sm:p-6">
+                <div className="mt-4 rounded-[14px] border border-[#dfe5f1] dark:border-border bg-white dark:bg-card p-5 sm:p-6">
                     <p className="mb-3 text-[13px] text-[#5b6474] dark:text-muted-foreground">Importer votre CV</p>
 
                     <div
