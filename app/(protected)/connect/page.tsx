@@ -107,7 +107,7 @@ function FeedTab() {
                 <p className="py-6 text-center text-sm text-muted-foreground">Aucune publication dans votre fil pour le moment.</p>
             ) : (
                 posts.map((post) => (
-                    <Card key={post.id} className="border border-border">
+                    <Card key={post.id} className="border border-border my-2">
                         <CardContent className="p-4">
                             <div className="flex items-start gap-3">
                                 <Avatar className="h-9 w-9">

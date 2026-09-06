@@ -97,10 +97,12 @@ export default function SimulationEntretienConfigPage() {
                     <SelectValue placeholder="Choisir la durée" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="5">5 minutes</SelectItem>
+                    <SelectItem value="10">10 minutes</SelectItem>
                     <SelectItem value="15">15 minutes</SelectItem>
+                    <SelectItem value="20">20 minutes</SelectItem>
+                    <SelectItem value="25">25 minutes</SelectItem>
                     <SelectItem value="30">30 minutes</SelectItem>
-                    <SelectItem value="45">45 minutes</SelectItem>
-                    <SelectItem value="60">1 heure</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
