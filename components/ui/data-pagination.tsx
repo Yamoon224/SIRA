@@ -64,7 +64,7 @@ export function DataPagination({
             )}
         >
             <span aria-label={t("pagination.shownOfTotal", { shown: currentCount, total })}>
-                <span className="font-medium text-foreground">{currentCount*(page - 1) + pageSize}</span> / {total}
+                <span className="font-medium text-foreground">{Math.min((page - 1) * pageSize + currentCount, total)}</span> / {total}
             </span>
 
             <div className="flex items-center gap-3">
