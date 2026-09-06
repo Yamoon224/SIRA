@@ -174,13 +174,13 @@ function GoriyaChatContent() {
                         activeThread.messages.map((msg) => (
                             <div key={msg.id} className={cn("flex gap-2", msg.role === "USER" ? "justify-end" : "justify-start")}>
                                 {msg.role === "ASSISTANT" && (
-                                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600">
+                                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-gradient">
                                         <Bot className="h-4 w-4 text-white" />
                                     </div>
                                 )}
                                 <div className={cn(
                                     "max-w-[85%] rounded-2xl px-4 py-2 text-sm break-words whitespace-pre-line sm:max-w-[75%]",
-                                    msg.role === "USER" ? "bg-blue-600 text-white" : "bg-muted text-foreground"
+                                    msg.role === "USER" ? "bg-brand-gradient text-white" : "bg-muted text-foreground"
                                 )}>
                                     {msg.content}
                                 </div>
@@ -198,7 +198,7 @@ function GoriyaChatContent() {
                         disabled={sending}
                         className="h-11 min-w-0 flex-1"
                     />
-                    <Button className="h-11 w-11 shrink-0 bg-blue-600 p-0 hover:bg-blue-700" disabled={sending || !input.trim()} onClick={handleSend}>
+                    <Button className="h-11 w-11 shrink-0 bg-brand-gradient p-0 hover:bg-brand-gradient-hover" disabled={sending || !input.trim()} onClick={handleSend}>
                         <Send className="h-4 w-4" />
                     </Button>
                 </div>

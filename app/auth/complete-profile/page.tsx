@@ -116,7 +116,7 @@ export default function CompleteProfilePage() {
                     <Button
                         type="submit"
                         disabled={loading}
-                        className="w-full h-10 rounded-full bg-[#2f6de6] hover:bg-[#2157d3] text-white font-semibold"
+                        className="w-full h-10 rounded-full bg-brand-gradient hover:bg-brand-gradient-hover text-white font-semibold"
                     >
                         {loading ? (
                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-white dark:border-border border-t-transparent" />

@@ -128,7 +128,7 @@ export function FiltersModal({ trigger, onFiltersChange }: FiltersModalProps) {
             <Filter className="w-4 h-4 mr-2" />
             Filtres
             {getActiveFiltersCount() > 0 && (
-              <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-blue-600">
+              <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-brand-gradient">
                 {getActiveFiltersCount()}
               </Badge>
             )}
@@ -346,7 +346,7 @@ export function FiltersModal({ trigger, onFiltersChange }: FiltersModalProps) {
             <Button variant="outline" onClick={clearAllFilters} className="bg-transparent">
               Réinitialiser
             </Button>
-            <Button onClick={applyFilters} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={applyFilters} className="bg-brand-gradient hover:bg-brand-gradient-hover">
               Appliquer les filtres ({getActiveFiltersCount()})
             </Button>
           </div>

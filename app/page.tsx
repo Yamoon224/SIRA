@@ -230,7 +230,7 @@ export default function Page() {
             <Header />
 
             {/* Hero */}
-            <section className="relative overflow-hidden bg-[#1e7df2] text-white py-10 sm:py-14 md:py-16">
+            <section className="relative overflow-hidden bg-brand-gradient text-white py-10 sm:py-14 md:py-16">
                 <div className="absolute -right-8 top-0 h-full w-[220px] sm:w-[320px] md:w-[380px] hidden md:block">
                     <div className="absolute top-8 right-16 w-36 h-36 border-[18px] border-[#7ab2ff] dark:border-primary/50 rounded-full opacity-60" />
                     <div className="absolute top-52 right-4 w-24 h-24 border-[14px] border-[#7ab2ff] dark:border-primary/50 rounded-full opacity-60" />
@@ -328,7 +328,7 @@ export default function Page() {
                     </div>
                     <div className="text-center mt-6 sm:mt-8">
                         <Link href="/explorer-entreprises">
-                            <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-10 sm:h-11 px-6 sm:px-8">+ Découvrir plus</Button>
+                            <Button className="rounded-full bg-brand-gradient hover:bg-brand-gradient-hover h-10 sm:h-11 px-6 sm:px-8">+ Découvrir plus</Button>
                         </Link>
                     </div>
                 </div>
@@ -342,7 +342,7 @@ export default function Page() {
                     <div className="mt-6 sm:mt-8 flex justify-center">
                         <form className="flex w-full max-w-[720px] relative" onSubmit={(e) => { e.preventDefault(); const q = (e.currentTarget.querySelector("input") as HTMLInputElement)?.value; router.push(`/explorer-emplois${q ? `?q=${encodeURIComponent(q)}` : ""}`) }}>
                             <Input className="h-10 sm:h-12 rounded-full border-[#dbe4f4] dark:border-border bg-white text-[#111827] placeholder:text-[#9aa3b2] pr-32 text-sm w-full" placeholder="Quel métier recherches-tu ? (ex: Comptable, Commercial...)" />
-                            <Button type="submit" className="absolute right-1 top-1/2 -translate-y-1/2 h-8 sm:h-10 rounded-full bg-[#2f6de6] hover:bg-[#2458ba] px-4 sm:px-6 text-xs sm:text-sm font-semibold shadow-md">
+                            <Button type="submit" className="absolute right-1 top-1/2 -translate-y-1/2 h-8 sm:h-10 rounded-full bg-brand-gradient hover:bg-brand-gradient-hover px-4 sm:px-6 text-xs sm:text-sm font-semibold shadow-md">
                                 Trouver un emploi
                             </Button>
                         </form>
@@ -391,7 +391,7 @@ export default function Page() {
             </section>
 
             {/* CTA banner */}
-            <section className="bg-gradient-to-r from-[#2058d6] to-[#1f4fc5] text-white py-10 sm:py-16 relative overflow-hidden">
+            <section className="bg-brand-gradient text-white py-10 sm:py-16 relative overflow-hidden">
                 <div className="absolute left-0 bottom-0 w-28 h-28 sm:w-52 sm:h-52 rounded-full border-[10px] sm:border-[20px] border-[#7cb0ff] dark:border-primary/50 opacity-40 -translate-x-5 sm:-translate-x-10 translate-y-5 sm:translate-y-10" />
                 <div className="mx-auto max-w-[1180px] px-3 sm:px-4 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center relative z-10">
                     <div>
@@ -437,7 +437,7 @@ export default function Page() {
                             {homeCareerJobs.map((job) => (
                                 <Link key={job.id} href={jobHref(job)}>
                                     <article className="rounded-2xl border border-[#e9eef8] dark:border-border p-3 hover:shadow-md transition-shadow h-full">
-                                        <div className="h-32 sm:h-40 w-full rounded-md overflow-hidden bg-gradient-to-br from-[#2f6de6] to-[#1539be] flex items-center justify-center">
+                                        <div className="h-32 sm:h-40 w-full rounded-md overflow-hidden bg-brand-gradient flex items-center justify-center">
                                             {job.image
                                                 ? <img src={formatFileUrl(job.image)} alt={job.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                 : job.company?.coverImage
@@ -463,7 +463,7 @@ export default function Page() {
                             <ChevronLeft className="w-4 h-4" />
                         </button>
                         <Link href={homeCareerTab === "Stagiaires" ? "/explorer-emplois?jobType=STAGE" : "/explorer-emplois"}>
-                            <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-10 sm:h-11 px-6 sm:px-8">+ Découvrir plus</Button>
+                            <Button className="rounded-full bg-brand-gradient hover:bg-brand-gradient-hover h-10 sm:h-11 px-6 sm:px-8">+ Découvrir plus</Button>
                         </Link>
                         <button type="button"
                             disabled={homeCareerPage >= homeCareerTotalPages || homeCareerLoading}
@@ -492,7 +492,7 @@ export default function Page() {
                             {articles.map((article) => (
                                 <Link key={article.id} href={`/blog/${article.slug}`}>
                                     <article className="rounded-2xl border border-[#e9eef8] dark:border-border bg-white dark:bg-card overflow-hidden h-full hover:shadow-md transition-shadow">
-                                        <div className="h-40 w-full bg-gradient-to-br from-[#2f6de6] to-[#1539be]">
+                                        <div className="h-40 w-full bg-brand-gradient">
                                             {article.coverImage && (
                                                 <img src={formatFileUrl(article.coverImage)} alt={article.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                             )}

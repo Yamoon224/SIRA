@@ -119,7 +119,7 @@ function PresentationsIaContent() {
                     </div>
                     <Textarea value={brief} onChange={(e) => setBrief(e.target.value)} placeholder="Décrivez le contenu attendu (sujet, objectif, points clés)..." className="min-h-[80px]" />
                     <div className="flex justify-end">
-                        <Button disabled={creating || !title.trim() || !brief.trim()} onClick={handleCreate} className="gap-1.5 bg-blue-600 hover:bg-blue-700">
+                        <Button disabled={creating || !title.trim() || !brief.trim()} onClick={handleCreate} className="gap-1.5 bg-brand-gradient hover:bg-brand-gradient-hover">
                             <Sparkles className="h-4 w-4" />{creating ? "Génération..." : "Générer"}
                         </Button>
                     </div>

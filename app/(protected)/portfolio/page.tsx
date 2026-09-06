@@ -67,7 +67,7 @@ export default function Page() {
                         <p className="text-[13px] text-[#7f8796] text-center dark:text-muted-foreground">
                             Aucun portfolio créé. Clique sur « Ajouter » pour commencer.
                         </p>
-                        <Button onClick={() => router.push("/creer-portfolio")} className="mt-4 rounded-full bg-[#2f6de6] hover:bg-[#2554b8]">
+                        <Button onClick={() => router.push("/creer-portfolio")} className="mt-4 rounded-full bg-brand-gradient hover:bg-brand-gradient-hover">
                             <Plus className="w-4 h-4 mr-1.5" /> Créer un portfolio
                         </Button>
                     </div>

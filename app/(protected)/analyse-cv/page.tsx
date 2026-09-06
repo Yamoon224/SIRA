@@ -253,7 +253,7 @@ function AnalyserCVContent() {
                         <Button
                             onClick={handleAnalyze}
                             disabled={!cvFile || isAnalyzing}
-                            className="h-10 bg-[#2f6de6] px-6 text-[13px] font-medium hover:bg-[#2157d3]"
+                            className="h-10 bg-brand-gradient px-6 text-[13px] font-medium hover:bg-brand-gradient-hover"
                         >
                             <Sparkles className="mr-2 h-4 w-4" />
                             {isAnalyzing ? "Goriya lit votre CV…" : "Analyser mon CV"}
@@ -354,7 +354,7 @@ function AnalyserCVContent() {
                         <div className="mt-10 flex flex-col gap-3 border-t border-[#eef1f7] dark:border-border pt-7 sm:flex-row">
                             <Button
                                 asChild
-                                className="h-11 rounded-full bg-[#2f6de6] text-[14px] font-medium hover:bg-[#2157d3] sm:px-7"
+                                className="h-11 rounded-full bg-brand-gradient text-[14px] font-medium hover:bg-brand-gradient-hover sm:px-7"
                             >
                                 <Link href="/creer-cv">
                                     <Check className="mr-2 h-4 w-4" />

@@ -108,7 +108,7 @@ function MatchingScoreWidget({ jobId }: { jobId?: string }) {
                 <div className="rounded-lg bg-[#f4f7ff] dark:bg-muted border border-[#dce8ff] dark:border-border p-3 text-center">
                     <p className="text-[11px] text-[#4e5a6e] dark:text-foreground mb-2">Crée un compte gratuit pour voir si ce poste te correspond vraiment.</p>
                     <Link href="/auth/signin">
-                        <Button size="sm" className="w-full rounded-full bg-[#2f6de6] hover:bg-[#2458ba] text-[11px] h-8">
+                        <Button size="sm" className="w-full rounded-full bg-brand-gradient hover:bg-brand-gradient-hover text-[11px] h-8">
                             Voir mon score de compatibilité
                         </Button>
                     </Link>
@@ -129,7 +129,7 @@ function MatchingScoreWidget({ jobId }: { jobId?: string }) {
                     <ul className="space-y-1.5 flex-1">
                         {result.matchReasons.slice(0, 3).map((reason, i) => (
                             <li key={i} className="text-[10px] text-[#4e5a6e] dark:text-foreground leading-4 flex items-start gap-1.5">
-                                <span className="mt-1 w-1 h-1 rounded-full bg-[#2f6de6] flex-shrink-0" />
+                                <span className="mt-1 w-1 h-1 rounded-full bg-brand-gradient flex-shrink-0" />
                                 {reason}
                             </li>
                         ))}
@@ -236,7 +236,7 @@ export default function JobDetailPage() {
                         <AlertCircle className="w-12 h-12 text-red-400" />
                         <h2 className="text-xl font-bold text-[#1b2331] dark:text-foreground">{error ?? "Offre introuvable"}</h2>
                         <Link href="/explorer-emplois">
-                            <Button className="rounded-full bg-[#2f6de6]">Voir toutes les offres</Button>
+                            <Button className="rounded-full bg-brand-gradient">Voir toutes les offres</Button>
                         </Link>
                     </div>
                 ) : (
@@ -297,7 +297,7 @@ export default function JobDetailPage() {
                                     ) : (
                                         <Button
                                             onClick={handleApply}
-                                            className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-9 px-6 text-[12px] font-semibold"
+                                            className="rounded-full bg-brand-gradient hover:bg-brand-gradient-hover h-9 px-6 text-[12px] font-semibold"
                                         >
                                             Postuler
                                         </Button>
@@ -409,7 +409,7 @@ export default function JobDetailPage() {
                             <MatchingScoreWidget jobId={jobId} />
 
                             {/* Premium CTA */}
-                            <div className="bg-gradient-to-br from-[#1539be] to-[#2f81f1] rounded-xl p-5 text-white text-center">
+                            <div className="bg-brand-gradient rounded-xl p-5 text-white text-center">
                                 <Sparkles className="w-6 h-6 mx-auto mb-3 text-yellow-300" />
                                 <p className="text-[14px] font-extrabold mb-1">Essayer dès maintenant</p>
                                 <p className="text-[11px] text-blue-200 mb-4">Accède à toutes les fonctionnalités premium et booste ta recherche d'emploi.</p>
@@ -445,7 +445,7 @@ export default function JobDetailPage() {
                                         </p>
                                         <Button
                                             onClick={handleApply}
-                                            className="w-full rounded-full bg-[#2f6de6] hover:bg-[#2458ba] h-9 text-[12px] font-semibold mb-2"
+                                            className="w-full rounded-full bg-brand-gradient hover:bg-brand-gradient-hover h-9 text-[12px] font-semibold mb-2"
                                         >
                                             Postuler
                                         </Button>

@@ -110,7 +110,7 @@ export function JobFiltersModal({ open, onOpenChange }: JobFiltersModalProps) {
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Annuler
           </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => onOpenChange(false)}>
+          <Button className="bg-brand-gradient hover:bg-brand-gradient-hover" onClick={() => onOpenChange(false)}>
             Explorer les offres
           </Button>
         </div>

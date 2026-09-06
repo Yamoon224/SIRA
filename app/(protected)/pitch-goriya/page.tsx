@@ -182,7 +182,7 @@ function PitchGoriyaContent() {
                                 ))}
                             </SelectContent>
                         </Select>
-                        <Button disabled={creating} onClick={handleCreate} className="h-10 gap-1.5 bg-blue-600 hover:bg-blue-700 sm:w-auto">
+                        <Button disabled={creating} onClick={handleCreate} className="h-10 gap-1.5 bg-brand-gradient hover:bg-brand-gradient-hover sm:w-auto">
                             <Sparkles className="h-4 w-4" />{creating ? "Génération..." : "Générer un pitch"}
                         </Button>
                     </div>

@@ -41,7 +41,7 @@ export default function OffresPage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-12 sm:py-16">
+      <section className="bg-brand-gradient text-white py-12 sm:py-16">
         <div className="container mx-auto px-6 text-center">
           <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-balance">Choisis le plan qui te convient</h1>
           <p className="text-lg sm:text-xl max-w-2xl mx-auto text-pretty">
@@ -76,7 +76,7 @@ export default function OffresPage() {
                 >
                   {isPopular && (
                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <Badge className="bg-blue-600 text-white px-4 py-1">
+                      <Badge className="bg-brand-gradient text-white px-4 py-1">
                         Choix populaire
                       </Badge>
                     </div>
@@ -90,7 +90,7 @@ export default function OffresPage() {
                   </CardHeader>
                   <CardContent>
                     <Link href="/auth/signin">   
-                      <Button className={`w-full rounded-full mb-4 sm:mb-6 ${isPopular ? "bg-blue-600 hover:bg-blue-700" : "bg-primary hover:bg-primary/90"}`}>
+                      <Button className={`w-full rounded-full mb-4 sm:mb-6 ${isPopular ? "bg-brand-gradient hover:bg-brand-gradient-hover" : "bg-primary hover:bg-primary/90"}`}>
                         {plan.price === 0 ? "Commencer gratuitement" : "Choisir ce plan"}
                       </Button>
                     </Link>
@@ -160,7 +160,7 @@ export default function OffresPage() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
             <Link href="/auth/signin">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto rounded-full ">Commencer maintenant</Button>
+              <Button size="lg" className="bg-brand-gradient hover:bg-brand-gradient-hover w-full sm:w-auto rounded-full ">Commencer maintenant</Button>
             </Link>
             <Link href="/a-propos">
               <Button size="lg" variant="outline" className="w-full sm:w-auto rounded-full">Nous contacter</Button>

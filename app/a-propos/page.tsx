@@ -38,7 +38,7 @@ export default function AboutPage() {
             <Header />
 
             <main>
-                <section className="bg-[#1e7df2] text-white py-14 sm:py-20">
+                <section className="bg-brand-gradient text-white py-14 sm:py-20">
                     <div className="mx-auto max-w-[900px] px-4 text-center">
                         <h1 className="font-extrabold leading-tight text-3xl sm:text-5xl">
                             On aide les talents à decrocher le poste qui leur correspond
@@ -87,7 +87,7 @@ export default function AboutPage() {
                         </p>
                         <div className="mt-6 flex flex-wrap justify-center gap-3">
                             <Link href="/auth/signin">
-                                <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] px-6 h-10">Créer mon compte (Gratuit)</Button>
+                                <Button className="rounded-full bg-brand-gradient hover:bg-brand-gradient-hover px-6 h-10">Créer mon compte (Gratuit)</Button>
                             </Link>
                             <Link href="/explorer-emplois">
                                 <Button variant="outline" className="rounded-full px-6 h-10">Explorer les offres</Button>

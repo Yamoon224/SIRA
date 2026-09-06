@@ -80,7 +80,7 @@ function FilterModal({
                             <button
                                 key={type}
                                 onClick={() => toggle(selectedTypes, type, setSelectedTypes)}
-                                className={`px-4 py-1.5 rounded-full text-[12px] font-semibold border transition-all ${selectedTypes.includes(type) ? "bg-[#2f6de6] text-white border-[#2f6de6]" : "bg-white dark:bg-card text-[#4e5a6e] dark:text-foreground border-[#d8deeb] dark:border-border hover:border-[#2f6de6]"}`}
+                                className={`px-4 py-1.5 rounded-full text-[12px] font-semibold border transition-all ${selectedTypes.includes(type) ? "bg-brand-gradient text-white border-[#2f6de6]" : "bg-white dark:bg-card text-[#4e5a6e] dark:text-foreground border-[#d8deeb] dark:border-border hover:border-[#2f6de6]"}`}
                             >
                                 {type}
                             </button>
@@ -104,7 +104,7 @@ function FilterModal({
                             <button
                                 key={dur}
                                 onClick={() => toggle(selectedDurations, dur, setSelectedDurations)}
-                                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all ${selectedDurations.includes(dur) ? "bg-[#2f6de6] text-white border-[#2f6de6]" : "bg-white dark:bg-card text-[#4e5a6e] dark:text-foreground border-[#d8deeb] dark:border-border hover:border-[#2f6de6]"}`}
+                                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all ${selectedDurations.includes(dur) ? "bg-brand-gradient text-white border-[#2f6de6]" : "bg-white dark:bg-card text-[#4e5a6e] dark:text-foreground border-[#d8deeb] dark:border-border hover:border-[#2f6de6]"}`}
                             >
                                 {dur}
                             </button>
@@ -120,7 +120,7 @@ function FilterModal({
                             <button
                                 key={exp}
                                 onClick={() => toggle(selectedExperiences, exp, setSelectedExperiences)}
-                                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all ${selectedExperiences.includes(exp) ? "bg-[#2f6de6] text-white border-[#2f6de6]" : "bg-white dark:bg-card text-[#4e5a6e] dark:text-foreground border-[#d8deeb] dark:border-border hover:border-[#2f6de6]"}`}
+                                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all ${selectedExperiences.includes(exp) ? "bg-brand-gradient text-white border-[#2f6de6]" : "bg-white dark:bg-card text-[#4e5a6e] dark:text-foreground border-[#d8deeb] dark:border-border hover:border-[#2f6de6]"}`}
                             >
                                 {exp}
                             </button>
@@ -143,7 +143,7 @@ function FilterModal({
                     </Button>
                     <Button
                         onClick={onApply}
-                        className="flex-1 rounded-full bg-[#2f6de6] hover:bg-[#2458ba] text-[12px] h-10"
+                        className="flex-1 rounded-full bg-brand-gradient hover:bg-brand-gradient-hover text-[12px] h-10"
                     >
                         Explorer les offres
                     </Button>
@@ -279,7 +279,7 @@ export default function EntrepriseDetailPage() {
 
             {/* Cover + Profile hero */}
             <div className="bg-white dark:bg-card">
-                <div className="relative h-[200px] sm:h-[250px] overflow-hidden bg-gradient-to-r from-[#1539be] to-[#2f81f1]">
+                <div className="relative h-[200px] sm:h-[250px] overflow-hidden bg-brand-gradient">
                     {company.coverImage && (
                         <img src={formatFileUrl(company.coverImage)} alt="cover" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                     )}
@@ -322,7 +322,7 @@ export default function EntrepriseDetailPage() {
                                     </button>
                                     <button
                                         onClick={() => setActiveTab("jobs")}
-                                        className={`px-4 sm:px-5 h-8 font-semibold transition-colors flex items-center gap-1.5 ${activeTab === "jobs" ? "bg-[#2f6de6] text-white" : "text-[#9aa3b2] dark:text-muted-foreground hover:text-[#1b2331] dark:hover:text-foreground"}`}
+                                        className={`px-4 sm:px-5 h-8 font-semibold transition-colors flex items-center gap-1.5 ${activeTab === "jobs" ? "bg-brand-gradient text-white" : "text-[#9aa3b2] dark:text-muted-foreground hover:text-[#1b2331] dark:hover:text-foreground"}`}
                                     >
                                         Offres
                                         {jobs.length > 0 && (
@@ -518,13 +518,13 @@ export default function EntrepriseDetailPage() {
                             <div className="flex gap-2 flex-wrap">
                                 <button
                                     onClick={() => setActiveJobType(activeJobType === "CDI" ? null : "CDI")}
-                                    className={`px-4 h-8 rounded-full text-[12px] font-semibold border transition-all ${activeJobType === "CDI" ? "bg-[#2f6de6] text-white border-[#2f6de6]" : "bg-white dark:bg-card text-[#4e5a6e] dark:text-foreground border-[#d8deeb] dark:border-border hover:border-[#2f6de6]"}`}
+                                    className={`px-4 h-8 rounded-full text-[12px] font-semibold border transition-all ${activeJobType === "CDI" ? "bg-brand-gradient text-white border-[#2f6de6]" : "bg-white dark:bg-card text-[#4e5a6e] dark:text-foreground border-[#d8deeb] dark:border-border hover:border-[#2f6de6]"}`}
                                 >
                                     Type de job
                                 </button>
                                 <button
                                     onClick={() => setShowRemote(r => !r)}
-                                    className={`px-4 h-8 rounded-full text-[12px] font-semibold border transition-all ${showRemote ? "bg-[#2f6de6] text-white border-[#2f6de6]" : "bg-white dark:bg-card text-[#4e5a6e] dark:text-foreground border-[#d8deeb] dark:border-border hover:border-[#2f6de6]"}`}
+                                    className={`px-4 h-8 rounded-full text-[12px] font-semibold border transition-all ${showRemote ? "bg-brand-gradient text-white border-[#2f6de6]" : "bg-white dark:bg-card text-[#4e5a6e] dark:text-foreground border-[#d8deeb] dark:border-border hover:border-[#2f6de6]"}`}
                                 >
                                     Télétravail
                                 </button>
@@ -533,7 +533,7 @@ export default function EntrepriseDetailPage() {
                                 </button>
                                 <button
                                     onClick={() => setFilterModalOpen(true)}
-                                    className={`px-4 h-8 rounded-full text-[12px] font-semibold border transition-all flex items-center gap-1.5 ${activeFilterCount > 0 ? "bg-[#2f6de6] text-white border-[#2f6de6]" : "bg-[#2f6de6] text-white border-[#2f6de6]"}`}
+                                    className={`px-4 h-8 rounded-full text-[12px] font-semibold border transition-all flex items-center gap-1.5 ${activeFilterCount > 0 ? "bg-brand-gradient text-white border-[#2f6de6]" : "bg-brand-gradient text-white border-[#2f6de6]"}`}
                                 >
                                     <SlidersHorizontal className="w-3.5 h-3.5" />
                                     Tous les filtres

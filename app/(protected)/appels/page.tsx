@@ -99,7 +99,7 @@ export default function Page() {
                 title="Appels vidéo"
                 description="Entretiens et sessions de coaching en visioconférence (GORIYA Call)"
                 actions={
-                    <Button className="gap-1.5 bg-blue-600 hover:bg-blue-700" onClick={() => setCreateOpen(true)}>
+                    <Button className="gap-1.5 bg-brand-gradient hover:bg-brand-gradient-hover" onClick={() => setCreateOpen(true)}>
                         <Plus className="h-4 w-4" />Planifier un appel
                     </Button>
                 }
@@ -135,7 +135,7 @@ export default function Page() {
                                     <div className="flex items-center gap-2">
                                         <Button
                                             size="sm"
-                                            className="h-9 gap-1.5 bg-blue-600 text-xs hover:bg-blue-700"
+                                            className="h-9 gap-1.5 bg-brand-gradient text-xs hover:bg-brand-gradient-hover"
                                             disabled={joiningId === callSession.id}
                                             onClick={() => handleJoin(callSession)}
                                         >
@@ -163,7 +163,7 @@ export default function Page() {
                             <Input type="datetime-local" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)} />
                         </div>
                         <DialogFooter>
-                            <Button disabled={creating || !title.trim()} onClick={handleCreate} className="w-full bg-blue-600 hover:bg-blue-700">
+                            <Button disabled={creating || !title.trim()} onClick={handleCreate} className="w-full bg-brand-gradient hover:bg-brand-gradient-hover">
                                 {creating ? "Création..." : "Planifier"}
                             </Button>
                         </DialogFooter>

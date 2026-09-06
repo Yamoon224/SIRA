@@ -149,7 +149,7 @@ export default function CreerPortfolioDetailPage() {
                                     <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">JavaScript</label>
                                     <div className="flex items-center gap-2">
                                         <div className="flex-1 bg-gray-200 dark:bg-muted rounded-full h-2">
-                                            <div className="bg-blue-500 h-2 rounded-full" style={{ width: "90%" }} />
+                                            <div className="bg-brand-gradient h-2 rounded-full" style={{ width: "90%" }} />
                                         </div>
                                         <span className="text-sm text-gray-600 dark:text-muted-foreground">90%</span>
                                     </div>
@@ -158,7 +158,7 @@ export default function CreerPortfolioDetailPage() {
                                     <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">React</label>
                                     <div className="flex items-center gap-2">
                                         <div className="flex-1 bg-gray-200 dark:bg-muted rounded-full h-2">
-                                            <div className="bg-blue-500 h-2 rounded-full" style={{ width: "85%" }} />
+                                            <div className="bg-brand-gradient h-2 rounded-full" style={{ width: "85%" }} />
                                         </div>
                                         <span className="text-sm text-gray-600 dark:text-muted-foreground">85%</span>
                                     </div>
@@ -167,7 +167,7 @@ export default function CreerPortfolioDetailPage() {
                                     <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">Python</label>
                                     <div className="flex items-center gap-2">
                                         <div className="flex-1 bg-gray-200 dark:bg-muted rounded-full h-2">
-                                            <div className="bg-blue-500 h-2 rounded-full" style={{ width: "75%" }} />
+                                            <div className="bg-brand-gradient h-2 rounded-full" style={{ width: "75%" }} />
                                         </div>
                                         <span className="text-sm text-gray-600 dark:text-muted-foreground">75%</span>
                                     </div>
@@ -176,7 +176,7 @@ export default function CreerPortfolioDetailPage() {
                                     <label className="block text-sm font-medium text-gray-700 dark:text-foreground mb-1">TypeScript</label>
                                     <div className="flex items-center gap-2">
                                         <div className="flex-1 bg-gray-200 dark:bg-muted rounded-full h-2">
-                                            <div className="bg-blue-500 h-2 rounded-full" style={{ width: "80%" }} />
+                                            <div className="bg-brand-gradient h-2 rounded-full" style={{ width: "80%" }} />
                                         </div>
                                         <span className="text-sm text-gray-600 dark:text-muted-foreground">80%</span>
                                     </div>
@@ -307,7 +307,7 @@ export default function CreerPortfolioDetailPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Avatar className="w-6 h-6 bg-blue-500">
+                                <Avatar className="w-6 h-6 bg-brand-gradient">
                                     <AvatarFallback className="text-white text-xs font-bold">G</AvatarFallback>
                                 </Avatar>
                                 Conseils de Goriya

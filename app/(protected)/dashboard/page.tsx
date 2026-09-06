@@ -149,7 +149,7 @@ export default function Page() {
                                     <p className="text-[11px] text-[#9aa3b2] dark:text-muted-foreground mb-1">{t("dashboard.savedJobs")}</p>
                                     <p className="text-[28px] font-bold text-[#1b2331] dark:text-foreground">{dashStats?.savedJobs ?? "-"}</p>
                                 </div>
-                                <div className="w-10 h-10 bg-[#2f6de6] rounded-full flex items-center justify-center">
+                                <div className="w-10 h-10 bg-brand-gradient rounded-full flex items-center justify-center">
                                     <span className="text-white text-[14px] font-bold">★</span>
                                 </div>
                             </div>

@@ -118,7 +118,7 @@ export function Sidebar() {
                 className={cn(
                     "flex items-center space-x-3 px-3 py-2 rounded-full text-sm font-medium transition-colors",
                     pathname === item.href
-                        ? "bg-blue-700 text-white border border-blue-700"
+                        ? "bg-brand-gradient text-white border border-transparent"
                         : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
                 )}
             >

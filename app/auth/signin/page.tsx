@@ -411,7 +411,7 @@ export default function Page() {
 
                             <Button
                                 type="submit"
-                                className="w-full rounded-full bg-blue-900 hover:bg-blue-950 py-3 transition-colors"
+                                className="w-full rounded-full bg-brand-gradient hover:bg-brand-gradient-hover py-3 transition-colors"
                                 disabled={isLoading || (activeTab === "signup" && !formData.acceptTerms)}
                             >
                                 {isLoading ? (

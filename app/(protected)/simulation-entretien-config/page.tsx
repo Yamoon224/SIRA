@@ -39,7 +39,7 @@ export default function SimulationEntretienConfigPage() {
           <CardContent className="p-6 sm:p-8">
             {/* Goriya Avatar */}
             <div className="text-center mb-6 sm:mb-8">
-              <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-brand-gradient rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-white text-2xl font-bold">G</span>
               </div>
               <h2 className="text-lg sm:text-xl font-semibold mb-2 text-card-foreground">Simulation d'entretien IA</h2>

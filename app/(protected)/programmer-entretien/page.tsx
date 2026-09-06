@@ -171,7 +171,7 @@ export default function ProgrammerEntretienPage() {
 
           {/* Summary Section */}
           <div className="lg:col-span-1">
-            <Card className="bg-blue-500 text-white">
+            <Card className="bg-brand-gradient text-white">
               <CardContent className="p-6">
                 <h2 className="text-lg font-semibold mb-4">Résumé de ta demande</h2>
                 <div className="space-y-4">

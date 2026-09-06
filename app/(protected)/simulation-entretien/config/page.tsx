@@ -41,7 +41,7 @@ function SimulationConfigContent() {
                         </div>
 
                         <div className="text-center mb-6">
-                            <Avatar className="w-16 h-16 bg-blue-500 mx-auto mb-4">
+                            <Avatar className="w-16 h-16 bg-brand-gradient mx-auto mb-4">
                                 <AvatarFallback className="text-white text-2xl font-bold">G</AvatarFallback>
                             </Avatar>
                             <h2 className="text-xl font-semibold mb-2">Simulation d'entretien IA</h2>

@@ -45,7 +45,7 @@ export default function ArticlePage() {
                 ) : (
                     <article className="mt-6">
                         {article.coverImage && (
-                            <div className="w-full h-56 sm:h-72 rounded-xl overflow-hidden bg-gradient-to-br from-[#2f6de6] to-[#1539be] mb-6">
+                            <div className="w-full h-56 sm:h-72 rounded-xl overflow-hidden bg-brand-gradient mb-6">
                                 <img src={article.coverImage} alt={article.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
                             </div>
                         )}

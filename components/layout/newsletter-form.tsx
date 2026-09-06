@@ -46,7 +46,7 @@ export function NewsletterForm() {
             <Button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-full bg-[#2f6de6] hover:bg-[#2458ba]"
+                className="w-full rounded-full bg-brand-gradient hover:bg-brand-gradient-hover"
             >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "S'abonner"}
             </Button>

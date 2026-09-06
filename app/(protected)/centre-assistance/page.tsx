@@ -166,7 +166,7 @@ export default function Page() {
                         {/* ── TAB: Centre d'assistance ── */}
                         <TabsContent value="assistance" className="mt-0">
                             {/* Hero */}
-                            <div className="bg-gradient-to-r from-[#1d4db8] to-[#2566d9] rounded-2xl p-6 text-white mb-8">
+                            <div className="bg-brand-gradient rounded-2xl p-6 text-white mb-8">
                                 <h2 className="text-3xl font-bold mb-2">
                                     {t("help.heroTitle")}
                                 </h2>
@@ -364,7 +364,7 @@ export default function Page() {
                                                 >
                                                     {isPopular && (
                                                         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                                                            <span className="rounded-full bg-[#2f6de6] px-3 py-1 text-xs font-semibold text-white">
+                                                            <span className="rounded-full bg-brand-gradient px-3 py-1 text-xs font-semibold text-white">
                                                                 Choix populaire
                                                             </span>
                                                         </div>
@@ -429,7 +429,7 @@ export default function Page() {
                                                         onClick={() => handleSelectPlan(plan)}
                                                         disabled={subscribing === plan.id}
                                                         className={`mt-auto w-full rounded-full font-semibold ${isPopular || isPaid
-                                                            ? "bg-[#2f6de6] text-white hover:bg-[#2157d3]"
+                                                            ? "bg-brand-gradient text-white hover:bg-brand-gradient-hover"
                                                             : "bg-[#f4f7ff] text-[#1b2331] hover:bg-[#e8edf6] dark:bg-muted dark:text-foreground dark:hover:bg-muted"
                                                             }`}
                                                     >

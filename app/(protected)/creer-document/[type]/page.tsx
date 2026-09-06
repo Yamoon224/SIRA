@@ -194,7 +194,7 @@ export default function Page() {
           <Button
             onClick={generateDocument}
             disabled={isGenerating}
-            className="mt-5 lg:mt-auto h-9 w-full sm:w-fit rounded-full bg-[#1d57d4] px-11 text-[12px] font-semibold text-white hover:bg-[#1949b2]"
+            className="mt-5 lg:mt-auto h-9 w-full sm:w-fit rounded-full bg-brand-gradient px-11 text-[12px] font-semibold text-white hover:bg-brand-gradient-hover"
           >
             {isGenerating ? "Génération..." : "Générer le document"}
           </Button>

@@ -61,7 +61,7 @@ function CatalogueTab({ enrolledCourseIds, onEnroll }: { enrolledCourseIds: Set<
                                 size="sm"
                                 disabled={isEnrolled || enrolling === course.id}
                                 onClick={() => handleEnroll(course.id)}
-                                className="mt-3 w-full gap-1.5 bg-blue-600 text-xs hover:bg-blue-700 disabled:bg-green-600"
+                                className="mt-3 w-full gap-1.5 bg-brand-gradient text-xs hover:bg-brand-gradient-hover disabled:bg-green-600"
                             >
                                 {isEnrolled ? "Déjà inscrit" : <><Plus className="h-3.5 w-3.5" />{enrolling === course.id ? "Inscription..." : "S'inscrire"}</>}
                             </Button>

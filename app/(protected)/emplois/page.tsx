@@ -150,7 +150,7 @@ export default function EmploisPage() {
                                 <label key={item} className="flex items-center gap-2 cursor-pointer">
                                     <div
                                         onClick={() => toggleFilter(item, selectedJobTypes, setSelectedJobTypes)}
-                                        className={`w-3.5 h-3.5 rounded border flex-shrink-0 cursor-pointer ${selectedJobTypes.includes(item) ? "bg-[#2f6de6] border-[#2f6de6]" : "border-[#c8d0df] dark:border-border bg-white dark:bg-card"}`}
+                                        className={`w-3.5 h-3.5 rounded border flex-shrink-0 cursor-pointer ${selectedJobTypes.includes(item) ? "bg-brand-gradient border-[#2f6de6]" : "border-[#c8d0df] dark:border-border bg-white dark:bg-card"}`}
                                     />
                                     <span className="text-[11px] text-[#4e5a6e] dark:text-foreground">{item}</span>
                                 </label>
@@ -167,7 +167,7 @@ export default function EmploisPage() {
                                 <label key={item} className="flex items-center gap-2 cursor-pointer">
                                     <div
                                         onClick={() => toggleFilter(item, selectedCategories, setSelectedCategories)}
-                                        className={`w-3.5 h-3.5 rounded border flex-shrink-0 cursor-pointer ${selectedCategories.includes(item) ? "bg-[#2f6de6] border-[#2f6de6]" : "border-[#c8d0df] dark:border-border bg-white dark:bg-card"}`}
+                                        className={`w-3.5 h-3.5 rounded border flex-shrink-0 cursor-pointer ${selectedCategories.includes(item) ? "bg-brand-gradient border-[#2f6de6]" : "border-[#c8d0df] dark:border-border bg-white dark:bg-card"}`}
                                     />
                                     <span className="text-[11px] text-[#4e5a6e] dark:text-foreground">{item}</span>
                                 </label>
@@ -184,7 +184,7 @@ export default function EmploisPage() {
                                 <label key={item} className="flex items-center gap-2 cursor-pointer">
                                     <div
                                         onClick={() => toggleFilter(item, selectedLevels, setSelectedLevels)}
-                                        className={`w-3.5 h-3.5 rounded border flex-shrink-0 cursor-pointer ${selectedLevels.includes(item) ? "bg-[#2f6de6] border-[#2f6de6]" : "border-[#c8d0df] dark:border-border bg-white dark:bg-card"}`}
+                                        className={`w-3.5 h-3.5 rounded border flex-shrink-0 cursor-pointer ${selectedLevels.includes(item) ? "bg-brand-gradient border-[#2f6de6]" : "border-[#c8d0df] dark:border-border bg-white dark:bg-card"}`}
                                     />
                                     <span className="text-[11px] text-[#4e5a6e] dark:text-foreground">{item}</span>
                                 </label>

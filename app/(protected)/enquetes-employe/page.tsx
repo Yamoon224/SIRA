@@ -122,7 +122,7 @@ export default function Page() {
                                             </div>
                                         ))}
                                     </div>
-                                    <Button disabled={submitting === survey.id} onClick={() => handleSubmit(survey)} className="bg-blue-600 hover:bg-blue-700">
+                                    <Button disabled={submitting === survey.id} onClick={() => handleSubmit(survey)} className="bg-brand-gradient hover:bg-brand-gradient-hover">
                                         {submitting === survey.id ? "Envoi..." : "Envoyer ma réponse"}
                                     </Button>
                                 </>

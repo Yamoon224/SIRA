@@ -178,7 +178,7 @@ function SimulationEntretienContent() {
                             <RotateCcw className="w-4 h-4" />
                             Recommencer
                         </Button>
-                        <Button className="flex items-center gap-2 bg-[#2f6de6] hover:bg-[#2157d3] text-white" onClick={handleShowFeedback}>
+                        <Button className="flex items-center gap-2 bg-brand-gradient hover:bg-brand-gradient-hover text-white" onClick={handleShowFeedback}>
                             <Star className="w-4 h-4" />
                             Voir le Feedback
                         </Button>
@@ -201,7 +201,7 @@ function SimulationEntretienContent() {
                         </button>
                         <div className="px-8 pt-8 pb-6">
                             <div className="flex flex-col items-center mb-6">
-                                <div className="w-14 h-14 bg-[#2f6de6] rounded-full flex items-center justify-center mb-2">
+                                <div className="w-14 h-14 bg-brand-gradient rounded-full flex items-center justify-center mb-2">
                                     <span className="text-white text-2xl font-bold">g</span>
                                 </div>
                                 <h2 className="text-lg font-bold text-[#1b2331] dark:text-foreground mb-1">Feedback de ton entretien</h2>
@@ -253,7 +253,7 @@ function SimulationEntretienContent() {
                             </div>
                             <Button
                                 onClick={handleRestart}
-                                className="w-full h-10 rounded-full bg-[#2f6de6] hover:bg-[#2157d3] text-white text-[15px] font-semibold"
+                                className="w-full h-10 rounded-full bg-brand-gradient hover:bg-brand-gradient-hover text-white text-[15px] font-semibold"
                             >
                                 Nouvelle simulation
                             </Button>

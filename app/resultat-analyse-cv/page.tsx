@@ -41,7 +41,7 @@ export default function ResultatAnalyseCVPage() {
           <h1 className="text-2xl font-bold text-[#1b2331] dark:text-foreground">Aucun résultat trouvé</h1>
           <p className="mt-2 text-sm text-[#7f8796] dark:text-muted-foreground">Téléverse ton CV depuis la page d'accueil pour lancer l'analyse.</p>
           <Link href="/">
-            <Button className="mt-5 rounded-full bg-[#2f6de6] hover:bg-[#285dcc]">Retour à l'accueil</Button>
+            <Button className="mt-5 rounded-full bg-brand-gradient hover:bg-brand-gradient-hover">Retour à l'accueil</Button>
           </Link>
         </div>
       </div>
@@ -150,7 +150,7 @@ export default function ResultatAnalyseCVPage() {
               </Button>
             </Link>
             <Link href="/explorer-emplois">
-              <Button className="rounded-full bg-[#2f6de6] hover:bg-[#285dcc] w-full sm:w-auto">Postuler à un emploi</Button>
+              <Button className="rounded-full bg-brand-gradient hover:bg-brand-gradient-hover w-full sm:w-auto">Postuler à un emploi</Button>
             </Link>
           </div>
         </div>

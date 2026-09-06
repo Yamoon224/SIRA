@@ -346,7 +346,7 @@ export function ApplyWizard({ open, onOpenChange, job, onApplied }: Props) {
 
                     {etape < etapesActives.length - 1 ? (
                         <Button
-                            className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] text-[12px]"
+                            className="rounded-full bg-brand-gradient hover:bg-brand-gradient-hover text-[12px]"
                             disabled={chargement}
                             onClick={suivant}
                         >
@@ -354,7 +354,7 @@ export function ApplyWizard({ open, onOpenChange, job, onApplied }: Props) {
                         </Button>
                     ) : (
                         <Button
-                            className="rounded-full bg-[#2f6de6] hover:bg-[#2458ba] text-[12px]"
+                            className="rounded-full bg-brand-gradient hover:bg-brand-gradient-hover text-[12px]"
                             disabled={envoi}
                             onClick={envoyer}
                         >
@@ -378,7 +378,7 @@ function Stepper({ etapes, courante }: { etapes: readonly string[]; courante: nu
                     <li key={etape} className="flex flex-1 flex-col gap-1.5">
                         <span
                             className={`h-1 rounded-full ${
-                                faite || active ? "bg-[#2f6de6] dark:bg-primary" : "bg-[#e8eef6] dark:bg-muted"
+                                faite || active ? "bg-brand-gradient" : "bg-[#e8eef6] dark:bg-muted"
                             }`}
                         />
                         <span

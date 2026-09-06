@@ -36,7 +36,7 @@ export function SubscriptionGate({ children, featureLabel = "cette fonctionnalit
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                     <Link href="/auth/plan">
-                        <Button className="rounded-full bg-[#2f6de6] hover:bg-[#2157d3] text-white px-6 gap-2">
+                        <Button className="rounded-full bg-brand-gradient hover:bg-brand-gradient-hover text-white px-6 gap-2">
                             <Sparkles className="h-4 w-4" />
                             Voir les plans
                         </Button>

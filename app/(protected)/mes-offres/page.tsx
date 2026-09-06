@@ -26,12 +26,16 @@ const STATUS_LABEL: Record<string, { label: string; className: string }> = {
   REFUSEE: { label: "Refusé", className: "bg-red-100 text-red-800" },
 }
 
+// Les `value` partent au backend comme filtre `status` : ce sont donc les
+// valeurs de App\Enums\CandidatureStatus, pas des libellés. Les onglets
+// envoyaient ACCEPTEE/REFUSEE, absents de l'enum — le filtre ne renvoyait
+// jamais rien sur ces deux onglets.
 const TABS = [
   { value: "all", label: "Toutes" },
   { value: "EN_ATTENTE", label: "En attente" },
   { value: "EN_COURS", label: "Entretiens" },
-  { value: "ACCEPTEE", label: "Acceptées" },
-  { value: "REFUSEE", label: "Refusées" },
+  { value: "APPROUVEE", label: "Acceptées" },
+  { value: "REJETEE", label: "Refusées" },
 ]
 
 export default function MyApplicationsPage() {

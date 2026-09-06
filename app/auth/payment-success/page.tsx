@@ -94,7 +94,7 @@ export default function PaymentSuccessPage() {
                         </div>
                         <Button
                             onClick={() => router.push("/dashboard")}
-                            className="rounded-full bg-[#2f6de6] hover:bg-[#2157d3] text-white px-8"
+                            className="rounded-full bg-brand-gradient hover:bg-brand-gradient-hover text-white px-8"
                         >
                             Accéder au tableau de bord
                         </Button>
@@ -112,7 +112,7 @@ export default function PaymentSuccessPage() {
                             <Button variant="outline" onClick={() => router.push("/auth/plan")}>
                                 Réessayer
                             </Button>
-                            <Button onClick={() => router.push("/dashboard")} className="bg-[#2f6de6] text-white">
+                            <Button onClick={() => router.push("/dashboard")} className="bg-brand-gradient text-white">
                                 Continuer sans abonnement
                             </Button>
                         </div>

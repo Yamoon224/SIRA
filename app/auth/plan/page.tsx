@@ -128,7 +128,7 @@ export default function PlanPage() {
                                 >
                                     {isPopular && (
                                         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                                            <span className="bg-[#2f6de6] text-white text-xs font-semibold px-3 py-1 rounded-full">
+                                            <span className="bg-brand-gradient text-white text-xs font-semibold px-3 py-1 rounded-full">
                                                 {t("plans.popularChoice")}
                                             </span>
                                         </div>
@@ -162,7 +162,7 @@ export default function PlanPage() {
                                         disabled={subscribing === plan.id}
                                         className={`mt-auto w-full rounded-full font-semibold ${
                                             isPaid
-                                                ? "bg-[#2f6de6] hover:bg-[#2157d3] text-white"
+                                                ? "bg-brand-gradient hover:bg-brand-gradient-hover text-white"
                                                 : "bg-white dark:bg-card hover:bg-blue-50 text-foreground border border-blue-500"
                                         }`}
                                     >

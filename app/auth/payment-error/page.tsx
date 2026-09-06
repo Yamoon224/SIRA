@@ -33,7 +33,7 @@ export default function PaymentErrorPage() {
                     </Button>
                     <Button
                         onClick={() => router.push("/dashboard")}
-                        className="bg-[#2f6de6] hover:bg-[#2157d3] text-white"
+                        className="bg-brand-gradient hover:bg-brand-gradient-hover text-white"
                     >
                         Continuer gratuitement
                     </Button>

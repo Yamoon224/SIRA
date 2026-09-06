@@ -751,7 +751,7 @@ function CreerCVContent() {
                     </div>
                 </div>
 
-                <Button onClick={handleAnalyze} className="mt-3 h-8 w-full rounded-full bg-[#2e6fe9] text-[11px] hover:bg-[#275ec6]">
+                <Button onClick={handleAnalyze} className="mt-3 h-8 w-full rounded-full bg-brand-gradient text-[11px] hover:bg-brand-gradient-hover">
                     <Sparkles className="mr-1 h-3.5 w-3.5" />
                     Analyser avec Goriya
                 </Button>
@@ -866,7 +866,7 @@ function CreerCVContent() {
                     </Button>
                     <Button
                         onClick={handleDownloadPDF}
-                        className="h-9 w-full sm:min-w-[330px] sm:w-auto rounded-full bg-[#7fa6e8] text-[12px] text-white hover:bg-[#6f96d8]"
+                        className="h-9 w-full sm:min-w-[330px] sm:w-auto rounded-full bg-brand-gradient text-[12px] text-white hover:bg-brand-gradient-hover"
                     >
                         <Download className="mr-1.5 h-3.5 w-3.5" />
                         Télécharger

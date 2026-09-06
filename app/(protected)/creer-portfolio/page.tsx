@@ -282,7 +282,7 @@ function CreerPortfolioContent() {
                         {/* Consulte de l'emploi */}
                         <div>
                             <h3 className="font-bold text-[14px] text-[#1b2331] dark:text-foreground mb-3">Consulte de l'emploi</h3>
-                            <div className="bg-gradient-to-br from-[#5b7eff] to-[#2f6de6] rounded-lg p-4 text-white space-y-2">
+                            <div className="bg-brand-gradient rounded-lg p-4 text-white space-y-2">
                                 <p className="text-[12px] font-medium">
                                     Lien de partage vers ton portfolio candidat. Tu peux
                                 </p>
@@ -305,7 +305,7 @@ function CreerPortfolioContent() {
                     <Button
                         onClick={handleSave}
                         disabled={saving}
-                        className="px-8 h-9 rounded-full bg-[#2f6de6] hover:bg-[#2157d3] text-white text-[12px] font-medium"
+                        className="px-8 h-9 rounded-full bg-brand-gradient hover:bg-brand-gradient-hover text-white text-[12px] font-medium"
                     >
                         {saving && <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />}
                         {editId ? "Mettre à jour" : "Enregistrer"}

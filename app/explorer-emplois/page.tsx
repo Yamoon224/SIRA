@@ -216,7 +216,7 @@ function ExploreJobsContent() {
                                 value={searchInput}
                                 onChange={(e) => setSearchInput(e.target.value)}
                             />
-                            <Button type="submit" className="absolute right-1 top-1/2 -translate-y-1/2 h-9 rounded-full bg-[#2f6de6] hover:bg-[#2458ba] px-6 text-[11px]">
+                            <Button type="submit" className="absolute right-1 top-1/2 -translate-y-1/2 h-9 rounded-full bg-brand-gradient hover:bg-brand-gradient-hover px-6 text-[11px]">
                                 Recherche
                             </Button>
                         </form>
@@ -232,7 +232,7 @@ function ExploreJobsContent() {
                             )
                         })}
                         <button type="button" onClick={() => setShowAllFilters(v => !v)}
-                            className={`h-7 rounded-full px-3 text-[12px] inline-flex items-center gap-1 transition-colors ${showAllFilters ? "bg-[#1d4cb9] text-white" : "bg-[#2f6de6] text-white hover:bg-[#2458ba]"}`}>
+                            className={`h-7 rounded-full px-3 text-[12px] inline-flex items-center gap-1 transition-colors ${showAllFilters ? "bg-brand-gradient text-white" : "bg-brand-gradient text-white hover:bg-brand-gradient-hover"}`}>
                             <Plus className={`w-3 h-3 transition-transform ${showAllFilters ? "rotate-45" : ""}`} /> Tous les filtres
                         </button>
                     </div>
@@ -263,7 +263,7 @@ function ExploreJobsContent() {
                                     <option key={exp} value={exp}>{EXPERIENCE_LABELS[exp] ?? exp}</option>
                                 ))}
                             </select>
-                            <Button type="button" onClick={() => { setPage(1); fetchJobs(1) }} className="h-9 rounded-full bg-[#2f6de6] hover:bg-[#2458ba] px-5 text-[12px]">
+                            <Button type="button" onClick={() => { setPage(1); fetchJobs(1) }} className="h-9 rounded-full bg-brand-gradient hover:bg-brand-gradient-hover px-5 text-[12px]">
                                 Appliquer
                             </Button>
                             {(locationFilter || typeFilter || experienceFilter) && (
@@ -351,7 +351,7 @@ function ExploreJobsContent() {
 
                 {/* Companies (populaires, ou correspondant à la recherche) */}
                 {(companies.length > 0 || searchTerm) && (
-                    <section className="mt-10 rounded-none bg-gradient-to-r from-[#4a8bf2] via-[#3970dd] to-[#2a56bf] px-4 sm:px-6 py-8 text-white relative overflow-hidden">
+                    <section className="mt-10 rounded-none bg-brand-gradient px-4 sm:px-6 py-8 text-white relative overflow-hidden">
                         <div className="absolute -left-14 bottom-2 w-36 h-36 rounded-full border-[14px] border-[#82b7ff] dark:border-primary/50 opacity-35" />
                         <h2 className="text-[18px] sm:text-[26px] font-extrabold mb-5 relative z-10">
                             {searchTerm ? `Entreprises pour « ${searchTerm} »` : "Entreprises populaires"}

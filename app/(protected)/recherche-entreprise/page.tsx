@@ -100,7 +100,7 @@ function RechercheEntrepriseContent() {
                                 className="h-10 pl-9"
                             />
                         </div>
-                        <Button disabled={searching || !companyName.trim()} onClick={handleSearch} className="h-10 gap-1.5 bg-blue-600 hover:bg-blue-700">
+                        <Button disabled={searching || !companyName.trim()} onClick={handleSearch} className="h-10 gap-1.5 bg-brand-gradient hover:bg-brand-gradient-hover">
                             <Sparkles className="h-4 w-4" />{searching ? "Recherche..." : "Rechercher"}
                         </Button>
                     </div>

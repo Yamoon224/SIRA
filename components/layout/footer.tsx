@@ -39,7 +39,7 @@ export function Footer() {
                     <p className="text-xs sm:text-sm text-[#6f7887] dark:text-muted-foreground">{new Date().getFullYear()} © Goriya. Tous droits réservés.</p>
                     <div className="flex items-center gap-2">
                         <Link href="/auth/signin"><Button variant="outline" className="h-8 rounded-full border-[#374153] text-[#d9e5ff] bg-transparent">Connexion</Button></Link>
-                        <Link href="https://entreprise.goriya.net"><Button className="h-8 rounded-full bg-[#2f6de6] hover:bg-[#2458ba]">Espace entreprise</Button></Link>
+                        <Link href="https://entreprise.goriya.net"><Button className="h-8 rounded-full bg-brand-gradient hover:bg-brand-gradient-hover">Espace entreprise</Button></Link>
                     </div>
                 </div>
             </div>

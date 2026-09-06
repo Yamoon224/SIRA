@@ -158,7 +158,7 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                     {mounted && isAuthenticated && (
                         <>
                             <Link href="/dashboard">
-                                <Button size="icon" className="rounded-full bg-[#2f6de6] text-white hover:bg-[#2458ba]" aria-label={t("nav.dashboard")} title={t("nav.dashboard")}>
+                                <Button size="icon" className="rounded-full bg-brand-gradient text-white hover:bg-brand-gradient-hover" aria-label={t("nav.dashboard")} title={t("nav.dashboard")}>
                                     <LayoutDashboard className="w-4 h-4" />
                                 </Button>
                             </Link>
@@ -227,7 +227,7 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                 </Button>
                             </Link>
                             <Link href="https://entreprise.goriya.net">
-                                <Button size="sm" className="sm:text-sm w-9 px-0 sm:w-auto sm:px-3 rounded-full bg-[#2f6de6] hover:bg-[#2458ba]" aria-label={t("nav.companySpace")}>
+                                <Button size="sm" className="sm:text-sm w-9 px-0 sm:w-auto sm:px-3 rounded-full bg-brand-gradient hover:bg-brand-gradient-hover" aria-label={t("nav.companySpace")}>
                                     <Briefcase className="w-4 h-4 sm:hidden" />
                                     <span className="hidden sm:inline">{t("nav.companySpace")}</span>
                                 </Button>

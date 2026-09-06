@@ -94,7 +94,7 @@ function FeedTab() {
                 <CardContent className="space-y-2 p-4">
                     <Textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="Partagez une actualité avec votre réseau..." className="min-h-[70px]" />
                     <div className="flex justify-end">
-                        <Button size="sm" disabled={posting || !content.trim()} onClick={handlePost} className="gap-1.5 bg-blue-600 hover:bg-blue-700">
+                        <Button size="sm" disabled={posting || !content.trim()} onClick={handlePost} className="gap-1.5 bg-brand-gradient hover:bg-brand-gradient-hover">
                             <Send className="h-3.5 w-3.5" />Publier
                         </Button>
                     </div>
@@ -199,7 +199,7 @@ function CommunitiesTab() {
     return (
         <div className="space-y-4">
             <div className="flex justify-end">
-                <Button size="sm" className="gap-1.5 bg-blue-600 hover:bg-blue-700" onClick={() => setCreateOpen(true)}>
+                <Button size="sm" className="gap-1.5 bg-brand-gradient hover:bg-brand-gradient-hover" onClick={() => setCreateOpen(true)}>
                     <Plus className="h-3.5 w-3.5" />Créer une communauté
                 </Button>
             </div>
@@ -239,7 +239,7 @@ function CommunitiesTab() {
                         </Select>
                         <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (optionnel)" className="min-h-[60px]" />
                         <DialogFooter>
-                            <Button disabled={creating || !name.trim()} onClick={handleCreate} className="w-full bg-blue-600 hover:bg-blue-700">
+                            <Button disabled={creating || !name.trim()} onClick={handleCreate} className="w-full bg-brand-gradient hover:bg-brand-gradient-hover">
                                 {creating ? "Création..." : "Créer"}
                             </Button>
                         </DialogFooter>
@@ -262,7 +262,7 @@ function CommunityCard({ community, joined, onToggle }: { community: ICommunity;
                             <span className="flex items-center gap-1 text-xs text-muted-foreground"><Users className="h-3 w-3" />{community.membersCount}</span>
                         </div>
                     </div>
-                    <Button size="sm" variant={joined ? "outline" : "default"} className={joined ? "h-8 text-xs" : "h-8 bg-blue-600 text-xs hover:bg-blue-700"} onClick={onToggle}>
+                    <Button size="sm" variant={joined ? "outline" : "default"} className={joined ? "h-8 text-xs" : "h-8 bg-brand-gradient text-xs hover:bg-brand-gradient-hover"} onClick={onToggle}>
                         {joined ? "Quitter" : "Rejoindre"}
                     </Button>
                 </div>
@@ -382,7 +382,7 @@ function UserRow({ connectUser, following, onToggle }: { connectUser: IConnectUs
                     {connectUser.companyName && <p className="text-xs text-muted-foreground">{connectUser.companyName}</p>}
                 </div>
             </div>
-            <Button size="sm" variant={following ? "outline" : "default"} className={following ? "h-8 gap-1 text-xs" : "h-8 gap-1 bg-blue-600 text-xs hover:bg-blue-700"} onClick={onToggle}>
+            <Button size="sm" variant={following ? "outline" : "default"} className={following ? "h-8 gap-1 text-xs" : "h-8 gap-1 bg-brand-gradient text-xs hover:bg-brand-gradient-hover"} onClick={onToggle}>
                 {following ? <UserMinus className="h-3.5 w-3.5" /> : <UserPlus className="h-3.5 w-3.5" />}
                 {following ? "Ne plus suivre" : "Suivre"}
             </Button>

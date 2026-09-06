@@ -148,7 +148,7 @@ export default function ExploreCompaniesPage() {
                                         <p className="mt-3 text-[10px] font-semibold text-[#2f5099] dark:text-primary">{sector.name}</p>
                                         <p className="text-[9px] text-[#8a95a8] dark:text-muted-foreground">{sector.count} entreprise{sector.count > 1 ? "s" : ""}</p>
                                     </div>
-                                    <div className={`h-7 text-white text-[11px] font-semibold flex items-center justify-center ${isActive ? "bg-[#1539be]" : "bg-gradient-to-r from-[#2f81f1] to-[#1539be]"}`}>
+                                    <div className={`h-7 text-white text-[11px] font-semibold flex items-center justify-center ${isActive ? "bg-brand-gradient" : "bg-brand-gradient"}`}>
                                         {isActive ? "Masquer ▲" : "Découvrir"}
                                     </div>
                                 </button>
