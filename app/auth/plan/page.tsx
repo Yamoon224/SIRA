@@ -138,8 +138,13 @@ export default function PlanPage() {
                                         <div className="mb-2">
                                             {isPaid ? (
                                                 <Zap className="w-8 h-8 text-[#2f6de6] dark:text-primary" />
-                                            ) : (
-                                                <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-muted flex items-center justify-center text-gray-500 dark:text-muted-foreground text-sm font-bold">G</div>
+                                            ) : (   
+                                                <img
+                                                                    src="/goriya-symbol.png"
+                                                                    alt=""
+                                                                    aria-hidden
+                                                                    className="h-8 w-8 object-contain"
+                                                                />
                                             )}
                                         </div>
                                         <h3 className="text-xl font-bold text-foreground">{plan.name}</h3>
