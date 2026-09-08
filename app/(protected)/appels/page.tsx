@@ -113,17 +113,26 @@ export default function Page() {
                     </CardContent>
                 </Card>
             ) : (
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                     {sessions.map((callSession) => (
-                        <div key={callSession.id} className="rounded-2xl border border-border bg-white dark:bg-card px-4 py-4">
+                        <div
+                            key={callSession.id}
+                            className="rounded-2xl border border-border bg-white dark:bg-card px-4 py-4"
+                        >
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <p className="text-sm font-semibold text-foreground">{callSession.title}</p>
-                                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_META[callSession.status].className}`}>
+                                        <p className="text-sm font-semibold text-foreground">
+                                            {callSession.title}
+                                        </p>
+
+                                        <span
+                                            className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_META[callSession.status].className}`}
+                                        >
                                             {STATUS_META[callSession.status].label}
                                         </span>
                                     </div>
+
                                     {callSession.scheduledAt && (
                                         <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
                                             <Calendar className="h-3.5 w-3.5" />
@@ -131,6 +140,7 @@ export default function Page() {
                                         </p>
                                     )}
                                 </div>
+
                                 {callSession.status !== "ENDED" && (
                                     <div className="flex items-center gap-2">
                                         <Button
@@ -140,10 +150,19 @@ export default function Page() {
                                             onClick={() => handleJoin(callSession)}
                                         >
                                             <LogIn className="h-3.5 w-3.5" />
-                                            {joiningId === callSession.id ? "Connexion..." : "Rejoindre"}
+                                            {joiningId === callSession.id
+                                                ? "Connexion..."
+                                                : "Rejoindre"}
                                         </Button>
-                                        <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs text-red-500 hover:bg-red-50" onClick={() => handleEnd(callSession)}>
-                                            <PhoneOff className="h-3.5 w-3.5" />Clôturer
+
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="h-9 gap-1.5 text-xs text-red-500 hover:bg-red-50"
+                                            onClick={() => handleEnd(callSession)}
+                                        >
+                                            <PhoneOff className="h-3.5 w-3.5" />
+                                            Clôturer
                                         </Button>
                                     </div>
                                 )}
