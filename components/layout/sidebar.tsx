@@ -29,6 +29,7 @@ import {
     ClipboardList,
     Video,
     ChevronDown,
+    Plus, Minus,
     type LucideIcon,
 } from "lucide-react"
 
@@ -158,14 +159,19 @@ export function Sidebar() {
                                 onClick={() => toggle(section.labelKey as TranslationKey)}
                                 aria-expanded={isOpen}
                                 className={cn(
-                                    "flex w-full items-center justify-between px-3 py-2 rounded-full text-xs font-semibold capitalize tracking-wider transition-colors",
-                                    hasActive ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+                                    "flex w-full items-center justify-between rounded-full px-3 py-2 text-xs font-semibold capitalize tracking-wider transition-colors",
+                                    hasActive
+                                        ? "text-foreground"
+                                        : "text-muted-foreground hover:text-foreground",
                                 )}
                             >
                                 <span className="truncate">{t(section.labelKey)}</span>
-                                <ChevronDown
-                                    className={cn("w-4 h-4 flex-shrink-0 transition-transform", isOpen && "rotate-180")}
-                                />
+
+                                {isOpen ? (
+                                    <Minus className="h-4 w-4 flex-shrink-0" />
+                                ) : (
+                                    <Plus className="h-4 w-4 flex-shrink-0" />
+                                )}
                             </button>
                             {/* Filet vertical derrière les sous-entrées, comme la
                                 sidebar de l'app entreprise. */}
