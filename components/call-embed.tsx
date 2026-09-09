@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react"
 import { X } from "lucide-react"
+import { AppLogo } from "./app-logo"
 import { Button } from "@/components/ui/button"
 
 const LUNION_MEET_ORIGIN = "https://meet.lunion-lab.com"
@@ -45,11 +46,26 @@ export function CallEmbed({ token, url, room, name, title, onClose }: CallEmbedP
 
     return (
         <div className="fixed inset-0 z-50 flex flex-col bg-black">
-            <div className="flex items-center justify-between bg-brand-gradient hover:bg-brand-gradient-hover px-4 py-2.5">
+            {/* <div className="flex items-center justify-between bg-brand-gradient hover:bg-brand-gradient-hover px-4 py-2.5">
                 <p className="text-sm font-medium text-white">{title}</p>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-red hover:bg-red/10" onClick={onClose}>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white/10" onClick={onClose}>
                     <X className="h-4 w-4" />
                 </Button>   
+            </div> */}
+            <div className="flex items-center justify-between bg-brand-gradient hover:bg-brand-gradient-hover px-4 py-2.5">
+                <div className="flex items-center gap-2">
+                    <AppLogo className="h-5 w-5" />
+                    <p className="text-sm font-medium text-white">{title}</p>
+                </div>
+
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-white hover:bg-white/10"
+                    onClick={onClose}
+                >
+                    <X className="h-4 w-4" />
+                </Button>
             </div>
             <iframe
                 ref={iframeRef}
