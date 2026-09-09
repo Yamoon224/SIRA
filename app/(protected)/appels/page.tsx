@@ -97,7 +97,7 @@ export default function Page() {
         <div className="space-y-4">
             <PageHeader
                 title="GORIYA Meet"
-                description="Entretiens et sessions de coaching en visioconférence (GORIYA Call)"
+                description="Entretiens et sessions de coaching en visioconférence (GORIYA Meet)"
                 actions={
                     <Button className="gap-1.5 bg-brand-gradient hover:bg-brand-gradient-hover" onClick={() => setCreateOpen(true)}>
                         <Plus className="h-4 w-4" />Planifier un appel
