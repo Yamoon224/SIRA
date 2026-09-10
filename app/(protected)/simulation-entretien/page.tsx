@@ -369,40 +369,42 @@ function SimulationEntretienContent() {
 
     return (
         <div className="p-0 sm:p-2">
+            {/* Titre seul dans l'en-tête : sur une ligne, souligné par le filet.
+                Les indicateurs passent dessous, sinon ils repoussaient le titre sur
+                plusieurs lignes. */}
             <PageHeader
-                title="Simulation d'Entretien avec Goriya"
+                title={<span className="sm:whitespace-nowrap">Simulation d'Entretien avec Goriya</span>}
                 description={[config.poste, config.entreprise].filter(Boolean).join(" · ") || undefined}
-                actions={
-                    <>
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground">
-                            <ModeIcon className="h-3.5 w-3.5" />
-                            {config.mode === "video" ? "Appel vidéo" : "Chat en direct"}
-                        </span>
-                        <span
-                            className={cn(
-                                "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium tabular-nums",
-                                remaining <= 60 && !finished ? "border-red-300 text-red-600" : "border-border text-foreground",
-                            )}
-                            aria-label="Temps restant"
-                        >
-                            <Clock className="h-3.5 w-3.5" />
-                            {formatRemaining(remaining)}
-                        </span>
-                        <Button variant="ghost" size="sm" onClick={() => router.push("/simulation-entretien-config")} className="gap-1.5">
-                            <Settings2 className="h-4 w-4" />
-                            Configurer
-                        </Button>
-                        <Button variant="outline" className="flex items-center gap-2 bg-white dark:bg-card text-[#1b2331] dark:text-foreground border-[#d8deeb] dark:border-border hover:bg-[#f4f5f7] dark:hover:bg-muted" onClick={handleRestart}>
-                            <RotateCcw className="w-4 h-4" />
-                            Recommencer
-                        </Button>
-                        <Button className="flex items-center gap-2 bg-brand-gradient hover:bg-brand-gradient-hover text-white" onClick={handleShowFeedback}>
-                            <Star className="w-4 h-4" />
-                            Voir le Feedback
-                        </Button>
-                    </>
-                }
             />
+
+            <div className="mb-6 flex flex-wrap items-center justify-end gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground">
+                    <ModeIcon className="h-3.5 w-3.5" />
+                    {config.mode === "video" ? "Appel vidéo" : "Chat en direct"}
+                </span>
+                <span
+                    className={cn(
+                        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium tabular-nums",
+                        remaining <= 60 && !finished ? "border-red-300 text-red-600" : "border-border text-foreground",
+                    )}
+                    aria-label="Temps restant"
+                >
+                    <Clock className="h-3.5 w-3.5" />
+                    {formatRemaining(remaining)}
+                </span>
+                <Button variant="ghost" size="sm" onClick={() => router.push("/simulation-entretien-config")} className="gap-1.5">
+                    <Settings2 className="h-4 w-4" />
+                    Configurer
+                </Button>
+                <Button variant="outline" className="flex items-center gap-2 bg-white dark:bg-card text-[#1b2331] dark:text-foreground border-[#d8deeb] dark:border-border hover:bg-[#f4f5f7] dark:hover:bg-muted" onClick={handleRestart}>
+                    <RotateCcw className="w-4 h-4" />
+                    Recommencer
+                </Button>
+                <Button className="flex items-center gap-2 bg-brand-gradient hover:bg-brand-gradient-hover text-white" onClick={handleShowFeedback}>
+                    <Star className="w-4 h-4" />
+                    Voir le Feedback
+                </Button>
+            </div>
 
             <div className="mx-auto flex max-w-3xl justify-center">
                 {config.mode === "video" ? (

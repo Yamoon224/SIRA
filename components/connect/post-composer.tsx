@@ -130,6 +130,8 @@ export function PostComposer({ onPublished }: { onPublished: (post: IPost) => vo
                         <AvatarImage src={user?.avatar ? formatFileUrl(user.avatar) : undefined} />
                         <AvatarFallback>{initials(user?.name)}</AvatarFallback>
                     </Avatar>
+                    {/* Même arrondi replié ou déplié : un `rounded-full` sur un textarea
+                        de plusieurs lignes le déformait en ellipse jusqu'au focus. */}
                     <Textarea
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
@@ -137,8 +139,8 @@ export function PostComposer({ onPublished }: { onPublished: (post: IPost) => vo
                         placeholder="Commencer un post…"
                         aria-label="Contenu de la publication"
                         className={cn(
-                            "resize-none rounded-2xl text-sm transition-[min-height]",
-                            expanded ? "min-h-[110px]" : "min-h-[48px] rounded-full py-3",
+                            "resize-none rounded-2xl px-4 py-3 text-sm transition-[min-height]",
+                            expanded ? "min-h-[110px]" : "min-h-[48px]",
                         )}
                     />
                 </div>

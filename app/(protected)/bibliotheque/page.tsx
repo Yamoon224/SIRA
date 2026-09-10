@@ -313,7 +313,7 @@ export default function BibliothequePage() {
                                         <p className="text-[11px] text-[#7f8796] dark:text-muted-foreground mb-4">{action.description}</p>
                                         <button
                                             onClick={() => router.push(action.href)}
-                                            className="h-8 px-4 rounded-full bg-[#1b2331] text-white text-[11px] font-medium hover:bg-[#2d3e4f]"
+                                            className="h-8 px-4 rounded-full bg-brand-gradient text-white text-[11px] font-medium hover:bg-brand-gradient-hover"
                                         >
                                             {action.action}
                                         </button>
@@ -324,40 +324,48 @@ export default function BibliothequePage() {
                     </div>
                 </div>
 
-                {/* Tabs & Search */}
-                <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                    <div role="tablist" aria-label="Filtrer la bibliothèque" className="flex flex-wrap gap-2">
-                        {TABS.map((tab) => {
-                            const active = selectedTab === tab.id
-                            return (
-                                <button
-                                    key={tab.id}
-                                    type="button"
-                                    role="tab"
-                                    aria-selected={active}
-                                    onClick={() => setSelectedTab(tab.id)}
+                {/* Onglets : même gabarit que ceux du centre d'assistance (piste pleine
+                    largeur, une seule ligne), l'onglet actif en dégradé de la marque.
+                    Sur mobile la piste défile horizontalement plutôt que de passer à la ligne. */}
+                <div
+                    role="tablist"
+                    aria-label="Filtrer la bibliothèque"
+                    className="mb-4 flex w-full gap-1 overflow-x-auto rounded-full bg-[#f4f7ff] p-1.5 dark:bg-muted"
+                >
+                    {TABS.map((tab) => {
+                        const active = selectedTab === tab.id
+                        return (
+                            <button
+                                key={tab.id}
+                                type="button"
+                                role="tab"
+                                aria-selected={active}
+                                onClick={() => setSelectedTab(tab.id)}
+                                className={cn(
+                                    "inline-flex flex-1 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                                    active
+                                        ? "bg-brand-gradient text-white shadow-sm"
+                                        : "text-[#7f8796] hover:text-[#1b2331] dark:text-muted-foreground dark:hover:text-foreground",
+                                )}
+                            >
+                                {tab.label}
+                                <span
                                     className={cn(
-                                        "inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                                        active
-                                            ? "border-[#1b2331] bg-[#1b2331] text-white dark:border-primary dark:bg-primary dark:text-primary-foreground"
-                                            : "border-[#e8edf6] bg-white text-[#7f8796] hover:border-[#c9d3e6] hover:text-[#1b2331] dark:border-border dark:bg-card dark:text-muted-foreground dark:hover:text-foreground",
+                                        "min-w-[1.5rem] rounded-full px-1.5 py-0.5 text-[11px] tabular-nums",
+                                        active ? "bg-white/25 text-white" : "bg-white text-[#5b6474] dark:bg-background dark:text-muted-foreground",
                                     )}
                                 >
-                                    {tab.label}
-                                    <span
-                                        className={cn(
-                                            "min-w-[1.5rem] rounded-2xl px-1.5 py-0.5 text-[11px] tabular-nums",
-                                            active ? "bg-white/20 text-white dark:text-primary-foreground" : "bg-[#f4f5f7] text-[#5b6474] dark:bg-muted dark:text-muted-foreground",
-                                        )}
-                                    >
-                                        {loading ? "…" : counts[tab.id]}
-                                    </span>
-                                </button>
-                            )
-                        })}
-                    </div>
-                    <div className="flex gap-2">
-                        <div className="relative flex-1 lg:w-64 lg:flex-initial">
+                                    {loading ? "…" : counts[tab.id]}
+                                </span>
+                            </button>
+                        )
+                    })}
+                </div>
+
+                {/* Recherche & tri */}
+                <div className="mb-6 flex justify-end">
+                    <div className="flex w-full gap-2 sm:w-auto">
+                        <div className="relative flex-1 sm:w-64 sm:flex-initial">
                             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9aa3b2] dark:text-muted-foreground" />
                             <Input
                                 value={search}
