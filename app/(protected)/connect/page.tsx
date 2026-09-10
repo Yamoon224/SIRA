@@ -229,7 +229,7 @@ function CommunitiesTab() {
             )}
 
             <div>
-                <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">Toutes les communautés</p>
+                <p className="mb-2 text-xs text-center font-semibold uppercase text-muted-foreground">Toutes les communautés</p>
                 {communities.length === 0 ? (
                     <p className="py-4 text-center text-sm text-muted-foreground">Aucune communauté pour le moment.</p>
                 ) : (
@@ -367,7 +367,7 @@ function ReseauTab() {
                 <div className="space-y-2">
                     {jobRecs.length === 0 ? <p className="text-sm text-muted-foreground">Aucune offre suggérée.</p> : jobRecs.map((job) => (
                         <Link key={job.id} href={jobHref(job)}>
-                            <Card className="border border-border transition-colors hover:border-blue-600">
+                            <Card className="border border-border transition-colors hover:border-blue-600 my-2">
                                 <CardContent className="flex items-center gap-3 p-3">
                                     <Briefcase className="h-4 w-4 shrink-0 text-blue-600" />
                                     <div>
