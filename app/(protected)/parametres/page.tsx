@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/components/ui/password-input"
 import { Textarea } from "@/components/ui/textarea"
 import { AutocompleteInput } from "@/components/autocomplete-input"
 import { LOCALISATIONS } from "@/lib/data/afrique"
@@ -412,9 +413,9 @@ export default function ParametresPage() {
               <CardContent className="space-y-4">
                 <div>
                   <Label htmlFor="newPassword">{t("settings.newPassword")}</Label>
-                  <Input
+                  <PasswordInput
                     id="newPassword"
-                    type="password"
+                    autoComplete="new-password"
                     placeholder={t("settings.newPasswordPlaceholder")}
                     value={passwords.next}
                     onChange={(e) => setPasswords((prev) => ({ ...prev, next: e.target.value }))}
@@ -422,9 +423,9 @@ export default function ParametresPage() {
                 </div>
                 <div>
                   <Label htmlFor="confirmPassword">{t("settings.confirmPassword")}</Label>
-                  <Input
+                  <PasswordInput
                     id="confirmPassword"
-                    type="password"
+                    autoComplete="new-password"
                     placeholder={t("settings.confirmPasswordPlaceholder")}
                     value={passwords.confirm}
                     onChange={(e) => setPasswords((prev) => ({ ...prev, confirm: e.target.value }))}

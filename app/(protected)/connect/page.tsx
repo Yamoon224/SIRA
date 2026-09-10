@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
 import { Button } from "@/components/ui/button"
@@ -9,10 +9,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Heart, Trash2, UserPlus, UserMinus, Users, Send, Plus, Briefcase } from "lucide-react"
+import { UserPlus, UserMinus, Users, Plus, Briefcase, Newspaper, RefreshCw } from "lucide-react"
 import {
     connectionService,
     communityService,
@@ -22,116 +23,130 @@ import {
     type IPost,
     type CommunityType,
 } from "@/lib/api/connect.service"
+import { profilePath } from "@/lib/api/public-profile.service"
 import type { IJobOffer } from "@/lib/@types/entities"
 import { PageHeader } from "@/components/layout/page-header"
+import { PostComposer } from "@/components/connect/post-composer"
+import { PostCard } from "@/components/connect/post-card"
+import { initials } from "@/components/connect/feed-format"
 import { jobHref } from "@/lib/public-links"
+import { formatFileUrl } from "@/lib/utils"
 
 const TYPE_LABELS: Record<CommunityType, string> = { SECTOR: "Secteur", COUNTRY: "Pays", EXPERTISE: "Expertise" }
 
-function initials(name: string) {
-    return name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2)
+const FEED_PAGE_SIZE = 10
+
+/** Carte « mon profil » à gauche du fil, comme sur LinkedIn. */
+function ProfileSummaryCard() {
+    const { user } = useAuth()
+    if (!user) return null
+
+    return (
+        <Card className="overflow-hidden border border-border lg:sticky lg:top-4">
+            <div className="h-14 bg-brand-gradient" />
+            <CardContent className="-mt-8 flex flex-col items-center px-4 pb-4 text-center">
+                <Avatar className="h-16 w-16 border-2 border-background">
+                    <AvatarImage src={user.avatar ? formatFileUrl(user.avatar) : undefined} />
+                    <AvatarFallback>{initials(user.name)}</AvatarFallback>
+                </Avatar>
+                <p className="mt-2 text-sm font-semibold text-foreground">{user.name}</p>
+                {user.title && <p className="text-xs text-muted-foreground">{user.title}</p>}
+                <Button asChild variant="outline" size="sm" className="mt-3 w-full rounded-full text-xs">
+                    <Link href={profilePath(user.id)}>Voir mon profil</Link>
+                </Button>
+            </CardContent>
+        </Card>
+    )
 }
 
 function FeedTab() {
-    const { user } = useAuth()
     const [posts, setPosts] = useState<IPost[]>([])
+    const [page, setPage] = useState(1)
+    const [hasMore, setHasMore] = useState(false)
     const [loading, setLoading] = useState(true)
-    const [content, setContent] = useState("")
-    const [posting, setPosting] = useState(false)
+    const [loadingMore, setLoadingMore] = useState(false)
+    const [error, setError] = useState(false)
 
-    const load = async () => {
-        setLoading(true)
+    const load = useCallback(async (nextPage: number) => {
+        if (nextPage === 1) setLoading(true)
+        else setLoadingMore(true)
+        setError(false)
         try {
-            const res = await postService.feed(1, 20)
-            const body = (res as any)?.data !== undefined ? res : { data: [] }
-            setPosts(Array.isArray(body.data) ? body.data : [])
+            const res = await postService.feed(nextPage, FEED_PAGE_SIZE)
+            const items = Array.isArray(res?.data) ? res.data : []
+            // Une publication ajoutée entre deux pages décale la pagination : on dédoublonne.
+            setPosts((prev) => (nextPage === 1 ? items : [...prev, ...items.filter((item) => !prev.some((p) => p.id === item.id))]))
+            setHasMore((res?.meta?.page ?? 1) < (res?.meta?.totalPages ?? 1))
+            setPage(nextPage)
         } catch (err) {
             console.error("[connect] feed load error:", err)
+            if (nextPage === 1) setError(true)
         } finally {
             setLoading(false)
+            setLoadingMore(false)
         }
-    }
+    }, [])
 
-    useEffect(() => { load() }, [])
+    useEffect(() => {
+        load(1)
+    }, [load])
 
-    const handlePost = async () => {
-        if (!content.trim()) return
-        setPosting(true)
-        try {
-            const res = await postService.create(content.trim())
-            const post = (res as any)?.data ?? res
-            setPosts((prev) => [post, ...prev])
-            setContent("")
-        } catch (err) {
-            console.error("[connect] post error:", err)
-        } finally {
-            setPosting(false)
-        }
-    }
-
-    const handleLike = async (post: IPost) => {
-        try {
-            const res = await postService.toggleLike(post.id)
-            const liked = (res as any)?.data?.liked ?? (res as any)?.liked
-            setPosts((prev) => prev.map((p) => p.id === post.id ? { ...p, likesCount: p.likesCount + (liked ? 1 : -1) } : p))
-        } catch (err) {
-            console.error("[connect] like error:", err)
-        }
-    }
-
-    const handleDelete = async (id: string) => {
-        try {
-            await postService.remove(id)
-            setPosts((prev) => prev.filter((p) => p.id !== id))
-        } catch (err) {
-            console.error("[connect] delete post error:", err)
-        }
-    }
+    const replacePost = (updated: IPost) => setPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
+    const prependPost = (post: IPost) => setPosts((prev) => [post, ...prev.filter((p) => p.id !== post.id)])
+    const removePost = (id: string) => setPosts((prev) => prev.filter((p) => p.id !== id))
 
     return (
-        <div className="space-y-4">
-            <Card className="border border-border">
-                <CardContent className="space-y-2 p-4">
-                    <Textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="Partagez une actualité avec votre réseau..." className="min-h-[70px]" />
-                    <div className="flex justify-end">
-                        <Button size="sm" disabled={posting || !content.trim()} onClick={handlePost} className="gap-1.5 bg-brand-gradient hover:bg-brand-gradient-hover">
-                            <Send className="h-3.5 w-3.5" />Publier
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">
+            <aside className="hidden lg:block">
+                <ProfileSummaryCard />
+            </aside>
 
-            {loading ? (
-                <div className="flex justify-center py-10"><div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" /></div>
-            ) : posts.length === 0 ? (
-                <p className="py-6 text-center text-sm text-muted-foreground">Aucune publication dans votre fil pour le moment.</p>
-            ) : (
-                posts.map((post) => (
-                    <Card key={post.id} className="border border-border my-2">
-                        <CardContent className="p-4">
-                            <div className="flex items-start gap-3">
-                                <Avatar className="h-9 w-9">
-                                    <AvatarImage src={post.author?.avatar ?? undefined} />
-                                    <AvatarFallback>{post.author ? initials(post.author.name) : "?"}</AvatarFallback>
-                                </Avatar>
-                                <div className="flex-1">
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-sm font-semibold text-foreground">{post.author?.name ?? "Utilisateur"}</p>
-                                        {post.author?.id === user?.id && (
-                                            <button onClick={() => handleDelete(post.id)} className="text-red-500"><Trash2 className="h-3.5 w-3.5" /></button>
-                                        )}
-                                    </div>
-                                    {post.author?.companyName && <p className="text-xs text-muted-foreground">{post.author.companyName}</p>}
-                                    <p className="mt-2 whitespace-pre-line text-sm text-foreground">{post.content}</p>
-                                    <button onClick={() => handleLike(post)} className="mt-2 flex items-center gap-1 text-xs text-muted-foreground hover:text-red-500">
-                                        <Heart className="h-3.5 w-3.5" />{post.likesCount}
-                                    </button>
+            <div className="mx-auto w-full max-w-2xl space-y-3">
+                <PostComposer onPublished={prependPost} />
+
+                {loading ? (
+                    [0, 1, 2].map((i) => (
+                        <Card key={i} className="border border-border p-4">
+                            <div className="flex items-center gap-3">
+                                <Skeleton className="h-12 w-12 rounded-full" />
+                                <div className="flex-1 space-y-2">
+                                    <Skeleton className="h-3 w-1/3" />
+                                    <Skeleton className="h-3 w-1/4" />
                                 </div>
                             </div>
+                            <Skeleton className="mt-4 h-16 w-full" />
+                        </Card>
+                    ))
+                ) : error ? (
+                    <Card className="border border-border">
+                        <CardContent className="flex flex-col items-center gap-3 py-10 text-center">
+                            <p className="text-sm text-muted-foreground">Le fil d'actualité n'a pas pu être chargé.</p>
+                            <Button variant="outline" size="sm" onClick={() => load(1)} className="gap-1.5 rounded-full">
+                                <RefreshCw className="h-3.5 w-3.5" />
+                                Réessayer
+                            </Button>
                         </CardContent>
                     </Card>
-                ))
-            )}
+                ) : posts.length === 0 ? (
+                    <Card className="border border-border">
+                        <CardContent className="flex flex-col items-center gap-2 py-12 text-center">
+                            <Newspaper className="h-10 w-10 text-muted-foreground/50" />
+                            <p className="text-sm font-medium text-foreground">Aucune publication pour le moment</p>
+                            <p className="max-w-sm text-xs text-muted-foreground">
+                                Partagez une actualité, un projet ou un document : vos publications apparaîtront ici et dans le fil des autres membres.
+                            </p>
+                        </CardContent>
+                    </Card>
+                ) : (
+                    posts.map((post) => <PostCard key={post.id} post={post} onChange={replacePost} onDelete={removePost} onReposted={prependPost} />)
+                )}
+
+                {!loading && hasMore && (
+                    <Button variant="outline" className="w-full rounded-full" onClick={() => load(page + 1)} disabled={loadingMore}>
+                        {loadingMore ? "Chargement…" : "Afficher plus de publications"}
+                    </Button>
+                )}
+            </div>
         </div>
     )
 }
@@ -335,7 +350,7 @@ function ReseauTab() {
                 <p className="mb-2 mt-4 text-xs font-semibold uppercase text-muted-foreground">Vous suivez ({following.length})</p>
                 <div className="space-y-2">
                     {following.length === 0 ? <p className="text-sm text-muted-foreground">Vous ne suivez personne pour le moment.</p> : following.map((u) => (
-                        <UserRow key={u.id} connectUser={u} following onToggle={() => toggleFollow(u)} />
+                        <UserRow key={u.id} connectUser={u} following={followingIds.has(u.id)} onToggle={() => toggleFollow(u)} />
                     ))}
                 </div>
 
@@ -371,18 +386,20 @@ function ReseauTab() {
 
 function UserRow({ connectUser, following, onToggle }: { connectUser: IConnectUser; following: boolean; onToggle: () => void }) {
     return (
-        <div className="flex items-center justify-between rounded-lg border border-border bg-white dark:bg-card px-3 py-2">
-            <div className="flex items-center gap-2.5">
+        <div className="flex items-center justify-between gap-2 rounded-lg border border-border bg-white dark:bg-card px-3 py-2">
+            <Link href={profilePath(connectUser.id)} className="flex min-w-0 items-center gap-2.5 hover:opacity-90">
                 <Avatar className="h-8 w-8">
-                    <AvatarImage src={connectUser.avatar ?? undefined} />
+                    <AvatarImage src={connectUser.avatar ? formatFileUrl(connectUser.avatar) : undefined} />
                     <AvatarFallback>{initials(connectUser.name)}</AvatarFallback>
                 </Avatar>
-                <div>
-                    <p className="text-sm font-medium text-foreground">{connectUser.name}</p>
-                    {connectUser.companyName && <p className="text-xs text-muted-foreground">{connectUser.companyName}</p>}
+                <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-foreground hover:underline">{connectUser.name}</p>
+                    {(connectUser.title || connectUser.companyName) && (
+                        <p className="truncate text-xs text-muted-foreground">{connectUser.title || connectUser.companyName}</p>
+                    )}
                 </div>
-            </div>
-            <Button size="sm" variant={following ? "outline" : "default"} className={following ? "h-8 gap-1 text-xs" : "h-8 gap-1 bg-brand-gradient text-xs hover:bg-brand-gradient-hover"} onClick={onToggle}>
+            </Link>
+            <Button size="sm" variant={following ? "outline" : "default"} className={following ? "h-8 shrink-0 gap-1 text-xs" : "h-8 shrink-0 gap-1 bg-brand-gradient text-xs hover:bg-brand-gradient-hover"} onClick={onToggle}>
                 {following ? <UserMinus className="h-3.5 w-3.5" /> : <UserPlus className="h-3.5 w-3.5" />}
                 {following ? "Ne plus suivre" : "Suivre"}
             </Button>
@@ -398,10 +415,11 @@ export default function Page() {
                 description="Votre réseau professionnel et vos communautés."
             />
             <Tabs defaultValue="feed">
-                <TabsList>
-                    <TabsTrigger value="feed">Fil d'actualité</TabsTrigger>
-                    <TabsTrigger value="communities">Communautés</TabsTrigger>
-                    <TabsTrigger value="reseau">Réseau</TabsTrigger>
+                {/* Onglets sur toute la largeur, chacun centré dans son tiers. */}
+                <TabsList className="grid h-auto w-full grid-cols-3">
+                    <TabsTrigger value="feed" className="w-full">Fil d'actualité</TabsTrigger>
+                    <TabsTrigger value="communities" className="w-full">Communautés</TabsTrigger>
+                    <TabsTrigger value="reseau" className="w-full">Réseau</TabsTrigger>
                 </TabsList>
                 <TabsContent value="feed" className="mt-4"><FeedTab /></TabsContent>
                 <TabsContent value="communities" className="mt-4"><CommunitiesTab /></TabsContent>

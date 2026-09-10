@@ -5,9 +5,17 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { MessageSquare, Video, X } from "lucide-react"
+import { Check, MessageSquare, Video, X, type LucideIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { PageHeader } from "@/components/layout/page-header"
+import { cn } from "@/lib/utils"
+
+type InterviewMode = "chat" | "video"
+
+const MODES: { id: InterviewMode; label: string; description: string; icon: LucideIcon }[] = [
+  { id: "chat", label: "Chat en direct", description: "Entretien par messages", icon: MessageSquare },
+  { id: "video", label: "Appel vidéo", description: "Entretien vidéo simulé", icon: Video },
+]
 
 export default function SimulationEntretienConfigPage() {
   const router = useRouter()
@@ -17,10 +25,19 @@ export default function SimulationEntretienConfigPage() {
     niveau: "",
     duree: "",
   })
+  // Le chat est présélectionné : on peut lancer la simulation sans choix
+  // explicite, et la carte active dit clairement ce qui va se passer.
+  const [mode, setMode] = useState<InterviewMode>("chat")
 
   const handleStart = () => {
-    // Redirect to simulation chat
-    router.push("/simulation-entretien")
+    // La configuration voyage dans l'URL : la simulation se relance à
+    // l'identique après un rechargement, et le lien peut être rouvert.
+    const params = new URLSearchParams({ mode })
+    if (formData.typePoste.trim()) params.set("poste", formData.typePoste.trim())
+    if (formData.entreprise.trim()) params.set("entreprise", formData.entreprise.trim())
+    if (formData.niveau) params.set("niveau", formData.niveau)
+    if (formData.duree) params.set("duree", formData.duree)
+    router.push(`/simulation-entretien?${params.toString()}`)
   }
 
   return (
@@ -29,7 +46,7 @@ export default function SimulationEntretienConfigPage() {
         <PageHeader
           title="Simulation d'Entretien avec Goriya"
           actions={
-            <Button variant="ghost" size="sm" onClick={() => router.back()}>
+            <Button variant="ghost" size="sm" onClick={() => router.back()} aria-label="Fermer">
               <X className="w-4 h-4" />
             </Button>
           }
@@ -51,8 +68,9 @@ export default function SimulationEntretienConfigPage() {
             {/* Configuration Form */}
             <div className="space-y-4 sm:space-y-6 mb-6 sm:mb-8">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Type de poste</label>
+                <label htmlFor="typePoste" className="block text-sm font-medium text-foreground mb-2">Type de poste</label>
                 <Input
+                  id="typePoste"
                   value={formData.typePoste}
                   onChange={(e) => setFormData((prev) => ({ ...prev, typePoste: e.target.value }))}
                   placeholder="Ex: Développeur Full-Stack"
@@ -61,8 +79,9 @@ export default function SimulationEntretienConfigPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Entreprise cible</label>
+                <label htmlFor="entreprise" className="block text-sm font-medium text-foreground mb-2">Entreprise cible</label>
                 <Input
+                  id="entreprise"
                   value={formData.entreprise}
                   onChange={(e) => setFormData((prev) => ({ ...prev, entreprise: e.target.value }))}
                   placeholder="Ex: Google, Microsoft..."
@@ -109,22 +128,32 @@ export default function SimulationEntretienConfigPage() {
             </div>
 
             {/* Interview Type Selection */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 sm:mb-8">
-              <Card className="cursor-pointer hover:bg-accent transition-colors border-border">
-                <CardContent className="p-4 sm:p-6 text-center">
-                  <MessageSquare className="w-6 sm:w-8 h-6 sm:h-8 text-blue-500 mx-auto mb-3" />
-                  <h3 className="font-medium mb-1 text-card-foreground text-sm sm:text-base">Chat en direct</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground">Entretien par messages</p>
-                </CardContent>
-              </Card>
-
-              <Card className="cursor-pointer hover:bg-accent transition-colors border-border">
-                <CardContent className="p-4 sm:p-6 text-center">
-                  <Video className="w-6 sm:w-8 h-6 sm:h-8 text-blue-500 mx-auto mb-3" />
-                  <h3 className="font-medium mb-1 text-card-foreground text-sm sm:text-base">Appel vidéo</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground">Entretien vidéo simulé</p>
-                </CardContent>
-              </Card>
+            <div role="radiogroup" aria-label="Type d'entretien" className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 sm:mb-8">
+              {MODES.map(({ id, label, description, icon: Icon }) => {
+                const selected = mode === id
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => setMode(id)}
+                    className={cn(
+                      "relative rounded-xl border bg-card p-4 sm:p-6 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      selected ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-border hover:bg-accent",
+                    )}
+                  >
+                    {selected && (
+                      <span className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                        <Check className="h-3 w-3" />
+                      </span>
+                    )}
+                    <Icon className={cn("w-6 sm:w-8 h-6 sm:h-8 mx-auto mb-3", selected ? "text-primary" : "text-blue-500")} />
+                    <h3 className="font-medium mb-1 text-card-foreground text-sm sm:text-base">{label}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{description}</p>
+                  </button>
+                )
+              })}
             </div>
 
             {/* Start Button */}

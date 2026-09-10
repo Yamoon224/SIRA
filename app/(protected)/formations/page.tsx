@@ -187,9 +187,10 @@ export default function Page() {
             />
 
             <Tabs defaultValue="mes-formations">
-                <TabsList>
-                    <TabsTrigger value="mes-formations">Mes formations</TabsTrigger>
-                    <TabsTrigger value="catalogue">Catalogue</TabsTrigger>
+                {/* Onglets sur toute la largeur, libellés centrés dans leur moitié. */}
+                <TabsList className="grid h-auto w-full grid-cols-2">
+                    <TabsTrigger value="mes-formations" className="w-full">Mes formations</TabsTrigger>
+                    <TabsTrigger value="catalogue" className="w-full">Catalogue</TabsTrigger>
                 </TabsList>
                 <TabsContent value="mes-formations" className="mt-4">
                     {loading ? (

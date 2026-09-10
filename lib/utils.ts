@@ -30,6 +30,9 @@ export function isPublicRoute(pathname: string) {
         '/explorer-entreprises',
         '/blog',
         '/a-propos',
+        // Profils publics (/p/{url-personnalisée|uuid}) : consultables sans
+        // connexion, la page adapte son contenu au lecteur.
+        '/p',
         '/images',
         '/icon',
     ];

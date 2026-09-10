@@ -1,11 +1,17 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Star, RotateCcw, X, Camera, Mic } from "lucide-react"
+import { Textarea } from "@/components/ui/textarea"
+import { Star, RotateCcw, X, Camera, Mic, MessageSquare, Video, Send, Clock, ChevronRight, Settings2 } from "lucide-react"
 import { SubscriptionGate } from "@/components/subscription-gate"
 import { interviewService } from "@/lib/api/interview.service"
 import { PageHeader } from "@/components/layout/page-header"
+import { cn } from "@/lib/utils"
+
+type InterviewMode = "chat" | "video"
+type Niveau = "debutant" | "intermediaire" | "avance"
 
 interface Message {
     id: string
@@ -14,131 +20,321 @@ interface Message {
     timestamp: string
 }
 
-const INITIAL_MESSAGES: Message[] = [
-    {
-        id: "1",
-        content: "Bonjour, je suis très intéressé par le poste de Développeur Full-Stack Senior. J'ai 5 ans d'expérience en React et Node.js.",
-        sender: "goriya",
-        timestamp: "10:30",
-    },
-    {
-        id: "2",
-        content: "Bonjour, merci pour ta candidature. Ton profil nous intéresse beaucoup. Peux-tu me parler de ton expérience avec React?",
-        sender: "user",
-        timestamp: "10:32",
-    },
-    {
-        id: "3",
-        content: "Bien sûr ! J'ai utilisé React dans plusieurs projets, notamment pour une application de e-commerce où j'ai géré toute la partie front-end...",
-        sender: "user",
-        timestamp: "10:33",
-    },
-    {
-        id: "4",
-        content: "Merci pour ton retour, je suis très intéressé par cette opportunité. Je suis disponible mercredi après-midi ou vendredi matin. Que préfères-tu ?",
-        sender: "goriya",
-        timestamp: "10:35",
-    },
-]
+/** Configuration choisie sur /simulation-entretien-config, transmise dans l'URL. */
+interface InterviewConfig {
+    mode: InterviewMode
+    poste: string
+    entreprise: string
+    niveau: Niveau | ""
+    /** En minutes. */
+    duree: number
+}
 
-function VideoInterviewBox() {
+const QUESTIONS_PAR_NIVEAU: Record<Niveau, string[]> = {
+    debutant: ["Qu'as-tu appris pendant ta formation ou tes stages qui te servira dans ce poste ?"],
+    intermediaire: ["Comment organises-tu ton travail quand plusieurs priorités urgentes se chevauchent ?"],
+    avance: [
+        "Raconte une décision importante que tu as dû défendre face à ton équipe ou ta hiérarchie.",
+        "Comment accompagnes-tu la montée en compétences de collègues moins expérimentés ?",
+    ],
+}
+
+const heure = () => new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+
+function useInterviewConfig(): InterviewConfig {
+    const searchParams = useSearchParams()
+
+    return useMemo(() => {
+        const niveau = searchParams.get("niveau")
+        const duree = Number(searchParams.get("duree"))
+        return {
+            mode: searchParams.get("mode") === "video" ? "video" : "chat",
+            poste: searchParams.get("poste")?.trim() ?? "",
+            entreprise: searchParams.get("entreprise")?.trim() ?? "",
+            niveau: niveau === "debutant" || niveau === "intermediaire" || niveau === "avance" ? niveau : "",
+            duree: Number.isFinite(duree) && duree > 0 ? Math.min(duree, 60) : 10,
+        }
+    }, [searchParams])
+}
+
+/**
+ * Questions de l'entretien, adaptées au poste et au niveau. Environ une
+ * question toutes les deux minutes et demie : un entretien court garde
+ * l'essentiel, et toujours la question de clôture.
+ */
+function buildQuestions({ poste, niveau, duree }: InterviewConfig): string[] {
+    const communes = [
+        poste ? `Qu'est-ce qui t'attire dans le poste de ${poste} ?` : "Qu'est-ce qui t'attire dans ce poste ?",
+        "Parle-moi d'un projet dont tu es particulièrement fier. Quel y était ton rôle ?",
+        "Décris une situation difficile au travail et la manière dont tu l'as gérée.",
+        "Quelles sont tes principales forces pour ce poste ? Et un point que tu cherches à améliorer ?",
+        "Où te vois-tu dans trois ans ?",
+        "As-tu des questions à me poser sur l'entreprise ou sur l'équipe ?",
+    ]
+    const toutes = [...communes.slice(0, 2), ...(niveau ? QUESTIONS_PAR_NIVEAU[niveau] : []), ...communes.slice(2)]
+    const nombre = Math.max(3, Math.min(toutes.length, Math.round(duree / 2.5)))
+
+    return nombre >= toutes.length ? toutes : [...toutes.slice(0, nombre - 1), toutes[toutes.length - 1]]
+}
+
+function welcomeMessage({ poste, entreprise }: InterviewConfig): string {
+    const cadre = [poste && `pour le poste de ${poste}`, entreprise && `chez ${entreprise}`].filter(Boolean).join(" ")
+    return `Bonjour, je suis Goriya et je vais mener ton entretien${cadre ? ` ${cadre}` : ""}. Pour commencer, présente-toi en quelques phrases.`
+}
+
+const CLOSING_MESSAGE =
+    "Merci, l'entretien est terminé. Clique sur « Voir le Feedback » pour découvrir l'analyse de ta performance."
+
+function formatRemaining(seconds: number): string {
+    const s = Math.max(0, seconds)
+    return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`
+}
+
+function VideoInterviewBox({ question, progress, onNext, finished }: { question: string; progress: number; onNext: () => void; finished: boolean }) {
     const [stream, setStream] = useState<MediaStream | null>(null)
     const [cameraActive, setCameraActive] = useState(false)
-    const videoRef = React.useRef<HTMLVideoElement>(null)
+    const [cameraError, setCameraError] = useState(false)
+    const videoRef = useRef<HTMLVideoElement>(null)
 
-    React.useEffect(() => {
-        if (cameraActive) {
-            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-                .then((mediaStream) => {
-                    setStream(mediaStream)
-                    if (videoRef.current) videoRef.current.srcObject = mediaStream
-                })
-                .catch(() => setStream(null))
-        } else {
-            if (stream) {
-                stream.getTracks().forEach((track) => track.stop())
-                setStream(null)
-            }
+    useEffect(() => {
+        if (!cameraActive) return
+        let active: MediaStream | null = null
+        setCameraError(false)
+        navigator.mediaDevices
+            ?.getUserMedia({ video: true, audio: false })
+            .then((mediaStream) => {
+                active = mediaStream
+                setStream(mediaStream)
+                if (videoRef.current) videoRef.current.srcObject = mediaStream
+            })
+            .catch(() => {
+                setCameraError(true)
+                setCameraActive(false)
+            })
+        return () => {
+            active?.getTracks().forEach((track) => track.stop())
+            setStream(null)
         }
-        return () => { if (stream) stream.getTracks().forEach((track) => track.stop()) }
-        // eslint-disable-next-line
     }, [cameraActive])
 
     return (
-        <div className="flex flex-col items-center justify-center w-full h-full min-h-[500px]">
-            <div className="relative w-full h-[420px] flex items-center justify-center bg-white dark:bg-card border border-[#e8edf6] dark:border-border rounded-2xl">
+        <div className="flex w-full flex-col gap-4">
+            <div className="rounded-2xl border border-[#e8edf6] dark:border-border bg-white dark:bg-card p-4">
+                <p className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">Goriya demande</p>
+                <p className="text-[15px] font-medium text-foreground">{question}</p>
+            </div>
+
+            <div className="relative flex h-[380px] sm:h-[420px] w-full items-center justify-center rounded-2xl border border-[#e8edf6] dark:border-border bg-white dark:bg-card">
                 {cameraActive && stream ? (
-                    <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover rounded-2xl" />
+                    <video ref={videoRef} autoPlay playsInline muted className="h-full w-full rounded-2xl object-cover" />
                 ) : (
-                    <div className="flex flex-col items-center justify-center w-full h-full">
-                        <Camera className="w-10 h-10 text-[#7f8796] dark:text-muted-foreground mb-2" />
-                        <span className="text-[#7f8796] dark:text-muted-foreground text-[15px]">Caméra désactivée</span>
+                    <div className="flex h-full w-full flex-col items-center justify-center px-4 text-center">
+                        <Camera className="mb-2 h-10 w-10 text-[#7f8796] dark:text-muted-foreground" />
+                        <span className="text-[15px] text-[#7f8796] dark:text-muted-foreground">
+                            {cameraError ? "Caméra inaccessible : autorise son accès dans ton navigateur." : "Caméra désactivée"}
+                        </span>
                     </div>
                 )}
-                <div className="absolute left-4 bottom-6 w-1/3">
-                    <div className="bg-[#e8edf6] dark:bg-muted rounded-full h-5 flex items-center">
-                        <div className="bg-[#7f8796] h-3 rounded-full ml-1 my-1" style={{ width: "60%" }} />
-                        <span className="absolute left-2 text-xs text-white font-medium">Progression: 60</span>
+                <div className="absolute bottom-6 left-4 w-1/2 sm:w-1/3">
+                    <div className="relative flex h-5 items-center rounded-full bg-[#e8edf6] dark:bg-muted">
+                        <div className="my-1 ml-1 h-3 rounded-full bg-brand-gradient transition-all" style={{ width: `calc(${progress}% - 0.5rem)` }} />
+                        <span className="absolute left-2 text-xs font-medium text-[#1b2331] dark:text-foreground">Progression : {progress}%</span>
                     </div>
                 </div>
-                <div className="absolute right-4 bottom-6 flex gap-2">
+                <div className="absolute bottom-6 right-4 flex gap-2">
                     <button
-                        className={`w-9 h-9 flex items-center justify-center rounded-lg border border-[#e8edf6] dark:border-border bg-white dark:bg-card ${cameraActive ? "text-[#2f6de6] dark:text-primary" : "text-[#7f8796] dark:text-muted-foreground"} hover:bg-[#f4f5f7] dark:hover:bg-muted`}
+                        className={cn(
+                            "flex h-9 w-9 items-center justify-center rounded-lg border border-[#e8edf6] dark:border-border bg-white dark:bg-card hover:bg-[#f4f5f7] dark:hover:bg-muted",
+                            cameraActive ? "text-[#2f6de6] dark:text-primary" : "text-[#7f8796] dark:text-muted-foreground",
+                        )}
                         onClick={() => setCameraActive((v) => !v)}
                         type="button"
+                        aria-label={cameraActive ? "Couper la caméra" : "Activer la caméra"}
+                        aria-pressed={cameraActive}
                     >
-                        <Camera className="w-5 h-5" />
+                        <Camera className="h-5 w-5" />
                     </button>
                     <button
-                        className="w-9 h-9 flex items-center justify-center rounded-lg border border-[#e8edf6] dark:border-border bg-white dark:bg-card text-[#7f8796] dark:text-muted-foreground hover:bg-[#f4f5f7] dark:hover:bg-muted"
+                        className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#e8edf6] dark:border-border bg-white dark:bg-card text-[#7f8796] dark:text-muted-foreground"
                         type="button"
+                        aria-label="Micro (bientôt disponible)"
                         disabled
                     >
-                        <Mic className="w-5 h-5" />
+                        <Mic className="h-5 w-5" />
                     </button>
                 </div>
+            </div>
+
+            <div className="flex justify-end">
+                <Button onClick={onNext} disabled={finished} className="gap-1.5 rounded-full bg-brand-gradient text-white hover:bg-brand-gradient-hover">
+                    {finished ? "Entretien terminé" : "Question suivante"}
+                    {!finished && <ChevronRight className="h-4 w-4" />}
+                </Button>
+            </div>
+        </div>
+    )
+}
+
+function ChatInterviewBox({
+    messages,
+    typing,
+    disabled,
+    onSend,
+}: {
+    messages: Message[]
+    typing: boolean
+    disabled: boolean
+    onSend: (content: string) => void
+}) {
+    const [draft, setDraft] = useState("")
+    const endRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
+    }, [messages, typing])
+
+    const send = () => {
+        if (!draft.trim() || disabled) return
+        onSend(draft.trim())
+        setDraft("")
+    }
+
+    return (
+        <div className="flex h-[560px] w-full flex-col overflow-hidden rounded-2xl border border-[#e8edf6] dark:border-border bg-white dark:bg-card">
+            <div className="flex-1 space-y-3 overflow-y-auto p-4">
+                {messages.map((message) => (
+                    <div key={message.id} className={cn("flex items-end gap-2", message.sender === "user" ? "justify-end" : "justify-start")}>
+                        {message.sender === "goriya" && (
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-gradient text-sm font-bold text-white">G</div>
+                        )}
+                        <div
+                            className={cn(
+                                "max-w-[80%] rounded-2xl px-4 py-2.5 text-sm",
+                                message.sender === "user"
+                                    ? "rounded-br-sm bg-[#2f6de6] text-white"
+                                    : "rounded-bl-sm bg-[#f4f6fb] dark:bg-muted text-foreground",
+                            )}
+                        >
+                            <p className="whitespace-pre-line">{message.content}</p>
+                            <p className={cn("mt-1 text-[10px]", message.sender === "user" ? "text-white/70" : "text-muted-foreground")}>{message.timestamp}</p>
+                        </div>
+                    </div>
+                ))}
+                {typing && (
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-gradient text-sm font-bold text-white">G</div>
+                        Goriya écrit…
+                    </div>
+                )}
+                <div ref={endRef} />
+            </div>
+
+            <div className="flex items-end gap-2 border-t border-[#e8edf6] dark:border-border p-3">
+                <Textarea
+                    value={draft}
+                    onChange={(e) => setDraft(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault()
+                            send()
+                        }
+                    }}
+                    disabled={disabled}
+                    placeholder={disabled ? "L'entretien est terminé." : "Écris ta réponse… (Entrée pour envoyer, Maj+Entrée pour aller à la ligne)"}
+                    className="min-h-[44px] resize-none"
+                    rows={2}
+                />
+                <Button onClick={send} disabled={disabled || !draft.trim()} size="icon" className="h-11 w-11 shrink-0 rounded-full bg-brand-gradient text-white hover:bg-brand-gradient-hover" aria-label="Envoyer">
+                    <Send className="h-4 w-4" />
+                </Button>
             </div>
         </div>
     )
 }
 
 function SimulationEntretienContent() {
-    const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES)
-    const [newMessage, setNewMessage] = useState("")
+    const router = useRouter()
+    const config = useInterviewConfig()
+    const questions = useMemo(() => buildQuestions(config), [config])
+
+    const initialMessages = useCallback(
+        (): Message[] => [{ id: "accueil", content: welcomeMessage(config), sender: "goriya", timestamp: heure() }],
+        [config],
+    )
+
+    const [messages, setMessages] = useState<Message[]>(initialMessages)
+    /** Nombre de réponses données : 0 = présentation, n = réponse à la question n. */
+    const [step, setStep] = useState(0)
+    const [typing, setTyping] = useState(false)
+    const [remaining, setRemaining] = useState(config.duree * 60)
     const [showFeedback, setShowFeedback] = useState(false)
     const [sessionId, setSessionId] = useState<string | null>(null)
     const [sessionScore, setSessionScore] = useState<number | null>(null)
     const [sessionDuration, setSessionDuration] = useState<number | null>(null)
+    const replyTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const timeUpNotified = useRef(false)
 
-    useEffect(() => {
-        interviewService.startSession({ position: "Simulation générale" })
+    const answeredAll = step > questions.length
+    const timeUp = remaining <= 0
+    const finished = answeredAll || timeUp
+
+    const startSession = useCallback(() => {
+        interviewService
+            .startSession({ position: config.poste || "Simulation générale" })
             .then((res) => {
                 const session = (res as any)?.data ?? res
                 if (session?.id) setSessionId(session.id)
             })
             .catch(() => {})
+    }, [config.poste])
+
+    useEffect(() => {
+        startSession()
+    }, [startSession])
+
+    useEffect(() => () => {
+        if (replyTimer.current) clearTimeout(replyTimer.current)
     }, [])
 
-    const handleSendMessage = () => {
-        if (!newMessage.trim()) return
-        const userMessage: Message = {
-            id: Date.now().toString(),
-            content: newMessage,
-            sender: "user",
-            timestamp: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }),
-        }
-        setMessages((prev) => [...prev, userMessage])
-        setNewMessage("")
-        setTimeout(() => {
-            const aiResponse: Message = {
-                id: (Date.now() + 1).toString(),
-                content: "Merci pour ta réponse. Peux-tu me parler de tes projets les plus significatifs ?",
-                sender: "goriya",
-                timestamp: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }),
-            }
-            setMessages((prev) => [...prev, aiResponse])
-        }, 1000)
+    // Compte à rebours : il s'arrête dès que l'entretien est terminé.
+    useEffect(() => {
+        if (finished) return
+        const timer = setInterval(() => setRemaining((s) => s - 1), 1000)
+        return () => clearInterval(timer)
+    }, [finished])
+
+    useEffect(() => {
+        if (!timeUp || answeredAll || timeUpNotified.current) return
+        timeUpNotified.current = true
+        setTyping(false)
+        if (replyTimer.current) clearTimeout(replyTimer.current)
+        setMessages((prev) => [
+            ...prev,
+            { id: `fin-${Date.now()}`, content: `Le temps imparti est écoulé. ${CLOSING_MESSAGE}`, sender: "goriya", timestamp: heure() },
+        ])
+    }, [timeUp, answeredAll])
+
+    /** Question posée après `answers` réponses ; message de clôture au-delà. */
+    const questionAfter = (answers: number) => (answers <= questions.length ? questions[answers - 1] : CLOSING_MESSAGE)
+
+    const handleSendMessage = (content: string) => {
+        if (finished) return
+        const answers = step + 1
+        setMessages((prev) => [...prev, { id: `u-${Date.now()}`, content, sender: "user", timestamp: heure() }])
+        setStep(answers)
+        setTyping(true)
+        replyTimer.current = setTimeout(() => {
+            setTyping(false)
+            setMessages((prev) => [...prev, { id: `g-${Date.now()}`, content: questionAfter(answers), sender: "goriya", timestamp: heure() }])
+        }, 900)
     }
+
+    const handleNextQuestion = () => {
+        if (!finished) setStep((s) => s + 1)
+    }
+
+    const videoQuestion = step === 0 ? "Pour commencer, présente-toi en quelques phrases." : questionAfter(step)
+    const progress = Math.round((Math.min(step, questions.length + 1) / (questions.length + 1)) * 100)
 
     const handleShowFeedback = async () => {
         if (sessionId) {
@@ -152,28 +348,50 @@ function SimulationEntretienContent() {
         setShowFeedback(true)
     }
 
-    const handleRestart = async () => {
+    const handleRestart = () => {
         if (sessionId) {
             interviewService.deleteSession(sessionId).catch(() => {})
         }
-        setMessages(INITIAL_MESSAGES)
+        if (replyTimer.current) clearTimeout(replyTimer.current)
+        timeUpNotified.current = false
+        setMessages(initialMessages())
+        setStep(0)
+        setTyping(false)
+        setRemaining(config.duree * 60)
         setSessionScore(null)
         setSessionDuration(null)
         setShowFeedback(false)
-        interviewService.startSession({ position: "Simulation générale" })
-            .then((res) => {
-                const session = (res as any)?.data ?? res
-                if (session?.id) setSessionId(session.id)
-            })
-            .catch(() => {})
+        startSession()
     }
 
+    const ModeIcon = config.mode === "video" ? Video : MessageSquare
+    const elapsedMinutes = Math.max(1, Math.round((config.duree * 60 - Math.max(0, remaining)) / 60))
+
     return (
-        <div className="p-6">
+        <div className="p-0 sm:p-2">
             <PageHeader
                 title="Simulation d'Entretien avec Goriya"
+                description={[config.poste, config.entreprise].filter(Boolean).join(" · ") || undefined}
                 actions={
                     <>
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground">
+                            <ModeIcon className="h-3.5 w-3.5" />
+                            {config.mode === "video" ? "Appel vidéo" : "Chat en direct"}
+                        </span>
+                        <span
+                            className={cn(
+                                "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium tabular-nums",
+                                remaining <= 60 && !finished ? "border-red-300 text-red-600" : "border-border text-foreground",
+                            )}
+                            aria-label="Temps restant"
+                        >
+                            <Clock className="h-3.5 w-3.5" />
+                            {formatRemaining(remaining)}
+                        </span>
+                        <Button variant="ghost" size="sm" onClick={() => router.push("/simulation-entretien-config")} className="gap-1.5">
+                            <Settings2 className="h-4 w-4" />
+                            Configurer
+                        </Button>
                         <Button variant="outline" className="flex items-center gap-2 bg-white dark:bg-card text-[#1b2331] dark:text-foreground border-[#d8deeb] dark:border-border hover:bg-[#f4f5f7] dark:hover:bg-muted" onClick={handleRestart}>
                             <RotateCcw className="w-4 h-4" />
                             Recommencer
@@ -186,16 +404,21 @@ function SimulationEntretienContent() {
                 }
             />
 
-            <div className="flex justify-center items-center min-h-[500px]">
-                <VideoInterviewBox />
+            <div className="mx-auto flex max-w-3xl justify-center">
+                {config.mode === "video" ? (
+                    <VideoInterviewBox question={videoQuestion} progress={progress} onNext={handleNextQuestion} finished={finished} />
+                ) : (
+                    <ChatInterviewBox messages={messages} typing={typing} disabled={finished} onSend={handleSendMessage} />
+                )}
             </div>
 
             {showFeedback && (
-                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-                    <div className="bg-white dark:bg-card rounded-2xl shadow-xl max-w-lg w-full p-0 relative">
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-card rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-0 relative">
                         <button
                             onClick={() => setShowFeedback(false)}
                             className="absolute top-4 right-4 p-1 hover:bg-white dark:hover:bg-card border border-transparent hover:border-blue-500 rounded-full"
+                            aria-label="Fermer"
                         >
                             <X className="w-6 h-6 text-[#7f8796] dark:text-muted-foreground" />
                         </button>
@@ -213,12 +436,14 @@ function SimulationEntretienContent() {
                                     <span className="text-[12px] text-[#7f8796] dark:text-muted-foreground">Score global</span>
                                 </div>
                                 <div className="flex flex-col items-center">
-                                    <span className="text-[22px] font-bold text-[#7c4dff] dark:text-primary">8.5/10</span>
-                                    <span className="text-[12px] text-[#7f8796] dark:text-muted-foreground">Communication</span>
+                                    <span className="text-[22px] font-bold text-[#7c4dff] dark:text-primary">
+                                        {Math.min(step, questions.length)}/{questions.length}
+                                    </span>
+                                    <span className="text-[12px] text-[#7f8796] dark:text-muted-foreground">Questions traitées</span>
                                 </div>
                                 <div className="flex flex-col items-center">
                                     <span className="text-[22px] font-bold text-[#a259e6]">
-                                        {sessionDuration != null ? `${sessionDuration}min` : "12min"}
+                                        {sessionDuration != null ? `${sessionDuration}min` : `${elapsedMinutes}min`}
                                     </span>
                                     <span className="text-[12px] text-[#7f8796] dark:text-muted-foreground">Durée totale</span>
                                 </div>
@@ -268,7 +493,10 @@ function SimulationEntretienContent() {
 export default function Page() {
     return (
         <SubscriptionGate featureLabel="la simulation d'entretien IA">
-            <SimulationEntretienContent />
+            {/* useSearchParams exige une frontière Suspense au prérendu. */}
+            <Suspense fallback={null}>
+                <SimulationEntretienContent />
+            </Suspense>
         </SubscriptionGate>
     )
 }

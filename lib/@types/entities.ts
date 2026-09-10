@@ -104,6 +104,32 @@ export interface ICandidature {
 }
 
 // ─────────────────────────────────────────────
+export type PortfolioTheme = "default" | "blue" | "purple" | "green";
+export type PortfolioStatus = "DRAFT" | "PUBLISHED";
+export type PortfolioProjectStatus = "EN_COURS" | "TERMINE";
+
+export interface IPortfolioProject {
+    /** Identifiant local, stable pendant l'édition (pas un uuid backend). */
+    id?: string | null;
+    title: string;
+    status?: PortfolioProjectStatus | null;
+    description?: string | null;
+    previewUrl?: string | null;
+    codeUrl?: string | null;
+}
+
+/** Bloc `details` du portfolio — clés admises par CreatePortfolioRequest::editorRules(). */
+export interface IPortfolioDetails {
+    fullName?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    location?: string | null;
+    /** Nom de compétence → niveau de 0 à 100. */
+    skillLevels?: Record<string, number> | null;
+    projects?: IPortfolioProject[] | null;
+    links?: { linkedin?: string | null; github?: string | null; twitter?: string | null; website?: string | null } | null;
+}
+
 export interface IPortfolio {
     id: string;
     title: string;
@@ -112,6 +138,13 @@ export interface IPortfolio {
     views: number;
     downloads: number;
     likes: number;
+    theme?: PortfolioTheme;
+    status?: PortfolioStatus;
+    /** URL absolue de la photo. */
+    photo?: string | null;
+    /** Chemin à renvoyer dans `photo` pour conserver la photo actuelle. */
+    photoPath?: string | null;
+    details?: IPortfolioDetails | null;
     createdDate: Date;
     user?: IUser | null;
     createdAt: Date;
