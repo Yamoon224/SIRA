@@ -13,7 +13,6 @@ import { dashboardService } from "@/lib/api/dashboard.service"
 import { companyService } from "@/lib/api/company.service"
 import { careerDashboardService, type ICareerDashboard } from "@/lib/api/career-dashboard.service"
 import { callSessionService, type ICallSession } from "@/lib/api/call-session.service"
-import { myEmployeeService } from "@/lib/api/my-employee.service"
 import { CompanyLogo } from "@/components/company-logo"
 import { capitalizeFirst } from "@/lib/utils"
 import type { ICandidature, ICompany } from "@/lib/@types/entities"
@@ -43,10 +42,6 @@ export default function Page() {
     const [recruitingCompanies, setRecruitingCompanies] = useState<ICompany[]>([])
     const [career, setCareer] = useState<ICareerDashboard | null>(null)
     const [callSessions, setCallSessions] = useState<ICallSession[]>([])
-    // Bouton « Mon espace employé » : visible seulement si le compte est ou a
-    // été employé sur Goriya (voir GET /me/employee). `null` = jamais employé,
-    // `undefined` = pas encore su.
-    const [hasEmployeeSpace, setHasEmployeeSpace] = useState<boolean | undefined>(undefined)
 
     const dateLocale = locale === "en" ? "en-GB" : "fr-FR"
 
@@ -83,15 +78,6 @@ export default function Page() {
             .catch((err) => console.error("[dashboard] call sessions load error:", err))
     }, [])
 
-    useEffect(() => {
-        myEmployeeService.get()
-            .then((me) => setHasEmployeeSpace(!!me))
-            .catch((err) => {
-                console.error("[dashboard] employee space check error:", err)
-                setHasEmployeeSpace(false)
-            })
-    }, [])
-
     // Rendez-vous à venir : les appels clôturés sortent, les plus proches d'abord.
     const upcomingCalls = useMemo(() => {
         return callSessions
@@ -111,9 +97,6 @@ export default function Page() {
         { icon: "📄", label: t("dashboard.actionCreateCv"), href: "/creer-cv" },
         { icon: "👤", label: t("dashboard.actionEditProfile"), href: "/parametres" },
         { icon: "🔍", label: t("dashboard.actionFindJob"), href: "/chercher-emploi" },
-        // Visible seulement pour un compte ayant été employé sur Goriya (voir
-        // hasEmployeeSpace) : sinon le bouton mènerait à un espace vide.
-        ...(hasEmployeeSpace ? [{ icon: "🧑‍💼", label: t("dashboard.actionEmployeeSpace"), href: "/espace-employe" }] : []),
         { icon: "💬", label: t("dashboard.actionContactSupport"), href: "/centre-assistance" },
     ]
 

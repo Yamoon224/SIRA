@@ -28,7 +28,6 @@ import { useAuth } from "@/contexts/auth-context"
 import { useState, useEffect, useRef, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { extractApiErrorMessage } from "@/lib/api-error"
 
 interface Attachment {
     name: string
@@ -64,6 +63,7 @@ interface Conversation {
     lastMessageAt: string | null
     unreadCount: number
     lastMessage: string
+    starred?: boolean
 }
 
 function formatRelative(iso: string | null): string {
@@ -90,6 +90,10 @@ function MessagesContent() {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [pendingFile, setPendingFile] = useState<File | null>(null)
     const [sending, setSending] = useState(false)
+
+    // Actions du menu « ... » de l'en-tête de conversation.
+    const [confirmDelete, setConfirmDelete] = useState<Conversation | null>(null)
+    const [deleting, setDeleting] = useState(false)
 
     useEffect(() => {
         fetchConversations()
@@ -186,6 +190,63 @@ function MessagesContent() {
         }
     }
 
+    const handleToggleStar = async () => {
+        if (!selectedConversation) return
+        const suivant = !selectedConversation.starred
+        setSelectedConversation({ ...selectedConversation, starred: suivant })
+        setConversations((prev) => prev.map((c) => (c.id === selectedConversation.id ? { ...c, starred: suivant } : c)))
+        try {
+            await messageService.setStarred(selectedConversation.id, suivant)
+            toast.success(suivant ? "Conversation épinglée." : "Conversation retirée des épinglées.")
+        } catch (error) {
+            console.error("Erreur lors de l'épinglage:", error)
+            setSelectedConversation({ ...selectedConversation, starred: !suivant })
+            setConversations((prev) => prev.map((c) => (c.id === selectedConversation.id ? { ...c, starred: !suivant } : c)))
+            toast.error("L'épinglage a échoué.")
+        }
+    }
+
+    const handleMarkUnread = async () => {
+        if (!selectedConversation) return
+        try {
+            await messageService.markAsUnread(selectedConversation.id)
+            setConversations((prev) => prev.map((c) => (c.id === selectedConversation.id ? { ...c, unreadCount: Math.max(c.unreadCount, 1) } : c)))
+            toast.success("Conversation marquée comme non lue.")
+        } catch (error) {
+            console.error("Erreur lors du marquage:", error)
+            toast.error("Le marquage a échoué.")
+        }
+    }
+
+    const handleRefresh = async () => {
+        if (!selectedConversation) return
+        await selectConversation(selectedConversation)
+        toast.success("Conversation actualisée.")
+    }
+
+    const handleDelete = async () => {
+        if (!confirmDelete) return
+        setDeleting(true)
+        try {
+            await messageService.deleteConversation(confirmDelete.id)
+            const restantes = conversations.filter((c) => c.id !== confirmDelete.id)
+            setConversations(restantes)
+            if (selectedConversation?.id === confirmDelete.id) {
+                const suivante = restantes[0] ?? null
+                setSelectedConversation(suivante)
+                setMessages([])
+                if (suivante) selectConversation(suivante)
+            }
+            setConfirmDelete(null)
+            toast.success("Conversation supprimée de votre liste.")
+        } catch (error) {
+            console.error("Erreur lors de la suppression:", error)
+            toast.error("La suppression a échoué.")
+        } finally {
+            setDeleting(false)
+        }
+    }
+
     const filteredConversations = conversations.filter((conv) =>
         conv.name.toLowerCase().includes(searchQuery.toLowerCase()),
     )
@@ -193,6 +254,7 @@ function MessagesContent() {
     const initials = (name: string) => name.split(" ").map((n) => n[0]).join("")
 
     return (
+        <>
         <div className="h-[calc(100vh-4rem)] sm:h-[calc(100vh-2rem)] flex overflow-hidden">
             {/* Conversations List */}
             <div className={`${showMobileList ? 'flex' : 'hidden'} md:flex w-full md:w-80 border-r border-border bg-background flex-col flex-shrink-0`}>
@@ -240,8 +302,25 @@ function MessagesContent() {
                                                     {conversation.unreadCount}
                                                 </Badge>
                                             )}
-                                            <Button variant="ghost" size="sm">
-                                                <Star className="w-4 h-4" />
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                aria-label={conversation.starred ? "Retirer des conversations épinglées" : "Épingler la conversation"}
+                                                title={conversation.starred ? "Retirer des conversations épinglées" : "Épingler la conversation"}
+                                                onClick={async (e) => {
+                                                    e.stopPropagation()
+                                                    const suivant = !conversation.starred
+                                                    setConversations((prev) => prev.map((c) => (c.id === conversation.id ? { ...c, starred: suivant } : c)))
+                                                    try {
+                                                        await messageService.setStarred(conversation.id, suivant)
+                                                    } catch (error) {
+                                                        console.error("Erreur lors de l'épinglage:", error)
+                                                        setConversations((prev) => prev.map((c) => (c.id === conversation.id ? { ...c, starred: !suivant } : c)))
+                                                        toast.error("L'épinglage a échoué.")
+                                                    }
+                                                }}
+                                            >
+                                                <Star className={cn("w-4 h-4", conversation.starred && "fill-amber-400 text-amber-400")} />
                                             </Button>
                                         </div>
                                     </div>
@@ -281,12 +360,46 @@ function MessagesContent() {
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    <Button variant="ghost" size="sm">
-                                        <Star className="w-4 h-4" />
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={handleToggleStar}
+                                        aria-label={selectedConversation.starred ? "Retirer des conversations épinglées" : "Épingler la conversation"}
+                                        title={selectedConversation.starred ? "Retirer des conversations épinglées" : "Épingler la conversation"}
+                                    >
+                                        <Star className={cn("w-4 h-4", selectedConversation.starred && "fill-amber-400 text-amber-400")} />
                                     </Button>
-                                    <Button variant="ghost" size="sm">
-                                        <MoreHorizontal className="w-4 h-4" />
-                                    </Button>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="sm" aria-label="Plus d'actions" title="Plus d'actions">
+                                                <MoreHorizontal className="w-4 h-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="w-56">
+                                            {/* focus:bg-accent (par défaut) posait un aplat peu lisible : le
+                                                dégradé de marque le remplace, comme ailleurs dans l'app. */}
+                                            <DropdownMenuItem onClick={handleMarkUnread} className="gap-2 focus:bg-brand-gradient focus:text-white focus:[&_svg:not([class*='text-'])]:text-white">
+                                                <MailOpen className="h-4 w-4" />
+                                                Marquer comme non lue
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={handleToggleStar} className="gap-2 focus:bg-brand-gradient focus:text-white focus:[&_svg:not([class*='text-'])]:text-white">
+                                                <Star className="h-4 w-4" />
+                                                {selectedConversation.starred ? "Retirer des épinglées" : "Épingler la conversation"}
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={handleRefresh} className="gap-2 focus:bg-brand-gradient focus:text-white focus:[&_svg:not([class*='text-'])]:text-white">
+                                                <RefreshCw className="h-4 w-4" />
+                                                Actualiser les messages
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem
+                                                onClick={() => setConfirmDelete(selectedConversation)}
+                                                className="gap-2 text-red-500 focus:bg-brand-gradient focus:text-white focus:[&_svg:not([class*='text-'])]:text-white"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                                Supprimer la conversation
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </div>
                             </div>
                         </div>
@@ -412,6 +525,24 @@ function MessagesContent() {
                 )}
             </div>
         </div>
+
+        <AlertDialog open={!!confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(null)}>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Supprimer cette conversation ?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Elle disparaîtra de votre liste. {confirmDelete?.name} conserve la conversation ; un nouveau message la fera réapparaître.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel disabled={deleting}>Annuler</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete} disabled={deleting} className="bg-red-500 hover:bg-red-600">
+                        {deleting ? "Suppression…" : "Supprimer"}
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+        </>
     )
 }
 
