@@ -214,6 +214,14 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                             {t("nav.dashboard")}
                                         </Link>
                                     </DropdownMenuItem>
+                                    {hasEmployeeSpace && (
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/espace-employe" className="flex items-center">
+                                                <UserCog className="mr-2 h-4 w-4" />
+                                                {t("nav.employeeSpace")}
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    )}
                                     <DropdownMenuItem asChild>
                                         <Link href="/notifications" className="flex items-center">
                                             <Bell className="mr-2 h-4 w-4" />
