@@ -15,6 +15,8 @@ export interface IEmployeeSurvey {
     description: string | null
     questions: ISurveyQuestion[]
     status: SurveyStatus
+    dueDate: string | null
+    department: string | null
     createdAt: string
 }
 

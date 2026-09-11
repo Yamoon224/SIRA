@@ -1,4 +1,5 @@
 import { apiRequest } from "@/lib/api-client-http"
+import type { IEmployeeSurvey } from "@/lib/api/employee-survey.service"
 
 /**
  * Espace employé (standard/app/(protected)/espace-employe) : congés et
@@ -86,4 +87,12 @@ export const myEmployeeService = {
 
     removeHrRequest: async (id: string) =>
         apiRequest<{ message: string }>({ endpoint: `/me/employee/hr-requests/${id}`, method: "DELETE" }),
+
+    /**
+     * Évaluations actives visibles par l'employé (toute l'entreprise, ou son
+     * département si l'évaluation en cible un — voir EmployeeSurveyService::
+     * listForEmployee côté backend). Répondre reste l'endpoint existant
+     * `/employee-surveys/{id}/responses` (employeeSurveyService.submitResponse).
+     */
+    evaluations: async () => unwrap<IEmployeeSurvey[]>(await apiRequest({ endpoint: "/me/employee/evaluations", method: "GET" })),
 }

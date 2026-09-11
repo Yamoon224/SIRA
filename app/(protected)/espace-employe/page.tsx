@@ -7,7 +7,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
     Dialog,
     DialogContent,
@@ -27,8 +26,9 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Briefcase, Building2, CalendarDays, Loader2, Plus, Trash2, Umbrella, UserCog } from "lucide-react"
+import { Briefcase, Building2, CalendarDays, CheckCircle2, ClipboardList, Loader2, Plus, Star, Trash2, Umbrella, UserCog } from "lucide-react"
 import { PageHeader } from "@/components/layout/page-header"
+import { cn } from "@/lib/utils"
 import {
     myEmployeeService,
     type HrRequestType,
@@ -37,6 +37,7 @@ import {
     type IMyLeave,
     type LeaveType,
 } from "@/lib/api/my-employee.service"
+import { employeeSurveyService, type IEmployeeSurvey } from "@/lib/api/employee-survey.service"
 
 /** Miroir des libellés entreprise/lib/data/rh.ts, pour rester cohérent avec ce que les RH voient. */
 const LEAVE_TYPE_LABEL: Record<LeaveType, string> = {
@@ -88,6 +89,8 @@ export default function Page() {
     const [employee, setEmployee] = useState<IMyEmployee | null>(null)
     const [leaves, setLeaves] = useState<IMyLeave[]>([])
     const [hrRequests, setHrRequests] = useState<IMyHrRequest[]>([])
+    const [evaluations, setEvaluations] = useState<IEmployeeSurvey[]>([])
+    const [tab, setTab] = useState<"leaves" | "requests" | "evaluations">("leaves")
 
     const isTerminated = employee?.status === "TERMINATED"
 
@@ -97,9 +100,14 @@ export default function Page() {
                 const me = await myEmployeeService.get()
                 setEmployee(me)
                 if (me) {
-                    const [l, r] = await Promise.all([myEmployeeService.leaves(), myEmployeeService.hrRequests()])
+                    const [l, r, ev] = await Promise.all([
+                        myEmployeeService.leaves(),
+                        myEmployeeService.hrRequests(),
+                        myEmployeeService.evaluations(),
+                    ])
                     setLeaves(Array.isArray(l) ? l : [])
                     setHrRequests(Array.isArray(r) ? r : [])
+                    setEvaluations(Array.isArray(ev) ? ev : [])
                 }
             } catch (err) {
                 console.error("[espace-employe] load error:", err)
@@ -109,6 +117,34 @@ export default function Page() {
         }
         load()
     }, [])
+
+    // ── Réponse à une évaluation ──
+    const [evalAnswers, setEvalAnswers] = useState<Record<string, Record<string, string | number>>>({})
+    const [evalSubmitting, setEvalSubmitting] = useState<string | null>(null)
+    const [evalSubmitted, setEvalSubmitted] = useState<Set<string>>(new Set())
+
+    const setEvalAnswer = (surveyId: string, questionId: string, value: string | number) => {
+        setEvalAnswers((prev) => ({ ...prev, [surveyId]: { ...prev[surveyId], [questionId]: value } }))
+    }
+
+    const submitEvaluation = async (survey: IEmployeeSurvey) => {
+        const answers = evalAnswers[survey.id] ?? {}
+        const payload = survey.questions
+            .filter((q) => answers[q.id] !== undefined && answers[q.id] !== "")
+            .map((q) => ({ questionId: q.id, value: answers[q.id] }))
+        if (payload.length === 0) return
+
+        setEvalSubmitting(survey.id)
+        try {
+            await employeeSurveyService.submitResponse(survey.id, payload)
+            setEvalSubmitted((prev) => new Set(prev).add(survey.id))
+            toast.success("Réponse envoyée, merci !")
+        } catch (err) {
+            toast.error(errMsg(err, "L'envoi de votre réponse a échoué."))
+        } finally {
+            setEvalSubmitting(null)
+        }
+    }
 
     // ── Nouvelle demande de congé ──
     const [leaveOpen, setLeaveOpen] = useState(false)
@@ -244,7 +280,7 @@ export default function Page() {
 
     return (
         <div className="space-y-5">
-            <PageHeader title="Mon espace employé" description="Vos congés et demandes RH auprès de votre employeur." />
+            <PageHeader title="Mon espace employé" description="Vos congés, vos demandes RH et vos évaluations auprès de votre employeur." />
 
             {isTerminated && (
                 <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
@@ -287,13 +323,54 @@ export default function Page() {
                 )}
             </Card>
 
-            <Tabs defaultValue="leaves">
-                <TabsList>
-                    <TabsTrigger value="leaves" className="gap-1.5"><Umbrella className="h-3.5 w-3.5" />Congés</TabsTrigger>
-                    <TabsTrigger value="requests" className="gap-1.5"><UserCog className="h-3.5 w-3.5" />Demandes RH</TabsTrigger>
-                </TabsList>
+            {/* Onglets : même gabarit que ceux de la bibliothèque (piste pleine
+                largeur, une seule ligne, actif en dégradé de la marque). Sur
+                mobile la piste défile horizontalement plutôt que de passer à
+                la ligne. */}
+            <div
+                role="tablist"
+                aria-label="Sections de l'espace employé"
+                className="flex w-full gap-1 overflow-x-auto rounded-full bg-[#f4f7ff] p-1.5 dark:bg-muted"
+            >
+                {(
+                    [
+                        { id: "leaves" as const, label: "Congés", icon: Umbrella, count: leaves.length },
+                        { id: "requests" as const, label: "Demandes RH", icon: UserCog, count: hrRequests.length },
+                        { id: "evaluations" as const, label: "Évaluations", icon: ClipboardList, count: evaluations.length },
+                    ]
+                ).map(({ id, label, icon: Icon, count }) => {
+                    const active = tab === id
+                    return (
+                        <button
+                            key={id}
+                            type="button"
+                            role="tab"
+                            aria-selected={active}
+                            onClick={() => setTab(id)}
+                            className={cn(
+                                "inline-flex flex-1 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                                active
+                                    ? "bg-brand-gradient text-white shadow-sm"
+                                    : "text-[#7f8796] hover:text-[#1b2331] dark:text-muted-foreground dark:hover:text-foreground",
+                            )}
+                        >
+                            <Icon className="h-3.5 w-3.5" />
+                            {label}
+                            <span
+                                className={cn(
+                                    "min-w-[1.5rem] rounded-full px-1.5 py-0.5 text-[11px] tabular-nums",
+                                    active ? "bg-white/25 text-white" : "bg-white text-[#5b6474] dark:bg-background dark:text-muted-foreground",
+                                )}
+                            >
+                                {count}
+                            </span>
+                        </button>
+                    )
+                })}
+            </div>
 
-                <TabsContent value="leaves" className="space-y-3">
+            {tab === "leaves" && (
+                <div className="space-y-3">
                     <div className="flex justify-end">
                         <Button size="sm" className="gap-1.5" disabled={isTerminated} onClick={openLeaveDialog}>
                             <Plus className="h-3.5 w-3.5" />Nouvelle demande de congé
@@ -338,9 +415,11 @@ export default function Page() {
                             ))}
                         </div>
                     )}
-                </TabsContent>
+                </div>
+            )}
 
-                <TabsContent value="requests" className="space-y-3">
+            {tab === "requests" && (
+                <div className="space-y-3">
                     <div className="flex justify-end">
                         <Button size="sm" className="gap-1.5" disabled={isTerminated} onClick={openRequestDialog}>
                             <Plus className="h-3.5 w-3.5" />Nouvelle demande RH
@@ -379,8 +458,66 @@ export default function Page() {
                             ))}
                         </div>
                     )}
-                </TabsContent>
-            </Tabs>
+                </div>
+            )}
+
+            {tab === "evaluations" && (
+                <div className="space-y-3">
+                    {evaluations.length === 0 ? (
+                        <p className="py-8 text-center text-sm text-muted-foreground">Aucune évaluation active pour le moment.</p>
+                    ) : (
+                        evaluations.map((survey) => {
+                            const isSubmitted = evalSubmitted.has(survey.id)
+                            return (
+                                <Card key={survey.id} className="border border-border">
+                                    <CardContent className="space-y-4 p-4">
+                                        <div>
+                                            <p className="text-sm font-semibold text-foreground">{survey.title}</p>
+                                            {survey.description && <p className="text-xs text-muted-foreground">{survey.description}</p>}
+                                            {survey.department && <p className="mt-1 text-[11px] text-muted-foreground">Département : {survey.department}</p>}
+                                        </div>
+
+                                        {isSubmitted ? (
+                                            <p className="flex items-center gap-1.5 text-sm text-green-600">
+                                                <CheckCircle2 className="h-4 w-4" />Réponse envoyée - merci !
+                                            </p>
+                                        ) : (
+                                            <>
+                                                <div className="space-y-3">
+                                                    {survey.questions.map((q) => (
+                                                        <div key={q.id}>
+                                                            <p className="mb-1.5 text-sm text-foreground">{q.question}</p>
+                                                            {q.type === "RATING" ? (
+                                                                <div className="flex gap-1">
+                                                                    {[1, 2, 3, 4, 5].map((n) => (
+                                                                        <button key={n} onClick={() => setEvalAnswer(survey.id, q.id, n)}>
+                                                                            <Star className={cn("h-6 w-6", (evalAnswers[survey.id]?.[q.id] as number) >= n ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground")} />
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                            ) : (
+                                                                <Textarea
+                                                                    value={(evalAnswers[survey.id]?.[q.id] as string) ?? ""}
+                                                                    onChange={(e) => setEvalAnswer(survey.id, q.id, e.target.value)}
+                                                                    placeholder="Votre réponse..."
+                                                                    className="min-h-[60px]"
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <Button disabled={evalSubmitting === survey.id} onClick={() => submitEvaluation(survey)}>
+                                                    {evalSubmitting === survey.id ? "Envoi..." : "Envoyer ma réponse"}
+                                                </Button>
+                                            </>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            )
+                        })
+                    )}
+                </div>
+            )}
 
             {/* ── Nouvelle demande de congé ── */}
             <Dialog open={leaveOpen} onOpenChange={setLeaveOpen}>
