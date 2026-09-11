@@ -298,7 +298,7 @@ function MessagesContent() {
                                         <h3 className="font-medium text-foreground truncate">{conversation.name}</h3>
                                         <div className="flex items-center space-x-1">
                                             {conversation.unreadCount > 0 && (
-                                                <Badge className="bg-primary text-primary-foreground text-xs px-2 py-1">
+                                                <Badge className="bg-brand-gradient text-white text-xs px-2 py-1">
                                                     {conversation.unreadCount}
                                                 </Badge>
                                             )}
@@ -412,10 +412,14 @@ function MessagesContent() {
                                     className={`flex ${message.senderId === currentUserId ? "justify-end" : "justify-start"}`}
                                 >
                                     <div
-                                        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${message.senderId === currentUserId
-                                                ? "bg-primary text-primary-foreground"
-                                                : "bg-muted text-foreground"
-                                            }`}
+                                        className={cn(
+                                            // Bulle façon WhatsApp : coins arrondis, sauf celui qui pointe vers
+                                            // l'expéditeur (queue de bulle) pour marquer la direction du message.
+                                            "max-w-xs lg:max-w-md px-4 py-2 rounded-2xl",
+                                            message.senderId === currentUserId
+                                                ? "bg-brand-gradient text-white rounded-br-sm"
+                                                : "bg-muted text-foreground rounded-bl-sm",
+                                        )}
                                     >
                                         {message.content && <p className="text-sm">{message.content}</p>}
                                         {message.attachment && (
@@ -423,7 +427,7 @@ function MessagesContent() {
                                                 href={message.attachment.url || undefined}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className={`mt-1.5 flex items-center gap-2 rounded-lg px-2.5 py-2 transition-colors ${message.pending ? "pointer-events-none opacity-70" : ""} ${message.senderId === currentUserId ? "bg-primary-foreground/15 hover:bg-primary-foreground/25" : "bg-background hover:bg-background/70"
+                                                className={`mt-1.5 flex items-center gap-2 rounded-lg px-2.5 py-2 transition-colors ${message.pending ? "pointer-events-none opacity-70" : ""} ${message.senderId === currentUserId ? "bg-white/15 hover:bg-white/25" : "bg-background hover:bg-background/70"
                                                     }`}
                                             >
                                                 {message.pending
@@ -431,14 +435,14 @@ function MessagesContent() {
                                                     : <FileText className="w-4 h-4 shrink-0" />}
                                                 <span className="min-w-0 flex-1">
                                                     <span className="block truncate text-xs font-medium">{message.attachment.name}</span>
-                                                    <span className={`block text-[10px] ${message.senderId === currentUserId ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                                                    <span className={`block text-[10px] ${message.senderId === currentUserId ? "text-white/70" : "text-muted-foreground"}`}>
                                                         {message.pending ? "Envoi…" : formatSize(message.attachment.size)}
                                                     </span>
                                                 </span>
                                             </a>
                                         )}
                                         <p
-                                            className={`text-xs mt-1 ${message.senderId === currentUserId ? "text-primary-foreground/70" : "text-muted-foreground"
+                                            className={`text-xs mt-1 ${message.senderId === currentUserId ? "text-white/70" : "text-muted-foreground"
                                                 }`}
                                         >
                                             {formatRelative(message.createdAt)}
@@ -502,7 +506,7 @@ function MessagesContent() {
                                 </div>
                                 <Button
                                     onClick={sendMessage}
-                                    className="bg-primary hover:bg-primary/90"
+                                    className="bg-brand-gradient hover:bg-brand-gradient-hover"
                                     disabled={sending || (!newMessage.trim() && !pendingFile)}
                                 >
                                     {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
