@@ -3,7 +3,7 @@ import { ApiResponse } from "@/lib/@types/api"
 
 async function requestWithFallback<T>(
     endpoints: string[],
-    method: "GET" | "POST" | "PUT",
+    method: "GET" | "POST" | "PUT" | "DELETE",
     data?: any,
 ) {
     let lastError: any
@@ -98,6 +98,41 @@ export const messageService = {
             ],
             "POST",
             { candidatureId },
+        )
+    },
+
+    markAsUnread: async (conversationId: string) => {
+        return requestWithFallback<ApiResponse<null>>(
+            [
+                `/messages/conversations/${conversationId}/unread`,
+                `/conversations/${conversationId}/unread`,
+                `/message/conversations/${conversationId}/unread`,
+            ],
+            "PUT",
+        )
+    },
+
+    /** Sans argument, bascule l'état courant (même comportement que l'étoile de l'en-tête). */
+    setStarred: async (conversationId: string, starred?: boolean) => {
+        return requestWithFallback<ApiResponse<any>>(
+            [
+                `/messages/conversations/${conversationId}/star`,
+                `/conversations/${conversationId}/star`,
+                `/message/conversations/${conversationId}/star`,
+            ],
+            "PUT",
+            typeof starred === "boolean" ? { starred } : undefined,
+        )
+    },
+
+    deleteConversation: async (conversationId: string) => {
+        return requestWithFallback<ApiResponse<null>>(
+            [
+                `/messages/conversations/${conversationId}`,
+                `/conversations/${conversationId}`,
+                `/message/conversations/${conversationId}`,
+            ],
+            "DELETE",
         )
     },
 }
