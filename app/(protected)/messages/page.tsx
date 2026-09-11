@@ -4,12 +4,31 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Search, Send, Paperclip, Star, MoreHorizontal, Bell, ChevronLeft, FileText, X, Loader2 } from "lucide-react"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Search, Send, Paperclip, Star, MoreHorizontal, MailOpen, RefreshCw, Trash2, Bell, ChevronLeft, FileText, X, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { messageService } from "@/lib/api/message.service"
 import { useAuth } from "@/contexts/auth-context"
 import { useState, useEffect, useRef, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
+import { cn } from "@/lib/utils"
+import { extractApiErrorMessage } from "@/lib/api-error"
 
 interface Attachment {
     name: string
