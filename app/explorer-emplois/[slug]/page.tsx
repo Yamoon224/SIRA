@@ -376,17 +376,21 @@ export default function JobDetailPage() {
 
                         {/* RIGHT - sidebar */}
                         <div className="space-y-4">
+                            {/* Image de couverture de l'offre : indépendante de la présence d'une
+                                entreprise (une offre sans entreprise rattachée peut avoir sa
+                                propre image, voir AdminJobsController/JobOfferService). */}
+                            {(job.image || job.company?.coverImage) && (
+                                <img
+                                    src={formatFileUrl(job.image || job.company?.coverImage)}
+                                    alt={job.title}
+                                    className="w-full h-28 object-cover rounded-2xl border border-[#e8eef6] dark:border-border"
+                                    onError={(e) => { e.currentTarget.style.display = "none" }}
+                                />
+                            )}
+
                             {/* Company card */}
                             {job.company && (
                                 <div className="bg-white dark:bg-card rounded-2xl border border-[#e8eef6] dark:border-border overflow-hidden">
-                                    {(job.image || job.company.coverImage) && (
-                                        <img
-                                            src={formatFileUrl(job.image || job.company.coverImage)}
-                                            alt={job.company.name}
-                                            className="w-full h-28 object-cover"
-                                            onError={(e) => { e.currentTarget.style.display = "none" }}
-                                        />
-                                    )}
                                     <div className="p-4">
                                         <div className="flex items-center gap-3 mb-3">
                                             <CompanyLogo name={job.company.name} logo={job.company.logo} className="w-10 h-10 rounded-xl text-[13px] flex-shrink-0 border border-[#e8eef6] dark:border-border" />
