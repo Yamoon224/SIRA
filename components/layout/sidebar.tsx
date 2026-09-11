@@ -103,19 +103,17 @@ export function Sidebar() {
 
     const sectionHasActive = (section: NavSection) => section.items.some((it) => it.href === pathname)
 
-    // Ouvre d'emblée la première catégorie + celle qui contient la page courante.
-    // Les sections sont repérées par leur clé de traduction, stable d'une
-    // langue à l'autre : changer de langue ne referme pas les accordéons.
-    const [openSections, setOpenSections] = useState<TranslationKey[]>(() => {
+    // Un seul groupe ouvert à la fois : en ouvrir un referme les autres.
+    // Au chargement, priorité à celle qui contient la page courante, sinon
+    // la première catégorie. La section est repérée par sa clé de traduction,
+    // stable d'une langue à l'autre : changer de langue ne referme pas l'accordéon.
+    const [openSection, setOpenSection] = useState<TranslationKey | null>(() => {
         const labeled = navSections.filter((s) => s.labelKey) as (NavSection & { labelKey: TranslationKey })[]
-        const initial = new Set<TranslationKey>()
-        if (labeled[0]) initial.add(labeled[0].labelKey)
-        labeled.forEach((s) => sectionHasActive(s) && initial.add(s.labelKey))
-        return [...initial]
+        return labeled.find((s) => sectionHasActive(s))?.labelKey ?? labeled[0]?.labelKey ?? null
     })
 
     const toggle = (key: TranslationKey) =>
-        setOpenSections((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]))
+        setOpenSection((prev) => (prev === key ? null : key))
 
     // Icône sur le menu (section) uniquement : les sous-menus (items d'une
     // section repliable) n'en affichent plus, pour ne pas doubler le repère
@@ -157,7 +155,7 @@ export function Sidebar() {
                         )
                     }
 
-                    const isOpen = openSections.includes(section.labelKey)
+                    const isOpen = openSection === section.labelKey
                     const hasActive = sectionHasActive(section)
                     const SectionIcon = section.icon
 
