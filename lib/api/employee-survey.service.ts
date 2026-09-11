@@ -17,6 +17,8 @@ export interface IEmployeeSurvey {
     status: SurveyStatus
     dueDate: string | null
     department: string | null
+    /** Présent sur /me/employee/evaluations : réponse déjà envoyée (une seule fois, définitif). */
+    answered?: boolean
     createdAt: string
 }
 

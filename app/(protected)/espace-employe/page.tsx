@@ -107,7 +107,11 @@ export default function Page() {
                     ])
                     setLeaves(Array.isArray(l) ? l : [])
                     setHrRequests(Array.isArray(r) ? r : [])
-                    setEvaluations(Array.isArray(ev) ? ev : [])
+                    const evList = Array.isArray(ev) ? ev : []
+                    setEvaluations(evList)
+                    // Une évaluation déjà répondue le reste après rechargement :
+                    // le formulaire ne doit pas réapparaître (réponse définitive).
+                    setEvalSubmitted(new Set(evList.filter((s) => s.answered).map((s) => s.id)))
                 }
             } catch (err) {
                 console.error("[espace-employe] load error:", err)
