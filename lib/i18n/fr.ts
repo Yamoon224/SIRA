@@ -226,6 +226,7 @@ export const fr = {
         actionEditProfile: "Modifier mon profil",
         actionFindJob: "Chercher un emploi",
         actionContactSupport: "Contacter support",
+        actionEmployeeSpace: "Mon espace employé",
         recruitingCompanies: "Les entreprises qui recrutent",
         noCompanies: "Aucune entreprise disponible.",
         application: "Candidature",

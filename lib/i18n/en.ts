@@ -225,6 +225,7 @@ export const en: Dictionary = {
         actionEditProfile: "Edit my profile",
         actionFindJob: "Find a job",
         actionContactSupport: "Contact support",
+        actionEmployeeSpace: "My employee space",
         recruitingCompanies: "Companies that are hiring",
         noCompanies: "No company available.",
         application: "Application",
