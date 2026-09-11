@@ -29,12 +29,13 @@ import {
     ClipboardList,
     Video,
     ChevronDown,
-    Plus, Minus,
+    ChevronUp,
+    Wrench,
     type LucideIcon,
 } from "lucide-react"
 
 type NavItem = { key: TranslationKey; href: string; icon: LucideIcon }
-type NavSection = { labelKey?: TranslationKey; items: NavItem[] }
+type NavSection = { labelKey?: TranslationKey; icon?: LucideIcon; items: NavItem[] }
 
 // Regroupé par thématique plutôt qu'une longue liste plate : la première
 // section (accueil) reste toujours visible, les suivantes sont des accordéons
@@ -51,6 +52,7 @@ const navSections: NavSection[] = [
     },
     {
         labelKey: "nav.sectionJob",
+        icon: Briefcase,
         items: [
             { key: "nav.searchJob", href: "/chercher-emploi", icon: Search },
             { key: "nav.myApplications", href: "/mes-offres", icon: Briefcase },
@@ -60,6 +62,7 @@ const navSections: NavSection[] = [
     },
     {
         labelKey: "nav.sectionProfile",
+        icon: User,
         items: [
             { key: "nav.myProfile", href: "/profil", icon: User },
             { key: "nav.createCv", href: "/creer-cv", icon: FileText },
@@ -71,6 +74,7 @@ const navSections: NavSection[] = [
     },
     {
         labelKey: "nav.sectionPrep",
+        icon: GraduationCap,
         items: [
             { key: "nav.interviewSimulation", href: "/simulation-entretien-config", icon: Bot },
             { key: "nav.goriyaPitch", href: "/pitch-goriya", icon: Mic },
@@ -80,6 +84,7 @@ const navSections: NavSection[] = [
     },
     {
         labelKey: "nav.sectionTools",
+        icon: Wrench,
         items: [
             { key: "nav.goriyaChat", href: "/goriya-chat", icon: MessageCircle },
             { key: "nav.internalSurveys", href: "/enquetes-employe", icon: ClipboardList },
@@ -112,7 +117,10 @@ export function Sidebar() {
     const toggle = (key: TranslationKey) =>
         setOpenSections((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]))
 
-    const renderItem = (item: NavItem) => {
+    // Icône sur le menu (section) uniquement : les sous-menus (items d'une
+    // section repliable) n'en affichent plus, pour ne pas doubler le repère
+    // visuel déjà porté par l'icône du menu parent.
+    const renderItem = (item: NavItem, showIcon = true) => {
         const Icon = item.icon
         return (
             <Link
@@ -125,7 +133,7 @@ export function Sidebar() {
                         : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
                 )}
             >
-                <Icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                {showIcon && <Icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />}
                 <span className="truncate">{t(item.key)}</span>
             </Link>
         )
@@ -144,13 +152,14 @@ export function Sidebar() {
                     if (!section.labelKey) {
                         return (
                             <div key={`section-${i}`} className="space-y-1">
-                                {section.items.map(renderItem)}
+                                {section.items.map((item) => renderItem(item))}
                             </div>
                         )
                     }
 
                     const isOpen = openSections.includes(section.labelKey)
                     const hasActive = sectionHasActive(section)
+                    const SectionIcon = section.icon
 
                     return (
                         <div key={section.labelKey} className="mt-4">
@@ -159,25 +168,28 @@ export function Sidebar() {
                                 onClick={() => toggle(section.labelKey as TranslationKey)}
                                 aria-expanded={isOpen}
                                 className={cn(
-                                    "flex w-full items-center justify-between rounded-full px-3 py-2 text-xs font-semibold capitalize tracking-wider transition-colors",
+                                    "flex w-full items-center justify-between rounded-full px-3 py-2 text-sm font-medium transition-colors",
                                     hasActive
                                         ? "text-foreground"
                                         : "text-muted-foreground hover:text-foreground",
                                 )}
                             >
-                                <span className="truncate">{t(section.labelKey)}</span>
+                                <span className="flex min-w-0 items-center gap-3">
+                                    {SectionIcon && <SectionIcon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />}
+                                    <span className="truncate">{t(section.labelKey)}</span>
+                                </span>
 
                                 {isOpen ? (
-                                    <Minus className="h-4 w-4 flex-shrink-0" />
+                                    <ChevronUp className="h-4 w-4 flex-shrink-0" />
                                 ) : (
-                                    <Plus className="h-4 w-4 flex-shrink-0" />
+                                    <ChevronDown className="h-4 w-4 flex-shrink-0" />
                                 )}
                             </button>
                             {/* Filet vertical derrière les sous-entrées, comme la
                                 sidebar de l'app entreprise. */}
                             {isOpen && (
                                 <div className="mt-1 ml-3 space-y-1 border-l border-border pl-3">
-                                    {section.items.map(renderItem)}
+                                    {section.items.map((item) => renderItem(item, false))}
                                 </div>
                             )}
                         </div>
@@ -187,7 +199,7 @@ export function Sidebar() {
 
             <div className="px-2 sm:px-4 pb-4 border-t border-border pt-4">
                 <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-3">Paramètres</div>
-                <div className="space-y-1">{parameterItems.map(renderItem)}</div>
+                <div className="space-y-1">{parameterItems.map((item) => renderItem(item))}</div>
             </div>
         </div>
     )

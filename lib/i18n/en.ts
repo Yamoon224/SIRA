@@ -50,6 +50,7 @@ export const en: Dictionary = {
         training: "Training",
         goriyaChat: "GORIYA Chat",
         internalSurveys: "Internal surveys",
+        employeeSpace: "Employee space",
         sectionJob: "Jobs",
         sectionProfile: "Profile & CV",
         sectionPrep: "Preparation",

@@ -51,6 +51,7 @@ export const fr = {
         training: "Formations",
         goriyaChat: "GORIYA Chat",
         internalSurveys: "Enquêtes internes",
+        employeeSpace: "Espace employé",
         sectionJob: "Emploi",
         sectionProfile: "Profil & CV",
         sectionPrep: "Préparation",

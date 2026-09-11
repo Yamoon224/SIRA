@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { cn, formatFileUrl } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Bell, Settings, User, Menu, LogIn, Briefcase, LayoutDashboard } from "lucide-react"
+import { Bell, Settings, User, Menu, LogIn, Briefcase, LayoutDashboard, UserCog } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
     DropdownMenu,
@@ -22,6 +22,7 @@ import { SearchBar } from "@/components/ui/search-bar"
 import { NotificationBell } from "@/components/notification-bell"
 import { useAuth } from "@/contexts/auth-context"
 import { useT } from "@/contexts/i18n-context"
+import { myEmployeeService } from "@/lib/api/my-employee.service"
 import { AppLogo } from "../app-logo"
 
 const PUBLIC_NAV_LINKS = [
@@ -42,6 +43,9 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
     const { user, logout, isAuthenticated } = useAuth()
     const t = useT()
     const pathname = usePathname()
+    // Lien « Espace employé » : visible seulement si le compte est/a été
+    // employé sur Goriya (voir GET /me/employee, même règle que le dashboard).
+    const [hasEmployeeSpace, setHasEmployeeSpace] = useState(false)
 
     const isActiveLink = (href: string) => {
         const p = pathname ?? ""
@@ -51,6 +55,13 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
     useEffect(() => {
         setMounted(true)
     }, [])
+
+    useEffect(() => {
+        if (!isAuthenticated) { setHasEmployeeSpace(false); return }
+        myEmployeeService.get()
+            .then((me) => setHasEmployeeSpace(!!me))
+            .catch(() => setHasEmployeeSpace(false))
+    }, [isAuthenticated])
 
     const handleLogout = () => {
         logout()
@@ -102,6 +113,18 @@ export function Header({ onToggleSidebar, showMobileMenuButton = false, showLogo
                                                 <Button className="w-full rounded-full gap-2">
                                                     <LayoutDashboard className="w-4 h-4" />
                                                     {t("nav.dashboard")}
+                                                </Button>
+                                            </Link>
+                                        </SheetClose>
+                                    </div>
+                                )}
+                                {mounted && isAuthenticated && hasEmployeeSpace && (
+                                    <div className="mt-2 px-4">
+                                        <SheetClose asChild>
+                                            <Link href="/espace-employe">
+                                                <Button variant="outline" className="w-full rounded-full gap-2">
+                                                    <UserCog className="w-4 h-4" />
+                                                    {t("nav.employeeSpace")}
                                                 </Button>
                                             </Link>
                                         </SheetClose>
