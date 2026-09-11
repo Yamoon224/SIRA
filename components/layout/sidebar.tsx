@@ -26,11 +26,9 @@ import {
     Users2,
     Presentation,
     GraduationCap,
-    ClipboardList,
     Video,
     ChevronDown,
     ChevronUp,
-    Wrench,
     type LucideIcon,
 } from "lucide-react"
 
@@ -48,6 +46,7 @@ const navSections: NavSection[] = [
             { key: "nav.library", href: "/bibliotheque", icon: Library },
             { key: "nav.connect", href: "/connect", icon: Users2 },
             { key: "nav.videoCalls", href: "/appels", icon: Video },
+            { key: "nav.goriyaChat", href: "/goriya-chat", icon: MessageCircle },
         ],
     },
     {
@@ -80,14 +79,6 @@ const navSections: NavSection[] = [
             { key: "nav.goriyaPitch", href: "/pitch-goriya", icon: Mic },
             { key: "nav.aiPresentations", href: "/presentations-ia", icon: Presentation },
             { key: "nav.training", href: "/formations", icon: GraduationCap },
-        ],
-    },
-    {
-        labelKey: "nav.sectionTools",
-        icon: Wrench,
-        items: [
-            { key: "nav.goriyaChat", href: "/goriya-chat", icon: MessageCircle },
-            { key: "nav.internalSurveys", href: "/enquetes-employe", icon: ClipboardList },
         ],
     },
 ]
