@@ -139,6 +139,13 @@ export default function Page() {
                                             {new Date(callSession.scheduledAt).toLocaleString("fr-FR")}
                                         </p>
                                     )}
+
+                                    {/* Session d'une entreprise (entretien) : le candidat est invité, pas hôte. */}
+                                    {callSession.isHost === false && callSession.hostName && (
+                                        <p className="mt-1 text-xs text-muted-foreground">
+                                            Organisé par {callSession.hostName}
+                                        </p>
+                                    )}
                                 </div>
 
                                 {callSession.status !== "ENDED" && (
@@ -155,15 +162,17 @@ export default function Page() {
                                                 : "Rejoindre"}
                                         </Button>
 
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="h-9 gap-1.5 text-xs text-red-500 hover:bg-red-50"
-                                            onClick={() => handleEnd(callSession)}
-                                        >
-                                            <PhoneOff className="h-3.5 w-3.5" />
-                                            Clôturer
-                                        </Button>
+                                        {callSession.isHost !== false && (
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="h-9 gap-1.5 text-xs text-red-500 hover:bg-red-50"
+                                                onClick={() => handleEnd(callSession)}
+                                            >
+                                                <PhoneOff className="h-3.5 w-3.5" />
+                                                Clôturer
+                                            </Button>
+                                        )}
                                     </div>
                                 )}
                             </div>

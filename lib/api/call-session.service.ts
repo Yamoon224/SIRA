@@ -5,6 +5,9 @@ export type CallSessionStatus = "SCHEDULED" | "ACTIVE" | "ENDED"
 export interface ICallSession {
     id: string
     hostId: string
+    /** Faux pour un invité (entretien de recrutement) : il rejoint mais ne clôture pas. */
+    isHost?: boolean
+    hostName?: string | null
     title: string
     roomSlug: string
     scheduledAt: string | null
