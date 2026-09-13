@@ -151,7 +151,10 @@ export function Sidebar() {
                     const SectionIcon = section.icon
 
                     return (
-                        <div key={section.labelKey} className="mt-4">
+                        // mt-1 : même espacement que les entrées sans sous-menu
+                        // (space-y-1 sur "Tableau de bord" - "Messages", etc.) —
+                        // c'était mt-4 (4x plus large) entre chaque section repliable.
+                        <div key={section.labelKey} className="mt-1">
                             <button
                                 type="button"
                                 onClick={() => toggle(section.labelKey as TranslationKey)}
