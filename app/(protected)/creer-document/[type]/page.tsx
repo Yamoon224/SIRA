@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { generateDocumentContent, type DocumentData } from "@/lib/document-generator"
+import { featureUsageService } from "@/lib/api/feature-usage.service"
+import { QuotaExceededNotice } from "@/components/feature-usage/quota-exceeded-notice"
 
 type TemplateField = {
   id: string
@@ -90,6 +92,7 @@ export default function Page() {
   const [previewContent, setPreviewContent] = useState("")
   const [isGenerating, setIsGenerating] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [quotaLimit, setQuotaLimit] = useState<number | null>(null)
 
   const defaultPreview = useMemo(() => getFallbackPreview(formData), [formData])
 
@@ -118,9 +121,23 @@ export default function Page() {
     if (!validateForm()) return
 
     setIsGenerating(true)
-    await new Promise((resolve) => setTimeout(resolve, 400))
-    setPreviewContent(generateDocumentContent(documentType, formData))
-    setIsGenerating(false)
+    setQuotaLimit(null)
+    try {
+      // "Générer des documents" est une fonctionnalité "Limité" (Standard: 5,
+      // Premium: 20) — voir UserFeatureUsageService. Entièrement côté client
+      // (pas de génération serveur), donc consommée ici, au clic, plutôt
+      // qu'après un appel backend qui n'existe pas pour cette fonctionnalité.
+      const usage = await featureUsageService.consume("document_generation")
+      if (!usage.allowed) {
+        setQuotaLimit(usage.limit)
+        return
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 400))
+      setPreviewContent(generateDocumentContent(documentType, formData))
+    } finally {
+      setIsGenerating(false)
+    }
   }
 
   const handleClear = () => {
@@ -198,6 +215,12 @@ export default function Page() {
           >
             {isGenerating ? "Génération..." : "Générer le document"}
           </Button>
+
+          {quotaLimit !== null && (
+            <div className="mt-3">
+              <QuotaExceededNotice featureKey="document_generation" limit={quotaLimit} featureLabel="documents générés" />
+            </div>
+          )}
         </section>
 
         <section className="flex min-h-0 lg:min-h-[548px] flex-col rounded-[12px] border border-[#e5e9f2] dark:border-border bg-white dark:bg-card p-4 sm:p-5">

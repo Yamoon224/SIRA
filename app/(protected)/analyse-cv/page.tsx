@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import type { CVAnalysis } from "@/lib/@types/openai"
 import { AlertCircle, Check, FileText, Sparkles, Target, UploadCloud, X } from "lucide-react"
 import { SubscriptionGate } from "@/components/subscription-gate"
+import { QuotaExceededNotice } from "@/components/feature-usage/quota-exceeded-notice"
 
 const ACCEPTED_TYPES = [
     "application/pdf",
@@ -101,6 +102,7 @@ function AnalyserCVContent() {
     const [isAnalyzing, setIsAnalyzing] = useState(false)
     const [analysis, setAnalysis] = useState<CVAnalysis | null>(null)
     const [error, setError] = useState<string | null>(null)
+    const [quotaLimit, setQuotaLimit] = useState<number | null>(null)
     const [isDragging, setIsDragging] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
 
@@ -143,14 +145,23 @@ function AnalyserCVContent() {
 
         setIsAnalyzing(true)
         setError(null)
+        setQuotaLimit(null)
 
         try {
             const formData = new FormData()
             formData.append("file", cvFile)
 
             const response = await fetch("/api/analyse-cv", { method: "POST", body: formData })
-            const payload = (await response.json()) as { analysis?: CVAnalysis; error?: string }
+            const payload = (await response.json()) as {
+                analysis?: CVAnalysis
+                error?: string
+                requiresReset?: boolean
+                limit?: number
+            }
             if (!response.ok || !payload.analysis) {
+                if (payload.requiresReset) {
+                    setQuotaLimit(payload.limit ?? 0)
+                }
                 throw new Error(payload.error || "L'analyse n'a pas abouti. Réessaie dans un instant.")
             }
             setAnalysis(payload.analysis)
@@ -234,11 +245,17 @@ function AnalyserCVContent() {
                         className="hidden"
                     />
 
-                    {error && (
+                    {error && quotaLimit === null && (
                         <p role="alert" className="mt-4 flex items-start gap-2 text-[13px] leading-relaxed text-[#d9544d]">
                             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                             {error}
                         </p>
+                    )}
+
+                    {quotaLimit !== null && (
+                        <div className="mt-4">
+                            <QuotaExceededNotice featureKey="cv_analysis" limit={quotaLimit} featureLabel="analyses de CV" />
+                        </div>
                     )}
 
                     <div className="mt-5 flex justify-end gap-3">

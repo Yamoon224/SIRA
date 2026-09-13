@@ -7,6 +7,10 @@ export interface CreateCheckoutData {
     successUrl?: string
     errorUrl?: string
     customerPhone?: string
+    /** SUBSCRIPTION (défaut) active le plan payé ; USAGE_RESET remet à 0 le quota de `featureKey`. */
+    purpose?: "SUBSCRIPTION" | "USAGE_RESET"
+    /** Requis quand purpose = USAGE_RESET. */
+    featureKey?: "cv_creation" | "document_generation" | "cv_analysis"
 }
 
 // Kkiapay (widget client) renvoie amount/clientReference ; les gateways à
@@ -42,7 +46,14 @@ export const subscriptionService = {
         }),
 
     checkSubscription: (userId: string) =>
-        apiRequest<{ hasSubscription: boolean; planName: string | null; status: string | null }>({
+        apiRequest<{
+            hasSubscription: boolean
+            planName: string | null
+            status: string | null
+            planId?: string | null
+            planPrice?: number | null
+            tier?: "NONE" | "FREE" | "PAID"
+        }>({
             endpoint: `/subscriptions/check/${userId}`,
             method: "GET",
         }),

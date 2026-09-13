@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { MessageCircle, Mail, Phone, ChevronDown, ChevronRight, Check, Crown, Zap, Loader2, Briefcase, FileUser, Building2, CreditCard } from "lucide-react"
+import { MessageCircle, Mail, Phone, ChevronDown, ChevronRight, Crown, Zap, Loader2, Briefcase, FileUser, Building2, CreditCard } from "lucide-react"
+import { PlanFeatureList } from "@/components/pricing/plan-feature-list"
 import { TawkToChat } from "@/components/tawk-to-chat"
 import { subscriptionService } from "@/lib/api/subscription.service"
 import { useAuth } from "@/contexts/auth-context"
@@ -408,22 +409,7 @@ export default function Page() {
                                                         )}
                                                     </div>
 
-                                                    <ul className="mb-6 flex-1 space-y-2.5">
-                                                        {plan.features.map((f, i) => (
-                                                            <li
-                                                                key={i}
-                                                                className="flex items-center gap-2 text-sm text-[#4e5a6e] dark:text-foreground"
-                                                            >
-                                                                <Check
-                                                                    className={`h-4 w-4 shrink-0 ${isPopular || isPaid
-                                                                        ? "text-[#2f6de6] dark:text-primary"
-                                                                        : "text-[#9aa3b2] dark:text-muted-foreground"
-                                                                        }`}
-                                                                />
-                                                                {f}
-                                                            </li>
-                                                        ))}
-                                                    </ul>
+                                                    <PlanFeatureList planName={plan.name} className="mb-6 flex-1 space-y-2.5" />
 
                                                     <Button
                                                         onClick={() => handleSelectPlan(plan)}

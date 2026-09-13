@@ -7,8 +7,9 @@ import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Check, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { subscriptionService } from "@/lib/api/subscription.service"
+import { PlanFeatureList } from "@/components/pricing/plan-feature-list"
 
 interface IPlan {
   id: string
@@ -94,14 +95,7 @@ export default function OffresPage() {
                         {plan.price === 0 ? "Commencer gratuitement" : "Choisir ce plan"}
                       </Button>
                     </Link>
-                    <div className="space-y-3">
-                      {plan.features.map((feature) => (
-                        <div key={feature} className="flex items-start gap-2">
-                          <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                          <span className="text-sm">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
+                    <PlanFeatureList planName={plan.name} className="space-y-3" />
                   </CardContent>
                 </Card>
               )

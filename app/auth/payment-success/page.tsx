@@ -15,6 +15,13 @@ export default function PaymentSuccessPage() {
     const [state, setState] = useState<State>("loading")
     const [errorMsg, setErrorMsg] = useState("")
 
+    // Réinitialisation d'un quota "Limité" (purpose=USAGE_RESET, voir
+    // QuotaExceededNotice) plutôt qu'un abonnement : même page de retour,
+    // mais on revient sur la page d'origine (returnTo) au lieu du dashboard,
+    // sans le message "abonnement actif".
+    const isUsageReset = params.get("purpose") === "USAGE_RESET"
+    const returnTo = params.get("returnTo") ? decodeURIComponent(params.get("returnTo") as string) : "/dashboard"
+
     useEffect(() => {
         const userId = params.get("userId")
         const planId = params.get("planId")
@@ -63,10 +70,10 @@ export default function PaymentSuccessPage() {
 
     useEffect(() => {
         if (state === "success") {
-            const t = setTimeout(() => router.push("/dashboard"), 3000)
+            const t = setTimeout(() => router.push(returnTo), 3000)
             return () => clearTimeout(t)
         }
-    }, [state, router])
+    }, [state, router, returnTo])
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4">
@@ -89,14 +96,16 @@ export default function PaymentSuccessPage() {
                         <div>
                             <h1 className="text-2xl font-bold text-foreground">Paiement réussi !</h1>
                             <p className="text-muted-foreground text-sm mt-1">
-                                Ton abonnement est maintenant actif. Redirection en cours…
+                                {isUsageReset
+                                    ? "Tes tentatives sont réinitialisées. Redirection en cours…"
+                                    : "Ton abonnement est maintenant actif. Redirection en cours…"}
                             </p>
                         </div>
                         <Button
-                            onClick={() => router.push("/dashboard")}
+                            onClick={() => router.push(returnTo)}
                             className="rounded-full bg-brand-gradient hover:bg-brand-gradient-hover text-white px-8"
                         >
-                            Accéder au tableau de bord
+                            {isUsageReset ? "Continuer" : "Accéder au tableau de bord"}
                         </Button>
                     </>
                 )}

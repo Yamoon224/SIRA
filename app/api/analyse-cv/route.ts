@@ -70,6 +70,25 @@ async function checkSubscription(userId: string): Promise<{ hasSubscription: boo
     return res.json()
 }
 
+type UsageStatus = { allowed: boolean; used: number; remaining: number; limit: number }
+
+/** Quota du forfait actif (Grouilleur: 2, Standard: 5, Premium: 20) — voir UserFeatureUsageService. */
+async function checkAuthedUsageStatus(accessToken: string): Promise<UsageStatus> {
+    const res = await fetch(`${BACKEND}/me/feature-usage/cv_analysis`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+    })
+    return res.json()
+}
+
+/** Consommée uniquement après le succès de l'analyse, comme le quota anonyme. */
+async function consumeAuthedUsage(accessToken: string): Promise<UsageStatus> {
+    const res = await fetch(`${BACKEND}/me/feature-usage/cv_analysis/consume`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${accessToken}` },
+    })
+    return res.json()
+}
+
 // ─── Main handler ─────────────────────────────────────────────────────────────
 
 export async function POST(request: Request) {
@@ -119,7 +138,30 @@ export async function POST(request: Request) {
             )
         }
 
-        return await runAnalysis(file, null)
+        // Quota du forfait actif (Grouilleur: 2/mois, Standard: 5,
+        // Premium: 20) — vérifié avant l'appel IA, sans le consommer
+        // (voir consumeAuthedUsage, appelée seulement après succès).
+        const accessToken = (session?.user as any)?.access_token as string | undefined
+        if (accessToken) {
+            const usage = await checkAuthedUsageStatus(accessToken)
+            if (!usage.allowed) {
+                return NextResponse.json(
+                    {
+                        error:
+                            usage.limit > 0
+                                ? `Tu as utilisé tes ${usage.limit} analyses de CV incluses dans ton forfait ce mois-ci.`
+                                : "L'analyse de CV n'est pas incluse dans ton forfait actuel.",
+                        requiresReset: usage.limit > 0,
+                        used: usage.used,
+                        remaining: usage.remaining,
+                        limit: usage.limit,
+                    },
+                    { status: 403 },
+                )
+            }
+        }
+
+        return await runAnalysis(file, null, accessToken)
     } catch (error) {
         console.error("Erreur API analyse-cv:", error)
         return NextResponse.json({ error: "Impossible d'analyser le CV pour le moment." }, { status: 500 })
@@ -129,6 +171,7 @@ export async function POST(request: Request) {
 async function runAnalysis(
     file: File,
     anonymous: { deviceId: string } | null,
+    authedAccessToken?: string,
 ) {
     const fileType = file.type.toLowerCase()
     let cvText = ""
@@ -187,10 +230,16 @@ async function runAnalysis(
     const parsed = JSON.parse(content)
     const analysis = sanitizeAnalysis(parsed)
 
-    // Le quota gratuit n'est consommé qu'ici, une fois l'analyse effectivement réussie -
-    // un échec (extraction, OpenAI, parsing) ne pénalise plus l'utilisateur anonyme.
+    // Le quota (gratuit ou de forfait) n'est consommé qu'ici, une fois
+    // l'analyse effectivement réussie - un échec (extraction, OpenAI,
+    // parsing) ne pénalise pas l'utilisateur.
     if (anonymous) {
         const usage = await consumeAnonymousUse(anonymous.deviceId)
+        return NextResponse.json({ analysis, usage })
+    }
+
+    if (authedAccessToken) {
+        const usage = await consumeAuthedUsage(authedAccessToken)
         return NextResponse.json({ analysis, usage })
     }
 

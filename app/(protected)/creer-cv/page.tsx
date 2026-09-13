@@ -28,6 +28,8 @@ import { useAuth } from "@/contexts/auth-context"
 import { cvService, type CvCompetence, type CvContent, type CvExperience, type CvFormation } from "@/lib/api/cv.service"
 import { resumeService } from "@/lib/api/resume.service"
 import { formatDerniereSauvegarde } from "@/lib/cv-draft"
+import { featureUsageService } from "@/lib/api/feature-usage.service"
+import { QuotaExceededNotice } from "@/components/feature-usage/quota-exceeded-notice"
 import {
     INDICATIF_PAR_DEFAUT,
     LOCALISATIONS,
@@ -264,6 +266,7 @@ function CreerCVContent() {
     const [saveState, setSaveState] = useState<SaveState>("idle")
     const [confirmDelete, setConfirmDelete] = useState(false)
     const [enregistrementBibliotheque, setEnregistrementBibliotheque] = useState(false)
+    const [quotaLimit, setQuotaLimit] = useState<number | null>(null)
     const router = useRouter()
     const hydrated = useRef(false)
 
@@ -530,7 +533,18 @@ function CreerCVContent() {
         }
 
         setEnregistrementBibliotheque(true)
+        setQuotaLimit(null)
         try {
+            // Pré-vérification : le créateur de CV est une fonctionnalité
+            // "Limité" (Standard: 5, Premium: 20) — voir UserFeatureUsageService.
+            // Le backend revalide (et consomme) au moment de l'upload, cette
+            // vérification n'est qu'un confort évitant de générer le PDF pour rien.
+            const usage = await featureUsageService.status("cv_creation")
+            if (!usage.allowed) {
+                setQuotaLimit(usage.limit)
+                return
+            }
+
             const { content, filename } = construireCv()
             const nom = `CV ${formData.nom.trim()}`
             await resumeService.upload(generatePDFFile(content, filename), nom, "builder")
@@ -926,6 +940,12 @@ function CreerCVContent() {
                         Télécharger
                     </Button>
                 </div>
+
+                {quotaLimit !== null && (
+                    <div className="mx-auto mt-4 w-full max-w-[520px]">
+                        <QuotaExceededNotice featureKey="cv_creation" limit={quotaLimit} featureLabel="CV créés" />
+                    </div>
+                )}
 
                 <div className="mt-3 flex flex-col items-center gap-1">
                     {saveState === "saving" && <p className="text-[11px] text-[#aab2c2] dark:text-muted-foreground">Enregistrement…</p>}

@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Check, Zap } from "lucide-react"
+import { Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/contexts/auth-context"
 import { useT } from "@/contexts/i18n-context"
 import { subscriptionService } from "@/lib/api/subscription.service"
 import { toast } from "sonner"
+import { PlanFeatureList } from "@/components/pricing/plan-feature-list"
 
 interface Plan {
     id: string
@@ -153,14 +154,7 @@ export default function PlanPage() {
                                         </p>
                                     </div>
 
-                                    <ul className="space-y-2 mb-6 flex-1">
-                                        {plan.features.map((f, i) => (
-                                            <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                <Check className={`w-4 h-4 shrink-0 ${isPaid ? "text-[#2f6de6] dark:text-primary" : "text-gray-400 dark:text-muted-foreground"}`} />
-                                                {f}
-                                            </li>
-                                        ))}
-                                    </ul>
+                                    <PlanFeatureList planName={plan.name} className="mb-6 flex-1 space-y-2" />
 
                                     <Button
                                         onClick={() => handleSelectPlan(plan)}
