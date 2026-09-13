@@ -311,7 +311,7 @@ function ScoreRow({ label, value }: { label: string; value: number }) {
 
 export default function Page() {
     return (
-        <SubscriptionGate featureLabel="Pitch Goriya">
+        <SubscriptionGate featureLabel="Pitch Goriya" feature="Goriya Pitch">
             <PitchGoriyaContent />
         </SubscriptionGate>
     )

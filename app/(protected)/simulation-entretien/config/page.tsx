@@ -140,7 +140,7 @@ function SimulationConfigContent() {
 
 export default function SimulationConfigPage() {
     return (
-        <SubscriptionGate featureLabel="la configuration d'entretien IA">
+        <SubscriptionGate featureLabel="la configuration d'entretien IA" feature="Simulation d'entretien">
             <SimulationConfigContent />
         </SubscriptionGate>
     )

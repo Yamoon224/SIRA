@@ -46,3 +46,19 @@ export const USER_PLAN_FEATURE_MATRIX: PlanFeatureRow[] = [
     },
     { label: "Goriya Chat", values: { Grouilleur: true, Standard: true, Premium: true } },
 ]
+
+/**
+ * Un forfait donné inclut-il `featureLabel` (une ligne de
+ * USER_PLAN_FEATURE_MATRIX) ? Sert de garde-fou (SubscriptionGate) en plus
+ * de l'affichage marketing — Grouilleur est un abonnement actif (prix 0,
+ * `hasSubscription: true`) mais ne doit pas ouvrir les pages réservées à
+ * Standard/Premium (voir le bug : Grouilleur avait accès aux pages
+ * Standard/Premium faute de vérifier autre chose que "un abonnement existe").
+ */
+export function planIncludesFeature(planName: string | null | undefined, featureLabel: string): boolean {
+    if (!planName) return false
+    const row = USER_PLAN_FEATURE_MATRIX.find((r) => r.label === featureLabel)
+    if (!row) return false
+    const value = row.values[planName as keyof PlanFeatureRow["values"]]
+    return value !== undefined && value !== false
+}

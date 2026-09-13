@@ -494,7 +494,7 @@ function SimulationEntretienContent() {
 
 export default function Page() {
     return (
-        <SubscriptionGate featureLabel="la simulation d'entretien IA">
+        <SubscriptionGate featureLabel="la simulation d'entretien IA" feature="Simulation d'entretien">
             {/* useSearchParams exige une frontière Suspense au prérendu. */}
             <Suspense fallback={null}>
                 <SimulationEntretienContent />

@@ -998,7 +998,7 @@ function CreerCVContent() {
 
 export default function Page() {
     return (
-        <SubscriptionGate featureLabel="la création de CV assistée par IA">
+        <SubscriptionGate featureLabel="la création de CV assistée par IA" feature="Créer un CV">
             <CreerCVContent />
         </SubscriptionGate>
     )

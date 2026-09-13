@@ -210,7 +210,7 @@ function PresentationsIaContent() {
 
 export default function Page() {
     return (
-        <SubscriptionGate featureLabel="Présentations & Schémas IA">
+        <SubscriptionGate featureLabel="Présentations & Schémas IA" feature="Goriya Docs">
             <PresentationsIaContent />
         </SubscriptionGate>
     )

@@ -189,7 +189,7 @@ function ListSection({ title, items }: { title: string; items?: string[] }) {
 
 export default function Page() {
     return (
-        <SubscriptionGate featureLabel="Goriya IA Research">
+        <SubscriptionGate featureLabel="Goriya IA Research" feature="Recherche avancée sur une entreprise">
             <RechercheEntrepriseContent />
         </SubscriptionGate>
     )
