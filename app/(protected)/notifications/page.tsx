@@ -21,7 +21,7 @@ interface Notification {
   description: string
   timestamp: string
   isRead: boolean
-  /** Page a ouvrir au clic — null quand la notification ne designe rien. */
+  /** Page a ouvrir au clic - null quand la notification ne designe rien. */
   href: string | null
 }
 

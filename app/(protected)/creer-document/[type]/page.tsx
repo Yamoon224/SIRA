@@ -124,7 +124,7 @@ export default function Page() {
     setQuotaLimit(null)
     try {
       // "Générer des documents" est une fonctionnalité "Limité" (Standard: 5,
-      // Premium: 20) — voir UserFeatureUsageService. Entièrement côté client
+      // Premium: 20) - voir UserFeatureUsageService. Entièrement côté client
       // (pas de génération serveur), donc consommée ici, au clic, plutôt
       // qu'après un appel backend qui n'existe pas pour cette fonctionnalité.
       const usage = await featureUsageService.consume("document_generation")

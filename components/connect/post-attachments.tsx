@@ -76,7 +76,7 @@ export function PostAttachments({ attachments }: { attachments: IPostAttachment[
                         n'affichent pas les PDF en ligne : le bouton « Ouvrir » suffit. */}
                     <object data={formatFileUrl(document.url)} type="application/pdf" className="hidden h-[440px] w-full sm:block" aria-label={`Aperçu de ${document.name}`}>
                         <p className="p-6 text-center text-sm text-muted-foreground">
-                            Aperçu indisponible dans ce navigateur —{" "}
+                            Aperçu indisponible dans ce navigateur -{" "}
                             <a href={formatFileUrl(document.url)} target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:underline">
                                 ouvrir le PDF
                             </a>

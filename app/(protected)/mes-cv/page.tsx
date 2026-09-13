@@ -237,7 +237,7 @@ export default function MesCvPage() {
                                         {brouillon.updatedAt
                                             ? `Brouillon modifié ${formatDerniereSauvegarde(brouillon.updatedAt)}`
                                             : "Brouillon non terminé"}{" "}
-                                        — enregistre-le depuis le créateur pour pouvoir le joindre à une candidature.
+                                        - enregistre-le depuis le créateur pour pouvoir le joindre à une candidature.
                                     </p>
                                 </div>
                             </div>

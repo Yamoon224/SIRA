@@ -536,7 +536,7 @@ function CreerCVContent() {
         setQuotaLimit(null)
         try {
             // Pré-vérification : le créateur de CV est une fonctionnalité
-            // "Limité" (Standard: 5, Premium: 20) — voir UserFeatureUsageService.
+            // "Limité" (Standard: 5, Premium: 20) - voir UserFeatureUsageService.
             // Le backend revalide (et consomme) au moment de l'upload, cette
             // vérification n'est qu'un confort évitant de générer le PDF pour rien.
             const usage = await featureUsageService.status("cv_creation")

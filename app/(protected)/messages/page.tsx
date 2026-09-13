@@ -485,7 +485,7 @@ function MessagesContent() {
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => fileInputRef.current?.click()}
-                                    title="Joindre un fichier (PDF, Word, Excel, texte ou image — 8 Mo max)"
+                                    title="Joindre un fichier (PDF, Word, Excel, texte ou image - 8 Mo max)"
                                     aria-label="Joindre un fichier"
                                 >
                                     <Paperclip className="w-4 h-4" />

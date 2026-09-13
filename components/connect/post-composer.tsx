@@ -27,7 +27,7 @@ interface ImageDraft {
 }
 
 /**
- * Zone « Commencer un post » : texte, jusqu'à 9 images ou un PDF seul — les
+ * Zone « Commencer un post » : texte, jusqu'à 9 images ou un PDF seul - les
  * mêmes règles que PostService côté backend, vérifiées ici pour répondre
  * avant l'envoi.
  */

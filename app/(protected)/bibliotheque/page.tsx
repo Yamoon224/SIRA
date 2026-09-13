@@ -74,9 +74,9 @@ const STATUS_STYLES: Record<string, { label: string; className: string }> = {
 }
 
 const formatDate = (iso: string | null) => {
-    if (!iso) return "—"
+    if (!iso) return "-"
     const date = new Date(iso)
-    return Number.isNaN(date.getTime()) ? "—" : date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+    return Number.isNaN(date.getTime()) ? "-" : date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
 }
 
 export default function BibliothequePage() {
@@ -289,7 +289,7 @@ export default function BibliothequePage() {
         interviews: "Aucun entretien prévu pour le moment.",
         applications: "Tu n'as encore postulé à aucune offre.",
         favorites: "Aucune offre sauvegardée. Clique sur le signet d'une offre pour la retrouver ici.",
-        hired: "Aucune embauche pour le moment — courage, ça vient !",
+        hired: "Aucune embauche pour le moment - courage, ça vient !",
     }
 
     return (
@@ -464,7 +464,7 @@ export default function BibliothequePage() {
                                                     row.role
                                                 )}
                                             </td>
-                                            <td className="px-4 py-4 text-[13px] text-[#7f8796] dark:text-muted-foreground">{row.candidatureId ? formatDate(row.date) : "—"}</td>
+                                            <td className="px-4 py-4 text-[13px] text-[#7f8796] dark:text-muted-foreground">{row.candidatureId ? formatDate(row.date) : "-"}</td>
                                             <td className="px-4 py-4">
                                                 <Badge variant="outline" className={cn("rounded-2xl px-3 py-1 text-[11px]", style.className)}>
                                                     {style.label}

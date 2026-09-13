@@ -72,7 +72,7 @@ async function checkSubscription(userId: string): Promise<{ hasSubscription: boo
 
 type UsageStatus = { allowed: boolean; used: number; remaining: number; limit: number }
 
-/** Quota du forfait actif (Grouilleur: 2, Standard: 5, Premium: 20) — voir UserFeatureUsageService. */
+/** Quota du forfait actif (Grouilleur: 2, Standard: 5, Premium: 20) - voir UserFeatureUsageService. */
 async function checkAuthedUsageStatus(accessToken: string): Promise<UsageStatus> {
     const res = await fetch(`${BACKEND}/me/feature-usage/cv_analysis`, {
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -139,7 +139,7 @@ export async function POST(request: Request) {
         }
 
         // Quota du forfait actif (Grouilleur: 2/mois, Standard: 5,
-        // Premium: 20) — vérifié avant l'appel IA, sans le consommer
+        // Premium: 20) - vérifié avant l'appel IA, sans le consommer
         // (voir consumeAuthedUsage, appelée seulement après succès).
         const accessToken = (session?.user as any)?.access_token as string | undefined
         if (accessToken) {

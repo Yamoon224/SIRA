@@ -11,7 +11,7 @@ interface QuotaExceededNoticeProps {
     featureKey: FeatureUsageKey
     /** Nombre de tentatives incluses dans le forfait actif (0 = fonctionnalité non incluse). */
     limit: number
-    /** Montant XOF de la réinitialisation — voir SubscriptionPlan.resetPrice (500 XOF pour Standard/Premium). */
+    /** Montant XOF de la réinitialisation - voir SubscriptionPlan.resetPrice (500 XOF pour Standard/Premium). */
     resetPrice?: number
     /** Ex. "analyses de CV", "CV créés", "documents générés". */
     featureLabel: string
@@ -20,7 +20,7 @@ interface QuotaExceededNoticeProps {
 /**
  * Affichée quand un quota "Limité" (Créer un CV / Générer des documents /
  * Analyse de CV) est épuisé. Propose de le remettre à 0 via un paiement
- * Paiement Pro dédié (purpose: USAGE_RESET) — voir
+ * Paiement Pro dédié (purpose: USAGE_RESET) - voir
  * SubscriptionService::checkoutUsageReset() et /auth/payment-success qui
  * détecte ce `purpose` pour revenir sur la page d'origine plutôt que
  * /dashboard.

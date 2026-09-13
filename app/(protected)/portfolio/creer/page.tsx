@@ -218,7 +218,7 @@ function PortfolioEditor() {
             const res: any = await portfolioService.uploadPhoto(file)
             const data = res?.data ?? res
             setPhoto({ path: data.path, url: data.url })
-            toast.success("Photo ajoutée — enregistre le portfolio pour la conserver.")
+            toast.success("Photo ajoutée - enregistre le portfolio pour la conserver.")
         } catch (err: any) {
             toast.error(err?.message ?? "Le téléversement de la photo a échoué.")
         } finally {
@@ -688,7 +688,7 @@ function PortfolioEditor() {
                                     <Users className="h-4 w-4 text-gray-500 dark:text-muted-foreground" />
                                     <span className="text-sm">Abonnés</span>
                                 </div>
-                                <span className="font-medium tabular-nums">{followers === null ? "—" : followers.toLocaleString("fr-FR")}</span>
+                                <span className="font-medium tabular-nums">{followers === null ? "-" : followers.toLocaleString("fr-FR")}</span>
                             </div>
                             {!published && <p className="text-xs text-muted-foreground">Les vues sont comptées dès que le portfolio est publié sur ton profil public.</p>}
                         </CardContent>

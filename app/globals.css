@@ -151,7 +151,7 @@
 
 /* `@utility` et non `@layer utilities` : en Tailwind v4, une classe écrite à
    la main dans la couche `utilities` existe telle quelle mais n'accepte aucune
-   variante — `hover:bg-brand-gradient` ou `focus:bg-brand-gradient` ne
+   variante - `hover:bg-brand-gradient` ou `focus:bg-brand-gradient` ne
    généraient donc aucune règle. Déclarée ainsi, l'utilitaire fonctionne avec
    toutes les variantes, comme n'importe quelle classe Tailwind. */
 @utility bg-brand-gradient {

@@ -28,7 +28,7 @@ const STATUS_LABEL: Record<string, { label: string; className: string }> = {
 
 // Les `value` partent au backend comme filtre `status` : ce sont donc les
 // valeurs de App\Enums\CandidatureStatus, pas des libellés. Les onglets
-// envoyaient ACCEPTEE/REFUSEE, absents de l'enum — le filtre ne renvoyait
+// envoyaient ACCEPTEE/REFUSEE, absents de l'enum - le filtre ne renvoyait
 // jamais rien sur ces deux onglets.
 const TABS = [
   { value: "all", label: "Toutes" },
