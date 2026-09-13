@@ -9,6 +9,7 @@ import { Check, MessageSquare, Video, X, type LucideIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { PageHeader } from "@/components/layout/page-header"
 import { cn } from "@/lib/utils"
+import { SubscriptionGate } from "@/components/subscription-gate"
 
 type InterviewMode = "chat" | "video"
 
@@ -41,6 +42,7 @@ export default function SimulationEntretienConfigPage() {
   }
 
   return (
+    <SubscriptionGate featureLabel="la simulation d'entretien IA" feature="Simulation d'entretien">
     <div className="bg-background">
       <div className="mx-auto max-w-2xl">
         <PageHeader
@@ -164,5 +166,6 @@ export default function SimulationEntretienConfigPage() {
         </Card>
       </div>
     </div>
+    </SubscriptionGate>
   )
 }
