@@ -11,13 +11,17 @@ export interface CreateCheckoutData {
     purpose?: "SUBSCRIPTION" | "USAGE_RESET"
     /** Requis quand purpose = USAGE_RESET. */
     featureKey?: "cv_creation" | "document_generation" | "cv_analysis"
+    /** Code promo optionnel — revalidé et recalculé côté serveur. */
+    promoCode?: string
 }
 
 // Kkiapay (widget client) renvoie amount/clientReference ; les gateways à
 // session hébergée (paiementpro, wave, stripe) renvoient une checkoutUrl.
+// originalAmount/discountAmount ne sont présents que si un code promo a été
+// appliqué (voir SubscriptionService::checkout()).
 export type CheckoutResponse =
-    | { amount: number; currency: string; clientReference: string }
-    | { gateway: string; checkoutUrl: string; sessionId: string }
+    | { amount: number; currency: string; clientReference: string; originalAmount?: number; discountAmount?: number }
+    | { gateway: string; checkoutUrl: string; sessionId: string; amount?: number; originalAmount?: number; discountAmount?: number }
 
 export const subscriptionService = {
     getPlans: (userType: "USER" | "ENTREPRISE" = "USER") =>

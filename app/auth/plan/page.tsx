@@ -26,6 +26,7 @@ export default function PlanPage() {
     const [loading, setLoading] = useState(true)
     const [subscribing, setSubscribing] = useState<string | null>(null)
     const [phone, setPhone] = useState("")
+    const [promoCode, setPromoCode] = useState("")
 
     useEffect(() => {
         subscriptionService.getPlans("USER")
@@ -64,14 +65,18 @@ export default function PlanPage() {
                 planId: plan.id,
                 gateway: "paiementpro",
                 customerPhone: phone.trim(),
+                promoCode: promoCode.trim() || undefined,
                 successUrl: `${origin}/auth/payment-success?userId=${user.id}&planId=${plan.id}&gateway=paiementpro`,
                 errorUrl: `${origin}/auth/payment-error?planId=${plan.id}`,
             })
             const data = (res as any)?.data ?? res
             if (!data?.checkoutUrl) throw new Error("checkoutUrl manquante")
+            if (data.discountAmount) {
+                toast.success(`Code promo appliqué : -${Number(data.discountAmount).toLocaleString("fr-FR")} FCFA`)
+            }
             window.location.href = data.checkoutUrl
-        } catch {
-            toast.error(t("plans.paymentError"))
+        } catch (error: any) {
+            toast.error(error?.message || t("plans.paymentError"))
             setSubscribing(null)
         }
     }
@@ -92,7 +97,7 @@ export default function PlanPage() {
                     <p className="text-muted-foreground text-sm">{t("plans.authSubtitle")}</p>
                 </div>
 
-                <div className="mx-auto mb-8 max-w-md">
+                <div className="mx-auto mb-8 max-w-md space-y-3">
                     <input
                         type="tel"
                         inputMode="tel"
@@ -100,6 +105,13 @@ export default function PlanPage() {
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder={t("plans.phonePlaceholder")}
                         className="w-full rounded-full border border-gray-200 dark:border-border px-4 py-2 text-sm outline-none focus:border-[#2f6de6]"
+                    />
+                    <input
+                        type="text"
+                        value={promoCode}
+                        onChange={(e) => setPromoCode(e.target.value)}
+                        placeholder="Code promo (optionnel)"
+                        className="w-full rounded-full border border-gray-200 dark:border-border px-4 py-2 text-sm uppercase outline-none focus:border-[#2f6de6] placeholder:normal-case"
                     />
                 </div>
 
