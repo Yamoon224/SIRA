@@ -1,4 +1,4 @@
-import OpenAI from "openai"
+import Anthropic from "@anthropic-ai/sdk"
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
@@ -40,6 +40,28 @@ function sanitizeAnalysis(payload: any): CVAnalysis {
         keywords: Array.isArray(payload?.keywords) ? payload.keywords.map(String) : [],
         summary: typeof payload?.summary === "string" ? payload.summary : "Analyse terminée",
     }
+}
+
+/** Claude vision n'accepte que ces 4 types - fallback jpeg pour le reste (svg, etc.). */
+function toClaudeMediaType(mimeType: string): "image/jpeg" | "image/png" | "image/gif" | "image/webp" {
+    const allowed = ["image/jpeg", "image/png", "image/gif", "image/webp"] as const
+    return (allowed as readonly string[]).includes(mimeType)
+        ? (mimeType as (typeof allowed)[number])
+        : "image/jpeg"
+}
+
+/**
+ * Claude n'a pas de mode "JSON forcé" équivalent à response_format d'OpenAI -
+ * on extrait le premier bloc JSON de la réponse, en tolérant un habillage
+ * markdown malgré la consigne. Mirroir de parseClaudeJson (backend PHP).
+ */
+function extractJson(text: string): unknown {
+    const cleaned = text.replace(/```(?:json)?\s*|```/g, "").trim()
+    const match = cleaned.match(/\{[\s\S]*\}/)
+    if (!match) {
+        throw new Error("Aucun JSON trouvé dans la réponse IA")
+    }
+    return JSON.parse(match[0])
 }
 
 // ─── Gate helpers ─────────────────────────────────────────────────────────────
@@ -191,47 +213,62 @@ async function runAnalysis(
         return NextResponse.json({ error: "Texte CV manquant après extraction" }, { status: 400 })
     }
 
-    if (!process.env.OPENAI_API_KEY) {
-        return NextResponse.json({ error: "OPENAI_API_KEY non configurée" }, { status: 500 })
+    if (!process.env.ANTHROPIC_API_KEY) {
+        return NextResponse.json({ error: "ANTHROPIC_API_KEY non configurée" }, { status: 500 })
     }
 
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+    // Mirroir de backend/config/services.php (services.anthropic.model) - même
+    // modèle par défaut des deux côtés du monorepo.
+    const model = process.env.CLAUDE_MODEL || "claude-haiku-4-5-20251001"
 
-    const userContent = imageDataUrl
+    const instructions =
+        "Tu es un expert RH. Analyse ce CV / document de candidature et réponds UNIQUEMENT en JSON valide " +
+        "(sans markdown, sans texte avant ou après), avec exactement cette structure : " +
+        '{"score": <entier entre 0 et 100>, "strengths": ["..."], "weaknesses": ["..."], "suggestions": ["..."], "keywords": ["..."], "summary": "..."}'
+
+    const content = imageDataUrl
         ? [
+              { type: "text" as const, text: instructions },
+              {
+                  type: "image" as const,
+                  source: {
+                      type: "base64" as const,
+                      media_type: toClaudeMediaType(file.type),
+                      data: imageDataUrl.slice(imageDataUrl.indexOf(",") + 1),
+                  },
+              },
+          ]
+        : [
               {
                   type: "text" as const,
-                  text: "Analyse ce CV / document de candidature et réponds strictement en JSON valide avec: score (0-100), strengths (string[]), weaknesses (string[]), suggestions (string[]), keywords (string[]), summary (string).",
+                  text: `${instructions}\n\nContenu du CV :\n---\n${cvText.slice(0, 20000)}\n---`,
               },
-              { type: "image_url" as const, image_url: { url: imageDataUrl } },
           ]
-        : `Analyse ce CV / document de candidature:\n${cvText.slice(0, 20000)}`
 
-    const response = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-            {
-                role: "system",
-                content:
-                    "Tu es un expert RH. Analyse ce document et réponds strictement en JSON valide avec: score (0-100), strengths (string[]), weaknesses (string[]), suggestions (string[]), keywords (string[]), summary (string).",
-            },
-            { role: "user", content: userContent },
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.4,
+    const response = await anthropic.messages.create({
+        model,
         max_tokens: 1400,
+        temperature: 0.4,
+        messages: [{ role: "user", content }],
     })
 
-    const content = response.choices[0]?.message?.content
-    if (!content) {
+    const textBlock = response.content.find((block) => block.type === "text")
+    if (!textBlock || textBlock.type !== "text") {
         return NextResponse.json({ error: "Aucune réponse IA reçue" }, { status: 502 })
     }
 
-    const parsed = JSON.parse(content)
+    let parsed: unknown
+    try {
+        parsed = extractJson(textBlock.text)
+    } catch {
+        return NextResponse.json({ error: "Réponse IA invalide" }, { status: 502 })
+    }
+
     const analysis = sanitizeAnalysis(parsed)
 
     // Le quota (gratuit ou de forfait) n'est consommé qu'ici, une fois
-    // l'analyse effectivement réussie - un échec (extraction, OpenAI,
+    // l'analyse effectivement réussie - un échec (extraction, IA,
     // parsing) ne pénalise pas l'utilisateur.
     if (anonymous) {
         const usage = await consumeAnonymousUse(anonymous.deviceId)
