@@ -13,6 +13,7 @@ import { companyService } from "@/lib/api/company.service"
 import { jobService } from "@/lib/api/job.service"
 import { capitalizeFirst, formatFileUrl } from "@/lib/utils"
 import { jobHref } from "@/lib/public-links"
+import { SocialLinkIcon } from "@/components/social-link-icon"
 
 export default function CompanyProfilePage() {
   const params = useParams()
@@ -257,17 +258,9 @@ export default function CompanyProfilePage() {
                 {company.socialLinks?.length > 0 && (
                   <div>
                     <h3 className="font-semibold text-foreground mb-4">Suis-nous sur</h3>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       {company.socialLinks.map((link: string, i: number) => (
-                        <a
-                          key={i}
-                          href={link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center w-9 h-9 bg-[#0a66c2] text-white rounded-lg hover:bg-[#085bb5]"
-                        >
-                          <Globe className="w-4 h-4" />
-                        </a>
+                        <SocialLinkIcon key={i} link={link} />
                       ))}
                     </div>
                   </div>
