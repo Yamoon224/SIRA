@@ -100,13 +100,16 @@ async function checkAnonymousStatus(deviceId: string): Promise<{
     return res.json()
 }
 
-async function consumeAnonymousUse(deviceId: string): Promise<{
+/** `log` (nom du fichier, score) alimente le journal des analyses lu par le backoffice admin. */
+type AnalysisLog = { filename: string; score: number }
+
+async function consumeAnonymousUse(deviceId: string, log: AnalysisLog): Promise<{
     allowed: boolean; used: number; remaining: number; limit: number
 }> {
     const res = await fetch(`${BACKEND}/anonymous-usage/consume`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ deviceId, featureKey: "cv_analysis" }),
+        body: JSON.stringify({ deviceId, featureKey: "cv_analysis", ...log }),
     })
     return res.json()
 }
@@ -128,10 +131,11 @@ async function checkAuthedUsageStatus(accessToken: string): Promise<UsageStatus>
 }
 
 /** Consommée uniquement après le succès de l'analyse, comme le quota anonyme. */
-async function consumeAuthedUsage(accessToken: string): Promise<UsageStatus> {
+async function consumeAuthedUsage(accessToken: string, log: AnalysisLog): Promise<UsageStatus> {
     const res = await fetch(`${BACKEND}/me/feature-usage/cv_analysis/consume`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${accessToken}` },
+        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+        body: JSON.stringify(log),
     })
     return res.json()
 }
@@ -320,13 +324,15 @@ async function runAnalysis(
     // Le quota (gratuit ou de forfait) n'est consommé qu'ici, une fois
     // l'analyse effectivement réussie - un échec (extraction, IA,
     // parsing) ne pénalise pas l'utilisateur.
+    const log: AnalysisLog = { filename: file.name, score: analysis.score }
+
     if (anonymous) {
-        const usage = await consumeAnonymousUse(anonymous.deviceId)
+        const usage = await consumeAnonymousUse(anonymous.deviceId, log)
         return NextResponse.json({ analysis, usage })
     }
 
     if (authedAccessToken) {
-        const usage = await consumeAuthedUsage(authedAccessToken)
+        const usage = await consumeAuthedUsage(authedAccessToken, log)
         return NextResponse.json({ analysis, usage })
     }
 
