@@ -3,25 +3,12 @@
 import type React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Bookmark, CloudOff, Compass, FolderKanban, PlayCircle, UserRound } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useT, type TranslationKey } from "@/contexts/i18n-context"
-
-const TABS: { href: string; key: TranslationKey; icon: React.ComponentType<{ className?: string }>; mobileOnly?: boolean }[] = [
-    { href: "/formations", key: "training.tabs.discover", icon: Compass },
-    { href: "/formations/mes-cours", key: "training.tabs.myCourses", icon: PlayCircle },
-    { href: "/formations/listes", key: "training.tabs.lists", icon: Bookmark },
-    { href: "/formations/mes-projets", key: "training.tabs.projects", icon: FolderKanban },
-    { href: "/formations/hors-ligne", key: "training.tabs.downloads", icon: CloudOff },
-    { href: "/profil", key: "training.tabs.profile", icon: UserRound, mobileOnly: true },
-]
+import { useT } from "@/contexts/i18n-context"
+import { FORMATIONS_TABS, FormationsBottomNav, isFormationsTabActive } from "./_components/formations-nav"
 
 /** Pages de l'espace Formation qui ne sont pas des fiches/lecteurs de cours. */
-const SECTION_PATHS = TABS.map((tab) => tab.href)
-
-function isActive(pathname: string, href: string) {
-    return href === "/formations" ? pathname === "/formations" : pathname.startsWith(href)
-}
+const SECTION_PATHS = FORMATIONS_TABS.map((tab) => tab.path)
 
 /**
  * Navigation propre au module Formation, calquée sur la maquette Dev/School :
@@ -39,11 +26,11 @@ export default function FormationsLayout({ children }: { children: React.ReactNo
         <div className={cn(!inPlayer && "pb-24 lg:pb-0")}>
             {onSectionPage && (
                 <nav className="mb-5 hidden gap-1 overflow-x-auto rounded-full border border-border bg-card p-1 lg:inline-flex">
-                    {TABS.filter((tab) => !tab.mobileOnly).map((tab) => {
-                        const active = isActive(pathname, tab.href)
+                    {FORMATIONS_TABS.filter((tab) => !tab.mobileOnly).map((tab) => {
+                        const active = isFormationsTabActive(pathname, tab.path)
                         return (
                             <Link
-                                key={tab.href}
+                                key={tab.path}
                                 href={tab.href}
                                 className={cn(
                                     "flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-[13px] font-medium transition-colors",
@@ -60,29 +47,7 @@ export default function FormationsLayout({ children }: { children: React.ReactNo
 
             {children}
 
-            {!inPlayer && (
-                <nav
-                    className="fixed inset-x-3 bottom-3 z-40 flex items-center justify-around rounded-full bg-brand-gradient px-2 py-1.5 shadow-lg lg:hidden"
-                    style={{ marginBottom: "env(safe-area-inset-bottom)" }}
-                >
-                    {TABS.filter((tab) => tab.href !== "/formations/hors-ligne").map((tab) => {
-                        const active = isActive(pathname, tab.href)
-                        return (
-                            <Link
-                                key={tab.href}
-                                href={tab.href}
-                                className={cn(
-                                    "flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-full py-1 text-[10px] font-medium text-white/75",
-                                    active && "bg-white/20 text-white",
-                                )}
-                            >
-                                <tab.icon className="h-5 w-5" />
-                                <span className="truncate">{t(tab.key)}</span>
-                            </Link>
-                        )
-                    })}
-                </nav>
-            )}
+            {!inPlayer && <FormationsBottomNav pathname={pathname} />}
         </div>
     )
 }

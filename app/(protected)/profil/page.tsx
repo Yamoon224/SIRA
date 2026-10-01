@@ -25,6 +25,7 @@ import {
 } from "@/lib/api/public-profile.service"
 import { useAuth } from "@/contexts/auth-context"
 import { CvProfileSections } from "@/components/cv-profile-sections"
+import { FormationsBottomNav, FROM_FORMATIONS_PARAM } from "@/app/(protected)/formations/_components/formations-nav"
 import { capitalizeFirst, formatFileUrl } from "@/lib/utils"
 
 const THEME_LABELS: Record<ProfileTheme, string> = {
@@ -308,6 +309,14 @@ export default function ProfilePage() {
     const [profile, setProfile] = useState<ProfileData | null>(null)
     const [portfolios, setPortfolios] = useState<IPortfolio[]>([])
     const [portfoliosLoading, setPortfoliosLoading] = useState(true)
+    // Arrivée depuis l'onglet « Profil » du module Formation : on garde sa
+    // barre du bas pour pouvoir revenir aux cours. Lu dans un effet plutôt
+    // qu'avec useSearchParams, qui imposerait une frontière Suspense.
+    const [fromFormations, setFromFormations] = useState(false)
+
+    useEffect(() => {
+        setFromFormations(window.location.search.includes(FROM_FORMATIONS_PARAM))
+    }, [])
 
     useEffect(() => {
         userService
@@ -351,7 +360,9 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="mx-auto max-w-4xl space-y-6">
+        <div className={`mx-auto max-w-4xl space-y-6 ${fromFormations ? "pb-24 lg:pb-0" : ""}`}>
+            {fromFormations && <FormationsBottomNav pathname="/profil" />}
+
             {/* Profile Header */}
             <Card>
                 <CardContent className="p-4 sm:p-6">

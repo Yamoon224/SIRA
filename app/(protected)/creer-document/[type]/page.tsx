@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { SubscriptionGate } from "@/components/subscription-gate"
 import { useParams } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -83,7 +84,7 @@ kk,
 kk`
 }
 
-export default function Page() {
+function CreerDocumentContent() {
   const params = useParams()
   const documentType = params.type as string
   const template = documentTemplates[documentType]
@@ -255,5 +256,13 @@ export default function Page() {
         </section>
       </div>
     </div>
+  )
+}
+
+export default function Page() {
+  return (
+    <SubscriptionGate featureLabel="la génération de documents" feature="Générer des documents">
+      <CreerDocumentContent />
+    </SubscriptionGate>
   )
 }
