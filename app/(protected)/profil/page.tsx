@@ -24,6 +24,7 @@ import {
     type ProfileTheme,
 } from "@/lib/api/public-profile.service"
 import { useAuth } from "@/contexts/auth-context"
+import { CvProfileSections } from "@/components/cv-profile-sections"
 import { capitalizeFirst, formatFileUrl } from "@/lib/utils"
 
 const THEME_LABELS: Record<ProfileTheme, string> = {
@@ -419,6 +420,8 @@ export default function ProfilePage() {
                     )}
                 </CardContent>
             </Card>
+
+            <CvProfileSections />
 
             {/* Portfolio Section */}
             <Card>
