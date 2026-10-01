@@ -11,19 +11,6 @@ const BACKEND = BACKEND_URL
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-async function extractTextFromPDF(file: File): Promise<string> {
-    const pdfjsLib = await import("pdfjs-dist")
-    const arrayBuffer = await file.arrayBuffer()
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
-    let fullText = ""
-    for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i)
-        const textContent = await page.getTextContent()
-        fullText += textContent.items.map((item: any) => item.str).join(" ") + "\n"
-    }
-    return fullText.trim()
-}
-
 async function toBase64(file: File): Promise<string> {
     // Route serveur (runtime "nodejs") : FileReader n'est pas garanti disponible côté Node,
     // on utilise Buffer qui est fiable dans cet environnement.
@@ -198,9 +185,13 @@ async function runAnalysis(
     const fileType = file.type.toLowerCase()
     let cvText = ""
     let imageDataUrl: string | null = null
+    let pdfBase64: string | null = null
 
     if (fileType.includes("pdf")) {
-        cvText = await extractTextFromPDF(file)
+        // Le PDF est transmis tel quel à Claude (bloc "document") : pdfjs-dist
+        // ne se charge pas côté Node (DOMMatrix absent), et la lecture native
+        // gère aussi les CV scannés, sans couche texte.
+        pdfBase64 = await toBase64(file)
     } else if (fileType.includes("word") || fileType.includes("document")) {
         cvText = await file.text()
     } else if (fileType.includes("image")) {
@@ -209,7 +200,7 @@ async function runAnalysis(
         cvText = await file.text()
     }
 
-    if (!cvText.trim() && !imageDataUrl) {
+    if (!cvText.trim() && !imageDataUrl && !pdfBase64) {
         return NextResponse.json({ error: "Texte CV manquant après extraction" }, { status: 400 })
     }
 
@@ -227,7 +218,19 @@ async function runAnalysis(
         "(sans markdown, sans texte avant ou après), avec exactement cette structure : " +
         '{"score": <entier entre 0 et 100>, "strengths": ["..."], "weaknesses": ["..."], "suggestions": ["..."], "keywords": ["..."], "summary": "..."}'
 
-    const content = imageDataUrl
+    const content = pdfBase64
+        ? [
+              {
+                  type: "document" as const,
+                  source: {
+                      type: "base64" as const,
+                      media_type: "application/pdf" as const,
+                      data: pdfBase64,
+                  },
+              },
+              { type: "text" as const, text: instructions },
+          ]
+        : imageDataUrl
         ? [
               { type: "text" as const, text: instructions },
               {
