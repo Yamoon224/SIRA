@@ -101,7 +101,7 @@ async function checkAnonymousStatus(deviceId: string): Promise<{
 }
 
 /** `log` (nom du fichier, score) alimente le journal des analyses lu par le backoffice admin. */
-type AnalysisLog = { filename: string; score: number }
+type AnalysisLog = { filename: string; score: number; recommendations: string[] }
 
 async function consumeAnonymousUse(deviceId: string, log: AnalysisLog): Promise<{
     allowed: boolean; used: number; remaining: number; limit: number
@@ -324,7 +324,7 @@ async function runAnalysis(
     // Le quota (gratuit ou de forfait) n'est consommé qu'ici, une fois
     // l'analyse effectivement réussie - un échec (extraction, IA,
     // parsing) ne pénalise pas l'utilisateur.
-    const log: AnalysisLog = { filename: file.name, score: analysis.score }
+    const log: AnalysisLog = { filename: file.name, score: analysis.score, recommendations: analysis.suggestions }
 
     if (anonymous) {
         const usage = await consumeAnonymousUse(anonymous.deviceId, log)
