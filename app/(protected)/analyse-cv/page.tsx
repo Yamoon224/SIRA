@@ -6,22 +6,10 @@ import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import type { CVAnalysis } from "@/lib/@types/openai"
+import { analysisErrorMessage, CV_ACCEPT, cvFileError } from "@/lib/cv-file"
 import { AlertCircle, Check, FileText, Sparkles, Target, UploadCloud, X } from "lucide-react"
 import { SubscriptionGate } from "@/components/subscription-gate"
 import { QuotaExceededNotice } from "@/components/feature-usage/quota-exceeded-notice"
-
-const ACCEPTED_TYPES = [
-    "application/pdf",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "image/png",
-    "image/jpeg",
-    "image/jpg",
-    "image/webp",
-]
-
-/** Aligné sur la maquette : « Maximum de 12 MB pour les PDFs ». */
-const MAX_SIZE = 12 * 1024 * 1024
 
 /** Verdict porté par le score : une couleur, un mot. */
 function verdict(score: number) {
@@ -107,12 +95,9 @@ function AnalyserCVContent() {
     const inputRef = useRef<HTMLInputElement>(null)
 
     const acceptFile = (file: File) => {
-        if (!ACCEPTED_TYPES.includes(file.type)) {
-            setError("Ce format n'est pas lisible. Choisis un PDF, un document Word ou une image.")
-            return
-        }
-        if (file.size > MAX_SIZE) {
-            setError(`Ce fichier pèse ${formatSize(file.size)}. La limite est de 12 MB.`)
+        const fileError = cvFileError(file)
+        if (fileError) {
+            setError(fileError)
             return
         }
         setCvFile(file)
@@ -166,7 +151,7 @@ function AnalyserCVContent() {
             }
             setAnalysis(payload.analysis)
         } catch (err) {
-            setError(err instanceof Error ? err.message : "L'analyse n'a pas abouti. Réessaie dans un instant.")
+            setError(analysisErrorMessage(err))
         } finally {
             setIsAnalyzing(false)
         }
@@ -231,7 +216,7 @@ function AnalyserCVContent() {
                                     Téléchargez votre CV ou faites glisser-déposer le fichier ici
                                 </p>
                                 <p className="mt-1.5 text-[12px] text-[#9aa3b5] dark:text-muted-foreground">
-                                    Maximum de 12 MB pour les PDFs
+                                    PDF ou Word (.docx), 4 Mo maximum
                                 </p>
                             </button>
                         )}
@@ -240,7 +225,7 @@ function AnalyserCVContent() {
                     <input
                         ref={inputRef}
                         type="file"
-                        accept=".pdf,.doc,.docx,.png,.jpeg,.jpg,.webp"
+                        accept={CV_ACCEPT}
                         onChange={handleInputChange}
                         className="hidden"
                     />

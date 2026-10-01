@@ -4,8 +4,12 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import type { CVAnalysis, CVProfile } from "@/lib/@types/openai"
 import { BACKEND_URL } from "@/lib/backend-url"
+import { extractDocxText } from "@/lib/docx-text"
 
 export const runtime = "nodejs"
+// L'analyse (lecture du CV + extraction du profil) dépasse la durée par défaut
+// d'une fonction : sans marge, la requête est coupée avant la réponse.
+export const maxDuration = 60
 
 const BACKEND = BACKEND_URL
 
@@ -67,12 +71,19 @@ function sanitizeAnalysis(payload: any): CVAnalysis {
     }
 }
 
-/** Claude vision n'accepte que ces 4 types - fallback jpeg pour le reste (svg, etc.). */
-function toClaudeMediaType(mimeType: string): "image/jpeg" | "image/png" | "image/gif" | "image/webp" {
-    const allowed = ["image/jpeg", "image/png", "image/gif", "image/webp"] as const
-    return (allowed as readonly string[]).includes(mimeType)
-        ? (mimeType as (typeof allowed)[number])
-        : "image/jpeg"
+const DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+/**
+ * Seuls PDF et Word (.docx) sont acceptés. L'extension sert de repli : certains
+ * navigateurs mobiles envoient un type MIME vide ou générique.
+ */
+function detectFormat(file: File): "pdf" | "docx" | "doc" | null {
+    const type = file.type.toLowerCase()
+    const name = file.name.toLowerCase()
+    if (type === "application/pdf" || name.endsWith(".pdf")) return "pdf"
+    if (type === DOCX_MIME || name.endsWith(".docx")) return "docx"
+    if (type === "application/msword" || name.endsWith(".doc")) return "doc"
+    return null
 }
 
 /**
@@ -152,6 +163,18 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Fichier CV manquant" }, { status: 400 })
         }
 
+        // Vérifié avant tout appel au backend : un format refusé ne coûte rien.
+        const format = detectFormat(file)
+        if (format === "doc") {
+            return NextResponse.json(
+                { error: "L'ancien format Word (.doc) n'est pas lisible. Enregistre ton CV en .docx ou en PDF, puis réessaie." },
+                { status: 400 },
+            )
+        }
+        if (!format) {
+            return NextResponse.json({ error: "Format non supporté. Utilise un CV au format PDF ou Word (.docx)." }, { status: 400 })
+        }
+
         // ── AUTH CHECK ────────────────────────────────────────────────────────
         // Session NextAuth httpOnly = unique source de vérité (plus de cookie "auth" custom).
         const session = await getServerSession(authOptions)
@@ -224,26 +247,29 @@ async function runAnalysis(
     anonymous: { deviceId: string } | null,
     authedAccessToken?: string,
 ) {
-    const fileType = file.type.toLowerCase()
     let cvText = ""
-    let imageDataUrl: string | null = null
     let pdfBase64: string | null = null
 
-    if (fileType.includes("pdf")) {
+    if (detectFormat(file) === "pdf") {
         // Le PDF est transmis tel quel à Claude (bloc "document") : pdfjs-dist
         // ne se charge pas côté Node (DOMMatrix absent), et la lecture native
         // gère aussi les CV scannés, sans couche texte.
         pdfBase64 = await toBase64(file)
-    } else if (fileType.includes("word") || fileType.includes("document")) {
-        cvText = await file.text()
-    } else if (fileType.includes("image")) {
-        imageDataUrl = `data:${file.type};base64,${await toBase64(file)}`
     } else {
-        cvText = await file.text()
-    }
-
-    if (!cvText.trim() && !imageDataUrl && !pdfBase64) {
-        return NextResponse.json({ error: "Texte CV manquant après extraction" }, { status: 400 })
+        try {
+            cvText = extractDocxText(Buffer.from(await file.arrayBuffer()))
+        } catch {
+            return NextResponse.json(
+                { error: "Ce document Word est illisible. Enregistre-le de nouveau en .docx ou en PDF, puis réessaie." },
+                { status: 400 },
+            )
+        }
+        if (!cvText.trim()) {
+            return NextResponse.json(
+                { error: "Aucun texte trouvé dans ce document Word. S'il contient une image de ton CV, exporte-le plutôt en PDF." },
+                { status: 400 },
+            )
+        }
     }
 
     if (!process.env.ANTHROPIC_API_KEY) {
@@ -281,18 +307,6 @@ async function runAnalysis(
                   },
               },
               { type: "text" as const, text: instructions },
-          ]
-        : imageDataUrl
-        ? [
-              { type: "text" as const, text: instructions },
-              {
-                  type: "image" as const,
-                  source: {
-                      type: "base64" as const,
-                      media_type: toClaudeMediaType(file.type),
-                      data: imageDataUrl.slice(imageDataUrl.indexOf(",") + 1),
-                  },
-              },
           ]
         : [
               {

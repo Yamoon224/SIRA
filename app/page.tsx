@@ -18,6 +18,7 @@ import { useAuth } from "@/contexts/auth-context"
 import { getDeviceId } from "@/lib/device"
 import { BACKEND_URL } from "@/lib/backend-url"
 import type { CVAnalysis } from "@/lib/@types/openai"
+import { analysisErrorMessage, CV_ACCEPT, cvFileError } from "@/lib/cv-file"
 import { companyHref, jobHref } from "@/lib/public-links"
 
 type GateState = "idle" | "requires_auth" | "requires_subscription"
@@ -162,19 +163,9 @@ export default function Page() {
         const file = event.target.files?.[0]
         if (!file) return
 
-        const allowedTypes = [
-            "application/pdf", "application/msword",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "image/png", "image/jpeg", "image/jpg", "image/webp",
-        ]
-
-        if (!allowedTypes.includes(file.type)) {
-            setUploadError("Format non supporté. Utilise PDF, Word ou image.")
-            event.target.value = ""
-            return
-        }
-        if (file.size > 10 * 1024 * 1024) {
-            setUploadError("Le fichier est trop volumineux (max 10MB).")
+        const fileError = cvFileError(file)
+        if (fileError) {
+            setUploadError(fileError)
             event.target.value = ""
             return
         }
@@ -217,7 +208,7 @@ export default function Page() {
             }))
             router.push("/resultat-analyse-cv")
         } catch (error) {
-            setUploadError(error instanceof Error ? error.message : "Une erreur est survenue pendant l'analyse.")
+            setUploadError(analysisErrorMessage(error))
         } finally {
             setIsAnalyzingCV(false)
             event.target.value = ""
@@ -279,7 +270,7 @@ export default function Page() {
                                 {uploadError && <p className="text-[12px] text-[#ffd4d4]">{uploadError}</p>}
                             </>
                         )}
-                        <input ref={cvInputRef} type="file" accept=".pdf,.doc,.docx,.png,.jpeg,.jpg,.webp" onChange={handleCVUpload} className="hidden" />
+                        <input ref={cvInputRef} type="file" accept={CV_ACCEPT} onChange={handleCVUpload} className="hidden" />
                     </div>
                     <p className="mt-4 sm:mt-6 text-xs sm:text-[13px] text-[#b9d8ff]">Importer votre CV, lettre de motivation ou tout autre document et obtenez un score en quelques secondes.</p>
                 </div>
@@ -362,7 +353,7 @@ export default function Page() {
                     <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 sm:gap-7 mt-8 sm:mt-12 text-center">
                         {[
                             { n: 1, title: "Créer un compte", desc: "Inscription ultra-rapide en 2 clics. Crée ton profil et rejoins la communauté des boostés." },
-                            { n: 2, title: "Télécharger un CV", desc: "Dépose ton CV ou ta lettre de motivation au format PDF, Word ou Docs." },
+                            { n: 2, title: "Télécharger un CV", desc: "Dépose ton CV ou ta lettre de motivation au format PDF ou Word." },
                             { n: 3, title: "Faire valider ton CV par l'IA", desc: "Obtiens ton score IA instantané. Découvre tes forces, tes faiblesses et reçois des conseils de correction immédiats." },
                             { n: 4, title: "Préparer ton entretien", desc: "Entraîne-toi face à la machine. Utilise notre chatbot intelligent ou simule un vrai entretien avec un expert RH pour être prêt le jour J." },
                             { n: 5, title: "Postuler et décrocher le poste", desc: "Décroche ton stage ou ton premier emploi. Postule directement aux offres qui matchent avec ton profil." },
