@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk"
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import type { CVAnalysis } from "@/lib/@types/openai"
+import type { CVAnalysis, CVProfile } from "@/lib/@types/openai"
 import { BACKEND_URL } from "@/lib/backend-url"
 
 export const runtime = "nodejs"
@@ -18,8 +18,46 @@ async function toBase64(file: File): Promise<string> {
     return buffer.toString("base64")
 }
 
+const str = (value: unknown) => (typeof value === "string" ? value.trim() : "")
+const strList = (value: unknown) => (Array.isArray(value) ? value.map(str).filter(Boolean) : [])
+
+function sanitizeProfile(payload: any): CVProfile {
+    const gender = str(payload?.gender)
+    const birthDate = str(payload?.birthDate)
+    return {
+        firstName: str(payload?.firstName),
+        fullName: str(payload?.fullName),
+        title: str(payload?.title),
+        phone: str(payload?.phone),
+        email: str(payload?.email),
+        birthDate: /^\d{4}-\d{2}-\d{2}$/.test(birthDate) ? birthDate : "",
+        gender: gender === "Homme" || gender === "Femme" ? gender : "",
+        desiredJob: str(payload?.desiredJob),
+        experiences: (Array.isArray(payload?.experiences) ? payload.experiences : []).map((e: any) => ({
+            position: str(e?.position),
+            company: str(e?.company),
+            location: str(e?.location),
+            date: str(e?.date),
+            skills: strList(e?.skills),
+            missions: strList(e?.missions),
+        })),
+        skills: strList(payload?.skills),
+        educations: (Array.isArray(payload?.educations) ? payload.educations : []).map((e: any) => ({
+            title: str(e?.title),
+            level: str(e?.level),
+            school: str(e?.school),
+            date: str(e?.date),
+            skills: strList(e?.skills),
+        })),
+        hobbies: strList(payload?.hobbies),
+        linkedin: str(payload?.linkedin),
+        website: str(payload?.website),
+    }
+}
+
 function sanitizeAnalysis(payload: any): CVAnalysis {
     return {
+        profile: sanitizeProfile(payload?.profile),
         score: Math.min(100, Math.max(0, Number(payload?.score ?? 0))),
         strengths: Array.isArray(payload?.strengths) ? payload.strengths.map(String) : [],
         weaknesses: Array.isArray(payload?.weaknesses) ? payload.weaknesses.map(String) : [],
@@ -216,7 +254,17 @@ async function runAnalysis(
     const instructions =
         "Tu es un expert RH. Analyse ce CV / document de candidature et réponds UNIQUEMENT en JSON valide " +
         "(sans markdown, sans texte avant ou après), avec exactement cette structure : " +
-        '{"score": <entier entre 0 et 100>, "strengths": ["..."], "weaknesses": ["..."], "suggestions": ["..."], "keywords": ["..."], "summary": "..."}'
+        '{"score": <entier entre 0 et 100>, "strengths": ["..."], "weaknesses": ["..."], "suggestions": ["..."], "keywords": ["..."], "summary": "...", ' +
+        '"profile": {"firstName": "", "fullName": "", "title": "", "phone": "", "email": "", "birthDate": "", "gender": "", "desiredJob": "", ' +
+        '"experiences": [{"position": "", "company": "", "location": "", "date": "", "skills": [""], "missions": [""]}], ' +
+        '"skills": [""], "educations": [{"title": "", "level": "", "school": "", "date": "", "skills": [""]}], ' +
+        '"hobbies": [""], "linkedin": "", "website": ""}}. ' +
+        "strengths, weaknesses et suggestions : 5 éléments maximum chacun, une phrase courte par élément. " +
+        "\"profile\" reprend uniquement ce qui est écrit dans le CV : n'invente rien, laisse \"\" ou [] quand l'information est absente. " +
+        "firstName = prénom seul ; title = intitulé professionnel affiché en tête du CV ; phone = numéro avec son indicatif s'il figure ; " +
+        "birthDate au format AAAA-MM-JJ ; gender = \"Homme\" ou \"Femme\" seulement s'il est indiqué explicitement ; " +
+        "desiredJob = poste recherché s'il est mentionné ; date = période telle qu'écrite (ex. \"2022 - 2024\") ; " +
+        "experiences et educations de la plus récente à la plus ancienne."
 
     const content = pdfBase64
         ? [
@@ -251,7 +299,7 @@ async function runAnalysis(
 
     const response = await anthropic.messages.create({
         model,
-        max_tokens: 1400,
+        max_tokens: 4000,
         messages: [{ role: "user", content }],
     })
 

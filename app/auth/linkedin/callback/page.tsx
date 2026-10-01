@@ -9,6 +9,7 @@ import { Loader2, XCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AppLogo } from "@/components/app-logo"
 import { authService } from "@/lib/api/auth.service"
+import { syncPendingOnboarding } from "@/lib/cv-onboarding"
 import { consumeLinkedInState, getLinkedInRedirectUri } from "@/lib/linkedin-auth"
 
 /**
@@ -84,6 +85,8 @@ export default function LinkedInCallbackPage() {
                 setStep("Ouverture de la session…")
                 const tokenResult = await signIn("token", { token, redirect: false })
                 if (tokenResult?.error) throw new Error("Erreur lors de la connexion avec LinkedIn")
+
+                await syncPendingOnboarding()
 
                 if (isNewUser) {
                     toast.success("Compte créé avec succès !")

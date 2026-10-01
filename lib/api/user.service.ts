@@ -21,7 +21,7 @@ export const userService = {
     },
 
     /** Mise à jour partielle : seuls les champs fournis sont écrits. */
-    updateMyProfile: async (data: Partial<Pick<MyProfile, "name" | "title" | "location" | "bio">>) => {
+    updateMyProfile: async (data: Partial<Pick<MyProfile, "name" | "title" | "location" | "bio" | "phone">>) => {
         return apiRequest<MyProfile>({ endpoint: "/me/profile", method: "PATCH", data })
     },
 

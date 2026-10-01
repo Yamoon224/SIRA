@@ -16,6 +16,7 @@ import { OTPVerificationModal } from "@/components/modals/otp-verification-modal
 import { initializeGoogleAuth, signInWithGoogle, GOOGLE_CLIENT_ID } from "@/lib/google-auth"
 import { signInWithLinkedIn, LINKEDIN_CLIENT_ID } from "@/lib/linkedin-auth"
 import { authService } from "@/lib/api/auth.service"
+import { getPendingProfile, syncPendingOnboarding } from "@/lib/cv-onboarding"
 
 export default function Page() {
     const router = useRouter()
@@ -51,6 +52,21 @@ export default function Page() {
             }
         }
         initGoogle()
+    }, [])
+
+    // Arrivée depuis le parcours d'analyse de CV (/auth/settings) : on ouvre
+    // l'onglet Inscription, pré-rempli avec le nom et l'e-mail lus sur le CV.
+    useEffect(() => {
+        if (new URLSearchParams(window.location.search).get("tab") !== "signup") return
+        setActiveTab("signup")
+        const pending = getPendingProfile()
+        if (pending) {
+            setFormData((prev) => ({
+                ...prev,
+                name: prev.name || pending.fullName || "",
+                email: prev.email || pending.email || "",
+            }))
+        }
     }, [])
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -104,6 +120,7 @@ export default function Page() {
                 return
             }
 
+            await syncPendingOnboarding()
             toast.success("Connexion réussie !")
             router.replace("/dashboard")
             router.refresh()
@@ -131,6 +148,7 @@ export default function Page() {
             const tokenResult = await signIn("token", { token, redirect: false })
             if (tokenResult?.error) throw new Error("Code de vérification invalide")
 
+            await syncPendingOnboarding()
             setShowOTPModal(false)
             toast.success("Compte vérifié avec succès !")
             router.push(otpContext === "login" ? "/dashboard" : "/auth/plan")
@@ -168,6 +186,8 @@ export default function Page() {
 
             const tokenResult = await signIn("token", { token, redirect: false })
             if (tokenResult?.error) throw new Error("Erreur lors de la connexion avec Google")
+
+            await syncPendingOnboarding()
 
             if (isNewUser) {
                 toast.success("Compte créé avec succès !")
