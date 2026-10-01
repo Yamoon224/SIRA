@@ -18,6 +18,9 @@ export default function OfflinePage() {
                     internet, la page se rechargera automatiquement une fois de retour en ligne.
                 </p>
             </div>
+            <a href="/formations/hors-ligne" className="text-sm font-medium text-primary underline-offset-4 hover:underline">
+                Voir mes leçons téléchargées
+            </a>
         </div>
     )
 }

@@ -37,6 +37,12 @@ export const USER_PLAN_FEATURE_MATRIX: PlanFeatureRow[] = [
     },
     { label: "Goriya Pitch", values: { Grouilleur: false, Standard: false, Premium: true } },
     { label: "Goriya Docs", values: { Grouilleur: false, Standard: false, Premium: true } },
+    // Le catalogue reste ouvert à tous ; ce qui change, c'est l'accès aux
+    // vidéos — voir CourseAccessService côté backend.
+    {
+        label: "Formations",
+        values: { Grouilleur: "Cours gratuits + pass 7 jours", Standard: "Catalogue illimité", Premium: "Catalogue illimité" },
+    },
     { label: "Profil Goriya", values: { Grouilleur: true, Standard: true, Premium: true } },
     { label: "Recherche d'emploi", values: { Grouilleur: true, Standard: true, Premium: true } },
     { label: "Historique de candidature", values: { Grouilleur: true, Standard: true, Premium: true } },
