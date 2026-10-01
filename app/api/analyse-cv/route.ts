@@ -252,7 +252,6 @@ async function runAnalysis(
     const response = await anthropic.messages.create({
         model,
         max_tokens: 1400,
-        temperature: 0.4,
         messages: [{ role: "user", content }],
     })
 
