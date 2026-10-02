@@ -26,7 +26,7 @@ import { SubscriptionGate } from "@/components/subscription-gate"
 import { AutocompleteInput } from "@/components/autocomplete-input"
 import { useAuth } from "@/contexts/auth-context"
 import { cvService, type CvCompetence, type CvContent, type CvExperience, type CvFormation } from "@/lib/api/cv.service"
-import { resumeService } from "@/lib/api/resume.service"
+import { resumeService, type IResume } from "@/lib/api/resume.service"
 import { formatDerniereSauvegarde } from "@/lib/cv-draft"
 import { featureUsageService } from "@/lib/api/feature-usage.service"
 import { QuotaExceededNotice } from "@/components/feature-usage/quota-exceeded-notice"
@@ -343,6 +343,17 @@ function CreerCVContent() {
     const router = useRouter()
     const hydrated = useRef(false)
 
+    // Modification d'un CV déposé (`/creer-cv?cv=<id>`, depuis « Mes CV ») : son
+    // contenu est repris par l'IA et le brouillon du créateur n'est ni lu ni
+    // écrit. `undefined` tant que l'URL n'a pas été lue. `window.location`
+    // plutôt que useSearchParams, qui imposerait une frontière Suspense.
+    const [cvSource, setCvSource] = useState<string | null | undefined>(undefined)
+    const [extraction, setExtraction] = useState<"inactive" | "chargement" | "prete" | "erreur">("inactive")
+    const [erreurExtraction, setErreurExtraction] = useState("")
+    useEffect(() => {
+        setCvSource(new URLSearchParams(window.location.search).get("cv"))
+    }, [])
+
     const writeLocal = useCallback(
         (data: CvContent, s: number, at: string) => {
             try {
@@ -357,7 +368,34 @@ function CreerCVContent() {
     // ── Restauration du brouillon au montage (backend prioritaire, cache local
     //    en repli hors-ligne / non authentifié) ───────────────────────────────
     useEffect(() => {
+        if (cvSource === undefined) return
         let cancelled = false
+
+        if (cvSource) {
+            setExtraction("chargement")
+            const form = new FormData()
+            form.append("resumeId", cvSource)
+            form.append("mode", "edition")
+            fetch("/api/analyse-cv", { method: "POST", body: form })
+                .then(async (reponse) => {
+                    const payload = (await reponse.json()) as { cv?: Record<string, unknown>; error?: string }
+                    if (!reponse.ok || !payload.cv) throw new Error(payload.error || "")
+                    if (cancelled) return
+                    setFormData(normalize(payload.cv))
+                    setStep(0)
+                    setExtraction("prete")
+                })
+                .catch((err: unknown) => {
+                    if (cancelled) return
+                    setErreurExtraction(
+                        (err instanceof Error && err.message) || "Le contenu du CV n'a pas pu être repris. Réessaie dans un instant.",
+                    )
+                    setExtraction("erreur")
+                })
+            return () => {
+                cancelled = true
+            }
+        }
 
         const readLocal = () => {
             try {
@@ -406,7 +444,7 @@ function CreerCVContent() {
             cancelled = true
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [storageKey])
+    }, [storageKey, cvSource])
 
     // ── Sauvegarde automatique (après hydratation) : cache local immédiat +
     //    persistance backend débouncée ───────────────────────────────────────
@@ -578,6 +616,32 @@ function CreerCVContent() {
         if (!formData.nom.trim()) {
             toast.error("Indiquez votre nom avant d'enregistrer le CV.")
             setStep(0)
+            return
+        }
+
+        // CV déposé modifié ici : le PDF régénéré prend la place du fichier
+        // d'origine (même nom, même statut par défaut). Il est envoyé avant que
+        // l'ancien ne soit retiré, pour qu'un envoi refusé ne fasse rien perdre.
+        if (cvSource) {
+            setEnregistrementBibliotheque(true)
+            try {
+                const liste = await resumeService.list()
+                const items = ((liste as any)?.data ?? liste) as IResume[]
+                const original = Array.isArray(items) ? items.find((cv) => cv.id === cvSource) : undefined
+                const nom = (original?.name ?? `CV ${formData.nom.trim()}`).replace(/\.(docx?|pdf)$/i, "")
+                const reponse = await resumeService.upload(cvPdfFile(formData, formData.modele, nomFichierCv()), nom)
+                const nouveau = ((reponse as any)?.data ?? reponse) as IResume
+                if (original) {
+                    if (original.isDefault) await resumeService.update(nouveau.id, { isDefault: true })
+                    await resumeService.remove(original.id)
+                }
+                toast.success("CV mis à jour dans « Mes CV »")
+                router.push("/mes-cv")
+            } catch (err: any) {
+                toast.error(err?.message ?? "L'enregistrement du CV a échoué.")
+            } finally {
+                setEnregistrementBibliotheque(false)
+            }
             return
         }
 
@@ -904,10 +968,33 @@ function CreerCVContent() {
     return (
         <div className="min-h-[calc(100vh-80px)]">
             <div className="border-b border-[#d9dfea] dark:border-border px-4 py-4 sm:px-6">
-                <h1 className="text-2xl sm:text-[32px] font-semibold leading-none text-[#1b2331] dark:text-foreground">Créer CV Intelligent</h1>
+                <h1 className="text-2xl sm:text-[32px] font-semibold leading-none text-[#1b2331] dark:text-foreground">
+                    {cvSource ? "Modifier mon CV" : "Créer CV Intelligent"}
+                </h1>
             </div>
 
-            <div className="mx-auto w-full max-w-[1240px] px-4 py-4 sm:px-6">
+            <div
+                className={`mx-auto w-full max-w-[1240px] px-4 py-4 sm:px-6 ${extraction === "chargement" ? "pointer-events-none opacity-60" : ""}`}
+                aria-busy={extraction === "chargement"}
+            >
+                {extraction === "chargement" && (
+                    <p className="mb-4 flex items-center gap-2 rounded-[10px] border border-[#dfe5f1] bg-[#f8faff] px-4 py-3 text-[12px] text-[#1f4ec2] dark:border-border dark:bg-muted dark:text-primary">
+                        <Loader2 className="h-4 w-4 shrink-0 animate-spin" />
+                        Lecture de ton CV en cours : les champs vont se remplir dans quelques secondes.
+                    </p>
+                )}
+                {extraction === "prete" && (
+                    <p className="mb-4 rounded-[10px] border border-[#dfe5f1] bg-[#f8faff] px-4 py-3 text-[12px] text-[#3d4554] dark:border-border dark:bg-muted dark:text-muted-foreground">
+                        Les champs ont été remplis à partir de ton CV. Vérifie-les, corrige ce qu&apos;il faut, puis clique sur
+                        « Enregistrer les modifications » : le fichier de « Mes CV » sera remplacé par la nouvelle version.
+                    </p>
+                )}
+                {extraction === "erreur" && (
+                    <p className="mb-4 rounded-[10px] border border-[#f3c9c5] bg-[#fdf3f2] px-4 py-3 text-[12px] text-[#b3413a]">
+                        {erreurExtraction} Tu peux remplir les champs à la main ou revenir à « Mes CV ».
+                    </p>
+                )}
+
                 {isMobile ? (
                     // ── Mobile : une étape = un panneau d'accordéon. `step` pilote
                     //    l'ouverture, donc un seul panneau est ouvert à la fois et
@@ -998,14 +1085,18 @@ function CreerCVContent() {
                 )}
 
                 <div className="mx-auto mt-6 flex w-full max-w-[720px] flex-col items-center justify-center gap-3 sm:flex-row">
-                    <Button
-                        variant="ghost"
-                        onClick={handleManualSave}
-                        className="h-9 w-full sm:min-w-[230px] sm:w-auto rounded-full bg-[#f0f2f8] dark:bg-muted text-[12px] text-[#5b6474] dark:text-muted-foreground hover:bg-[#e6eaf4] dark:hover:bg-muted"
-                    >
-                        <Save className="mr-1.5 h-3.5 w-3.5" />
-                        Sauvegarder
-                    </Button>
+                    {/* « Sauvegarder » écrit le brouillon du créateur : hors sujet
+                        quand on modifie un CV déposé, qui a son propre contenu. */}
+                    {!cvSource && (
+                        <Button
+                            variant="ghost"
+                            onClick={handleManualSave}
+                            className="h-9 w-full sm:min-w-[230px] sm:w-auto rounded-full bg-[#f0f2f8] dark:bg-muted text-[12px] text-[#5b6474] dark:text-muted-foreground hover:bg-[#e6eaf4] dark:hover:bg-muted"
+                        >
+                            <Save className="mr-1.5 h-3.5 w-3.5" />
+                            Sauvegarder
+                        </Button>
+                    )}
                     <Button
                         variant="ghost"
                         onClick={handleSaveToLibrary}
@@ -1017,7 +1108,7 @@ function CreerCVContent() {
                         ) : (
                             <FolderPlus className="mr-1.5 h-3.5 w-3.5" />
                         )}
-                        Enregistrer dans Mes CV
+                        {cvSource ? "Enregistrer les modifications" : "Enregistrer dans Mes CV"}
                     </Button>
                     <Button
                         onClick={handleDownloadPDF}

@@ -478,9 +478,19 @@ export default function MesCvPage() {
                             ) : (
                                 <>
                                     <p className="mt-1 text-[11px] text-[#5b6474] dark:text-muted-foreground">
-                                        Un fichier déposé ne peut pas être retouché ici. Corrige-le sur ton appareil puis
-                                        remplace-le : son nom et son statut par défaut sont conservés.
+                                        Goriya relit ton fichier et remplit le créateur de CV avec son contenu : tu corriges,
+                                        puis la nouvelle version remplace ce fichier. Tu peux aussi le remplacer par un
+                                        fichier de ton appareil.
                                     </p>
+                                    <Button
+                                        variant="outline"
+                                        className="mr-2 mt-3 h-8 rounded-full text-[12px]"
+                                        disabled={remplacement}
+                                        onClick={() => aRenommer && router.push(`/creer-cv?cv=${encodeURIComponent(aRenommer.id)}`)}
+                                    >
+                                        <Pencil className="mr-1.5 h-3.5 w-3.5" />
+                                        Modifier le contenu
+                                    </Button>
                                     <Button
                                         variant="outline"
                                         className="mt-3 h-8 rounded-full text-[12px]"

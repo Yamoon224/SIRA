@@ -216,6 +216,16 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Format non supporté. Utilise un CV au format PDF ou Word (.docx)." }, { status: 400 })
         }
 
+        // Modification d'un CV de la bibliothèque dans le créateur : on ne note pas
+        // le CV, on en reprend le contenu. `resumeId` garantit déjà une session
+        // et l'appartenance du fichier ; aucun quota d'analyse n'est consommé.
+        if (str(formData.get("mode")) === "edition") {
+            if (!resumeId) {
+                return NextResponse.json({ error: "CV de la bibliothèque manquant" }, { status: 400 })
+            }
+            return await runExtraction(file)
+        }
+
         // ── AUTH CHECK ────────────────────────────────────────────────────────
         // Session NextAuth httpOnly = unique source de vérité (plus de cookie "auth" custom).
         const session = await getServerSession(authOptions)
@@ -280,6 +290,78 @@ export async function POST(request: Request) {
     } catch (error) {
         console.error("Erreur API analyse-cv:", error)
         return NextResponse.json({ error: "Impossible d'analyser le CV pour le moment." }, { status: 500 })
+    }
+}
+
+/**
+ * Reprend le contenu d'un CV dans la forme du créateur de CV (`CvContent`,
+ * lib/api/cv.service.ts) pour qu'un CV déposé puisse y être modifié. La page
+ * /creer-cv repasse la réponse dans son `normalize`, qui écarte ce qui ne
+ * respecte pas le format.
+ */
+async function runExtraction(file: File) {
+    if (!process.env.ANTHROPIC_API_KEY) {
+        return NextResponse.json({ error: "ANTHROPIC_API_KEY non configurée" }, { status: 500 })
+    }
+
+    const instructions =
+        "Tu es un expert RH. Reprends le contenu de ce CV et réponds UNIQUEMENT en JSON valide " +
+        "(sans markdown, sans texte avant ou après), avec exactement cette structure : " +
+        '{"nom": "", "email": "", "telephone": "", "adresse": "", "profil": "", ' +
+        '"experiences": [{"entreprise": "", "poste": "", "dateDebut": "", "dateFin": "", "enCours": false, "description": ""}], ' +
+        '"formations": [{"etablissement": "", "diplome": "", "dateDebut": "", "dateFin": ""}], ' +
+        '"competences": [{"nom": "", "niveau": ""}]}. ' +
+        "Reprends uniquement ce qui est écrit dans le CV : n'invente rien, laisse \"\" ou [] quand l'information est absente. " +
+        "nom = prénom et nom ; telephone = numéro avec son indicatif s'il figure ; adresse = ville ou adresse indiquée ; " +
+        "profil = texte de présentation (résumé, accroche, objectif) tel qu'écrit. " +
+        "Dates au format AAAA-MM-JJ : si seul le mois est connu, utilise le 1er du mois ; si seule l'année est connue, utilise le 1er janvier. " +
+        "enCours = true pour un poste toujours occupé (\"à ce jour\", \"aujourd'hui\", \"présent\"), avec dateFin vide. " +
+        "description = missions et réalisations du poste, une par ligne. " +
+        "etablissement = intitulé du diplôme suivi de l'établissement (ex. \"Master Marketing, Université de Cocody\") ; " +
+        "diplome = le niveau parmi Bac, BTS, Licence, Master, Doctorat, Professorat, ou \"\" si aucun ne correspond. " +
+        "niveau d'une compétence = Débutant, Intermédiaire, Avancé ou Expert s'il est indiqué, sinon \"Intermédiaire\". " +
+        "experiences et formations de la plus récente à la plus ancienne."
+
+    let content: Anthropic.MessageParam["content"]
+    if (detectFormat(file) === "pdf") {
+        content = [
+            { type: "document", source: { type: "base64", media_type: "application/pdf", data: await toBase64(file) } },
+            { type: "text", text: instructions },
+        ]
+    } else {
+        let cvText = ""
+        try {
+            cvText = extractDocxText(Buffer.from(await file.arrayBuffer()))
+        } catch {
+            // traité ci-dessous comme un document sans texte
+        }
+        if (!cvText.trim()) {
+            return NextResponse.json(
+                { error: "Ce document Word est illisible. Remplace-le par une version .docx ou PDF, puis réessaie." },
+                { status: 400 },
+            )
+        }
+        content = [{ type: "text", text: `${instructions}\n\nContenu du CV :\n---\n${cvText.slice(0, 20000)}\n---` }]
+    }
+
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+    const response = await anthropic.messages.create({
+        model: process.env.CLAUDE_MODEL || "claude-haiku-4-5-20251001",
+        max_tokens: 4000,
+        messages: [{ role: "user", content }],
+    })
+
+    const textBlock = response.content.find((block) => block.type === "text")
+    if (!textBlock || textBlock.type !== "text") {
+        return NextResponse.json({ error: "Aucune réponse IA reçue" }, { status: 502 })
+    }
+
+    try {
+        const cv = extractJson(textBlock.text)
+        if (!cv || typeof cv !== "object") throw new Error("JSON inattendu")
+        return NextResponse.json({ cv })
+    } catch {
+        return NextResponse.json({ error: "Le contenu du CV n'a pas pu être repris. Réessaie dans un instant." }, { status: 502 })
     }
 }
 

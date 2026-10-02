@@ -54,13 +54,24 @@ export interface CvDraft {
     updatedAt: string | null
 }
 
-// Le backend renvoie une JsonResource → payload encapsulé dans `data`.
+/**
+ * Le backend désactive l'enveloppe des JsonResource (`withoutWrapping`) : le
+ * corps de la réponse EST le brouillon (`{ data, step, updatedAt }`). Sans ce
+ * redressement, les appelants lisaient le contenu du CV à la place du brouillon
+ * et le créateur se rouvrait vide. Une réponse déjà enveloppée passe telle quelle.
+ */
+const enveloppe = (corps: unknown): { data: CvDraft } => {
+    const brut = corps as Record<string, unknown> | null
+    return brut && typeof brut === "object" && ("step" in brut || "updatedAt" in brut)
+        ? { data: brut as unknown as CvDraft }
+        : (corps as { data: CvDraft })
+}
+
 export const cvService = {
-    get: () =>
-        apiRequest<{ data: CvDraft }>({ endpoint: "/me/cv", method: "GET" }),
+    get: () => apiRequest<unknown>({ endpoint: "/me/cv", method: "GET" }).then(enveloppe),
 
     save: (payload: { data?: CvContent | null; step?: number }) =>
-        apiRequest<{ data: CvDraft }>({ endpoint: "/me/cv", method: "PUT", data: payload }),
+        apiRequest<unknown>({ endpoint: "/me/cv", method: "PUT", data: payload }).then(enveloppe),
 
     remove: () =>
         apiRequest<null>({ endpoint: "/me/cv", method: "DELETE", silent: true }),
