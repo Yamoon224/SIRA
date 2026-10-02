@@ -19,6 +19,7 @@ import { getDeviceId } from "@/lib/device"
 import { BACKEND_URL } from "@/lib/backend-url"
 import type { CVAnalysis } from "@/lib/@types/openai"
 import { analysisErrorMessage, CV_ACCEPT, cvFileError } from "@/lib/cv-file"
+import { extractCvPhoto, storeExtractedPhoto } from "@/lib/cv-photo"
 import { companyHref, jobHref } from "@/lib/public-links"
 
 type GateState = "idle" | "requires_auth" | "requires_subscription"
@@ -174,6 +175,10 @@ export default function Page() {
         setGateState("idle")
         setIsAnalyzingCV(true)
 
+        // La photo du CV est cherchée dans le navigateur pendant que l'IA analyse
+        // le texte : elle préremplit la photo de profil sur la page de résultat.
+        const photoPromise = extractCvPhoto(file)
+
         try {
             const formData = new FormData()
             formData.append("file", file)
@@ -203,6 +208,7 @@ export default function Page() {
             if (!response.ok || !payload.analysis) throw new Error(payload.error || "Analyse IA indisponible")
 
             if (payload.usage) setFreeUsage(payload.usage)
+            await storeExtractedPhoto(await photoPromise)
             sessionStorage.setItem("goriya_cv_analysis_result", JSON.stringify({
                 fileName: file.name, analyzedAt: new Date().toISOString(), analysis: payload.analysis,
             }))

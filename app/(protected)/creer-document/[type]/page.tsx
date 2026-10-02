@@ -102,6 +102,8 @@ function CreerDocumentContent() {
 
   const [formData, setFormData] = useState<DocumentData>({})
   const [previewContent, setPreviewContent] = useState("")
+  // Une fois le document généré, l'aperçu devient modifiable à la main.
+  const [isGenerated, setIsGenerated] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [quotaLimit, setQuotaLimit] = useState<number | null>(null)
@@ -175,6 +177,7 @@ function CreerDocumentContent() {
 
       await new Promise((resolve) => setTimeout(resolve, 400))
       setPreviewContent(generateDocumentContent(documentType, formData))
+      setIsGenerated(true)
     } finally {
       setIsGenerating(false)
     }
@@ -184,6 +187,7 @@ function CreerDocumentContent() {
     setFormData({})
     setErrors({})
     setPreviewContent("")
+    setIsGenerated(false)
     try {
       localStorage.removeItem(storageKey)
     } catch {
@@ -201,7 +205,7 @@ function CreerDocumentContent() {
   }
 
   const handleDownloadPDF = () => {
-    if (!previewContent || !template) return
+    if (!previewContent.trim() || !template) return
     generatePDF(previewContent, nomFichier(template.title, formData.nom))
   }
 
@@ -301,10 +305,24 @@ function CreerDocumentContent() {
             <div className="pointer-events-none absolute left-4 bottom-7 h-12 w-12 rounded-full bg-[#dce4f4] dark:bg-primary/10 opacity-80" />
             <div className="pointer-events-none absolute left-16 bottom-0 h-4 w-4 rounded-full bg-[#dce4f4] dark:bg-primary/10 opacity-80" />
 
-            <pre className="relative z-10 h-full overflow-y-auto pr-2 whitespace-pre-wrap break-words font-sans text-[12px] leading-[1.55] text-[#7d8595] dark:text-muted-foreground">
-              {previewContent || defaultPreview}
-            </pre>
+            {isGenerated ? (
+              <textarea
+                value={previewContent}
+                onChange={(e) => setPreviewContent(e.target.value)}
+                aria-label="Texte du document, modifiable"
+                className="relative z-10 h-full w-full resize-none overflow-y-auto rounded-[8px] border border-transparent bg-transparent pr-2 font-sans text-[12px] leading-[1.55] text-[#3d4554] outline-none focus:border-[#9aa6d8] dark:text-foreground"
+              />
+            ) : (
+              <pre className="relative z-10 h-full overflow-y-auto pr-2 whitespace-pre-wrap break-words font-sans text-[12px] leading-[1.55] text-[#7d8595] dark:text-muted-foreground">
+                {defaultPreview}
+              </pre>
+            )}
           </div>
+          <p className="mt-2 text-[11px] text-[#8b93a3] dark:text-muted-foreground">
+            {isGenerated
+              ? "Clique dans le texte pour le modifier (par exemple « Monsieur » ou « Madame ») : le PDF reprend tes corrections."
+              : "Génère le document pour pouvoir modifier le texte avant de le télécharger."}
+          </p>
 
           <div className="mt-4 grid grid-cols-2 gap-3">
             <Button
@@ -331,8 +349,8 @@ function CreerDocumentContent() {
             </Button>
             <Button
               onClick={handleDownloadPDF}
-              disabled={!previewContent}
-              title={previewContent ? undefined : "Génère d'abord le document"}
+              disabled={!previewContent.trim()}
+              title={previewContent.trim() ? undefined : "Génère d'abord le document"}
               className="h-9 rounded-full bg-brand-gradient text-[12px] font-semibold text-white hover:bg-brand-gradient-hover"
             >
               <Download className="h-3.5 w-3.5" />

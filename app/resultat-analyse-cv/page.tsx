@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import { AppLogo } from "@/components/app-logo"
 import { Footer } from "@/components/layout/footer"
 import { clearPendingOnboarding, setPendingPhoto, setPendingProfile } from "@/lib/cv-onboarding"
+import { clearExtractedPhoto, loadExtractedPhoto } from "@/lib/cv-photo"
 import { INDICATIF_PAR_DEFAUT, PAYS_AFRICAINS, separerIndicatif } from "@/lib/data/afrique"
 import type { CVAnalysis, CVProfile, CVProfileEducation, CVProfileExperience } from "@/lib/@types/openai"
 
@@ -147,6 +148,7 @@ export default function ResultatAnalyseCVPage() {
     const [localPhone, setLocalPhone] = useState("")
     const [photoFile, setPhotoFile] = useState<File | null>(null)
     const [photoUrl, setPhotoUrl] = useState<string | null>(null)
+    const [photoFromCv, setPhotoFromCv] = useState(false)
     const [editing, setEditing] = useState<SectionKey | null>(null)
     const [saving, setSaving] = useState(false)
 
@@ -166,6 +168,18 @@ export default function ResultatAnalyseCVPage() {
             setResult(null)
         }
         setLoaded(true)
+
+        // Photo trouvée dans le CV au moment de l'envoi (lib/cv-photo.ts) : elle
+        // est proposée par défaut, sans écraser un choix déjà fait à l'écran.
+        let cancelled = false
+        loadExtractedPhoto().then((photo) => {
+            if (cancelled || !photo) return
+            setPhotoFile((current) => current ?? photo)
+            setPhotoFromCv(true)
+        })
+        return () => {
+            cancelled = true
+        }
     }, [])
 
     useEffect(() => {
@@ -200,10 +214,18 @@ export default function ResultatAnalyseCVPage() {
             return
         }
         setPhotoFile(file)
+        setPhotoFromCv(false)
+    }
+
+    const removePhoto = () => {
+        setPhotoFile(null)
+        setPhotoFromCv(false)
+        clearExtractedPhoto()
     }
 
     const handleReject = () => {
         sessionStorage.removeItem(RESULT_KEY)
+        clearExtractedPhoto()
         clearPendingOnboarding()
         router.push("/")
     }
@@ -306,7 +328,8 @@ export default function ResultatAnalyseCVPage() {
                             Cette image sera affichée publiquement comme votre photo de profil, cela aidera les recruteurs à vous reconnaître !
                         </p>
                     </div>
-                    <div className="h-[88px] w-[88px] shrink-0 overflow-hidden rounded-full bg-[#eceef3] dark:bg-muted">
+                    <div className="shrink-0">
+                        <div className="h-[88px] w-[88px] overflow-hidden rounded-full bg-[#eceef3] dark:bg-muted">
                         {photoUrl ? (
                             <img src={photoUrl} alt="Photo de profil" className="h-full w-full object-cover" />
                         ) : (
@@ -314,8 +337,23 @@ export default function ResultatAnalyseCVPage() {
                                 {(firstName[0] ?? "?").toUpperCase()}
                             </div>
                         )}
+                        </div>
+                        {photoUrl && (
+                            <button
+                                type="button"
+                                onClick={removePhoto}
+                                className="mt-2 w-full text-center text-[10px] text-[#5b6474] underline hover:text-[#0b2ca8] dark:text-muted-foreground"
+                            >
+                                Retirer
+                            </button>
+                        )}
                     </div>
                     <div>
+                        {photoFromCv && photoUrl && (
+                            <p className="mb-2 text-[10px] text-[#0b2ca8] dark:text-primary">
+                                Photo récupérée depuis votre CV. Vous pouvez la remplacer ou la retirer.
+                            </p>
+                        )}
                         <button
                             type="button"
                             onClick={() => photoInputRef.current?.click()}
