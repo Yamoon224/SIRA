@@ -85,21 +85,25 @@ export const generateDocumentContent = (type: string, data: DocumentData): strin
   }
 }
 
+/**
+ * Bloc d'en-tête (coordonnées) : les lignes facultatives laissées vides sont
+ * retirées plutôt que rendues en « [Ton adresse] » dans la lettre finale.
+ */
+const bloc = (...lignes: Array<string | undefined>): string =>
+  lignes.map((ligne) => ligne?.trim()).filter(Boolean).join("\n")
+
 const generateMotivationLetter = (data: DocumentData): string => {
   const today = new Date().toLocaleDateString("fr-FR")
 
-  return `${data.nom || "[Ton nom]"}
-${data.titre || "[Ton titre]"}
-[Ton adresse]
-[Ville, Code postal]
-[Téléphone]
-[Email]
+  return `${bloc(data.nom || "[Ton nom]", data.titre, data.adresse, data.ville, data.telephone, data.email)}
 
 ${formatDateFr(data.date) || today}
 
-${data.destinataire || "[Nom du destinataire]"}
-${data.entreprise || "[Nom de l'entreprise]"}
-[Adresse de l'entreprise]
+${bloc(
+    [data.destinataire, data.titreDestinataire].filter(Boolean).join(", "),
+    data.entreprise || "[Nom de l'entreprise]",
+    data.adresseEntreprise,
+  )}
 
 Objet : Candidature pour le poste de ${data.poste || "[Poste visé]"}
 
@@ -109,7 +113,7 @@ Je me permets de vous adresser ma candidature pour le poste de ${data.poste || "
 
 Diplômé(e) et fort(e) de mon expérience professionnelle, je suis convaincu(e) que mon profil correspond aux exigences de ce poste. Mes compétences techniques et ma motivation à contribuer efficacement aux objectifs de votre équipe constituent des atouts majeurs pour votre organisation.
 
-Mon parcours professionnel m'a permis de développer des compétences solides en [mentionnez vos compétences clés], particulièrement adaptées aux défis que représente le poste proposé. Je suis persuadé(e) que mes qualités personnelles et professionnelles seront un véritable atout pour ${data.entreprise || "[entreprise]"}.
+Mon parcours professionnel m'a permis de développer des compétences solides${data.competences?.trim() ? ` en ${data.competences.trim()}` : ""}, particulièrement adaptées aux défis que représente le poste proposé. Je suis persuadé(e) que mes qualités personnelles et professionnelles seront un véritable atout pour ${data.entreprise || "[entreprise]"}.
 
 Je serais ravi(e) de vous rencontrer pour discuter de ma candidature et vous démontrer ma motivation. Je reste à votre disposition pour tout complément d'information.
 
@@ -123,16 +127,11 @@ Pièces jointes : CV, diplômes, références`
 const generateResignationLetter = (data: DocumentData): string => {
   const today = new Date().toLocaleDateString("fr-FR")
 
-  return `${data.nom || "[Ton nom]"}
-${data.poste || "[Ton poste actuel]"}
-[Ton adresse]
-[Ville, Code postal]
+  return `${bloc(data.nom || "[Ton nom]", data.poste || "[Ton poste actuel]", data.adresse, data.ville, data.telephone, data.email)}
 
 ${formatDateFr(data.date) || today}
 
-${data.manager || "[Nom du manager]"}
-${data.entreprise || "[Nom de l'entreprise]"}
-[Adresse de l'entreprise]
+${bloc(data.manager, data.entreprise || "[Nom de l'entreprise]", data.adresseEntreprise)}
 
 Objet : Démission de mon poste de ${data.poste || "[ton poste]"}
 
@@ -148,19 +147,13 @@ Je vous remercie pour la confiance que vous m'avez accordée durant ces années 
 
 Je reste à votre disposition pour organiser au mieux cette transition et vous prie d'agréer, ${data.manager ? `Madame, Monsieur ${data.manager}` : "Madame, Monsieur"}, l'expression de mes salutations respectueuses.
 
-${data.nom || "[Ton nom]"}
-Signature`
+${data.nom || "[Ton nom]"}`
 }
 
 const generateRecommendationLetter = (data: DocumentData): string => {
   const today = new Date().toLocaleDateString("fr-FR")
 
-  return `${data.nom || "[Ton nom]"}
-${data.poste || "[Ton poste]"}
-[Ton entreprise]
-[Adresse]
-[Téléphone]
-[Email]
+  return `${bloc(data.nom || "[Ton nom]", data.poste || "[Ton poste]", data.entreprise, data.adresse, data.telephone, data.email)}
 
 ${formatDateFr(data.date) || today}
 
@@ -185,8 +178,7 @@ Je reste à votre disposition pour tout complément d'information concernant cet
 Cordialement,
 
 ${data.nom || "[Ton nom]"}
-${data.poste || "[Ton poste]"}
-Signature`
+${data.poste || "[Ton poste]"}`
 }
 
 export const previewDocument = (content: string): void => {

@@ -280,7 +280,7 @@ export default function BibliothequePage() {
             title: "Créer un portfolio",
             description: "Créer ton portfolio professionnel",
             action: "Créer un portfolio",
-            href: "/portfolio/creer",
+            href: "/portfolio/nouveau",
         },
     ]
 

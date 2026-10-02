@@ -391,7 +391,7 @@ function PublicProfileContent() {
                             action={
                                 editing ? (
                                     <Button asChild variant="ghost" size="sm">
-                                        <Link href="/portfolio/creer">Ajouter</Link>
+                                        <Link href="/portfolio/nouveau">Ajouter</Link>
                                     </Button>
                                 ) : undefined
                             }

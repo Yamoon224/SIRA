@@ -26,4 +26,5 @@ export interface RequestOptions {
     params?: any;    // query params pour GET
     silent?: boolean; // désactive les logs d'erreur pour les tentatives de fallback
     skipAuth?: boolean; // endpoint public : n'essaie pas de résoudre la session NextAuth
+    timeout?: number; // ms ; remplace BACKEND_TIMEOUT_MS pour les appels longs (recherche IA)
 }

@@ -11,6 +11,10 @@ export interface ICallSession {
     title: string
     roomSlug: string
     scheduledAt: string | null
+    /** Message de l'organisateur, repris dans l'invitation. */
+    description?: string | null
+    /** Adresses invitées par email ; renseigné pour l'organisateur seulement. */
+    invitees?: string[]
     status: CallSessionStatus
     recordingUrl: string | null
     endedAt: string | null
@@ -30,8 +34,14 @@ export const callSessionService = {
         return apiRequest<ICallSession[]>({ endpoint: "/calls", method: "GET" })
     },
 
-    schedule: async (title: string, scheduledAt?: string) => {
-        return apiRequest<ICallSession>({ endpoint: "/calls", method: "POST", data: { title, scheduledAt } })
+    schedule: async (title: string, scheduledAt?: string, invitees: string[] = [], description?: string) => {
+        return apiRequest<ICallSession>({
+            endpoint: "/calls",
+            method: "POST",
+            data: { title, scheduledAt, invitees, description },
+            // Les invitations partent une à une avant la réponse.
+            timeout: 60_000,
+        })
     },
 
     get: async (id: string) => {

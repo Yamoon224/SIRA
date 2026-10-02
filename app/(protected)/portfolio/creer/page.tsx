@@ -39,6 +39,7 @@ import {
 import { PageHeader } from "@/components/layout/page-header"
 import { PortfolioPreview, PORTFOLIO_THEMES, type PortfolioPreviewData } from "@/components/portfolio/portfolio-preview"
 import { PORTFOLIO_PHOTO_ACCEPT, PORTFOLIO_PHOTO_MAX_BYTES, portfolioService } from "@/lib/api/portfolio.service"
+import { findPortfolioTemplate } from "@/lib/portfolio-templates"
 import { userService } from "@/lib/api/user.service"
 import { connectionService } from "@/lib/api/connect.service"
 import type { IPortfolio, PortfolioProjectStatus, PortfolioStatus, PortfolioTheme } from "@/lib/@types/entities"
@@ -163,6 +164,11 @@ function PortfolioEditor() {
             .catch(() => {})
 
         if (!editId) {
+            const template = findPortfolioTemplate(searchParams.get("modele"))
+            if (template) {
+                setTheme(template.theme)
+                setSkills(template.skills.map((skill) => ({ ...skill })))
+            }
             // Nouveau portfolio : on part du profil du membre plutôt que d'un formulaire vide.
             userService
                 .getProfile()
@@ -173,10 +179,16 @@ function PortfolioEditor() {
                     setEmail(profile?.email ?? "")
                     setPhone(profile?.phone ?? "")
                     setLocation(profile?.location ?? "")
-                    setTitle(profile?.title ?? "")
-                    setBio(profile?.bio ?? "")
+                    // Modèle choisi sur /portfolio/nouveau : sa trame ne comble
+                    // que ce que le profil ne renseigne pas déjà.
+                    setTitle(profile?.title || template?.title || "")
+                    setBio(profile?.bio || template?.bio || "")
                 })
-                .catch(() => {})
+                .catch(() => {
+                    if (cancelled || !template) return
+                    setTitle(template.title)
+                    setBio(template.bio)
+                })
                 .finally(() => !cancelled && setLoading(false))
             return () => {
                 cancelled = true

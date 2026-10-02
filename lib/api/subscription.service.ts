@@ -49,6 +49,19 @@ export const subscriptionService = {
             method: "GET",
         }),
 
+    /**
+     * État d'un paiement à partir de sa seule référence. Endpoint public :
+     * après un paiement mobile, la page de retour s'ouvre souvent dans un
+     * navigateur où l'utilisateur n'est pas connecté.
+     */
+    checkoutStatus: (reference: string) =>
+        apiRequest<{ status: "PENDING" | "SUCCESS" | "FAILED" | "UNKNOWN"; purpose: string | null; planName: string | null }>({
+            endpoint: `/subscriptions/checkout/status/${encodeURIComponent(reference)}`,
+            method: "GET",
+            skipAuth: true,
+            silent: true,
+        }),
+
     checkSubscription: (userId: string) =>
         apiRequest<{
             hasSubscription: boolean

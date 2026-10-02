@@ -61,7 +61,7 @@ export default function Page() {
                 description="Gère les portfolios que tu partages avec les recruteurs."
                 actions={
                     portfolios.length > 0 ? (
-                        <Button onClick={() => router.push("/portfolio/creer")} className="rounded-full bg-brand-gradient hover:bg-brand-gradient-hover">
+                        <Button onClick={() => router.push("/portfolio/nouveau")} className="rounded-full bg-brand-gradient hover:bg-brand-gradient-hover">
                             <Plus className="mr-1.5 h-4 w-4" /> Nouveau portfolio
                         </Button>
                     ) : undefined
@@ -78,7 +78,7 @@ export default function Page() {
                         <p className="text-[13px] text-[#7f8796] text-center dark:text-muted-foreground">
                             Aucun portfolio créé pour le moment.
                         </p>
-                        <Button onClick={() => router.push("/portfolio/creer")} className="mt-4 rounded-full bg-brand-gradient hover:bg-brand-gradient-hover">
+                        <Button onClick={() => router.push("/portfolio/nouveau")} className="mt-4rounded-full bg-brand-gradient hover:bg-brand-gradient-hover">
                             <Plus className="w-4 h-4 mr-1.5" /> Créer un portfolio
                         </Button>
                     </div>

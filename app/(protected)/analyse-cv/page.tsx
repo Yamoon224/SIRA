@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
@@ -94,6 +94,9 @@ function AnalyserCVContent() {
     const [isDragging, setIsDragging] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
 
+    /** CV choisi dans « Mes CV » (`?cv=<id>&nom=<nom>`) : analysé sans nouveau dépôt. */
+    const [libraryCv, setLibraryCv] = useState<{ id: string; name: string } | null>(null)
+
     const acceptFile = (file: File) => {
         const fileError = cvFileError(file)
         if (fileError) {
@@ -101,6 +104,7 @@ function AnalyserCVContent() {
             return
         }
         setCvFile(file)
+        setLibraryCv(null)
         setError(null)
         setAnalysis(null)
     }
@@ -121,12 +125,13 @@ function AnalyserCVContent() {
 
     const clearFile = () => {
         setCvFile(null)
+        setLibraryCv(null)
         setAnalysis(null)
         setError(null)
     }
 
-    const handleAnalyze = async () => {
-        if (!cvFile) return
+    const handleAnalyze = async (fromLibrary: { id: string; name: string } | null = libraryCv) => {
+        if (!cvFile && !fromLibrary) return
 
         setIsAnalyzing(true)
         setError(null)
@@ -134,7 +139,8 @@ function AnalyserCVContent() {
 
         try {
             const formData = new FormData()
-            formData.append("file", cvFile)
+            if (fromLibrary) formData.append("resumeId", fromLibrary.id)
+            else if (cvFile) formData.append("file", cvFile)
 
             const response = await fetch("/api/analyse-cv", { method: "POST", body: formData })
             const payload = (await response.json()) as {
@@ -157,7 +163,26 @@ function AnalyserCVContent() {
         }
     }
 
+    // Arrivée depuis le bouton « Faire analyser » de « Mes CV » : l'analyse part
+    // tout de suite. `window.location` plutôt que useSearchParams, qui imposerait
+    // une frontière Suspense à toute la page.
+    const startedFromLibrary = useRef(false)
+    useEffect(() => {
+        if (startedFromLibrary.current) return
+        startedFromLibrary.current = true
+
+        const params = new URLSearchParams(window.location.search)
+        const id = params.get("cv")
+        if (!id) return
+
+        const cv = { id, name: params.get("nom") || "CV de ta bibliothèque" }
+        setLibraryCv(cv)
+        void handleAnalyze(cv)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
     const v = analysis ? verdict(analysis.score) : null
+    const hasCv = Boolean(cvFile || libraryCv)
 
     return (
         <div className="min-h-[calc(100vh-80px)]">
@@ -184,12 +209,14 @@ function AnalyserCVContent() {
                                 : "border-[#c8d0e0] dark:border-border bg-[#fbfcfe] dark:bg-background"
                         }`}
                     >
-                        {cvFile ? (
+                        {hasCv ? (
                             <div className="flex items-center justify-center gap-3">
                                 <FileText className="h-5 w-5 shrink-0 text-[#2f6de6] dark:text-primary" strokeWidth={1.8} />
                                 <div className="min-w-0 text-left">
-                                    <p className="truncate text-[13px] font-medium text-[#1b2331] dark:text-foreground">{cvFile.name}</p>
-                                    <p className="text-[11px] text-[#8b93a3] dark:text-muted-foreground">{formatSize(cvFile.size)}</p>
+                                    <p className="truncate text-[13px] font-medium text-[#1b2331] dark:text-foreground">{cvFile?.name ?? libraryCv?.name}</p>
+                                    <p className="text-[11px] text-[#8b93a3] dark:text-muted-foreground">
+                                        {cvFile ? formatSize(cvFile.size) : "Depuis « Mes CV »"}
+                                    </p>
                                 </div>
                                 <button
                                     type="button"
@@ -247,14 +274,14 @@ function AnalyserCVContent() {
                         <Button
                             variant="ghost"
                             onClick={clearFile}
-                            disabled={!cvFile || isAnalyzing}
+                            disabled={!hasCv || isAnalyzing}
                             className="h-10 px-6 text-[13px] text-[#5b6474] dark:text-muted-foreground hover:bg-[#f1f3f8] dark:hover:bg-muted"
                         >
                             Annuler
                         </Button>
                         <Button
-                            onClick={handleAnalyze}
-                            disabled={!cvFile || isAnalyzing}
+                            onClick={() => handleAnalyze()}
+                            disabled={!hasCv || isAnalyzing}
                             className="h-10 bg-brand-gradient px-6 text-[13px] font-medium hover:bg-brand-gradient-hover"
                         >
                             <Sparkles className="mr-2 h-4 w-4" />

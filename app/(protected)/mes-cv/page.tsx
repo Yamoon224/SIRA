@@ -318,14 +318,18 @@ export default function MesCvPage() {
                                                     Par défaut
                                                 </Button>
                                             )}
-                                            {cv.source === "builder" && (
+                                            {cv.url && (
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
                                                     className="h-8 w-8 rounded-full text-[#5b6474] dark:text-muted-foreground"
-                                                    aria-label={`Modifier ${cv.name} dans le créateur de CV`}
-                                                    title="Modifier dans le créateur de CV"
-                                                    onClick={() => router.push("/creer-cv")}
+                                                    aria-label={`Faire analyser ${cv.name}`}
+                                                    title="Faire analyser ce CV"
+                                                    onClick={() =>
+                                                        router.push(
+                                                            `/analyse-cv?cv=${encodeURIComponent(cv.id)}&nom=${encodeURIComponent(cv.name)}`,
+                                                        )
+                                                    }
                                                 >
                                                     <Sparkles className="h-4 w-4" />
                                                 </Button>

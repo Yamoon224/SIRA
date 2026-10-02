@@ -1,12 +1,16 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import Link from "next/link"
+import { ArrowLeft, Download, Save } from "lucide-react"
+import { toast } from "sonner"
 import { SubscriptionGate } from "@/components/subscription-gate"
+import { useAuth } from "@/contexts/auth-context"
 import { useParams } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { generateDocumentContent, type DocumentData } from "@/lib/document-generator"
+import { generateDocumentContent, generatePDF, type DocumentData } from "@/lib/document-generator"
 import { featureUsageService } from "@/lib/api/feature-usage.service"
 import { QuotaExceededNotice } from "@/components/feature-usage/quota-exceeded-notice"
 
@@ -16,7 +20,7 @@ type TemplateField = {
   required: boolean
   split?: boolean
   /** `date` bascule le champ sur le sélecteur natif (cf. components/ui/input.tsx). */
-  type?: "text" | "date"
+  type?: "text" | "date" | "tel" | "email"
 }
 
 type TemplateConfig = {
@@ -32,8 +36,14 @@ const documentTemplates: Record<string, TemplateConfig> = {
       { id: "titre", label: "Ton titre", required: false, split: true },
       { id: "destinataire", label: "Nom du destinataire", required: false, split: true },
       { id: "titreDestinataire", label: "Titre du destinataire", required: false, split: true },
+      { id: "adresse", label: "Ton adresse", required: false, split: true },
+      { id: "ville", label: "Ville, code postal", required: false, split: true },
+      { id: "telephone", label: "Ton téléphone", required: false, split: true, type: "tel" },
+      { id: "email", label: "Ton email", required: false, split: true, type: "email" },
       { id: "entreprise", label: "Nom de l'entreprise", required: true },
+      { id: "adresseEntreprise", label: "Adresse de l'entreprise", required: false },
       { id: "poste", label: "Poste visé", required: true },
+      { id: "competences", label: "Tes compétences clés (ex. : communication digitale, relations presse)", required: false },
       { id: "date", label: "Date", required: false, type: "date" },
     ],
   },
@@ -44,6 +54,11 @@ const documentTemplates: Record<string, TemplateConfig> = {
       { id: "poste", label: "Ton poste", required: true, split: true },
       { id: "manager", label: "Nom du destinataire", required: false, split: true },
       { id: "entreprise", label: "Nom de l'entreprise", required: true, split: true },
+      { id: "adresse", label: "Ton adresse", required: false, split: true },
+      { id: "ville", label: "Ville, code postal", required: false, split: true },
+      { id: "telephone", label: "Ton téléphone", required: false, split: true, type: "tel" },
+      { id: "email", label: "Ton email", required: false, split: true, type: "email" },
+      { id: "adresseEntreprise", label: "Adresse de l'entreprise", required: false },
       { id: "dateFin", label: "Date de fin souhaitée", required: true, type: "date" },
       { id: "date", label: "Date", required: false, type: "date" },
     ],
@@ -55,39 +70,35 @@ const documentTemplates: Record<string, TemplateConfig> = {
       { id: "poste", label: "Ton titre", required: true, split: true },
       { id: "candidat", label: "Nom du destinataire", required: true, split: true },
       { id: "posteCandidatActuel", label: "Titre du destinataire", required: false, split: true },
+      { id: "entreprise", label: "Ton entreprise", required: false, split: true },
+      { id: "adresse", label: "Adresse", required: false, split: true },
+      { id: "telephone", label: "Ton téléphone", required: false, split: true, type: "tel" },
+      { id: "email", label: "Ton email", required: false, split: true, type: "email" },
       { id: "posteCandidatVise", label: "Poste visé", required: false },
       { id: "date", label: "Date", required: false, type: "date" },
     ],
   },
 }
 
-function getFallbackPreview(formData: DocumentData): string {
-  const nom = formData.nom || "kkkk kkkk"
-  const entreprise = formData.entreprise || "kkkkk"
-  const poste = formData.poste || "Inejflier"
-
-  return `Objet : Candidature pour le poste de ${poste}
-
-${nom},
-
-J'ai l'honneur de vous adresser ma candidature pour le poste de ${poste} au sein de ${entreprise}.
-
-Diplômé(e) et fort(e) de mon expérience professionnelle, je suis convaincu(e) que mon profil correspond aux exigences de ce poste. Mes compétences en [compétences clés] et ma motivation pour [domaine d'activité] me permettront de contribuer efficacement aux objectifs de votre équipe.
-
-[Développez ici vos expériences pertinentes et vos motivations spécifiques pour l'entreprise]
-
-Je serais ravi(e) de vous rencontrer pour discuter de ma candidature et vous démontrer ma motivation. Je reste à votre disposition pour tout entretien à votre convenance.
-
-Dans l'attente de votre retour, je vous prie d'agréer, kkkkk kkkk, l'expression de mes salutations distinguées.
-
-kk,
-kk`
+/** "Lettre de motivation" + "Ange Axel" -> "lettre-de-motivation-ange-axel.pdf" */
+function nomFichier(titre: string, nom?: string): string {
+  const slug = [titre, nom]
+    .filter(Boolean)
+    .join(" ")
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+  return `${slug || "document"}.pdf`
 }
 
 function CreerDocumentContent() {
   const params = useParams()
   const documentType = params.type as string
   const template = documentTemplates[documentType]
+  const { user } = useAuth()
+  const storageKey = `goriya:document-draft:${user?.id ?? "anon"}:${documentType}`
 
   const [formData, setFormData] = useState<DocumentData>({})
   const [previewContent, setPreviewContent] = useState("")
@@ -95,7 +106,35 @@ function CreerDocumentContent() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [quotaLimit, setQuotaLimit] = useState<number | null>(null)
 
-  const defaultPreview = useMemo(() => getFallbackPreview(formData), [formData])
+  // Tant que rien n'a été généré, l'aperçu suit la saisie en direct.
+  const defaultPreview = useMemo(() => generateDocumentContent(documentType, formData), [documentType, formData])
+
+  // Reprend le brouillon enregistré sur cet appareil, puis complète les champs
+  // encore vides avec les coordonnées du profil.
+  const hydratedKey = useRef<string | null>(null)
+  useEffect(() => {
+    if (!template || !user || hydratedKey.current === storageKey) return
+    hydratedKey.current = storageKey
+
+    let draft: DocumentData = {}
+    try {
+      draft = JSON.parse(localStorage.getItem(storageKey) ?? "{}") ?? {}
+    } catch {
+      // Brouillon illisible ou stockage indisponible : on repart du profil.
+    }
+
+    const profil: DocumentData = {
+      nom: user.name ?? "",
+      email: user.email ?? "",
+      telephone: user.phone ?? "",
+      ville: user.location ?? "",
+      ...(documentType === "motivation" ? { titre: user.title ?? "" } : {}),
+    }
+    const champs = new Set(template.fields.map((field) => field.id))
+    const prefill = Object.fromEntries(Object.entries(profil).filter(([id, value]) => champs.has(id) && value))
+
+    setFormData((prev) => ({ ...prefill, ...draft, ...prev }))
+  }, [template, user, storageKey, documentType])
 
   const handleInputChange = (fieldId: string, value: string) => {
     setFormData((prev) => ({ ...prev, [fieldId]: value }))
@@ -145,6 +184,25 @@ function CreerDocumentContent() {
     setFormData({})
     setErrors({})
     setPreviewContent("")
+    try {
+      localStorage.removeItem(storageKey)
+    } catch {
+      // Stockage indisponible : rien à effacer.
+    }
+  }
+
+  const handleSaveDraft = () => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(formData))
+      toast.success("Brouillon enregistré sur cet appareil")
+    } catch {
+      toast.error("L'enregistrement du brouillon a échoué.")
+    }
+  }
+
+  const handleDownloadPDF = () => {
+    if (!previewContent || !template) return
+    generatePDF(previewContent, nomFichier(template.title, formData.nom))
   }
 
   const handleRegenerate = () => {
@@ -168,6 +226,13 @@ function CreerDocumentContent() {
   return (
     <div className="min-h-[calc(100vh-80px)]">
       <div className="border-b border-[#d9dfea] dark:border-border px-4 py-4 sm:px-6">
+        <Link
+          href="/nouveau-document"
+          className="mb-3 inline-flex items-center gap-1.5 text-[12px] font-medium text-[#646d80] dark:text-muted-foreground hover:text-[#1b2331] dark:hover:text-foreground"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Retour au choix du document
+        </Link>
         <h1 className="text-2xl sm:text-[32px] font-semibold leading-none text-[#1b2331] dark:text-foreground">Nouveau document</h1>
       </div>
 
@@ -232,7 +297,7 @@ function CreerDocumentContent() {
             <div className="pointer-events-none absolute left-4 bottom-7 h-12 w-12 rounded-full bg-[#dce4f4] dark:bg-primary/10 opacity-80" />
             <div className="pointer-events-none absolute left-16 bottom-0 h-4 w-4 rounded-full bg-[#dce4f4] dark:bg-primary/10 opacity-80" />
 
-            <pre className="relative z-10 h-full whitespace-pre-wrap text-[10.5px] leading-[1.55] text-[#7d8595] dark:text-muted-foreground">
+            <pre className="relative z-10 h-full overflow-y-auto pr-2 whitespace-pre-wraptext-[10.5px] leading-[1.55] text-[#7d8595] dark:text-muted-foreground">
               {previewContent || defaultPreview}
             </pre>
           </div>
@@ -251,6 +316,23 @@ function CreerDocumentContent() {
               className="h-9 rounded-full bg-[#eaedf8] dark:bg-primary/10 text-[12px] font-medium text-[#646d80] dark:text-muted-foreground hover:bg-[#dfe4f4] dark:hover:bg-primary/10"
             >
               Régénérer
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={handleSaveDraft}
+              className="h-9 rounded-full bg-[#eaedf8] dark:bg-primary/10 text-[12px] font-medium text-[#646d80] dark:text-muted-foreground hover:bg-[#dfe4f4] dark:hover:bg-primary/10"
+            >
+              <Save className="h-3.5 w-3.5" />
+              Enregistrer
+            </Button>
+            <Button
+              onClick={handleDownloadPDF}
+              disabled={!previewContent}
+              title={previewContent ? undefined : "Génère d'abord le document"}
+              className="h-9 rounded-full bg-brand-gradient text-[12px] font-semibold text-white hover:bg-brand-gradient-hover"
+            >
+              <Download className="h-3.5 w-3.5" />
+              Télécharger PDF
             </Button>
           </div>
         </section>

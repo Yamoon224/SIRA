@@ -151,13 +151,54 @@ async function consumeAuthedUsage(accessToken: string, log: AnalysisLog): Promis
     return res.json()
 }
 
+/**
+ * Récupère un CV de la bibliothèque « Mes CV » côté serveur : le navigateur ne
+ * peut pas relire le fichier lui-même (stockage public sans CORS). Passer par
+ * `/me/resumes` garantit au passage que le CV appartient bien à l'utilisateur.
+ */
+async function fetchLibraryResume(accessToken: string, resumeId: string): Promise<File | null> {
+    const res = await fetch(`${BACKEND}/me/resumes`, {
+        headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" },
+    })
+    if (!res.ok) return null
+
+    const payload = await res.json()
+    const resumes: any[] = Array.isArray(payload) ? payload : Array.isArray(payload?.data) ? payload.data : []
+    const resume = resumes.find((r) => String(r?.id) === resumeId)
+    if (!resume?.url) return null
+
+    const fileRes = await fetch(resume.url)
+    if (!fileRes.ok) return null
+
+    // Le nom affiché (« CV Ange Axel ») n'a pas toujours d'extension : on
+    // reprend celle du fichier stocké, dont dépend la détection du format.
+    const extension = new URL(resume.url).pathname.match(/\.[a-z0-9]+$/i)?.[0] ?? ""
+    const name = str(resume.name) || "CV"
+    const filename = name.toLowerCase().endsWith(extension.toLowerCase()) ? name : `${name}${extension}`
+
+    return new File([await fileRes.arrayBuffer()], filename, { type: str(resume.mimeType) })
+}
+
 // ─── Main handler ─────────────────────────────────────────────────────────────
 
 export async function POST(request: Request) {
     try {
         const formData = await request.formData()
-        const file = formData.get("file")
+        const resumeId = str(formData.get("resumeId"))
+        let file = formData.get("file")
         const deviceId = request.headers.get("x-device-id") ?? "unknown"
+
+        if (resumeId) {
+            const librarySession = await getServerSession(authOptions)
+            const libraryToken = (librarySession?.user as any)?.access_token as string | undefined
+            if (!libraryToken) {
+                return NextResponse.json({ error: "Connecte-toi pour analyser un CV de ta bibliothèque." }, { status: 401 })
+            }
+            file = await fetchLibraryResume(libraryToken, resumeId)
+            if (!file) {
+                return NextResponse.json({ error: "Ce CV est introuvable dans ta bibliothèque." }, { status: 404 })
+            }
+        }
 
         if (!(file instanceof File) || !file.name) {
             return NextResponse.json({ error: "Fichier CV manquant" }, { status: 400 })

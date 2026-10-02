@@ -20,6 +20,17 @@ const TYPE_LABELS: Record<PitchType, string> = {
     STARTUP: "Pitch startup",
 }
 
+/** L'avatar animé (Studio IA) n'est pas encore ouvert aux utilisateurs. */
+const AVATAR_DISPONIBLE = false
+
+/** Ce que l'IA doit savoir pour ne pas broder : rappelé dans le champ « idée ». */
+const IDEE_PLACEHOLDERS: Record<PitchType, string> = {
+    EMPLOI: "Ex : le poste visé, tes 2-3 atouts principaux, une réalisation concrète (avec chiffres si tu en as)...",
+    CONCOURS: "Ex : le concours ou la bourse visé, ton parcours, ce qui distingue ta candidature, ton projet...",
+    APPEL_PROJET: "Ex : le nom du projet, le besoin auquel il répond, la solution, les bénéficiaires, ton rôle...",
+    STARTUP: "Ex : nom du projet, problème résolu, ce que fait le produit, clients visés, résultats obtenus, montant recherché...",
+}
+
 const STATUS_META: Record<string, { label: string; className: string }> = {
     DRAFT: { label: "Brouillon", className: "bg-gray-200 dark:bg-muted text-gray-700 dark:text-foreground" },
     PROCESSING: { label: "En traitement", className: "bg-blue-100 text-blue-600" },
@@ -191,9 +202,12 @@ function PitchGoriyaContent() {
                         <Textarea
                             value={newDescription}
                             onChange={(e) => setNewDescription(e.target.value)}
-                            placeholder="De quoi parle ton pitch ? (ex : mon projet, ce qui me démarque, l'objectif visé...) - sert de base à la génération IA"
+                            placeholder={IDEE_PLACEHOLDERS[newType]}
                             className="min-h-[80px]"
                         />
+                        <p className="mt-1 text-[11px] text-muted-foreground">
+                            Plus tu donnes de détails précis, plus le pitch sera juste : l&apos;IA n&apos;invente ni chiffres ni résultats.
+                        </p>
                     </div>
                     <div>
                         <label className="mb-1 block text-xs font-medium text-muted-foreground">Script (optionnel)</label>
@@ -277,8 +291,11 @@ function PitchGoriyaContent() {
                                     <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs" disabled={uploading} onClick={() => fileInputRef.current?.click()}>
                                         <Upload className="h-3.5 w-3.5" />{uploading ? "Envoi..." : "Attacher une vidéo"}
                                     </Button>
-                                    <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs" disabled={renderingAvatar || !active.content} onClick={handleRenderAvatar}>
+                                    {/* Studio IA pas encore ouvert : le bouton l'annonce au lieu
+                                        de paraître cliquable. Remettre `handleRenderAvatar` à l'ouverture. */}
+                                    <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs" disabled={!AVATAR_DISPONIBLE || renderingAvatar || !active.content} onClick={handleRenderAvatar}>
                                         <Sparkles className="h-3.5 w-3.5" />{renderingAvatar ? "Génération..." : "Avatar animé (Studio IA)"}
+                                        {!AVATAR_DISPONIBLE && <Badge variant="secondary" className="ml-1 px-1.5 py-0 text-[10px]">Bientôt</Badge>}
                                     </Button>
                                     <div className="ml-auto flex items-center gap-2">
                                         {active.isPublic ? <Eye className="h-3.5 w-3.5 text-green-600" /> : <EyeOff className="h-3.5 w-3.5 text-muted-foreground" />}

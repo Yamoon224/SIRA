@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useIsMobile } from "@/components/ui/use-mobile"
 import { FileBadge2, ChevronDown, CloudOff, Download, FolderPlus, Loader2, Plus, Save, Sparkles, Trash2 } from "lucide-react"
-import { generatePDF, generatePDFFile } from "@/lib/document-generator"
+import { CV_MODELES, CV_MODELE_PAR_DEFAUT, cvPdfFile, cvPdfPreviewUrl, downloadCvPdf, isCvModele, type CvModeleId } from "@/lib/cv-pdf"
 import { SubscriptionGate } from "@/components/subscription-gate"
 import { AutocompleteInput } from "@/components/autocomplete-input"
 import { useAuth } from "@/contexts/auth-context"
@@ -57,6 +57,22 @@ const EMPTY_CV: CvContent = {
     experiences: [],
     formations: [],
     competences: [],
+    modele: CV_MODELE_PAR_DEFAUT,
+}
+
+/**
+ * Copie locale du modèle choisi : tant que le backend ne renvoie pas le champ
+ * `modele` (brouillons antérieurs), le choix survit quand même au rechargement.
+ */
+const CLE_MODELE = "goriya:cv-modele"
+
+const lireModeleLocal = (): CvModeleId => {
+    try {
+        const valeur = localStorage.getItem(CLE_MODELE)
+        return isCvModele(valeur) ? valeur : CV_MODELE_PAR_DEFAUT
+    } catch {
+        return CV_MODELE_PAR_DEFAUT
+    }
 }
 
 const STEPS = [
@@ -64,6 +80,7 @@ const STEPS = [
     { id: "experience", label: "Expérience professionnelle", icon: "👨‍💼" },
     { id: "formation", label: "Formation", icon: "📘" },
     { id: "competences", label: "Compétences", icon: "🏅" },
+    { id: "modele", label: "Modèle de CV", icon: "🎨" },
 ]
 
 type ListKey = "experiences" | "formations" | "competences"
@@ -155,7 +172,63 @@ function normalize(raw: Record<string, unknown> | null | undefined): CvContent {
         experiences,
         formations,
         competences,
+        modele: isCvModele(src.modele) ? src.modele : lireModeleLocal(),
     }
+}
+
+/** Vignette schématique d'un modèle, dessinée en CSS (pas d'image à charger). */
+function VignetteModele({ id }: { id: CvModeleId }) {
+    const ligne = "h-[3px] rounded-full bg-[#d5dbe8]"
+    const corps = (accent: string) => (
+        <div className="flex-1 space-y-[5px]">
+            <div className={`h-[3px] w-1/3 rounded-full ${accent}`} />
+            <div className={ligne} />
+            <div className={`${ligne} w-5/6`} />
+            <div className={`mt-2 h-[3px] w-2/5 rounded-full ${accent}`} />
+            <div className={ligne} />
+            <div className={`${ligne} w-4/6`} />
+            <div className={ligne} />
+        </div>
+    )
+
+    return (
+        <div aria-hidden className="mx-auto flex aspect-[210/297] w-full max-w-[150px] overflow-hidden rounded-[6px] border border-[#e1e6f1] bg-white text-left">
+            {id === "moderne" && (
+                <>
+                    <div className="flex w-[32%] flex-col items-center gap-[5px] bg-[#16264a] px-[6px] pt-3">
+                        <div className="h-6 w-6 rounded-full bg-[#2f6de6]" />
+                        <div className="mt-2 h-[3px] w-full rounded-full bg-[#9db8f5]" />
+                        <div className="h-[3px] w-full rounded-full bg-white/40" />
+                        <div className="h-[3px] w-full rounded-full bg-white/40" />
+                    </div>
+                    <div className="flex flex-1 flex-col gap-2 p-2.5">
+                        <div className="h-[6px] w-3/4 rounded-full bg-[#16264a]" />
+                        {corps("bg-[#2f6de6]")}
+                    </div>
+                </>
+            )}
+            {id === "classique" && (
+                <div className="flex flex-1 flex-col gap-2 p-3">
+                    <div className="mx-auto h-[6px] w-2/3 rounded-full bg-[#1b2331]" />
+                    <div className="mx-auto h-[3px] w-1/2 rounded-full bg-[#d5dbe8]" />
+                    <div className="h-px bg-[#1b2331]" />
+                    {corps("bg-[#1b2331]")}
+                </div>
+            )}
+            {id === "elegant" && (
+                <div className="flex flex-1 flex-col">
+                    <div className="space-y-[5px] bg-[#0f766e] px-3 py-3">
+                        <div className="h-[6px] w-2/3 rounded-full bg-white" />
+                        <div className="h-[3px] w-1/2 rounded-full bg-white/50" />
+                    </div>
+                    <div className="flex flex-1 gap-2 p-2.5">
+                        <div className="h-[3px] w-1/4 rounded-full bg-[#0f766e]" />
+                        {corps("bg-[#0f766e]")}
+                    </div>
+                </div>
+            )}
+        </div>
+    )
 }
 
 const isEmptyCv = (cv: CvContent) =>
@@ -463,61 +536,37 @@ function CreerCVContent() {
     const indicatif = formData.indicatif || INDICATIF_PAR_DEFAUT
     const paysIndicatif = PAYS_AFRICAINS.find((p) => p.indicatif === indicatif) ?? PAYS_PAR_DEFAUT
 
-    /**
-     * Texte du CV et nom de fichier, partagés par le téléchargement et par
-     * l'enregistrement dans « Mes CV » : les deux doivent produire le même PDF.
-     */
-    const construireCv = () => {
-        const filename = `cv-${formData.nom.toLowerCase().replace(/\s+/g, "-") || "document"}.pdf`
-        // Les dates sont stockées en ISO ; le PDF les rend au format français.
-        const fr = (iso: string) => {
-            const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/)
-            return m ? `${m[3]}/${m[2]}/${m[1]}` : iso
+    const choisirModele = (modele: CvModeleId) => {
+        setFormData((prev) => ({ ...prev, modele }))
+        try {
+            localStorage.setItem(CLE_MODELE, modele)
+        } catch {
+            /* navigation privée : le choix reste valable pour la session */
         }
-        const periode = (debut: string, fin: string) => [fr(debut), fr(fin)].filter(Boolean).join(" – ")
-        const section = (title: string, body: string) => (body.trim() ? `\n${title.toUpperCase()}\n${body.trim()}\n` : "")
-
-        const experiences = formData.experiences
-            .map((e) =>
-                [
-                    [e.poste, e.entreprise].filter(Boolean).join(" - "),
-                    e.enCours ? periode(e.dateDebut, "") + (e.dateDebut ? " – En cours" : "En cours") : periode(e.dateDebut, e.dateFin),
-                    e.description,
-                ]
-                    .filter(Boolean)
-                    .join("\n"),
-            )
-            .filter(Boolean)
-            .join("\n\n")
-
-        const formations = formData.formations
-            .map((f) =>
-                [[f.diplome, f.etablissement].filter(Boolean).join(" - "), periode(f.dateDebut, f.dateFin)]
-                    .filter(Boolean)
-                    .join("\n"),
-            )
-            .filter(Boolean)
-            .join("\n\n")
-
-        const competences = formData.competences
-            .filter((c) => c.nom.trim())
-            .map((c) => `• ${c.nom}${c.niveau ? ` (${c.niveau})` : ""}`)
-            .join("\n")
-
-        const content =
-            `${formData.nom || "Votre nom"}\n` +
-            `${[formData.email, formData.telephone ? `${indicatif} ${formData.telephone}` : "", formData.adresse].filter(Boolean).join(" · ")}\n` +
-            section("Profil", formData.profil) +
-            section("Expérience professionnelle", experiences) +
-            section("Formation", formations) +
-            section("Compétences", competences)
-
-        return { content, filename }
     }
 
+    // Aperçu du PDF à l'étape « Modèle » (desktop : les navigateurs mobiles
+    // n'affichent pas un PDF dans une iframe). Régénéré avec un léger délai.
+    const etapeModele = STEPS[step].id === "modele"
+    const [apercuUrl, setApercuUrl] = useState<string | null>(null)
+    useEffect(() => {
+        if (!etapeModele || isMobile) return
+        let url: string | null = null
+        const id = setTimeout(() => {
+            url = cvPdfPreviewUrl(formData, formData.modele)
+            setApercuUrl(url)
+        }, 250)
+        return () => {
+            clearTimeout(id)
+            if (url) URL.revokeObjectURL(url)
+        }
+    }, [etapeModele, isMobile, formData])
+
+    /** Le téléchargement et l'enregistrement dans « Mes CV » produisent le même PDF. */
+    const nomFichierCv = () => `cv-${formData.nom.trim().toLowerCase().replace(/\s+/g, "-") || "document"}.pdf`
+
     const handleDownloadPDF = () => {
-        const { content, filename } = construireCv()
-        generatePDF(content, filename)
+        downloadCvPdf(formData, formData.modele, nomFichierCv())
     }
 
     /**
@@ -545,9 +594,8 @@ function CreerCVContent() {
                 return
             }
 
-            const { content, filename } = construireCv()
             const nom = `CV ${formData.nom.trim()}`
-            await resumeService.upload(generatePDFFile(content, filename), nom, "builder")
+            await resumeService.upload(cvPdfFile(formData, formData.modele, nomFichierCv()), nom, "builder")
             toast.success("CV enregistré dans « Mes CV »", {
                 action: { label: "Voir", onClick: () => router.push("/mes-cv") },
             })
@@ -769,6 +817,45 @@ function CreerCVContent() {
                         ))}
                     </div>
                 ))}
+
+            {i === 4 && (
+                <>
+                    <p className="mb-3 text-[12px] text-[#8b93a3] dark:text-muted-foreground">
+                        Choisissez la mise en page de votre CV : le téléchargement et l&apos;enregistrement dans « Mes CV » utilisent ce modèle.
+                    </p>
+                    <div role="radiogroup" aria-label="Modèle de CV" className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                        {CV_MODELES.map((m) => {
+                            const actif = formData.modele === m.id
+                            return (
+                                <button
+                                    key={m.id}
+                                    type="button"
+                                    role="radio"
+                                    aria-checked={actif}
+                                    onClick={() => choisirModele(m.id)}
+                                    className={`rounded-[12px] border p-3 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6a9ff3] ${
+                                        actif
+                                            ? "border-[#2f6de6] bg-[#f5f9ff] dark:bg-primary/10"
+                                            : "border-[#e1e6f1] dark:border-border hover:border-[#6a9ff3]"
+                                    }`}
+                                >
+                                    <VignetteModele id={m.id} />
+                                    <span className="mt-2 block text-[13px] font-semibold text-[#1b2331] dark:text-foreground">{m.nom}</span>
+                                    <span className="mt-0.5 block text-[11px] leading-[1.35] text-[#8b93a3] dark:text-muted-foreground">{m.description}</span>
+                                </button>
+                            )
+                        })}
+                    </div>
+                    {!isMobile && apercuUrl && (
+                        <iframe
+                            key={apercuUrl}
+                            src={`${apercuUrl}#toolbar=0&navpanes=0&view=FitH`}
+                            title="Aperçu du CV"
+                            className="mt-4 h-[640px] w-full rounded-[10px] border border-[#e1e6f1] dark:border-border bg-[#f2f4fb]"
+                        />
+                    )}
+                </>
+            )}
         </>
     )
 

@@ -1,12 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Presentation as PresentationIcon, Trash2, Download, Sparkles, ArrowRight } from "lucide-react"
+import { Presentation as PresentationIcon, Trash2, Download, FileText, ImageDown, Sparkles } from "lucide-react"
 import { SubscriptionGate } from "@/components/subscription-gate"
 import {
     presentationService,
@@ -16,6 +17,8 @@ import {
     type ISchemaNode,
     type ISchemaEdge,
 } from "@/lib/api/presentation.service"
+import { SchemaDiagram } from "@/components/presentations/schema-diagram"
+import { exporterSlidesPdf, exporterSvgPng, slugFichier, urlFichierBackend } from "@/lib/presentation-export"
 import { PageHeader } from "@/components/layout/page-header"
 
 function isSlidesContent(content: IPresentation["content"]): content is { slides: ISlide[] } {
@@ -32,6 +35,7 @@ function PresentationsIaContent() {
     const [brief, setBrief] = useState("")
     const [creating, setCreating] = useState(false)
     const [exporting, setExporting] = useState(false)
+    const schemaRef = useRef<SVGSVGElement>(null)
 
     const load = async () => {
         setLoading(true)
@@ -72,11 +76,35 @@ function PresentationsIaContent() {
         try {
             const res = await presentationService.exportPptx(active.id)
             const url = (res as any)?.data?.url ?? (res as any)?.url
-            if (url) window.open(url, "_blank")
+            if (!url) throw new Error("URL du fichier manquante")
+            // Navigation plutôt que window.open : après un `await`, Safari bloque
+            // l'ouverture d'un onglet. Un .pptx se télécharge sans quitter la page.
+            window.location.assign(urlFichierBackend(url))
         } catch (err) {
             console.error("[presentations-ia] export error:", err)
+            toast.error("L'export .pptx a échoué. Réessayez dans un instant.")
         } finally {
             setExporting(false)
+        }
+    }
+
+    const handleExportPdf = () => {
+        if (!active || !isSlidesContent(active.content)) return
+        try {
+            exporterSlidesPdf(active.title, active.content.slides)
+        } catch (err) {
+            console.error("[presentations-ia] pdf export error:", err)
+            toast.error("L'export PDF a échoué.")
+        }
+    }
+
+    const handleExportPng = async () => {
+        if (!active || !schemaRef.current) return
+        try {
+            await exporterSvgPng(schemaRef.current, `${slugFichier(active.title)}.png`)
+        } catch (err) {
+            console.error("[presentations-ia] png export error:", err)
+            toast.error("L'export de l'image a échoué.")
         }
     }
 
@@ -150,12 +178,21 @@ function PresentationsIaContent() {
                     {active ? (
                         <Card className="border border-border">
                             <CardContent className="space-y-4 p-4">
-                                <div className="flex items-center justify-between">
+                                <div className="flex flex-wrap items-center justify-between gap-2">
                                     <h2 className="text-lg font-semibold text-foreground">{active.title}</h2>
-                                    <div className="flex items-center gap-1">
-                                        {active.type === "SLIDES" && (
-                                            <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs" disabled={exporting} onClick={handleExport}>
-                                                <Download className="h-3.5 w-3.5" />{exporting ? "Export..." : "Exporter .pptx"}
+                                    <div className="flex flex-wrap items-center gap-1">
+                                        {active.type === "SLIDES" ? (
+                                            <>
+                                                <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs" onClick={handleExportPdf}>
+                                                    <FileText className="h-3.5 w-3.5" />Exporter PDF
+                                                </Button>
+                                                <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs" disabled={exporting} onClick={handleExport}>
+                                                    <Download className="h-3.5 w-3.5" />{exporting ? "Export..." : "Exporter .pptx"}
+                                                </Button>
+                                            </>
+                                        ) : (
+                                            <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs" onClick={handleExportPng}>
+                                                <ImageDown className="h-3.5 w-3.5" />Exporter l&apos;image
                                             </Button>
                                         )}
                                         <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:bg-red-50" onClick={() => handleDelete(active.id)}>
@@ -176,25 +213,12 @@ function PresentationsIaContent() {
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="space-y-3">
-                                        <div className="flex flex-wrap gap-2">
-                                            {(active.content as { nodes: ISchemaNode[] }).nodes.map((node) => (
-                                                <span key={node.id} className="rounded-full border border-border bg-muted/40 px-3 py-1 text-xs text-foreground">{node.label}</span>
-                                            ))}
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            {(active.content as { nodes: ISchemaNode[]; edges: ISchemaEdge[] }).edges.map((edge, i) => {
-                                                const nodes = (active.content as { nodes: ISchemaNode[] }).nodes
-                                                const from = nodes.find((n) => n.id === edge.from)?.label ?? edge.from
-                                                const to = nodes.find((n) => n.id === edge.to)?.label ?? edge.to
-                                                return (
-                                                    <p key={i} className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                                                        {from}<ArrowRight className="h-3.5 w-3.5" />{to}
-                                                        {edge.label && <span className="text-xs">({edge.label})</span>}
-                                                    </p>
-                                                )
-                                            })}
-                                        </div>
+                                    <div className="overflow-x-auto">
+                                        <SchemaDiagram
+                                            ref={schemaRef}
+                                            nodes={(active.content as { nodes: ISchemaNode[] }).nodes ?? []}
+                                            edges={(active.content as { edges: ISchemaEdge[] }).edges ?? []}
+                                        />
                                     </div>
                                 )}
                             </CardContent>

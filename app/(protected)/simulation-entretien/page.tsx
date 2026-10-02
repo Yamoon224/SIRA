@@ -4,7 +4,7 @@ import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } fr
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Star, RotateCcw, X, Camera, Mic, MessageSquare, Video, Send, Clock, ChevronRight, Settings2 } from "lucide-react"
+import { Star, RotateCcw, X, Camera, Mic, MessageSquare, Video, Send, Clock, ChevronRight, Settings2, Loader2 } from "lucide-react"
 import { SubscriptionGate } from "@/components/subscription-gate"
 import { interviewService } from "@/lib/api/interview.service"
 import { PageHeader } from "@/components/layout/page-header"
@@ -57,10 +57,22 @@ function useInterviewConfig(): InterviewConfig {
     }, [searchParams])
 }
 
+/** Analyse de fin d'entretien renvoyée par /api/simulation-entretien. */
+interface Feedback {
+    score: number
+    summary: string
+    strengths: string[]
+    improvements: string[]
+    recommendations: string[]
+}
+
+/** Tour « candidat » envoyé à l'IA en mode vidéo, où la réponse n'est pas transcrite. */
+const REPONSE_ORALE = "(Réponse donnée à l'oral, non transcrite.)"
+
 /**
- * Questions de l'entretien, adaptées au poste et au niveau. Environ une
- * question toutes les deux minutes et demie : un entretien court garde
- * l'essentiel, et toujours la question de clôture.
+ * Questions de secours, utilisées seulement si l'IA est injoignable : en temps
+ * normal chaque question est générée à partir des réponses du candidat (voir
+ * /api/simulation-entretien).
  */
 function buildQuestions({ poste, niveau, duree }: InterviewConfig): string[] {
     const communes = [
@@ -90,7 +102,7 @@ function formatRemaining(seconds: number): string {
     return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`
 }
 
-function VideoInterviewBox({ question, progress, onNext, finished }: { question: string; progress: number; onNext: () => void; finished: boolean }) {
+function VideoInterviewBox({ question, progress, onNext, finished, thinking }: { question: string; progress: number; onNext: () => void; finished: boolean; thinking: boolean }) {
     const [stream, setStream] = useState<MediaStream | null>(null)
     const [cameraActive, setCameraActive] = useState(false)
     const [cameraError, setCameraError] = useState(false)
@@ -121,7 +133,14 @@ function VideoInterviewBox({ question, progress, onNext, finished }: { question:
         <div className="flex w-full flex-col gap-4">
             <div className="rounded-2xl border border-[#e8edf6] dark:border-border bg-white dark:bg-card p-4">
                 <p className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">Goriya demande</p>
-                <p className="text-[15px] font-medium text-foreground">{question}</p>
+                {thinking ? (
+                    <p className="flex items-center gap-2 text-[15px] text-muted-foreground">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Goriya prépare la question suivante…
+                    </p>
+                ) : (
+                    <p className="text-[15px] font-medium text-foreground">{question}</p>
+                )}
             </div>
 
             <div className="relative flex h-[380px] sm:h-[420px] w-full items-center justify-center rounded-2xl border border-[#e8edf6] dark:border-border bg-white dark:bg-card">
@@ -166,7 +185,7 @@ function VideoInterviewBox({ question, progress, onNext, finished }: { question:
             </div>
 
             <div className="flex justify-end">
-                <Button onClick={onNext} disabled={finished} className="gap-1.5 rounded-full bg-brand-gradient text-white hover:bg-brand-gradient-hover">
+                <Button onClick={onNext} disabled={finished || thinking} className="gap-1.5 rounded-full bg-brand-gradient text-white hover:bg-brand-gradient-hover">
                     {finished ? "Entretien terminé" : "Question suivante"}
                     {!finished && <ChevronRight className="h-4 w-4" />}
                 </Button>
@@ -255,7 +274,7 @@ function ChatInterviewBox({
 function SimulationEntretienContent() {
     const router = useRouter()
     const config = useInterviewConfig()
-    const questions = useMemo(() => buildQuestions(config), [config])
+    const secours = useMemo(() => buildQuestions(config), [config])
 
     const initialMessages = useCallback(
         (): Message[] => [{ id: "accueil", content: welcomeMessage(config), sender: "goriya", timestamp: heure() }],
@@ -263,20 +282,26 @@ function SimulationEntretienContent() {
     )
 
     const [messages, setMessages] = useState<Message[]>(initialMessages)
-    /** Nombre de réponses données : 0 = présentation, n = réponse à la question n. */
+    /** Nombre de réponses données par le candidat. */
     const [step, setStep] = useState(0)
     const [typing, setTyping] = useState(false)
     const [remaining, setRemaining] = useState(config.duree * 60)
     const [showFeedback, setShowFeedback] = useState(false)
+    const [feedback, setFeedback] = useState<Feedback | null>(null)
+    const [feedbackLoading, setFeedbackLoading] = useState(false)
+    const [feedbackError, setFeedbackError] = useState(false)
     const [sessionId, setSessionId] = useState<string | null>(null)
-    const [sessionScore, setSessionScore] = useState<number | null>(null)
-    const [sessionDuration, setSessionDuration] = useState<number | null>(null)
-    const replyTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+    /** Incrémenté à chaque fin/redémarrage : une réponse IA en retard est alors ignorée. */
+    const runId = useRef(0)
+    /** Incrémenté au redémarrage seulement : écarte un feedback de la simulation précédente. */
+    const restarts = useRef(0)
+    const remainingRef = useRef(remaining)
+    remainingRef.current = remaining
+    /** Nombre de messages couverts par le feedback affiché (évite de le recalculer). */
+    const feedbackFor = useRef(0)
     const timeUpNotified = useRef(false)
 
-    const answeredAll = step > questions.length
-    const timeUp = remaining <= 0
-    const finished = answeredAll || timeUp
+    const finished = remaining <= 0
 
     const startSession = useCallback(() => {
         interviewService
@@ -292,10 +317,6 @@ function SimulationEntretienContent() {
         startSession()
     }, [startSession])
 
-    useEffect(() => () => {
-        if (replyTimer.current) clearTimeout(replyTimer.current)
-    }, [])
-
     // Compte à rebours : il s'arrête dès que l'entretien est terminé.
     useEffect(() => {
         if (finished) return
@@ -304,68 +325,116 @@ function SimulationEntretienContent() {
     }, [finished])
 
     useEffect(() => {
-        if (!timeUp || answeredAll || timeUpNotified.current) return
+        if (!finished || timeUpNotified.current) return
         timeUpNotified.current = true
+        runId.current += 1
         setTyping(false)
-        if (replyTimer.current) clearTimeout(replyTimer.current)
         setMessages((prev) => [
             ...prev,
             { id: `fin-${Date.now()}`, content: `Le temps imparti est écoulé. ${CLOSING_MESSAGE}`, sender: "goriya", timestamp: heure() },
         ])
-    }, [timeUp, answeredAll])
+    }, [finished])
 
-    /** Question posée après `answers` réponses ; message de clôture au-delà. */
-    const questionAfter = (answers: number) => (answers <= questions.length ? questions[answers - 1] : CLOSING_MESSAGE)
+    const versApi = (historique: Message[]) =>
+        historique.map((m) => ({ role: m.sender === "user" ? "user" : "assistant", content: m.content }))
 
-    const handleSendMessage = (content: string) => {
-        if (finished) return
-        const answers = step + 1
-        setMessages((prev) => [...prev, { id: `u-${Date.now()}`, content, sender: "user", timestamp: heure() }])
-        setStep(answers)
+    /**
+     * Demande à l'IA le prochain message du recruteur à partir de tout
+     * l'échange : relance sur la dernière réponse, ou nouveau thème plus pointu.
+     */
+    const demanderQuestion = async (historique: Message[], reponses: number) => {
+        const run = runId.current
         setTyping(true)
-        replyTimer.current = setTimeout(() => {
-            setTyping(false)
-            setMessages((prev) => [...prev, { id: `g-${Date.now()}`, content: questionAfter(answers), sender: "goriya", timestamp: heure() }])
-        }, 900)
+        let contenu: string
+        try {
+            const res = await fetch("/api/simulation-entretien", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "question", config, messages: versApi(historique), remaining: remainingRef.current }),
+            })
+            const payload = (await res.json()) as { question?: string }
+            if (!res.ok || !payload.question) throw new Error("question indisponible")
+            contenu = payload.question
+        } catch {
+            contenu = secours[(reponses - 1) % secours.length]
+        }
+        if (run !== runId.current) return
+        setTyping(false)
+        setMessages((prev) => [...prev, { id: `g-${Date.now()}`, content: contenu, sender: "goriya", timestamp: heure() }])
     }
 
-    const handleNextQuestion = () => {
-        if (!finished) setStep((s) => s + 1)
+    const repondre = (content: string) => {
+        if (finished || typing) return
+        const historique: Message[] = [...messages, { id: `u-${Date.now()}`, content, sender: "user", timestamp: heure() }]
+        setMessages(historique)
+        setStep(step + 1)
+        void demanderQuestion(historique, step + 1)
     }
 
-    const videoQuestion = step === 0 ? "Pour commencer, présente-toi en quelques phrases." : questionAfter(step)
-    const progress = Math.round((Math.min(step, questions.length + 1) / (questions.length + 1)) * 100)
+    const handleSendMessage = repondre
+    const handleNextQuestion = () => repondre(REPONSE_ORALE)
+
+    const videoQuestion = [...messages].reverse().find((m) => m.sender === "goriya")?.content ?? ""
+    const progress = Math.min(100, Math.max(0, Math.round(((config.duree * 60 - remaining) / (config.duree * 60)) * 100)))
+    const elapsedMinutes = Math.max(1, Math.round((config.duree * 60 - Math.max(0, remaining)) / 60))
+    /** Réponses écrites : les seules que le feedback peut analyser. */
+    const reponsesEcrites = messages.filter((m) => m.sender === "user" && m.content !== REPONSE_ORALE).length
 
     const handleShowFeedback = async () => {
-        if (sessionId) {
-            try {
-                const res = await interviewService.getSession(sessionId)
-                const session = (res as any)?.data ?? res
-                if (session?.score != null) setSessionScore(session.score)
-                if (session?.duration != null) setSessionDuration(session.duration)
-            } catch { /* show fallback values */ }
-        }
         setShowFeedback(true)
+        if (reponsesEcrites === 0 || feedbackLoading || feedbackFor.current === messages.length) return
+
+        const run = restarts.current
+        setFeedbackLoading(true)
+        setFeedbackError(false)
+        try {
+            const res = await fetch("/api/simulation-entretien", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "feedback", config, messages: versApi(messages) }),
+            })
+            const payload = (await res.json()) as { feedback?: Feedback }
+            if (!res.ok || !payload.feedback) throw new Error("feedback indisponible")
+            if (run !== restarts.current) return
+            setFeedback(payload.feedback)
+            feedbackFor.current = messages.length
+            // Trace côté compte (historique, backoffice) : sans incidence sur l'affichage.
+            if (sessionId) {
+                interviewService
+                    .updateSession(sessionId, {
+                        score: payload.feedback.score,
+                        feedback: payload.feedback.summary,
+                        duration: elapsedMinutes,
+                        status: "COMPLETED",
+                    })
+                    .catch(() => {})
+            }
+        } catch {
+            setFeedbackError(true)
+        } finally {
+            setFeedbackLoading(false)
+        }
     }
 
     const handleRestart = () => {
         if (sessionId) {
             interviewService.deleteSession(sessionId).catch(() => {})
         }
-        if (replyTimer.current) clearTimeout(replyTimer.current)
+        runId.current += 1
+        restarts.current += 1
         timeUpNotified.current = false
+        feedbackFor.current = 0
         setMessages(initialMessages())
         setStep(0)
         setTyping(false)
         setRemaining(config.duree * 60)
-        setSessionScore(null)
-        setSessionDuration(null)
+        setFeedback(null)
+        setFeedbackError(false)
         setShowFeedback(false)
         startSession()
     }
 
     const ModeIcon = config.mode === "video" ? Video : MessageSquare
-    const elapsedMinutes = Math.max(1, Math.round((config.duree * 60 - Math.max(0, remaining)) / 60))
 
     return (
         <div className="p-0 sm:p-2">
@@ -408,9 +477,9 @@ function SimulationEntretienContent() {
 
             <div className="mx-auto flex max-w-3xl justify-center">
                 {config.mode === "video" ? (
-                    <VideoInterviewBox question={videoQuestion} progress={progress} onNext={handleNextQuestion} finished={finished} />
+                    <VideoInterviewBox question={videoQuestion} progress={progress} onNext={handleNextQuestion} finished={finished} thinking={typing} />
                 ) : (
-                    <ChatInterviewBox messages={messages} typing={typing} disabled={finished} onSend={handleSendMessage} />
+                    <ChatInterviewBox messages={messages} typing={typing} disabled={finished || typing} onSend={handleSendMessage} />
                 )}
             </div>
 
@@ -432,52 +501,65 @@ function SimulationEntretienContent() {
                                 <h2 className="text-lg font-bold text-[#1b2331] dark:text-foreground mb-1">Feedback de ton entretien</h2>
                                 <p className="text-[13px] text-[#7f8796] dark:text-muted-foreground text-center">Analyse de ta performance et conseils d'amélioration</p>
                             </div>
-                            <div className="flex justify-center gap-4 mb-6">
-                                <div className="flex flex-col items-center">
-                                    <span className="text-[22px] font-bold text-[#2f6de6] dark:text-primary">{sessionScore != null ? `${sessionScore}%` : "85%"}</span>
-                                    <span className="text-[12px] text-[#7f8796] dark:text-muted-foreground">Score global</span>
+                            {reponsesEcrites === 0 ? (
+                                <p className="mb-6 rounded-xl bg-[#f4f6fb] dark:bg-muted p-4 text-center text-[13px] text-[#5b6474] dark:text-muted-foreground">
+                                    {config.mode === "video"
+                                        ? "Les réponses orales ne sont pas encore analysées : fais la simulation en mode Chat pour obtenir un feedback détaillé."
+                                        : "Réponds à au moins une question pour obtenir l'analyse de ton entretien."}
+                                </p>
+                            ) : feedbackLoading ? (
+                                <p className="mb-6 flex items-center justify-center gap-2 py-8 text-[13px] text-[#7f8796] dark:text-muted-foreground">
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    Goriya analyse tes réponses…
+                                </p>
+                            ) : feedbackError || !feedback ? (
+                                <div className="mb-6 text-center">
+                                    <p className="mb-3 text-[13px] text-[#d9544d]">L&apos;analyse n&apos;a pas abouti.</p>
+                                    <Button variant="outline" size="sm" onClick={handleShowFeedback}>Réessayer</Button>
                                 </div>
-                                <div className="flex flex-col items-center">
-                                    <span className="text-[22px] font-bold text-[#7c4dff] dark:text-primary">
-                                        {Math.min(step, questions.length)}/{questions.length}
-                                    </span>
-                                    <span className="text-[12px] text-[#7f8796] dark:text-muted-foreground">Questions traitées</span>
-                                </div>
-                                <div className="flex flex-col items-center">
-                                    <span className="text-[22px] font-bold text-[#a259e6]">
-                                        {sessionDuration != null ? `${sessionDuration}min` : `${elapsedMinutes}min`}
-                                    </span>
-                                    <span className="text-[12px] text-[#7f8796] dark:text-muted-foreground">Durée totale</span>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                                <div className="rounded-2xl border border-[#e8edf6] dark:border-border p-4">
-                                    <div className="font-semibold text-[#2ecc71] mb-2 text-[14px]">Points forts</div>
-                                    <ul className="text-[13px] text-[#1b2331] dark:text-foreground space-y-1">
-                                        <li>Excellente présentation personnelle</li>
-                                        <li>Réponses structurées et claires</li>
-                                        <li>Bonne connaissance des entreprises</li>
-                                        <li>Confiance et professionnalisme</li>
-                                    </ul>
-                                </div>
-                                <div className="rounded-2xl border border-[#e8edf6] dark:border-border p-4">
-                                    <div className="font-semibold text-[#ff9800] mb-2 text-[14px]">Points d'amélioration</div>
-                                    <ul className="text-[13px] text-[#1b2331] dark:text-foreground space-y-1">
-                                        <li>Développer davantage les exemples concrets</li>
-                                        <li>Améliorer la gestion du stress</li>
-                                        <li>Préparer plus de questions sur le poste</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div className="rounded-xl bg-[#2f2e41] text-white p-4 mb-6">
-                                <div className="font-semibold mb-2">Recommandations</div>
-                                <ul className="text-[13px] list-disc pl-5 space-y-1">
-                                    <li>Utilise la méthode STAR pour structurer tes réponses</li>
-                                    <li>Pratique la respiration profonde avant l'entretien</li>
-                                    <li>Prépare 3-5 questions pertinentes sur l'entreprise</li>
-                                    <li>Entraîne-toi régulièrement avec notre simulateur</li>
-                                </ul>
-                            </div>
+                            ) : (
+                                <>
+                                    <div className="flex justify-center gap-4 mb-4">
+                                        <div className="flex flex-col items-center">
+                                            <span className="text-[22px] font-bold text-[#2f6de6] dark:text-primary">{feedback.score}%</span>
+                                            <span className="text-[12px] text-[#7f8796] dark:text-muted-foreground">Score global</span>
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                            <span className="text-[22px] font-bold text-[#7c4dff] dark:text-primary">{reponsesEcrites}</span>
+                                            <span className="text-[12px] text-[#7f8796] dark:text-muted-foreground">Réponses données</span>
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                            <span className="text-[22px] font-bold text-[#a259e6]">{elapsedMinutes}min</span>
+                                            <span className="text-[12px] text-[#7f8796] dark:text-muted-foreground">Durée totale</span>
+                                        </div>
+                                    </div>
+                                    {feedback.summary && (
+                                        <p className="mb-6 text-center text-[13px] leading-relaxed text-[#5b6474] dark:text-muted-foreground">{feedback.summary}</p>
+                                    )}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                        <div className="rounded-2xl border border-[#e8edf6] dark:border-border p-4">
+                                            <div className="font-semibold text-[#2ecc71] mb-2 text-[14px]">Points forts</div>
+                                            <ul className="text-[13px] text-[#1b2331] dark:text-foreground space-y-1.5">
+                                                {feedback.strengths.map((item, i) => <li key={i}>{item}</li>)}
+                                            </ul>
+                                        </div>
+                                        <div className="rounded-2xl border border-[#e8edf6] dark:border-border p-4">
+                                            <div className="font-semibold text-[#ff9800] mb-2 text-[14px]">Points d&apos;amélioration</div>
+                                            <ul className="text-[13px] text-[#1b2331] dark:text-foreground space-y-1.5">
+                                                {feedback.improvements.map((item, i) => <li key={i}>{item}</li>)}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    {feedback.recommendations.length > 0 && (
+                                        <div className="rounded-xl bg-[#2f2e41] text-white p-4 mb-6">
+                                            <div className="font-semibold mb-2">Recommandations</div>
+                                            <ul className="text-[13px] list-disc pl-5 space-y-1">
+                                                {feedback.recommendations.map((item, i) => <li key={i}>{item}</li>)}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </>
+                            )}
                             <Button
                                 onClick={handleRestart}
                                 className="w-full h-10 rounded-full bg-brand-gradient hover:bg-brand-gradient-hover text-white text-[15px] font-semibold"

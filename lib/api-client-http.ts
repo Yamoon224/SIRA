@@ -5,7 +5,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 
 const API_BASE_URL = BACKEND_URL;
 
-export async function apiRequest<T>({ endpoint, method = 'GET', data, params, silent = false, skipAuth = false }: RequestOptions): Promise<T> {
+export async function apiRequest<T>({ endpoint, method = 'GET', data, params, silent = false, skipAuth = false, timeout = BACKEND_TIMEOUT_MS }: RequestOptions): Promise<T> {
     try {
         // Les endpoints publics (connexion, inscription, retour Google/LinkedIn)
         // n'ont pas de token à joindre. Y appeler resolveToken() n'est pas
@@ -20,7 +20,7 @@ export async function apiRequest<T>({ endpoint, method = 'GET', data, params, si
             headers: {},
             data,
             params,
-            timeout: BACKEND_TIMEOUT_MS,
+            timeout,
         };
 
         if (resolvedToken) {

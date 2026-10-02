@@ -1,4 +1,5 @@
 import { apiRequest } from "@/lib/api-client-http"
+import type { CvModeleId } from "@/lib/cv-pdf"
 
 /** Une entrée de la liste « Expérience professionnelle » du créateur de CV. */
 export interface CvExperience {
@@ -40,6 +41,8 @@ export interface CvContent {
     experiences: CvExperience[]
     formations: CvFormation[]
     competences: CvCompetence[]
+    /** Modèle de mise en page du PDF, choisi à l'étape « Modèle ». */
+    modele: CvModeleId
 }
 
 export interface CvDraft {

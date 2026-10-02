@@ -445,7 +445,7 @@ export default function ProfilePage() {
                                     Tout voir
                                 </Button>
                             )}
-                            <Button variant="ghost" size="sm" onClick={() => router.push("/portfolio/creer")} aria-label="Créer un portfolio">
+                            <Button variant="ghost" size="sm" onClick={() => router.push("/portfolio/nouveau")} aria-label="Créer un portfolio">
                                 <Plus className="h-4 w-4" />
                             </Button>
                         </div>
@@ -460,7 +460,7 @@ export default function ProfilePage() {
                         <div className="flex flex-col items-center gap-3 py-6 text-center">
                             <FolderOpen className="h-8 w-8 text-muted-foreground/60" />
                             <p className="text-sm text-muted-foreground">Aucun portfolio pour le moment.</p>
-                            <Button size="sm" onClick={() => router.push("/portfolio/creer")} className="rounded-full bg-brand-gradient text-white hover:bg-brand-gradient-hover">
+                            <Button size="sm" onClick={() => router.push("/portfolio/nouveau")} className="rounded-full bg-brand-gradient text-white hover:bg-brand-gradient-hover">
                                 <Plus className="mr-1.5 h-4 w-4" />
                                 Créer mon portfolio
                             </Button>

@@ -2,18 +2,20 @@
 
 import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { CheckCircle, Loader2, XCircle } from "lucide-react"
+import { CheckCircle, Clock, Loader2, XCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AppLogo } from "@/components/app-logo"
 import { subscriptionService } from "@/lib/api/subscription.service"
 
-type State = "loading" | "success" | "error"
+/** `pending` : toujours pas confirmé après 3 min ; `failed` : paiement refusé. */
+type State = "loading" | "success" | "pending" | "failed" | "error"
 
 export default function PaymentSuccessPage() {
     const router = useRouter()
     const params = useSearchParams()
     const [state, setState] = useState<State>("loading")
     const [errorMsg, setErrorMsg] = useState("")
+    const [reference, setReference] = useState<string | null>(null)
     // "Réessayer" relance la vérification du MÊME paiement — renvoyer vers la
     // page des forfaits ferait payer une seconde fois.
     const [retryKey, setRetryKey] = useState(0)
@@ -38,21 +40,81 @@ export default function PaymentSuccessPage() {
             ? (params.get("ref")?.split("?")[0] || params.get("referenceNumber"))
             : sessionStorage.getItem("kkiapay_transaction_id")
 
-        if (!userId || !planId || !transactionId) {
+        // Paiement Pro : la référence suffit (l'utilisateur et le plan sont
+        // relus côté serveur sur la transaction).
+        if (!transactionId || (gateway !== "paiementpro" && (!userId || !planId))) {
             setErrorMsg("Paramètres de paiement introuvables.")
             setState("error")
             return
         }
 
         let cancelled = false
-        // Paiement Pro confirme via une notification serveur-à-serveur qui peut
-        // arriver après le retour du navigateur - on re-tente quelques fois.
-        // (~1 min ; l'abonnement s'active de toute façon à la notification.)
-        const maxAttempts = gateway === "paiementpro" ? 20 : 1
         setState("loading")
 
+        // Paiement Pro : le résultat arrive par une notification serveur-à-
+        // serveur, parfois après le retour du navigateur. On interroge l'état
+        // du paiement (endpoint public, par référence) toutes les 3 s pendant
+        // 3 min, puis toutes les 10 s tant que la page reste ouverte : dès que
+        // la confirmation tombe, l'écran passe au vert tout seul.
+        if (gateway === "paiementpro") {
+            setReference(transactionId)
+            let timer: ReturnType<typeof setTimeout> | undefined
+            let attempts = 0
+
+            const lireStatut = async (): Promise<"PENDING" | "SUCCESS" | "FAILED" | "UNKNOWN"> => {
+                try {
+                    const res = await subscriptionService.checkoutStatus(transactionId)
+                    const status = ((res as any)?.data ?? res)?.status
+                    if (status === "SUCCESS" || status === "FAILED" || status === "UNKNOWN") return status
+                    if (status === "PENDING") return "PENDING"
+                    throw new Error("réponse inattendue")
+                } catch {
+                    // Backend pas encore à jour, coupure réseau... : on retombe
+                    // sur l'ancienne vérification, qui exige d'être connecté.
+                    if (!userId || !planId) return "PENDING"
+                    try {
+                        await subscriptionService.verifyCheckout(transactionId, userId, planId, gateway)
+                        return "SUCCESS"
+                    } catch {
+                        return "PENDING"
+                    }
+                }
+            }
+
+            const tick = async () => {
+                const status = await lireStatut()
+                if (cancelled) return
+                attempts += 1
+
+                if (status === "SUCCESS") {
+                    sessionStorage.removeItem("kkiapay_transaction_id")
+                    setState("success")
+                    return
+                }
+                if (status === "UNKNOWN") {
+                    setErrorMsg("Ce paiement est introuvable.")
+                    setState("error")
+                    return
+                }
+                if (status === "FAILED") setState("failed")
+                else if (attempts >= 60) setState("pending")
+
+                // Un refus peut être suivi d'un nouvel essai réussi sur la même
+                // session : on continue donc de surveiller, plus lentement.
+                timer = setTimeout(tick, status === "FAILED" || attempts >= 60 ? 10_000 : 3_000)
+            }
+            tick()
+
+            return () => {
+                cancelled = true
+                if (timer) clearTimeout(timer)
+            }
+        }
+
+        const maxAttempts = 1
+
         const attempt = (n: number) => {
-            subscriptionService.verifyCheckout(transactionId, userId, planId, gateway)
+            subscriptionService.verifyCheckout(transactionId, userId as string, planId as string, gateway)
                 .then(() => {
                     if (cancelled) return
                     sessionStorage.removeItem("kkiapay_transaction_id")
@@ -64,10 +126,7 @@ export default function PaymentSuccessPage() {
                         setTimeout(() => attempt(n + 1), 3000)
                         return
                     }
-                    const msg = gateway === "paiementpro"
-                        ? "Ton paiement n'est pas encore confirmé. S'il a été débité, ne paie pas une seconde fois : ton abonnement s'activera dès la confirmation."
-                        : err?.response?.data?.message ?? err?.message ?? "Paiement non confirmé."
-                    setErrorMsg(msg)
+                    setErrorMsg(err?.response?.data?.message ?? err?.message ?? "Paiement non confirmé.")
                     setState("error")
                 })
         }
@@ -115,6 +174,53 @@ export default function PaymentSuccessPage() {
                         >
                             {isUsageReset ? "Continuer" : "Accéder au tableau de bord"}
                         </Button>
+                    </>
+                )}
+
+                {state === "pending" && (
+                    <>
+                        <Clock className="mx-auto h-16 w-16 text-amber-500" />
+                        <div>
+                            <h1 className="text-2xl font-bold text-foreground">Paiement en cours de confirmation</h1>
+                            <p className="text-muted-foreground text-sm mt-1 text-center">
+                                La confirmation de ton opérateur met plus de temps que prévu. Si ton compte a été débité,
+                                ne paie pas une seconde fois : {isUsageReset ? "tes tentatives seront réinitialisées" : "ton abonnement s'activera"} automatiquement
+                                dès la confirmation, même si tu fermes cette page.
+                            </p>
+                            {reference && (
+                                <p className="text-muted-foreground text-xs mt-3 text-center break-all">
+                                    Un souci ? Écris à support@goriya.net avec cette référence : <span className="font-medium text-foreground">{reference}</span>
+                                </p>
+                            )}
+                        </div>
+                        <div className="flex flex-wrap gap-3 justify-center">
+                            <Button variant="outline" onClick={() => setRetryKey((k) => k + 1)}>
+                                Vérifier maintenant
+                            </Button>
+                            <Button onClick={() => router.push(returnTo)} className="bg-brand-gradient text-white">
+                                Continuer
+                            </Button>
+                        </div>
+                    </>
+                )}
+
+                {state === "failed" && (
+                    <>
+                        <XCircle className="mx-auto h-16 w-16 text-red-500" />
+                        <div>
+                            <h1 className="text-2xl font-bold text-foreground">Paiement non abouti</h1>
+                            <p className="text-muted-foreground text-sm mt-1 text-center">
+                                Ton opérateur a refusé ou annulé ce paiement : rien n&apos;a été activé. Vérifie ton solde puis relance le paiement.
+                            </p>
+                        </div>
+                        <div className="flex flex-wrap gap-3 justify-center">
+                            <Button variant="outline" onClick={() => router.push(isUsageReset ? returnTo : "/auth/plan")}>
+                                Relancer le paiement
+                            </Button>
+                            <Button onClick={() => router.push("/dashboard")} className="bg-brand-gradient text-white">
+                                Continuer sans abonnement
+                            </Button>
+                        </div>
                     </>
                 )}
 

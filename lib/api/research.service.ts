@@ -1,5 +1,15 @@
 import { apiRequest } from "@/lib/api-client-http"
 
+export interface IResearchLeader {
+    nom: string
+    role: string
+}
+
+export interface IResearchSource {
+    title: string
+    url: string
+}
+
 export interface IResearchResult {
     historique: string
     valeurs: string[]
@@ -7,6 +17,26 @@ export interface IResearchResult {
     actualites: string[]
     synthese: string
     recommandations: string[]
+    // Champs de la recherche approfondie : absents des recherches antérieures.
+    presentation?: string
+    fiche?: {
+        secteur?: string
+        creation?: string
+        siege?: string
+        effectif?: string
+        siteWeb?: string
+        groupe?: string
+    }
+    dirigeants?: IResearchLeader[]
+    activites?: string[]
+    chiffres?: string[]
+    dates?: { annee: string; evenement: string }[]
+    concurrents?: string[]
+    questions?: string[]
+    /** Pages web consultées ; vide quand la recherche repose sur les seules connaissances de l'IA. */
+    sources?: IResearchSource[]
+    /** `web` : informations vérifiées en ligne ; `connaissances` : mémoire de l'IA seule. */
+    mode?: "web" | "connaissances"
 }
 
 export interface IResearchQuery {
@@ -23,7 +53,9 @@ export const researchService = {
     },
 
     create: async (companyName: string) => {
-        return apiRequest<IResearchQuery>({ endpoint: "/research", method: "POST", data: { companyName } })
+        // La recherche approfondie consulte le web : elle dépasse largement
+        // le délai par défaut des appels backend.
+        return apiRequest<IResearchQuery>({ endpoint: "/research", method: "POST", data: { companyName }, timeout: 120_000 })
     },
 
     get: async (id: string) => {
