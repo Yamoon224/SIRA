@@ -14,6 +14,9 @@ export default function PaymentSuccessPage() {
     const params = useSearchParams()
     const [state, setState] = useState<State>("loading")
     const [errorMsg, setErrorMsg] = useState("")
+    // "Réessayer" relance la vérification du MÊME paiement — renvoyer vers la
+    // page des forfaits ferait payer une seconde fois.
+    const [retryKey, setRetryKey] = useState(0)
 
     // Réinitialisation d'un quota "Limité" (purpose=USAGE_RESET, voir
     // QuotaExceededNotice) plutôt qu'un abonnement : même page de retour,
@@ -28,8 +31,11 @@ export default function PaymentSuccessPage() {
         const gateway = params.get("gateway") ?? undefined
         // Paiement Pro (session hébergée) : la référence est portée par l'URL de
         // retour. Kkiapay (widget) : elle a été stockée par la page de choix.
+        // Si Paiement Pro accole ses propres paramètres au returnURL avec un
+        // "?" de trop, `ref` (dernier paramètre) arrive pollué : on le nettoie
+        // et on retombe sur le `referenceNumber` qu'il renvoie.
         const transactionId = gateway === "paiementpro"
-            ? params.get("ref")
+            ? (params.get("ref")?.split("?")[0] || params.get("referenceNumber"))
             : sessionStorage.getItem("kkiapay_transaction_id")
 
         if (!userId || !planId || !transactionId) {
@@ -41,7 +47,9 @@ export default function PaymentSuccessPage() {
         let cancelled = false
         // Paiement Pro confirme via une notification serveur-à-serveur qui peut
         // arriver après le retour du navigateur - on re-tente quelques fois.
-        const maxAttempts = gateway === "paiementpro" ? 5 : 1
+        // (~1 min ; l'abonnement s'active de toute façon à la notification.)
+        const maxAttempts = gateway === "paiementpro" ? 20 : 1
+        setState("loading")
 
         const attempt = (n: number) => {
             subscriptionService.verifyCheckout(transactionId, userId, planId, gateway)
@@ -57,7 +65,7 @@ export default function PaymentSuccessPage() {
                         return
                     }
                     const msg = gateway === "paiementpro"
-                        ? "Paiement en cours de confirmation. Réessaie dans un instant."
+                        ? "Ton paiement n'est pas encore confirmé. S'il a été débité, ne paie pas une seconde fois : ton abonnement s'activera dès la confirmation."
                         : err?.response?.data?.message ?? err?.message ?? "Paiement non confirmé."
                     setErrorMsg(msg)
                     setState("error")
@@ -66,7 +74,7 @@ export default function PaymentSuccessPage() {
         attempt(1)
 
         return () => { cancelled = true }
-    }, [params])
+    }, [params, retryKey])
 
     useEffect(() => {
         if (state === "success") {
@@ -118,7 +126,7 @@ export default function PaymentSuccessPage() {
                             <p className="text-muted-foreground text-sm mt-1">{errorMsg}</p>
                         </div>
                         <div className="flex gap-3 justify-center">
-                            <Button variant="outline" onClick={() => router.push("/auth/plan")}>
+                            <Button variant="outline" onClick={() => setRetryKey((k) => k + 1)}>
                                 Réessayer
                             </Button>
                             <Button onClick={() => router.push("/dashboard")} className="bg-brand-gradient text-white">
