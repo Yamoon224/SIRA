@@ -274,13 +274,17 @@ function CreerDocumentContent() {
             ))}
           </div>
 
-          <Button
-            onClick={generateDocument}
-            disabled={isGenerating}
-            className="mt-5 lg:mt-auto h-9 w-full sm:w-fit rounded-full bg-brand-gradient px-11 text-[12px] font-semibold text-white hover:bg-brand-gradient-hover"
-          >
-            {isGenerating ? "Génération..." : "Générer le document"}
-          </Button>
+          {/* `mt-auto` seul tombait à 0 dès que le formulaire remplissait la
+              carte : le `pt-5` garantit l'écart avec le dernier champ. */}
+          <div className="mt-auto pt-5">
+            <Button
+              onClick={generateDocument}
+              disabled={isGenerating}
+              className="h-9 w-full sm:w-fit rounded-full bg-brand-gradient px-11 text-[12px] font-semibold text-white hover:bg-brand-gradient-hover"
+            >
+              {isGenerating ? "Génération..." : "Générer le document"}
+            </Button>
+          </div>
 
           {quotaLimit !== null && (
             <div className="mt-3">
