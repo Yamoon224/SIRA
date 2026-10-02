@@ -236,8 +236,8 @@ function CreerDocumentContent() {
         <h1 className="text-2xl sm:text-[32px] font-semibold leading-none text-[#1b2331] dark:text-foreground">Nouveau document</h1>
       </div>
 
-      <div className="mx-auto grid w-full max-w-[1240px] grid-cols-1 gap-4 px-4 py-4 sm:px-6 lg:grid-cols-[1.62fr_1fr]">
-        <section className="flex min-h-0 lg:min-h-[548px] flex-col rounded-[12px] border border-[#e5e9f2] dark:border-border bg-white dark:bg-card p-4 sm:p-5">
+      <div className="mx-auto grid w-full max-w-[1240px] grid-cols-1 gap-4 px-4 py-4 sm:px-6 lg:grid-cols-2">
+        <section className="flex min-h-0 min-w-0 lg:min-h-[548px] flex-col rounded-[12px] border border-[#e5e9f2] dark:border-border bg-white dark:bg-card p-4 sm:p-5">
           <h2 className="mb-3 text-[14px] font-semibold text-[#1d2433] dark:text-foreground">{template.title}</h2>
 
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -289,7 +289,7 @@ function CreerDocumentContent() {
           )}
         </section>
 
-        <section className="flex min-h-0 lg:min-h-[548px] flex-col rounded-[12px] border border-[#e5e9f2] dark:border-border bg-white dark:bg-card p-4 sm:p-5">
+        <section className="flex min-h-0 min-w-0 lg:min-h-[548px] flex-col rounded-[12px] border border-[#e5e9f2] dark:border-border bg-white dark:bg-card p-4 sm:p-5">
           <h2 className="mb-3 text-[14px] font-semibold text-[#1d2433] dark:text-foreground">Aperçu du document</h2>
 
           <div className="relative h-[320px] sm:h-[418px] overflow-hidden rounded-[12px] bg-[#f2f5fb] dark:bg-muted p-4">
@@ -297,7 +297,7 @@ function CreerDocumentContent() {
             <div className="pointer-events-none absolute left-4 bottom-7 h-12 w-12 rounded-full bg-[#dce4f4] dark:bg-primary/10 opacity-80" />
             <div className="pointer-events-none absolute left-16 bottom-0 h-4 w-4 rounded-full bg-[#dce4f4] dark:bg-primary/10 opacity-80" />
 
-            <pre className="relative z-10 h-full overflow-y-auto pr-2 whitespace-pre-wraptext-[10.5px] leading-[1.55] text-[#7d8595] dark:text-muted-foreground">
+            <pre className="relative z-10 h-full overflow-y-auto pr-2 whitespace-pre-wrap break-words font-sans text-[12px] leading-[1.55] text-[#7d8595] dark:text-muted-foreground">
               {previewContent || defaultPreview}
             </pre>
           </div>
