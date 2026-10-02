@@ -9,6 +9,7 @@ import {
     FileText,
     Loader2,
     Pencil,
+    RefreshCw,
     Sparkles,
     Star,
     Trash2,
@@ -74,7 +75,10 @@ export default function MesCvPage() {
     const [renommage, setRenommage] = useState(false)
     const [aSupprimer, setASupprimer] = useState<IResume | null>(null)
 
+    const [remplacement, setRemplacement] = useState(false)
+
     const inputFichier = useRef<HTMLInputElement>(null)
+    const inputRemplacement = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
         let annule = false
@@ -150,11 +154,42 @@ export default function MesCvPage() {
             await resumeService.update(aRenommer.id, { name: nom })
             setCvs((prev) => prev.map((item) => (item.id === aRenommer.id ? { ...item, name: nom } : item)))
             setARenommer(null)
-            toast.success("CV renommé.")
+            toast.success("Nom du CV enregistré.")
         } catch (err: any) {
             toast.error(err?.message ?? "Le renommage du CV a échoué.")
         } finally {
             setRenommage(false)
+        }
+    }
+
+    /**
+     * Remplace le fichier d'un CV déposé en gardant son nom et son statut par
+     * défaut. Le nouveau fichier est envoyé avant que l'ancien ne soit retiré :
+     * un envoi refusé laisse la bibliothèque intacte.
+     */
+    const remplacer = async (cv: IResume, fichier: File) => {
+        if (fichier.size > RESUME_MAX_SIZE_BYTES) {
+            toast.error("Le CV ne doit pas dépasser 5 Mo.")
+            return
+        }
+
+        setRemplacement(true)
+        try {
+            const nom = nouveauNom.trim() || cv.name
+            const nouveau = contenu<IResume>(await resumeService.upload(fichier, nom))
+            if (cv.isDefault) await resumeService.update(nouveau.id, { isDefault: true })
+            await resumeService.remove(cv.id)
+            await recharger([nouveau])
+            setARenommer(null)
+            toast.success("Fichier du CV remplacé.")
+        } catch (err: any) {
+            // Un échec en cours de route peut laisser les deux fichiers : on
+            // relit la liste pour afficher l'état réel.
+            await recharger(cvs).catch(() => undefined)
+            toast.error(err?.message ?? "Le remplacement du CV a échoué.")
+        } finally {
+            setRemplacement(false)
+            if (inputRemplacement.current) inputRemplacement.current.value = ""
         }
     }
 
@@ -219,6 +254,17 @@ export default function MesCvPage() {
                     onChange={(e) => {
                         const fichier = e.target.files?.[0]
                         if (fichier) televerser(fichier)
+                    }}
+                />
+
+                <input
+                    ref={inputRemplacement}
+                    type="file"
+                    accept={RESUME_ACCEPT}
+                    className="hidden"
+                    onChange={(e) => {
+                        const fichier = e.target.files?.[0]
+                        if (fichier && aRenommer) remplacer(aRenommer, fichier)
                     }}
                 />
 
@@ -356,8 +402,8 @@ export default function MesCvPage() {
                                                 variant="ghost"
                                                 size="icon"
                                                 className="h-8 w-8 rounded-full text-[#5b6474] dark:text-muted-foreground"
-                                                aria-label={`Renommer ${cv.name}`}
-                                                title="Renommer"
+                                                aria-label={`Modifier ${cv.name}`}
+                                                title="Modifier"
                                                 onClick={() => {
                                                     setARenommer(cv)
                                                     setNouveauNom(cv.name)
@@ -393,12 +439,16 @@ export default function MesCvPage() {
                 <Dialog open={!!aRenommer} onOpenChange={(ouvert) => !ouvert && setARenommer(null)}>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Renommer le CV</DialogTitle>
+                            <DialogTitle>Modifier le CV</DialogTitle>
                             <DialogDescription>
-                                Ce nom n'est visible que par toi : il t'aide à choisir le bon CV au moment de postuler.
+                                Le nom n'est visible que par toi : il t'aide à choisir le bon CV au moment de postuler.
                             </DialogDescription>
                         </DialogHeader>
+                        <label className="text-[12px] font-medium text-[#1b2331] dark:text-foreground" htmlFor="nom-cv">
+                            Nom du CV
+                        </label>
                         <Input
+                            id="nom-cv"
                             value={nouveauNom}
                             onChange={(e) => setNouveauNom(e.target.value)}
                             placeholder="CV développeur web"
@@ -407,13 +457,54 @@ export default function MesCvPage() {
                                 if (e.key === "Enter") renommer()
                             }}
                         />
+
+                        <div className="rounded-lg border border-[#e8edf6] bg-[#f8faff] p-3 dark:border-border dark:bg-muted">
+                            <p className="text-[12px] font-medium text-[#1b2331] dark:text-foreground">Contenu du CV</p>
+                            {aRenommer?.source === "builder" ? (
+                                <>
+                                    <p className="mt-1 text-[11px] text-[#5b6474] dark:text-muted-foreground">
+                                        Ce CV a été créé sur Goriya : rouvre-le dans le créateur pour changer son contenu ou
+                                        son modèle, puis enregistre-le à nouveau dans « Mes CV ».
+                                    </p>
+                                    <Button
+                                        variant="outline"
+                                        className="mt-3 h-8 rounded-full text-[12px]"
+                                        onClick={() => router.push("/creer-cv")}
+                                    >
+                                        <Pencil className="mr-1.5 h-3.5 w-3.5" />
+                                        Modifier dans le créateur
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <p className="mt-1 text-[11px] text-[#5b6474] dark:text-muted-foreground">
+                                        Un fichier déposé ne peut pas être retouché ici. Corrige-le sur ton appareil puis
+                                        remplace-le : son nom et son statut par défaut sont conservés.
+                                    </p>
+                                    <Button
+                                        variant="outline"
+                                        className="mt-3 h-8 rounded-full text-[12px]"
+                                        disabled={remplacement}
+                                        onClick={() => inputRemplacement.current?.click()}
+                                    >
+                                        {remplacement ? (
+                                            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                                        ) : (
+                                            <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+                                        )}
+                                        Remplacer le fichier
+                                    </Button>
+                                </>
+                            )}
+                        </div>
+
                         <DialogFooter>
                             <Button variant="ghost" onClick={() => setARenommer(null)}>
                                 Annuler
                             </Button>
-                            <Button onClick={renommer} disabled={renommage || !nouveauNom.trim()}>
+                            <Button onClick={renommer} disabled={renommage || remplacement || !nouveauNom.trim()}>
                                 {renommage && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
-                                Renommer
+                                Enregistrer le nom
                             </Button>
                         </DialogFooter>
                     </DialogContent>

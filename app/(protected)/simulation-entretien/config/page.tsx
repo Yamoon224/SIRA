@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/ui/card"
 import { SubscriptionGate } from "@/components/subscription-gate"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { MessageSquare, Video, X } from "lucide-react"
+import { MessageSquare, Video } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { PageHeader } from "@/components/layout/page-header"
 
@@ -33,13 +33,6 @@ function SimulationConfigContent() {
             <div className="flex items-center justify-center min-h-[600px]">
                 <Card className="w-full max-w-md">
                     <CardContent className="p-6">
-                        <div className="flex justify-between items-start mb-6">
-                            <div></div>
-                            <Button variant="ghost" size="sm" onClick={() => router.back()}>
-                                <X className="w-4 h-4" />
-                            </Button>
-                        </div>
-
                         <div className="text-center mb-6">
                             <Avatar className="w-16 h-16 bg-brand-gradient mx-auto mb-4">
                                 <AvatarFallback className="text-white text-2xl font-bold">G</AvatarFallback>
