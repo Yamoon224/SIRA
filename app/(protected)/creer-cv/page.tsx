@@ -298,6 +298,18 @@ function AddButton({ label, onClick }: { label: string; onClick: () => void }) {
     )
 }
 
+/** Réponse de /api/analyse-cv/brouillon. */
+interface AnalyseBrouillon {
+    score: number
+    structure: string
+    motsCles: string
+    experience: string
+    suggestions: string[]
+}
+
+const couleurAppreciation = (valeur: string) =>
+    valeur === "Faible" ? "text-[#e0685f]" : valeur === "Moyen" ? "text-[#c9b26f]" : "text-[#8dc79b]"
+
 function ScoreGauge({ value }: { value: number }) {
     const radius = 42
     const circumference = 2 * Math.PI * radius
@@ -332,7 +344,9 @@ function CreerCVContent() {
     // Sous 768px les étapes deviennent un accordéon ; au-dessus, sidebar + carte.
     const isMobile = useIsMobile()
 
-    const [analysisProgress, setAnalysisProgress] = useState(0)
+    /** Dernière analyse IA du brouillon, `null` tant qu'aucune n'a été lancée. */
+    const [analyse, setAnalyse] = useState<AnalyseBrouillon | null>(null)
+    const [analyseEnCours, setAnalyseEnCours] = useState(false)
     const [step, setStep] = useState(0)
     const [formData, setFormData] = useState<CvContent>(EMPTY_CV)
     const [savedAt, setSavedAt] = useState<string | null>(null)
@@ -561,14 +575,27 @@ function CreerCVContent() {
         }
     }
 
-    const handleAnalyze = () => {
-        setAnalysisProgress(0)
-        let progress = 0
-        const timer = setInterval(() => {
-            progress += 10
-            setAnalysisProgress(progress)
-            if (progress >= 100) clearInterval(timer)
-        }, 180)
+    const handleAnalyze = async () => {
+        if (isEmptyCv(formData)) {
+            toast.error("Remplis d'abord ton CV pour pouvoir l'analyser.")
+            return
+        }
+        setAnalyse(null)
+        setAnalyseEnCours(true)
+        try {
+            const reponse = await fetch("/api/analyse-cv/brouillon", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ cv: formData }),
+            })
+            const payload = (await reponse.json()) as Partial<AnalyseBrouillon> & { error?: string }
+            if (!reponse.ok || typeof payload.score !== "number") throw new Error(payload.error || "")
+            setAnalyse(payload as AnalyseBrouillon)
+        } catch (err: unknown) {
+            toast.error((err instanceof Error && err.message) || "L'analyse n'a pas pu aboutir. Réessaie dans un instant.")
+        } finally {
+            setAnalyseEnCours(false)
+        }
     }
 
     const indicatif = formData.indicatif || INDICATIF_PAR_DEFAUT
@@ -940,26 +967,38 @@ function CreerCVContent() {
                 <p className="text-center text-[13px] font-semibold text-[#2e6fe9] dark:text-primary">Analyse avec Goriya</p>
                 <p className="mb-3 text-center text-[11px] text-[#8b94ab] dark:text-muted-foreground">Score d&apos;optimisation de votre CV</p>
 
-                <ScoreGauge value={analysisProgress} />
+                <ScoreGauge value={analyse?.score ?? 0} />
 
                 <div className="mt-3 space-y-2 text-[10px] text-[#99a3b8] dark:text-muted-foreground">
-                    <div className="flex items-center justify-between">
-                        <span>Structure</span>
-                        <span className="text-[#8dc79b] dark:text-muted-foreground">Excellent</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <span>Mots-clés</span>
-                        <span className="text-[#c9b26f]">Moyen</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <span>Expérience</span>
-                        <span className="text-[#8dc79b] dark:text-muted-foreground">Très bon</span>
-                    </div>
+                    {(
+                        [
+                            ["Structure", analyse?.structure],
+                            ["Mots-clés", analyse?.motsCles],
+                            ["Expérience", analyse?.experience],
+                        ] as const
+                    ).map(([libelle, valeur]) => (
+                        <div key={libelle} className="flex items-center justify-between">
+                            <span>{libelle}</span>
+                            <span className={valeur ? couleurAppreciation(valeur) : undefined}>{valeur ?? "-"}</span>
+                        </div>
+                    ))}
                 </div>
 
-                <Button onClick={handleAnalyze} className="mt-3 h-8 w-full rounded-full bg-brand-gradient text-[11px] hover:bg-brand-gradient-hover">
-                    <Sparkles className="mr-1 h-3.5 w-3.5" />
-                    Analyser avec Goriya
+                {analyse && analyse.suggestions.length > 0 && (
+                    <ul className="mt-3 list-disc space-y-1 pl-4 text-[11px] leading-[1.4] text-[#5b6474] dark:text-muted-foreground">
+                        {analyse.suggestions.map((suggestion, i) => (
+                            <li key={i}>{suggestion}</li>
+                        ))}
+                    </ul>
+                )}
+
+                <Button
+                    onClick={handleAnalyze}
+                    disabled={analyseEnCours}
+                    className="mt-3 h-8 w-full rounded-full bg-brand-gradient text-[11px] hover:bg-brand-gradient-hover"
+                >
+                    {analyseEnCours ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Sparkles className="mr-1 h-3.5 w-3.5" />}
+                    {analyseEnCours ? "Analyse en cours…" : analyse ? "Relancer l'analyse" : "Analyser avec Goriya"}
                 </Button>
             </CardContent>
         </Card>
