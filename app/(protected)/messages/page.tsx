@@ -60,6 +60,8 @@ interface Conversation {
     id: string
     name: string
     role: string
+    /** Logo de l'entreprise (ou photo du candidat), null quand il n'y en a pas. */
+    avatar?: string | null
     lastMessageAt: string | null
     unreadCount: number
     lastMessage: string
@@ -251,7 +253,7 @@ function MessagesContent() {
         conv.name.toLowerCase().includes(searchQuery.toLowerCase()),
     )
 
-    const initials = (name: string) => name.split(" ").map((n) => n[0]).join("")
+    const initials = (name: string) => name.split(" ").filter(Boolean).map((n) => n[0]).join("").slice(0, 2).toUpperCase()
 
     return (
         <>
@@ -290,7 +292,7 @@ function MessagesContent() {
                         >
                             <div className="flex items-start space-x-3">
                                 <Avatar className="w-12 h-12">
-                                    <AvatarImage src="/placeholder.svg" />
+                                    {conversation.avatar && <AvatarImage src={conversation.avatar} alt={conversation.name} className="object-cover" />}
                                     <AvatarFallback>{initials(conversation.name)}</AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1 min-w-0">
@@ -351,7 +353,7 @@ function MessagesContent() {
                                         <ChevronLeft className="w-5 h-5" />
                                     </Button>
                                     <Avatar className="w-10 h-10">
-                                        <AvatarImage src="/placeholder.svg" />
+                                        {selectedConversation.avatar && <AvatarImage src={selectedConversation.avatar} alt={selectedConversation.name} className="object-cover" />}
                                         <AvatarFallback>{initials(selectedConversation.name)}</AvatarFallback>
                                     </Avatar>
                                     <div>
