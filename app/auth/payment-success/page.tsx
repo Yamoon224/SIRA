@@ -6,6 +6,7 @@ import { CheckCircle, Clock, Loader2, XCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AppLogo } from "@/components/app-logo"
 import { subscriptionService } from "@/lib/api/subscription.service"
+import { forgetPaymentReference, isPaiementProReturn, paymentReferenceCandidates } from "@/lib/payment-reference"
 
 /** `pending` : toujours pas confirmé après 3 min ; `failed` : paiement refusé. */
 type State = "loading" | "success" | "pending" | "failed" | "error"
@@ -33,16 +34,17 @@ export default function PaymentSuccessPage() {
         const gateway = params.get("gateway") ?? undefined
         // Paiement Pro (session hébergée) : la référence est portée par l'URL de
         // retour. Kkiapay (widget) : elle a été stockée par la page de choix.
-        // Si Paiement Pro accole ses propres paramètres au returnURL avec un
-        // "?" de trop, `ref` (dernier paramètre) arrive pollué : on le nettoie
-        // et on retombe sur le `referenceNumber` qu'il renvoie.
-        const transactionId = gateway === "paiementpro"
-            ? (params.get("ref")?.split("?")[0] || params.get("referenceNumber"))
+        // L'URL de retour peut revenir abîmée par Paiement Pro : plusieurs
+        // pistes sont essayées (voir lib/payment-reference).
+        const isPaiementPro = isPaiementProReturn(params)
+        const candidates = isPaiementPro ? paymentReferenceCandidates(params) : []
+        const transactionId = isPaiementPro
+            ? (candidates[0] ?? null)
             : sessionStorage.getItem("kkiapay_transaction_id")
 
         // Paiement Pro : la référence suffit (l'utilisateur et le plan sont
         // relus côté serveur sur la transaction).
-        if (!transactionId || (gateway !== "paiementpro" && (!userId || !planId))) {
+        if (!transactionId || (!isPaiementPro && (!userId || !planId))) {
             setErrorMsg("Paramètres de paiement introuvables.")
             setState("error")
             return
@@ -56,24 +58,34 @@ export default function PaymentSuccessPage() {
         // du paiement (endpoint public, par référence) toutes les 3 s pendant
         // 3 min, puis toutes les 10 s tant que la page reste ouverte : dès que
         // la confirmation tombe, l'écran passe au vert tout seul.
-        if (gateway === "paiementpro") {
+        if (isPaiementPro) {
             setReference(transactionId)
             let timer: ReturnType<typeof setTimeout> | undefined
             let attempts = 0
+            let active: string | null = null
 
             const lireStatut = async (): Promise<"PENDING" | "SUCCESS" | "FAILED" | "UNKNOWN"> => {
                 try {
-                    const res = await subscriptionService.checkoutStatus(transactionId)
-                    const status = ((res as any)?.data ?? res)?.status
-                    if (status === "SUCCESS" || status === "FAILED" || status === "UNKNOWN") return status
-                    if (status === "PENDING") return "PENDING"
-                    throw new Error("réponse inattendue")
+                    // Première référence reconnue par le serveur : on s'y tient
+                    // pour les interrogations suivantes.
+                    for (const candidate of active ? [active] : candidates) {
+                        const res = await subscriptionService.checkoutStatus(candidate)
+                        const status = ((res as any)?.data ?? res)?.status
+                        if (status === "UNKNOWN") continue
+                        if (status !== "SUCCESS" && status !== "FAILED" && status !== "PENDING") throw new Error("réponse inattendue")
+                        if (active !== candidate) {
+                            active = candidate
+                            setReference(candidate)
+                        }
+                        return status
+                    }
+                    return "UNKNOWN"
                 } catch {
                     // Backend pas encore à jour, coupure réseau... : on retombe
                     // sur l'ancienne vérification, qui exige d'être connecté.
                     if (!userId || !planId) return "PENDING"
                     try {
-                        await subscriptionService.verifyCheckout(transactionId, userId, planId, gateway)
+                        await subscriptionService.verifyCheckout(transactionId, userId, planId, "paiementpro")
                         return "SUCCESS"
                     } catch {
                         return "PENDING"
@@ -88,6 +100,7 @@ export default function PaymentSuccessPage() {
 
                 if (status === "SUCCESS") {
                     sessionStorage.removeItem("kkiapay_transaction_id")
+                    forgetPaymentReference()
                     setState("success")
                     return
                 }
@@ -230,6 +243,11 @@ export default function PaymentSuccessPage() {
                         <div>
                             <h1 className="text-2xl font-bold text-foreground">Activation échouée</h1>
                             <p className="text-muted-foreground text-sm mt-1">{errorMsg}</p>
+                            {reference && (
+                                <p className="text-muted-foreground text-xs mt-3 text-center break-all">
+                                    Si ton compte a été débité, ne paie pas une seconde fois : écris à support@goriya.net avec cette référence : <span className="font-medium text-foreground">{reference}</span>
+                                </p>
+                            )}
                         </div>
                         <div className="flex gap-3 justify-center">
                             <Button variant="outline" onClick={() => setRetryKey((k) => k + 1)}>

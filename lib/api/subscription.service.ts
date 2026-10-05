@@ -1,4 +1,5 @@
 import { apiRequest } from "@/lib/api-client-http"
+import { rememberPaymentReference } from "@/lib/payment-reference"
 
 export interface CreateCheckoutData {
     userId: string
@@ -36,12 +37,17 @@ export const subscriptionService = {
     subscribe: (data: { userId: string; planId: string }) =>
         apiRequest<any>({ endpoint: "/subscriptions/subscribe", method: "POST", data }),
 
-    createCheckout: (data: CreateCheckoutData) =>
-        apiRequest<CheckoutResponse>({
+    createCheckout: async (data: CreateCheckoutData) => {
+        const res = await apiRequest<CheckoutResponse>({
             endpoint: "/subscriptions/checkout",
             method: "POST",
             data,
-        }),
+        })
+        // Session hébergée : on garde la référence avant de quitter le site,
+        // au cas où l'URL de retour du prestataire reviendrait abîmée.
+        rememberPaymentReference(((res as any)?.data ?? res)?.sessionId)
+        return res
+    },
 
     verifyCheckout: (transactionId: string, userId: string, planId: string, gateway?: string) =>
         apiRequest<any>({
