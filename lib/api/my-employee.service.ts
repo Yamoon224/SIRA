@@ -25,6 +25,7 @@ export interface IMyEmployee {
     id: string
     source: "CANDIDATURE" | "MANUAL"
     companyName: string | null
+    companyLogo: string | null
     matricule: string
     firstName: string
     lastName: string

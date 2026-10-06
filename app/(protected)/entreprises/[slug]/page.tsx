@@ -199,6 +199,23 @@ export default function CompanyProfilePage() {
                 </section>
               )}
 
+              {/* Mission et valeurs */}
+              {company.values && company.values.length > 0 && (
+                <section>
+                  <h2 className="text-2xl font-bold text-foreground mb-4">Nos valeurs</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {company.values.map((v: string) => (
+                      <span
+                        key={v}
+                        className="inline-flex items-center rounded-full bg-blue-50 dark:bg-primary/10 px-3 py-1 text-xs font-medium text-blue-700 dark:text-primary"
+                      >
+                        {v}
+                      </span>
+                    ))}
+                  </div>
+                </section>
+              )}
+
               {/* Contact + Stats + Social */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6 border-t border-border">
                 {/* Contact */}
@@ -356,6 +373,22 @@ export default function CompanyProfilePage() {
                   </p>
                 )}
               </div>
+
+              {company.values && company.values.length > 0 && (
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground mb-4">Nos valeurs</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {company.values.map((v: string) => (
+                      <span
+                        key={v}
+                        className="inline-flex items-center rounded-full bg-blue-50 dark:bg-primary/10 px-3 py-1 text-xs font-medium text-blue-700 dark:text-primary"
+                      >
+                        {v}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </TabsContent>
 
             {/* ===== ÉQUIPE TAB ===== */}

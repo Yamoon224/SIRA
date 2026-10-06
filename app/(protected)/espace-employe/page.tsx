@@ -26,8 +26,9 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Briefcase, Building2, CalendarDays, CheckCircle2, ClipboardList, Loader2, Plus, Star, Trash2, Umbrella, UserCog } from "lucide-react"
+import { Briefcase, CalendarDays, CheckCircle2, ClipboardList, Loader2, Plus, Star, Trash2, Umbrella, UserCog } from "lucide-react"
 import { PageHeader } from "@/components/layout/page-header"
+import { CompanyLogo } from "@/components/company-logo"
 import { cn } from "@/lib/utils"
 import {
     myEmployeeService,
@@ -296,9 +297,11 @@ export default function Page() {
             <Card className="border border-border">
                 <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex items-start gap-3">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                            <Building2 className="h-5 w-5 text-primary" />
-                        </div>
+                        <CompanyLogo
+                            name={employee.companyName ?? "?"}
+                            logo={employee.companyLogo}
+                            className="h-11 w-11 text-sm"
+                        />
                         <div>
                             <p className="text-base font-semibold text-foreground">{employee.companyName ?? "Entreprise"}</p>
                             <p className="text-sm text-muted-foreground">{employee.jobTitle}{employee.department ? ` · ${employee.department}` : ""}</p>

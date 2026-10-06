@@ -34,6 +34,8 @@ export interface ICompany {
     partnershipDate: Date;
     companySize: string | null;
     socialLinks: string[];
+    /** Mission et valeurs choisies côté entreprise (lib/data/entreprise.ts côté entreprise). */
+    values?: string[];
     country: string | null;
     headquarters: string | null;
     location: string | null;

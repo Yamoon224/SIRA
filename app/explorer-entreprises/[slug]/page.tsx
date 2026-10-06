@@ -350,6 +350,23 @@ export default function EntrepriseDetailPage() {
                             </div>
                         )}
 
+                        {/* Mission et valeurs */}
+                        {company.values && company.values.length > 0 && (
+                            <div className="bg-white dark:bg-card rounded-2xl border border-[#e8edf6] dark:border-border p-6">
+                                <h2 className="text-[18px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Nos valeurs</h2>
+                                <div className="flex flex-wrap gap-2">
+                                    {company.values.map((v: string) => (
+                                        <span
+                                            key={v}
+                                            className="inline-flex items-center rounded-full bg-[#eef3fe] dark:bg-primary/10 px-3 py-1 text-[12px] font-medium text-[#2f6de6] dark:text-primary"
+                                        >
+                                            {v}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Ce qu'ils recherchent */}
                         <div className="bg-white dark:bg-card rounded-2xl border border-[#e8edf6] dark:border-border p-6">
                             <h2 className="text-[18px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Ce qu'ils recherchent</h2>
