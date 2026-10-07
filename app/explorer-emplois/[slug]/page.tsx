@@ -15,6 +15,7 @@ import { companyHref } from "@/lib/public-links"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
 import { ApplyWizard } from "@/components/apply-wizard"
+import { GoriyaLogoLoader } from "@/components/goriya-loader"
 
 function formatPosted(date: Date | string) {
     const d = new Date(date)
@@ -122,7 +123,10 @@ function MatchingScoreWidget({ jobId }: { jobId?: string }) {
             <h3 className="text-[13px] font-extrabold text-[#1b2331] dark:text-foreground mb-4">Ton profil correspond à cette offre</h3>
 
             {loading ? (
-                <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 animate-spin text-[#2f6de6] dark:text-primary" /></div>
+                <div className="flex flex-col items-center justify-center gap-2 py-4 text-center">
+                    <GoriyaLogoLoader width={50} />
+                    <p className="text-[10px] text-[#8b93a3] dark:text-muted-foreground">Analyse en cours…</p>
+                </div>
             ) : result ? (
                 <div className="flex items-center gap-4">
                     <ScoreGauge value={result.matchingScore} />

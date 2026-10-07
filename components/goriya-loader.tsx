@@ -1,16 +1,16 @@
 import type { CSSProperties } from "react"
 
 /**
- * Loader de marque : le logo Goriya se remplit du dégradé de marque, du bas
+ * Loader de marque : l'icône Goriya se remplit du dégradé de marque, du bas
  * vers le haut, en boucle. Le remplissage est un `clip-path` animé sur une
- * copie du logo utilisée comme masque - l'alpha du PNG dessine la forme, la
- * couleur vient du calque dégradé posé dessous.
+ * copie de l'icône utilisée comme masque - l'alpha du SVG dessine la forme,
+ * la couleur vient du calque dégradé posé dessous. Ratio 511x871 (icon.svg).
  */
-export function GoriyaLogoLoader({ width = 150, label = "Analyse en cours" }: { width?: number; label?: string }) {
-    const height = Math.round(width * 0.36)
+export function GoriyaLogoLoader({ width = 100, label = "Analyse en cours" }: { width?: number; label?: string }) {
+    const height = Math.round(width * (871 / 511))
     const maskStyle: CSSProperties = {
-        WebkitMaskImage: "url(/images/logo.png)",
-        maskImage: "url(/images/logo.png)",
+        WebkitMaskImage: "url(/icon.svg)",
+        maskImage: "url(/icon.svg)",
         WebkitMaskSize: "contain",
         maskSize: "contain",
         WebkitMaskRepeat: "no-repeat",

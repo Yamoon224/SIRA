@@ -32,6 +32,7 @@ import { SubscriptionGate } from "@/components/subscription-gate"
 import { researchService, type IResearchQuery } from "@/lib/api/research.service"
 import { PageHeader } from "@/components/layout/page-header"
 import { cn } from "@/lib/utils"
+import { GoriyaLogoLoader } from "@/components/goriya-loader"
 
 const initiales = (nom: string) =>
     nom
@@ -436,7 +437,12 @@ function RechercheEntrepriseContent() {
                 </div>
 
                 <div className="min-w-0">
-                    {active ? (
+                    {searching ? (
+                        <div className="flex flex-col items-center justify-center gap-5 rounded-2xl border border-dashed border-[#d8deeb] px-4 py-16 text-center dark:border-border">
+                            <GoriyaLogoLoader width={90} />
+                            <p className="text-[13px] text-muted-foreground">Goriya recherche l&apos;entreprise…</p>
+                        </div>
+                    ) : active ? (
                         <Resultat query={active} onFavorite={() => handleToggleFavorite(active)} onDelete={() => handleDelete(active.id)} />
                     ) : (
                         <div className="rounded-2xl border border-dashed border-[#d8deeb] px-4 py-14 text-center dark:border-border">

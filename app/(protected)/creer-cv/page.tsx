@@ -22,6 +22,7 @@ import {
 import { useIsMobile } from "@/components/ui/use-mobile"
 import { FileBadge2, ChevronDown, CloudOff, Download, FolderPlus, Loader2, Plus, Save, Sparkles, Trash2 } from "lucide-react"
 import { CV_MODELES, CV_MODELE_PAR_DEFAUT, cvPdfFile, cvPdfPreviewUrl, downloadCvPdf, isCvModele, type CvModeleId } from "@/lib/cv-pdf"
+import { GoriyaLogoLoader } from "@/components/goriya-loader"
 import { SubscriptionGate } from "@/components/subscription-gate"
 import { AutocompleteInput } from "@/components/autocomplete-input"
 import { useAuth } from "@/contexts/auth-context"
@@ -967,29 +968,38 @@ function CreerCVContent() {
                 <p className="text-center text-[13px] font-semibold text-[#2e6fe9] dark:text-primary">Analyse avec Goriya</p>
                 <p className="mb-3 text-center text-[11px] text-[#8b94ab] dark:text-muted-foreground">Score d&apos;optimisation de votre CV</p>
 
-                <ScoreGauge value={analyse?.score ?? 0} />
+                {analyseEnCours ? (
+                    <div className="flex flex-col items-center justify-center gap-3 py-2 text-center">
+                        <GoriyaLogoLoader width={65} />
+                        <p className="text-[11px] text-[#8b94ab] dark:text-muted-foreground">Analyse en cours…</p>
+                    </div>
+                ) : (
+                    <>
+                        <ScoreGauge value={analyse?.score ?? 0} />
 
-                <div className="mt-3 space-y-2 text-[10px] text-[#99a3b8] dark:text-muted-foreground">
-                    {(
-                        [
-                            ["Structure", analyse?.structure],
-                            ["Mots-clés", analyse?.motsCles],
-                            ["Expérience", analyse?.experience],
-                        ] as const
-                    ).map(([libelle, valeur]) => (
-                        <div key={libelle} className="flex items-center justify-between">
-                            <span>{libelle}</span>
-                            <span className={valeur ? couleurAppreciation(valeur) : undefined}>{valeur ?? "-"}</span>
+                        <div className="mt-3 space-y-2 text-[10px] text-[#99a3b8] dark:text-muted-foreground">
+                            {(
+                                [
+                                    ["Structure", analyse?.structure],
+                                    ["Mots-clés", analyse?.motsCles],
+                                    ["Expérience", analyse?.experience],
+                                ] as const
+                            ).map(([libelle, valeur]) => (
+                                <div key={libelle} className="flex items-center justify-between">
+                                    <span>{libelle}</span>
+                                    <span className={valeur ? couleurAppreciation(valeur) : undefined}>{valeur ?? "-"}</span>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
 
-                {analyse && analyse.suggestions.length > 0 && (
-                    <ul className="mt-3 list-disc space-y-1 pl-4 text-[11px] leading-[1.4] text-[#5b6474] dark:text-muted-foreground">
-                        {analyse.suggestions.map((suggestion, i) => (
-                            <li key={i}>{suggestion}</li>
-                        ))}
-                    </ul>
+                        {analyse && analyse.suggestions.length > 0 && (
+                            <ul className="mt-3 list-disc space-y-1 pl-4 text-[11px] leading-[1.4] text-[#5b6474] dark:text-muted-foreground">
+                                {analyse.suggestions.map((suggestion, i) => (
+                                    <li key={i}>{suggestion}</li>
+                                ))}
+                            </ul>
+                        )}
+                    </>
                 )}
 
                 <Button
@@ -997,7 +1007,7 @@ function CreerCVContent() {
                     disabled={analyseEnCours}
                     className="mt-3 h-8 w-full rounded-full bg-brand-gradient text-[11px] hover:bg-brand-gradient-hover"
                 >
-                    {analyseEnCours ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Sparkles className="mr-1 h-3.5 w-3.5" />}
+                    {analyseEnCours ? null : <Sparkles className="mr-1 h-3.5 w-3.5" />}
                     {analyseEnCours ? "Analyse en cours…" : analyse ? "Relancer l'analyse" : "Analyser avec Goriya"}
                 </Button>
             </CardContent>
