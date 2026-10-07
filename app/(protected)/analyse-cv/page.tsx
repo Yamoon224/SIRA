@@ -68,7 +68,7 @@ function AnalyzingPanel() {
     return (
         <div className="mt-8 flex flex-col items-center justify-center gap-5 rounded-[14px] bg-[#eef2fd] dark:bg-primary/10 px-6 py-16 text-center">
             <GoriyaLogoLoader width={100} />
-            <p className="text-[13px] text-[#5b6474] dark:text-muted-foreground">Goriya analyse votre CV…</p>
+            <p className="text-[13px] text-[#5b6474] dark:text-muted-foreground">Analyse du CV…</p>
         </div>
     )
 }

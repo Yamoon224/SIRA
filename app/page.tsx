@@ -266,7 +266,7 @@ export default function Page() {
             {isAnalyzingCV && (
                 <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-background/95 backdrop-blur-sm">
                     <GoriyaLogoLoader width={110} />
-                    <p className="text-[13px] text-muted-foreground">Goriya analyse votre CV…</p>
+                    <p className="text-[13px] text-muted-foreground">Analyse du CV…</p>
                 </div>
             )}
 
