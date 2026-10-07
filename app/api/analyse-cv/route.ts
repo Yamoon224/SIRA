@@ -251,8 +251,14 @@ export async function POST(request: Request) {
             return await runAnalysis(file, { deviceId })
         }
 
-        // Authenticated: check subscription
-        const { hasSubscription } = await checkSubscription(authedUserId)
+        // Abonnement et quota : deux lectures indépendantes, lancées ensemble
+        // plutôt que l'une après l'autre (un aller-retour backend de moins
+        // avant de commencer l'analyse).
+        const accessToken = (session?.user as any)?.access_token as string | undefined
+        const [{ hasSubscription }, usage] = await Promise.all([
+            checkSubscription(authedUserId),
+            accessToken ? checkAuthedUsageStatus(accessToken) : Promise.resolve(null),
+        ])
         if (!hasSubscription) {
             return NextResponse.json(
                 {
@@ -266,24 +272,20 @@ export async function POST(request: Request) {
         // Quota du forfait actif (Grouilleur: 2/mois, Standard: 5,
         // Premium: 20) - vérifié avant l'appel IA, sans le consommer
         // (voir consumeAuthedUsage, appelée seulement après succès).
-        const accessToken = (session?.user as any)?.access_token as string | undefined
-        if (accessToken) {
-            const usage = await checkAuthedUsageStatus(accessToken)
-            if (!usage.allowed) {
-                return NextResponse.json(
-                    {
-                        error:
-                            usage.limit > 0
-                                ? `Tu as utilisé tes ${usage.limit} analyses de CV incluses dans ton forfait ce mois-ci.`
-                                : "L'analyse de CV n'est pas incluse dans ton forfait actuel.",
-                        requiresReset: usage.limit > 0,
-                        used: usage.used,
-                        remaining: usage.remaining,
-                        limit: usage.limit,
-                    },
-                    { status: 403 },
-                )
-            }
+        if (usage && !usage.allowed) {
+            return NextResponse.json(
+                {
+                    error:
+                        usage.limit > 0
+                            ? `Tu as utilisé tes ${usage.limit} analyses de CV incluses dans ton forfait ce mois-ci.`
+                            : "L'analyse de CV n'est pas incluse dans ton forfait actuel.",
+                    requiresReset: usage.limit > 0,
+                    used: usage.used,
+                    remaining: usage.remaining,
+                    limit: usage.limit,
+                },
+                { status: 403 },
+            )
         }
 
         return await runAnalysis(file, null, accessToken)
@@ -365,6 +367,9 @@ async function runExtraction(file: File) {
     }
 }
 
+/** Réponse de l'IA absente ou illisible : rendue en 502, sans consommer de quota. */
+class ReponseIaInvalide extends Error {}
+
 async function runAnalysis(
     file: File,
     anonymous: { deviceId: string } | null,
@@ -404,59 +409,94 @@ async function runAnalysis(
     // modèle par défaut des deux côtés du monorepo.
     const model = process.env.CLAUDE_MODEL || "claude-haiku-4-5-20251001"
 
-    const instructions =
+    // L'attente vient presque entièrement de la rédaction de la réponse
+    // (~2 000 tokens écrits l'un après l'autre). On la répartit donc sur trois
+    // appels lancés en même temps - l'évaluation, les expériences, le reste du
+    // profil - et on recolle les morceaux : la durée devient celle du plus long
+    // des trois (mesuré sur un CV d'une page : 20 s -> 9 s). Le CV est lu trois
+    // fois, ce qui ajoute quelques milliers de tokens d'entrée par analyse.
+    const enTete =
         "Tu es un expert RH. Analyse ce CV / document de candidature et réponds UNIQUEMENT en JSON valide " +
-        "(sans markdown, sans texte avant ou après), avec exactement cette structure : " +
-        '{"score": <entier entre 0 et 100>, "strengths": ["..."], "weaknesses": ["..."], "suggestions": ["..."], "keywords": ["..."], "summary": "...", ' +
-        '"profile": {"firstName": "", "fullName": "", "title": "", "phone": "", "email": "", "birthDate": "", "gender": "", "desiredJob": "", ' +
-        '"experiences": [{"position": "", "company": "", "location": "", "date": "", "skills": [""], "missions": [""]}], ' +
-        '"skills": [""], "educations": [{"title": "", "level": "", "school": "", "date": "", "skills": [""]}], ' +
-        '"hobbies": [""], "linkedin": "", "website": ""}}. ' +
-        "strengths, weaknesses et suggestions : 5 éléments maximum chacun, une phrase courte par élément. " +
-        "\"profile\" reprend uniquement ce qui est écrit dans le CV : n'invente rien, laisse \"\" ou [] quand l'information est absente. " +
-        "firstName = prénom seul ; title = intitulé professionnel affiché en tête du CV ; phone = numéro avec son indicatif s'il figure ; " +
-        "birthDate au format AAAA-MM-JJ ; gender = \"Homme\" ou \"Femme\" seulement s'il est indiqué explicitement ; " +
-        "desiredJob = poste recherché s'il est mentionné ; date = période telle qu'écrite (ex. \"2022 - 2024\") ; " +
-        "experiences et educations de la plus récente à la plus ancienne."
+        "(sans markdown, sans texte avant ou après), avec exactement cette structure : "
+    const fidelite =
+        "Reprends uniquement ce qui est écrit dans le CV : n'invente rien, laisse \"\" ou [] quand l'information est absente. "
+    const dates = "date = période telle qu'écrite (ex. \"2022 - 2024\")"
 
-    const content = pdfBase64
-        ? [
-              {
-                  type: "document" as const,
-                  source: {
-                      type: "base64" as const,
-                      media_type: "application/pdf" as const,
-                      data: pdfBase64,
-                  },
-              },
-              { type: "text" as const, text: instructions },
-          ]
-        : [
-              {
-                  type: "text" as const,
-                  text: `${instructions}\n\nContenu du CV :\n---\n${cvText.slice(0, 20000)}\n---`,
-              },
-          ]
-
-    const response = await anthropic.messages.create({
-        model,
-        max_tokens: 4000,
-        messages: [{ role: "user", content }],
-    })
-
-    const textBlock = response.content.find((block) => block.type === "text")
-    if (!textBlock || textBlock.type !== "text") {
-        return NextResponse.json({ error: "Aucune réponse IA reçue" }, { status: 502 })
+    const demandes = {
+        evaluation: {
+            maxTokens: 1500,
+            instructions:
+                enTete +
+                '{"score": <entier entre 0 et 100>, "strengths": ["..."], "weaknesses": ["..."], "suggestions": ["..."], "keywords": ["..."], "summary": "..."}. ' +
+                "strengths, weaknesses et suggestions : 5 éléments maximum chacun, une phrase courte par élément.",
+        },
+        experiences: {
+            maxTokens: 3000,
+            instructions:
+                enTete +
+                '{"experiences": [{"position": "", "company": "", "location": "", "date": "", "skills": [""], "missions": [""]}]}. ' +
+                fidelite +
+                `${dates} ; experiences de la plus récente à la plus ancienne.`,
+        },
+        identite: {
+            maxTokens: 2000,
+            instructions:
+                enTete +
+                '{"firstName": "", "fullName": "", "title": "", "phone": "", "email": "", "birthDate": "", "gender": "", "desiredJob": "", ' +
+                '"skills": [""], "educations": [{"title": "", "level": "", "school": "", "date": "", "skills": [""]}], ' +
+                '"hobbies": [""], "linkedin": "", "website": ""}. ' +
+                fidelite +
+                "firstName = prénom seul ; title = intitulé professionnel affiché en tête du CV ; phone = numéro avec son indicatif s'il figure ; " +
+                "birthDate au format AAAA-MM-JJ ; gender = \"Homme\" ou \"Femme\" seulement s'il est indiqué explicitement ; " +
+                `desiredJob = poste recherché s'il est mentionné ; ${dates} ; educations de la plus récente à la plus ancienne.`,
+        },
     }
 
-    let parsed: unknown
+    const demander = async ({ instructions, maxTokens }: { instructions: string; maxTokens: number }): Promise<any> => {
+        const content: Anthropic.MessageParam["content"] = pdfBase64
+            ? [
+                  { type: "document", source: { type: "base64", media_type: "application/pdf", data: pdfBase64 } },
+                  { type: "text", text: instructions },
+              ]
+            : [{ type: "text", text: `${instructions}\n\nContenu du CV :\n---\n${cvText.slice(0, 20000)}\n---` }]
+
+        const response = await anthropic.messages.create({
+            model,
+            max_tokens: maxTokens,
+            messages: [{ role: "user", content }],
+        })
+
+        const textBlock = response.content.find((block) => block.type === "text")
+        if (!textBlock || textBlock.type !== "text") {
+            throw new ReponseIaInvalide("Aucune réponse IA reçue")
+        }
+        try {
+            return extractJson(textBlock.text)
+        } catch {
+            throw new ReponseIaInvalide("Réponse IA invalide")
+        }
+    }
+
+    let evaluation: any, experiences: any, identite: any
     try {
-        parsed = extractJson(textBlock.text)
-    } catch {
-        return NextResponse.json({ error: "Réponse IA invalide" }, { status: 502 })
+        ;[evaluation, experiences, identite] = await Promise.all([
+            demander(demandes.evaluation),
+            demander(demandes.experiences),
+            demander(demandes.identite),
+        ])
+    } catch (error) {
+        // Une partie manquante rendrait l'analyse incomplète : comme avant, on
+        // préfère un échec net (le quota n'est pas consommé) à un résultat tronqué.
+        if (error instanceof ReponseIaInvalide) {
+            return NextResponse.json({ error: error.message }, { status: 502 })
+        }
+        throw error
     }
 
-    const analysis = sanitizeAnalysis(parsed)
+    const analysis = sanitizeAnalysis({
+        ...evaluation,
+        profile: { ...identite, experiences: experiences?.experiences },
+    })
 
     // Le quota (gratuit ou de forfait) n'est consommé qu'ici, une fois
     // l'analyse effectivement réussie - un échec (extraction, IA,
