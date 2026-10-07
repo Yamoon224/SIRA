@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Poppins } from "next/font/google"
-import { AtSign, ChevronLeft, FileText, Globe, ImageIcon, Linkedin, Loader2, Rocket, Sparkles, UserSearch } from "lucide-react"
+import { AtSign, ChevronLeft, FileText, Globe, ImageIcon, Linkedin, Loader2, Rocket, Sparkles, Target, UserSearch } from "lucide-react"
 import { toast } from "sonner"
 import { AppLogo } from "@/components/app-logo"
 import { Footer } from "@/components/layout/footer"
@@ -294,6 +294,50 @@ export default function ResultatAnalyseCVPage() {
                 <p className="mt-5 text-center text-[13px] text-[#3d4554] dark:text-muted-foreground">
                     Un petit effort maintenant pour un grand bond dans votre carrière.
                 </p>
+
+                {(result.analysis.strengths.length > 0 || result.analysis.weaknesses.length > 0 || result.analysis.suggestions.length > 0) && (
+                    <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        {result.analysis.strengths.length > 0 && (
+                            <div className="rounded-xl border border-[#e6e8ee] dark:border-border bg-white dark:bg-card p-5">
+                                <h2 className="text-[13px] font-semibold text-[#1b2331] dark:text-foreground">Points forts</h2>
+                                <ul className="mt-3 space-y-2.5">
+                                    {result.analysis.strengths.map((s, i) => (
+                                        <li key={i} className="border-l-2 border-[#1f9d63] pl-3 text-[12px] leading-relaxed text-[#5b6474] dark:text-muted-foreground">
+                                            {s}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
+                        {result.analysis.weaknesses.length > 0 && (
+                            <div className="rounded-xl border border-[#e6e8ee] dark:border-border bg-white dark:bg-card p-5">
+                                <h2 className="text-[13px] font-semibold text-[#1b2331] dark:text-foreground">À améliorer</h2>
+                                <ul className="mt-3 space-y-2.5">
+                                    {result.analysis.weaknesses.map((w, i) => (
+                                        <li key={i} className="border-l-2 border-[#d9544d] pl-3 text-[12px] leading-relaxed text-[#5b6474] dark:text-muted-foreground">
+                                            {w}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
+                        {result.analysis.suggestions.length > 0 && (
+                            <div className="rounded-xl border border-[#e6e8ee] dark:border-border bg-white dark:bg-card p-5">
+                                <h2 className="text-[13px] font-semibold text-[#1b2331] dark:text-foreground">Ce que tu peux corriger</h2>
+                                <ul className="mt-3 space-y-3">
+                                    {result.analysis.suggestions.map((s, i) => (
+                                        <li key={i} className="flex gap-2.5">
+                                            <Target className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#0b2ca8] dark:text-primary" strokeWidth={1.8} />
+                                            <span className="text-[12px] leading-relaxed text-[#5b6474] dark:text-muted-foreground">{s}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-12">
                     {BENEFITS.map(({ icon: Icon, label }) => (
