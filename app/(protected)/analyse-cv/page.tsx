@@ -303,43 +303,47 @@ function AnalyserCVContent() {
                         </div>
 
                         {(analysis.strengths.length > 0 || analysis.weaknesses.length > 0 || analysis.suggestions.length > 0) && (
-                            <div className="mt-9 grid gap-5 sm:grid-cols-3">
-                                {analysis.strengths.length > 0 && (
-                                    <section className="rounded-[14px] border border-[#dfe5f1] dark:border-border bg-white dark:bg-card p-5">
-                                        <SectionTitle>Points forts</SectionTitle>
-                                        <ul className="space-y-2.5">
-                                            {analysis.strengths.map((s, i) => (
-                                                <li
-                                                    key={i}
-                                                    className="border-l-2 border-[#1f9d63] pl-3 text-[13px] leading-relaxed text-[#5b6474] dark:text-muted-foreground"
-                                                >
-                                                    {s}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </section>
-                                )}
+                            <div className="mt-9 space-y-5">
+                                {(analysis.strengths.length > 0 || analysis.weaknesses.length > 0) && (
+                                    <div className="grid gap-5 sm:grid-cols-2">
+                                        {analysis.strengths.length > 0 && (
+                                            <section className="rounded-[14px] border border-[#dfe5f1] dark:border-border bg-white dark:bg-card p-5">
+                                                <SectionTitle>Points forts</SectionTitle>
+                                                <ul className="space-y-2.5">
+                                                    {analysis.strengths.map((s, i) => (
+                                                        <li
+                                                            key={i}
+                                                            className="border-l-2 border-[#1f9d63] pl-3 text-[13px] leading-relaxed text-[#5b6474] dark:text-muted-foreground"
+                                                        >
+                                                            {s}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </section>
+                                        )}
 
-                                {analysis.weaknesses.length > 0 && (
-                                    <section className="rounded-[14px] border border-[#dfe5f1] dark:border-border bg-white dark:bg-card p-5">
-                                        <SectionTitle>À améliorer</SectionTitle>
-                                        <ul className="space-y-2.5">
-                                            {analysis.weaknesses.map((w, i) => (
-                                                <li
-                                                    key={i}
-                                                    className="border-l-2 border-[#d9544d] pl-3 text-[13px] leading-relaxed text-[#5b6474] dark:text-muted-foreground"
-                                                >
-                                                    {w}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </section>
+                                        {analysis.weaknesses.length > 0 && (
+                                            <section className="rounded-[14px] border border-[#dfe5f1] dark:border-border bg-white dark:bg-card p-5">
+                                                <SectionTitle>À améliorer</SectionTitle>
+                                                <ul className="space-y-2.5">
+                                                    {analysis.weaknesses.map((w, i) => (
+                                                        <li
+                                                            key={i}
+                                                            className="border-l-2 border-[#d9544d] pl-3 text-[13px] leading-relaxed text-[#5b6474] dark:text-muted-foreground"
+                                                        >
+                                                            {w}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </section>
+                                        )}
+                                    </div>
                                 )}
 
                                 {analysis.suggestions.length > 0 && (
                                     <section className="rounded-[14px] border border-[#dfe5f1] dark:border-border bg-white dark:bg-card p-5">
                                         <SectionTitle>Ce que tu peux corriger</SectionTitle>
-                                        <ul className="space-y-3">
+                                        <ul className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
                                             {analysis.suggestions.map((s, i) => (
                                                 <li key={i} className="flex gap-2.5">
                                                     <Target className="mt-0.5 h-4 w-4 shrink-0 text-[#2f6de6] dark:text-primary" strokeWidth={1.8} />

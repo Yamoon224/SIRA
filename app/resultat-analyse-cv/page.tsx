@@ -296,37 +296,41 @@ export default function ResultatAnalyseCVPage() {
                 </p>
 
                 {(result.analysis.strengths.length > 0 || result.analysis.weaknesses.length > 0 || result.analysis.suggestions.length > 0) && (
-                    <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                        {result.analysis.strengths.length > 0 && (
-                            <div className="rounded-xl border border-[#e6e8ee] dark:border-border bg-white dark:bg-card p-5">
-                                <h2 className="text-[13px] font-semibold text-[#1b2331] dark:text-foreground">Points forts</h2>
-                                <ul className="mt-3 space-y-2.5">
-                                    {result.analysis.strengths.map((s, i) => (
-                                        <li key={i} className="border-l-2 border-[#1f9d63] pl-3 text-[12px] leading-relaxed text-[#5b6474] dark:text-muted-foreground">
-                                            {s}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
+                    <div className="mt-8 space-y-4">
+                        {(result.analysis.strengths.length > 0 || result.analysis.weaknesses.length > 0) && (
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                {result.analysis.strengths.length > 0 && (
+                                    <div className="rounded-xl border border-[#e6e8ee] dark:border-border bg-white dark:bg-card p-5">
+                                        <h2 className="text-[13px] font-semibold text-[#1b2331] dark:text-foreground">Points forts</h2>
+                                        <ul className="mt-3 space-y-2.5">
+                                            {result.analysis.strengths.map((s, i) => (
+                                                <li key={i} className="border-l-2 border-[#1f9d63] pl-3 text-[12px] leading-relaxed text-[#5b6474] dark:text-muted-foreground">
+                                                    {s}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
 
-                        {result.analysis.weaknesses.length > 0 && (
-                            <div className="rounded-xl border border-[#e6e8ee] dark:border-border bg-white dark:bg-card p-5">
-                                <h2 className="text-[13px] font-semibold text-[#1b2331] dark:text-foreground">À améliorer</h2>
-                                <ul className="mt-3 space-y-2.5">
-                                    {result.analysis.weaknesses.map((w, i) => (
-                                        <li key={i} className="border-l-2 border-[#d9544d] pl-3 text-[12px] leading-relaxed text-[#5b6474] dark:text-muted-foreground">
-                                            {w}
-                                        </li>
-                                    ))}
-                                </ul>
+                                {result.analysis.weaknesses.length > 0 && (
+                                    <div className="rounded-xl border border-[#e6e8ee] dark:border-border bg-white dark:bg-card p-5">
+                                        <h2 className="text-[13px] font-semibold text-[#1b2331] dark:text-foreground">À améliorer</h2>
+                                        <ul className="mt-3 space-y-2.5">
+                                            {result.analysis.weaknesses.map((w, i) => (
+                                                <li key={i} className="border-l-2 border-[#d9544d] pl-3 text-[12px] leading-relaxed text-[#5b6474] dark:text-muted-foreground">
+                                                    {w}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
                             </div>
                         )}
 
                         {result.analysis.suggestions.length > 0 && (
                             <div className="rounded-xl border border-[#e6e8ee] dark:border-border bg-white dark:bg-card p-5">
                                 <h2 className="text-[13px] font-semibold text-[#1b2331] dark:text-foreground">Ce que tu peux corriger</h2>
-                                <ul className="mt-3 space-y-3">
+                                <ul className="mt-3 grid gap-x-8 gap-y-3 sm:grid-cols-2">
                                     {result.analysis.suggestions.map((s, i) => (
                                         <li key={i} className="flex gap-2.5">
                                             <Target className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#0b2ca8] dark:text-primary" strokeWidth={1.8} />
