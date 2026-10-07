@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useRef, useState, useEffect, useCallback } from "react"
+import { useRef, useState, useEffect, useCallback, type ReactNode } from "react"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -21,6 +21,7 @@ import type { CVAnalysis } from "@/lib/@types/openai"
 import { analysisErrorMessage, CV_ACCEPT, cvFileError } from "@/lib/cv-file"
 import { extractCvPhoto, storeExtractedPhoto } from "@/lib/cv-photo"
 import { companyHref, jobHref } from "@/lib/public-links"
+import { GoriyaLogoLoader } from "@/components/goriya-loader"
 
 type GateState = "idle" | "requires_auth" | "requires_subscription"
 
@@ -67,6 +68,44 @@ function BoldText({ text }: { text: string }) {
                 i % 2 === 1 ? <strong key={i} className="font-semibold text-foreground">{part}</strong> : part
             )}
         </>
+    )
+}
+
+/**
+ * Révèle son contenu (fondu + léger glissement + zoom) dès qu'il entre dans
+ * le viewport, une seule fois. `delay` permet d'échelonner plusieurs
+ * `Reveal` voisins pour un effet d'apparition en cascade.
+ */
+function Reveal({ children, delay = 0, className = "" }: { children: ReactNode; delay?: number; className?: string }) {
+    const ref = useRef<HTMLDivElement>(null)
+    const [visible, setVisible] = useState(false)
+
+    useEffect(() => {
+        const el = ref.current
+        if (!el) return
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setVisible(true)
+                    observer.disconnect()
+                }
+            },
+            { threshold: 0.2, rootMargin: "0px 0px -40px 0px" }
+        )
+        observer.observe(el)
+        return () => observer.disconnect()
+    }, [])
+
+    return (
+        <div
+            ref={ref}
+            style={{ transitionDelay: visible ? `${delay}ms` : "0ms" }}
+            className={`transition-all duration-700 ease-out motion-reduce:transition-none motion-reduce:opacity-100 motion-reduce:translate-y-0 ${
+                visible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-7 scale-[0.96]"
+            } ${className}`}
+        >
+            {children}
+        </div>
     )
 }
 
@@ -224,6 +263,13 @@ export default function Page() {
     // Accueil : la même page pour tout le monde, connecté ou non.
     return (
         <div className="min-h-screen bg-background text-foreground">
+            {isAnalyzingCV && (
+                <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-background/95 backdrop-blur-sm">
+                    <GoriyaLogoLoader width={180} />
+                    <p className="text-[13px] text-muted-foreground">Goriya analyse votre CV…</p>
+                </div>
+            )}
+
             <Header />
 
             {/* Hero */}
@@ -355,7 +401,9 @@ export default function Page() {
             {/* How it works */}
             <section className="bg-white dark:bg-background py-10 sm:py-16">
                 <div className="mx-auto max-w-[1180px] px-3 sm:px-4">
-                    <h2 className="text-center text-xl xs:text-2xl sm:text-3xl md:text-[38px] lg:text-[44px] leading-none font-extrabold">Comment fonctionne Goriya?</h2>
+                    <Reveal>
+                        <h2 className="text-center text-xl xs:text-2xl sm:text-3xl md:text-[38px] lg:text-[44px] leading-none font-extrabold">Comment fonctionne Goriya?</h2>
+                    </Reveal>
                     <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 sm:gap-7 mt-8 sm:mt-12 text-center">
                         {[
                             { n: 1, title: "Créer un compte", desc: "Inscription ultra-rapide en 2 clics. Crée ton profil et rejoins la communauté des boostés." },
@@ -363,17 +411,17 @@ export default function Page() {
                             { n: 3, title: "Faire valider ton CV par l'IA", desc: "Obtiens ton score IA instantané. Découvre tes forces, tes faiblesses et reçois des conseils de correction immédiats." },
                             { n: 4, title: "Préparer ton entretien", desc: "Entraîne-toi face à la machine. Utilise notre chatbot intelligent ou simule un vrai entretien avec un expert RH pour être prêt le jour J." },
                             { n: 5, title: "Postuler et décrocher le poste", desc: "Décroche ton stage ou ton premier emploi. Postule directement aux offres qui matchent avec ton profil." },
-                        ].map(({ n, title, desc }) => (
-                            <div key={n}>
+                        ].map(({ n, title, desc }, i) => (
+                            <Reveal key={n} delay={i * 110}>
                                 <div className="mx-auto w-8 h-8 rounded-full border border-[#bfd0f5] dark:border-border text-[#2f6de6] dark:text-primary text-sm flex items-center justify-center">{n}</div>
                                 <h3 className="mt-4 font-semibold text-[#1c2433] dark:text-foreground">{title}</h3>
                                 <p className="text-sm text-[#8a95a8] dark:text-muted-foreground mt-2">{desc}</p>
-                            </div>
+                            </Reveal>
                         ))}
                     </div>
                     <div className="mt-8 sm:mt-12 space-y-10 sm:space-y-14">
-                        {featureBlocks.map((item) => (
-                            <div key={item.title} className={`grid grid-cols-1 md:grid-cols-2 items-center gap-6 sm:gap-8 ${item.reverse ? "md:[&>*:first-child]:order-2" : ""}`}>
+                        {featureBlocks.map((item, i) => (
+                            <Reveal key={item.title} delay={i === 0 ? 0 : 80} className={`grid grid-cols-1 md:grid-cols-2 items-center gap-6 sm:gap-8 ${item.reverse ? "md:[&>*:first-child]:order-2" : ""}`}>
                                 <div className="px-1 sm:px-2 md:px-6 text-center md:text-left">
                                     <h3 className="text-lg xs:text-xl sm:text-2xl md:text-[32px] lg:text-[40px] leading-[1.05] font-extrabold text-[#2f6de6] dark:text-primary">{item.title}</h3>
                                     <p className="mt-3 sm:mt-4 text-[#2d3545] dark:text-muted-foreground leading-7 text-sm sm:text-base"><BoldText text={item.desc} /></p>
@@ -381,7 +429,7 @@ export default function Page() {
                                 <div className="flex justify-center mt-4 md:mt-0">
                                     <img src={item.image} alt={item.title} className="max-h-[160px] xs:max-h-[200px] sm:max-h-[240px] w-auto object-contain" />
                                 </div>
-                            </div>
+                            </Reveal>
                         ))}
                     </div>
                 </div>

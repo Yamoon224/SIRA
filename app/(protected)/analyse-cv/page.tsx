@@ -10,6 +10,7 @@ import { analysisErrorMessage, CV_ACCEPT, cvFileError } from "@/lib/cv-file"
 import { AlertCircle, Check, FileText, Sparkles, Target, UploadCloud, X } from "lucide-react"
 import { SubscriptionGate } from "@/components/subscription-gate"
 import { QuotaExceededNotice } from "@/components/feature-usage/quota-exceeded-notice"
+import { GoriyaLogoLoader } from "@/components/goriya-loader"
 
 /** Verdict porté par le score : une couleur, un mot. */
 function verdict(score: number) {
@@ -62,25 +63,12 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
     return <h2 className="mb-3 text-[13px] font-semibold text-[#1b2331] dark:text-foreground">{children}</h2>
 }
 
-/** Silhouette des résultats pendant l'analyse : on annonce ce qui arrive. */
-function ResultsSkeleton() {
+/** Occupe la zone des résultats pendant l'analyse : le logo se remplit en boucle. */
+function AnalyzingPanel() {
     return (
-        <div className="mt-8 animate-pulse motion-reduce:animate-none" aria-hidden>
-            <div className="rounded-[14px] bg-[#eef2fd] dark:bg-primary/10 p-6">
-                <div className="flex flex-col items-center gap-5 sm:flex-row sm:gap-7">
-                    <div className="h-[132px] w-[132px] shrink-0 rounded-full border-[5px] border-[#dde4f2] dark:border-border" />
-                    <div className="w-full space-y-2">
-                        <div className="h-4 w-40 rounded bg-[#dde4f2] dark:bg-primary/10" />
-                        <div className="h-3 w-full max-w-[380px] rounded bg-[#e4eaf6] dark:bg-primary/10" />
-                        <div className="h-3 w-full max-w-[300px] rounded bg-[#e4eaf6] dark:bg-primary/10" />
-                    </div>
-                </div>
-            </div>
-            <div className="mt-8 grid gap-x-10 gap-y-3 sm:grid-cols-2">
-                {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="h-3 rounded bg-[#eaeef7] dark:bg-muted" />
-                ))}
-            </div>
+        <div className="mt-8 flex flex-col items-center justify-center gap-5 rounded-[14px] bg-[#eef2fd] dark:bg-primary/10 px-6 py-16 text-center">
+            <GoriyaLogoLoader width={170} />
+            <p className="text-[13px] text-[#5b6474] dark:text-muted-foreground">Goriya analyse votre CV…</p>
         </div>
     )
 }
@@ -294,7 +282,7 @@ function AnalyserCVContent() {
                     {isAnalyzing ? "Analyse en cours" : analysis ? "Analyse terminée" : ""}
                 </div>
 
-                {isAnalyzing && !analysis && <ResultsSkeleton />}
+                {isAnalyzing && !analysis && <AnalyzingPanel />}
 
                 {/* ── Résultats ─────────────────────────────────────────────── */}
                 {analysis && v && (
@@ -314,10 +302,10 @@ function AnalyserCVContent() {
                             </div>
                         </div>
 
-                        {analysis.strengths.length > 0 || analysis.weaknesses.length > 0 ? (
-                            <div className="mt-9 grid gap-x-10 gap-y-8 sm:grid-cols-2">
+                        {(analysis.strengths.length > 0 || analysis.weaknesses.length > 0 || analysis.suggestions.length > 0) && (
+                            <div className="mt-9 grid gap-5 sm:grid-cols-3">
                                 {analysis.strengths.length > 0 && (
-                                    <section>
+                                    <section className="rounded-[14px] border border-[#dfe5f1] dark:border-border bg-white dark:bg-card p-5">
                                         <SectionTitle>Points forts</SectionTitle>
                                         <ul className="space-y-2.5">
                                             {analysis.strengths.map((s, i) => (
@@ -333,7 +321,7 @@ function AnalyserCVContent() {
                                 )}
 
                                 {analysis.weaknesses.length > 0 && (
-                                    <section>
+                                    <section className="rounded-[14px] border border-[#dfe5f1] dark:border-border bg-white dark:bg-card p-5">
                                         <SectionTitle>À améliorer</SectionTitle>
                                         <ul className="space-y-2.5">
                                             {analysis.weaknesses.map((w, i) => (
@@ -347,21 +335,21 @@ function AnalyserCVContent() {
                                         </ul>
                                     </section>
                                 )}
-                            </div>
-                        ) : null}
 
-                        {analysis.suggestions.length > 0 && (
-                            <section className="mt-9 border-t border-[#eef1f7] dark:border-border pt-7">
-                                <SectionTitle>Ce que tu peux corriger</SectionTitle>
-                                <ul className="divide-y divide-[#eef1f7]">
-                                    {analysis.suggestions.map((s, i) => (
-                                        <li key={i} className="flex gap-3 py-3">
-                                            <Target className="mt-0.5 h-4 w-4 shrink-0 text-[#2f6de6] dark:text-primary" strokeWidth={1.8} />
-                                            <span className="text-[13px] leading-relaxed text-[#5b6474] dark:text-muted-foreground">{s}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </section>
+                                {analysis.suggestions.length > 0 && (
+                                    <section className="rounded-[14px] border border-[#dfe5f1] dark:border-border bg-white dark:bg-card p-5">
+                                        <SectionTitle>Ce que tu peux corriger</SectionTitle>
+                                        <ul className="space-y-3">
+                                            {analysis.suggestions.map((s, i) => (
+                                                <li key={i} className="flex gap-2.5">
+                                                    <Target className="mt-0.5 h-4 w-4 shrink-0 text-[#2f6de6] dark:text-primary" strokeWidth={1.8} />
+                                                    <span className="text-[13px] leading-relaxed text-[#5b6474] dark:text-muted-foreground">{s}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </section>
+                                )}
+                            </div>
                         )}
 
                         {analysis.keywords.length > 0 && (
