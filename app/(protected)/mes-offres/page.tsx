@@ -163,7 +163,7 @@ export default function MyApplicationsPage() {
                         </div>
                         {(job?.image || job?.company?.coverImage) && (
                           <div className="w-full sm:w-[150px] md:w-[180px] h-[95px] rounded-xl overflow-hidden bg-[#f0f3fb] dark:bg-muted shrink-0">
-                            <img src={cover} alt={job?.title ?? ""} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                            <img src={cover} alt={job?.title ?? ""} className="w-full h-full object-cover" loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none" }} />
                           </div>
                         )}
                       </div>

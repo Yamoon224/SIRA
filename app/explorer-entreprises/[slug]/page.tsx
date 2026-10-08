@@ -484,7 +484,7 @@ export default function EntrepriseDetailPage() {
                                             onClick={() => setLightboxSrc(formatFileUrl(src))}
                                             className="aspect-video overflow-hidden rounded-lg border border-[#e8edf6] dark:border-border hover:border-[#2f6de6] transition-colors"
                                         >
-                                            <img src={formatFileUrl(src)} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                            <img src={formatFileUrl(src)} alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                         </button>
                                     ))}
                                 </div>
@@ -612,7 +612,7 @@ export default function EntrepriseDetailPage() {
                                             </div>
                                             {company.coverImage && (
                                                 <div className="w-[100px] flex-shrink-0 hidden sm:block">
-                                                    <img src={formatFileUrl(company.coverImage)} alt={company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                                    <img src={formatFileUrl(company.coverImage)} alt={company.name} className="w-full h-full object-cover" loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                 </div>
                                             )}
                                         </div>

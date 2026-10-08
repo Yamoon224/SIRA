@@ -23,7 +23,7 @@ export function CourseCard({ course, progress, href }: { course: ICourse; progre
             <div className="relative aspect-video w-full overflow-hidden bg-brand-gradient">
                 {course.thumbnailUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={course.thumbnailUrl} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+                    <img src={course.thumbnailUrl} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" loading="lazy" decoding="async" />
                 ) : (
                     <div className="flex h-full w-full items-center justify-center">
                         <GraduationCap className="h-10 w-10 text-white/80" />

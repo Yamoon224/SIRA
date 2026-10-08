@@ -1,4 +1,6 @@
-import jsPDF from "jspdf"
+// jsPDF n'est utile qu'au moment de produire réellement le PDF : import
+// dynamique pour ne pas l'embarquer dans le bundle initial de la page.
+import type jsPDF from "jspdf"
 
 export interface DocumentData {
   [key: string]: string
@@ -73,8 +75,9 @@ const estObjet = (bloc: string[]): boolean => /^objet\s*:/i.test(bloc[0])
  * l'enregistrement dans la bibliothèque de CV, qui a besoin du binaire plutôt
  * que d'une sauvegarde navigateur.
  */
-const renderPDF = (content: string): jsPDF => {
-  const pdf = new jsPDF({ unit: "mm", format: "a4" })
+const renderPDF = async (content: string): Promise<jsPDF> => {
+  const { default: JsPDF } = await import("jspdf")
+  const pdf = new JsPDF({ unit: "mm", format: "a4" })
   const largeur = PAGE_W - MARGE * 2
 
   // Le texte arrive à plat : chaque bloc (séparé par une ligne vide) est
@@ -272,13 +275,13 @@ const renderPDF = (content: string): jsPDF => {
   return pdf
 }
 
-export const generatePDF = (content: string, filename = "document.pdf"): void => {
-  renderPDF(content).save(filename)
+export const generatePDF = async (content: string, filename = "document.pdf"): Promise<void> => {
+  ;(await renderPDF(content)).save(filename)
 }
 
 /** Le même PDF, en fichier prêt à être téléversé (`POST /me/resumes`). */
-export const generatePDFFile = (content: string, filename = "document.pdf"): File =>
-  new File([renderPDF(content).output("blob")], filename, { type: "application/pdf" })
+export const generatePDFFile = async (content: string, filename = "document.pdf"): Promise<File> =>
+  new File([(await renderPDF(content)).output("blob")], filename, { type: "application/pdf" })
 
 export const generateDocumentContent = (type: string, data: DocumentData): string => {
   switch (type) {

@@ -1,4 +1,7 @@
-import jsPDF from "jspdf"
+// jsPDF (~350 Ko) n'est utile qu'au moment de produire réellement le PDF
+// (téléchargement, enregistrement, aperçu) : import dynamique pour ne pas
+// l'embarquer dans le bundle initial de la page "Créer CV".
+import type jsPDF from "jspdf"
 import type { CvContent } from "@/lib/api/cv.service"
 
 /**
@@ -472,8 +475,9 @@ function dessinerElegant(pdf: jsPDF, cv: CvPret) {
 
 // ─── API ──────────────────────────────────────────────────────────────────────
 
-const renderCvPdf = (cv: CvContent, modele: CvModeleId): jsPDF => {
-    const pdf = new jsPDF({ unit: "mm", format: "a4" })
+const renderCvPdf = async (cv: CvContent, modele: CvModeleId): Promise<jsPDF> => {
+    const { default: JsPDF } = await import("jspdf")
+    const pdf = new JsPDF({ unit: "mm", format: "a4" })
     const pret = preparer(cv)
     if (modele === "classique") dessinerClassique(pdf, pret)
     else if (modele === "elegant") dessinerElegant(pdf, pret)
@@ -481,14 +485,14 @@ const renderCvPdf = (cv: CvContent, modele: CvModeleId): jsPDF => {
     return pdf
 }
 
-export const downloadCvPdf = (cv: CvContent, modele: CvModeleId, filename: string): void => {
-    renderCvPdf(cv, modele).save(filename)
+export const downloadCvPdf = async (cv: CvContent, modele: CvModeleId, filename: string): Promise<void> => {
+    ;(await renderCvPdf(cv, modele)).save(filename)
 }
 
 /** Le même PDF, en fichier prêt à être téléversé (`POST /me/resumes`). */
-export const cvPdfFile = (cv: CvContent, modele: CvModeleId, filename: string): File =>
-    new File([renderCvPdf(cv, modele).output("blob")], filename, { type: "application/pdf" })
+export const cvPdfFile = async (cv: CvContent, modele: CvModeleId, filename: string): Promise<File> =>
+    new File([(await renderCvPdf(cv, modele)).output("blob")], filename, { type: "application/pdf" })
 
 /** URL d'aperçu (blob) du PDF ; à libérer avec `URL.revokeObjectURL`. */
-export const cvPdfPreviewUrl = (cv: CvContent, modele: CvModeleId): string =>
-    URL.createObjectURL(renderCvPdf(cv, modele).output("blob"))
+export const cvPdfPreviewUrl = async (cv: CvContent, modele: CvModeleId): Promise<string> =>
+    URL.createObjectURL((await renderCvPdf(cv, modele)).output("blob"))

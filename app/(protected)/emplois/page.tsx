@@ -239,7 +239,7 @@ export default function EmploisPage() {
                                         </div>
                                         <div className="w-8 h-8 rounded-full bg-[#eff4ff] dark:bg-primary/10 flex items-center justify-center mb-2 overflow-hidden">
                                             {job.company?.logo
-                                                ? <img src={job.company.logo} alt={job.company.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                                ? <img src={job.company.logo} alt={job.company.name} className="w-full h-full object-cover" loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                 : <Building2 className="w-4 h-4 text-[#2f6de6] dark:text-primary" />
                                             }
                                         </div>

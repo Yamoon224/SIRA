@@ -484,11 +484,11 @@ export default function Page() {
                                     <article className="rounded-2xl border border-[#e9eef8] dark:border-border p-3 hover:shadow-md transition-shadow h-full">
                                         <div className="h-32 sm:h-40 w-full rounded-md overflow-hidden bg-brand-gradient flex items-center justify-center">
                                             {job.image
-                                                ? <img src={formatFileUrl(job.image)} alt={job.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                                ? <img src={formatFileUrl(job.image)} alt={job.title} className="w-full h-full object-cover" loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                 : job.company?.coverImage
-                                                    ? <img src={formatFileUrl(job.company.coverImage)} alt={job.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                                    ? <img src={formatFileUrl(job.company.coverImage)} alt={job.title} className="w-full h-full object-cover" loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                     : job.company?.logo
-                                                        ? <img src={formatFileUrl(job.company.logo)} alt={job.company.name} className="w-16 h-16 object-contain brightness-0 invert" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                                        ? <img src={formatFileUrl(job.company.logo)} alt={job.company.name} className="w-16 h-16 object-contain brightness-0 invert" loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                                         : <Building2 className="w-10 h-10 text-white opacity-60" />
                                             }
                                         </div>
@@ -539,7 +539,7 @@ export default function Page() {
                                     <article className="rounded-2xl border border-[#e9eef8] dark:border-border bg-white dark:bg-card overflow-hidden h-full hover:shadow-md transition-shadow">
                                         <div className="h-40 w-full bg-brand-gradient">
                                             {article.coverImage && (
-                                                <img src={formatFileUrl(article.coverImage)} alt={article.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                                                <img src={formatFileUrl(article.coverImage)} alt={article.title} className="w-full h-full object-cover" loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none" }} />
                                             )}
                                         </div>
                                         <div className="p-4">

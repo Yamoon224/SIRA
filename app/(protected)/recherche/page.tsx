@@ -154,7 +154,7 @@ function SearchResults() {
                         <div className="flex items-start space-x-4">
                           <div className="w-12 h-12 bg-blue-100 dark:bg-primary/10 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
                             {job.image || job.company?.logo
-                              ? <img src={job.image || job.company?.logo || ""} alt={job.company?.name ?? job.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none" }} />
+                              ? <img src={job.image || job.company?.logo || ""} alt={job.company?.name ?? job.title} className="w-full h-full object-cover" loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none" }} />
                               : <Building2 className="w-6 h-6 text-blue-600 dark:text-primary" />
                             }
                           </div>

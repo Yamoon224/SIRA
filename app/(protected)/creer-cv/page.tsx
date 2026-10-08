@@ -617,12 +617,20 @@ function CreerCVContent() {
     const [apercuUrl, setApercuUrl] = useState<string | null>(null)
     useEffect(() => {
         if (!etapeModele || isMobile) return
+        let annule = false
         let url: string | null = null
         const id = setTimeout(() => {
-            url = cvPdfPreviewUrl(formData, formData.modele)
-            setApercuUrl(url)
+            cvPdfPreviewUrl(formData, formData.modele).then((u) => {
+                if (annule) {
+                    URL.revokeObjectURL(u)
+                    return
+                }
+                url = u
+                setApercuUrl(u)
+            })
         }, 250)
         return () => {
+            annule = true
             clearTimeout(id)
             if (url) URL.revokeObjectURL(url)
         }
@@ -631,8 +639,8 @@ function CreerCVContent() {
     /** Le téléchargement et l'enregistrement dans « Mes CV » produisent le même PDF. */
     const nomFichierCv = () => `cv-${formData.nom.trim().toLowerCase().replace(/\s+/g, "-") || "document"}.pdf`
 
-    const handleDownloadPDF = () => {
-        downloadCvPdf(formData, formData.modele, nomFichierCv())
+    const handleDownloadPDF = async () => {
+        await downloadCvPdf(formData, formData.modele, nomFichierCv())
     }
 
     /**
@@ -657,7 +665,7 @@ function CreerCVContent() {
                 const items = ((liste as any)?.data ?? liste) as IResume[]
                 const original = Array.isArray(items) ? items.find((cv) => cv.id === cvSource) : undefined
                 const nom = (original?.name ?? `CV ${formData.nom.trim()}`).replace(/\.(docx?|pdf)$/i, "")
-                const reponse = await resumeService.upload(cvPdfFile(formData, formData.modele, nomFichierCv()), nom)
+                const reponse = await resumeService.upload(await cvPdfFile(formData, formData.modele, nomFichierCv()), nom)
                 const nouveau = ((reponse as any)?.data ?? reponse) as IResume
                 if (original) {
                     if (original.isDefault) await resumeService.update(nouveau.id, { isDefault: true })
@@ -687,7 +695,7 @@ function CreerCVContent() {
             }
 
             const nom = `CV ${formData.nom.trim()}`
-            await resumeService.upload(cvPdfFile(formData, formData.modele, nomFichierCv()), nom, "builder")
+            await resumeService.upload(await cvPdfFile(formData, formData.modele, nomFichierCv()), nom, "builder")
             toast.success("CV enregistré dans « Mes CV »", {
                 action: { label: "Voir", onClick: () => router.push("/mes-cv") },
             })

@@ -297,7 +297,7 @@ export default function CompanyProfilePage() {
                           <CardContent className="p-4">
                             <div className="flex items-center justify-between mb-3">
                               <div className="w-9 h-9 rounded-full overflow-hidden bg-muted">
-                                <img src={sim.logo || "/placeholder.svg"} alt={sim.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = "/placeholder.svg" }} />
+                                <img src={sim.logo || "/placeholder.svg"} alt={sim.name} className="w-full h-full object-cover" loading="lazy" decoding="async" onError={(e) => { e.currentTarget.src = "/placeholder.svg" }} />
                               </div>
                               <Badge variant="outline" className="text-xs">{sim.sector}</Badge>
                             </div>
@@ -349,7 +349,7 @@ export default function CompanyProfilePage() {
                         </div>
                         {job.image && (
                           <div className="w-full md:w-48 h-32 rounded-lg overflow-hidden">
-                            <img src={job.image || "/placeholder.svg"} alt="Job preview" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = "/placeholder.svg" }} />
+                            <img src={job.image || "/placeholder.svg"} alt="Job preview" className="w-full h-full object-cover" loading="lazy" decoding="async" onError={(e) => { e.currentTarget.src = "/placeholder.svg" }} />
                           </div>
                         )}
                       </div>
@@ -411,7 +411,7 @@ export default function CompanyProfilePage() {
                         <CardContent className="p-6">
                           <div className="flex items-center gap-3 mb-4">
                             <div className="w-12 h-12 rounded-lg overflow-hidden">
-                              <img src={sim.logo || "/placeholder.svg"} alt={`${sim.name} logo`} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = "/placeholder.svg" }} />
+                              <img src={sim.logo || "/placeholder.svg"} alt={`${sim.name} logo`} className="w-full h-full object-cover" loading="lazy" decoding="async" onError={(e) => { e.currentTarget.src = "/placeholder.svg" }} />
                             </div>
                             <div className="flex-1">
                               <h3 className="font-semibold text-foreground">{sim.name}</h3>

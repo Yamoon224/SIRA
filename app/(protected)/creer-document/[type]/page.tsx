@@ -204,9 +204,9 @@ function CreerDocumentContent() {
     }
   }
 
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
     if (!previewContent.trim() || !template) return
-    generatePDF(previewContent, nomFichier(template.title, formData.nom))
+    await generatePDF(previewContent, nomFichier(template.title, formData.nom))
   }
 
   const handleRegenerate = () => {

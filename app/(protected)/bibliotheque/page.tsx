@@ -461,7 +461,7 @@ export default function BibliothequePage() {
                                         <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#e8edf6] text-[13px] font-semibold text-[#5b6474] dark:bg-muted dark:text-muted-foreground">
                                             {row.logo ? (
                                                 // eslint-disable-next-line @next/next/no-img-element
-                                                <img src={formatFileUrl(row.logo)} alt="" className="h-full w-full object-cover" />
+                                                <img src={formatFileUrl(row.logo)} alt="" className="h-full w-full object-cover" loading="lazy" decoding="async" />
                                             ) : (
                                                 row.company.charAt(0).toUpperCase()
                                             )}
@@ -556,7 +556,7 @@ export default function BibliothequePage() {
                                                     <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#e8edf6] text-[12px] font-semibold text-[#5b6474] dark:bg-muted dark:text-muted-foreground">
                                                         {row.logo ? (
                                                             // eslint-disable-next-line @next/next/no-img-element
-                                                            <img src={formatFileUrl(row.logo)} alt="" className="h-full w-full object-cover" />
+                                                            <img src={formatFileUrl(row.logo)} alt="" className="h-full w-full object-cover" loading="lazy" decoding="async" />
                                                         ) : (
                                                             row.company.charAt(0).toUpperCase()
                                                         )}

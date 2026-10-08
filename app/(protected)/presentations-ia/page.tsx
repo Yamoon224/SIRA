@@ -88,10 +88,10 @@ function PresentationsIaContent() {
         }
     }
 
-    const handleExportPdf = () => {
+    const handleExportPdf = async () => {
         if (!active || !isSlidesContent(active.content)) return
         try {
-            exporterSlidesPdf(active.title, active.content.slides)
+            await exporterSlidesPdf(active.title, active.content.slides)
         } catch (err) {
             console.error("[presentations-ia] pdf export error:", err)
             toast.error("L'export PDF a échoué.")

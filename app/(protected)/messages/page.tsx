@@ -129,8 +129,12 @@ function MessagesContent() {
         setShowMobileList(false)
         setConversations((prev) => prev.map((c) => (c.id === conversation.id ? { ...c, unreadCount: 0 } : c)))
         try {
-            await messageService.markAsRead(conversation.id)
-            const response = await messageService.getConversationMessages(conversation.id)
+            // Les deux appels sont indépendants (l'un marque la conversation lue,
+            // l'autre récupère les messages) : en parallèle plutôt qu'en série.
+            const [, response] = await Promise.all([
+                messageService.markAsRead(conversation.id),
+                messageService.getConversationMessages(conversation.id),
+            ])
             const items = (response as any)?.data ?? response ?? []
             setMessages(Array.isArray(items) ? items : [])
         } catch (error) {

@@ -1,4 +1,6 @@
-import jsPDF from "jspdf"
+// jsPDF n'est utile qu'au moment de l'export réel : import dynamique pour ne
+// pas l'embarquer dans le bundle initial de la page "Présentations IA".
+import type jsPDF from "jspdf"
 import type { ISlide } from "@/lib/api/presentation.service"
 import { BACKEND_URL } from "@/lib/backend-url"
 
@@ -38,8 +40,9 @@ const BLEU: [number, number, number] = [47, 109, 230]
 const ENCRE: [number, number, number] = [27, 35, 49]
 const GRIS: [number, number, number] = [91, 100, 116]
 
-export function exporterSlidesPdf(titre: string, slides: ISlide[]) {
-    const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: [L, H] })
+export async function exporterSlidesPdf(titre: string, slides: ISlide[]) {
+    const { default: JsPDF } = await import("jspdf")
+    const pdf = new JsPDF({ orientation: "landscape", unit: "mm", format: [L, H] })
 
     // Couverture.
     pdf.setFillColor(...MARINE)
