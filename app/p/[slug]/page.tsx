@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useRef, useState } from "react"
+import { Suspense, useEffect, useRef, useState, type FormEvent } from "react"
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
@@ -17,6 +17,8 @@ import {
     Newspaper,
     Pencil,
     Phone,
+    Plus,
+    Search,
     Settings2,
     Share2,
     Star,
@@ -47,7 +49,7 @@ import {
 import { capitalizeFirst, cn, formatFileUrl } from "@/lib/utils"
 
 const THEME_COVERS: Record<ProfileTheme, string> = {
-    DEFAULT: "bg-brand-gradient",
+    DEFAULT: "bg-gradient-to-br from-sky-600 via-teal-500 to-lime-400",
     CREATIF: "bg-gradient-to-r from-fuchsia-500 via-rose-400 to-orange-300",
     TECHNIQUE: "bg-gradient-to-r from-slate-800 via-slate-700 to-cyan-600",
     COMMERCIAL: "bg-gradient-to-r from-blue-700 via-blue-500 to-emerald-400",
@@ -89,6 +91,7 @@ function PublicProfileContent() {
     const [viewAsVisitor, setViewAsVisitor] = useState(searchParams.get("vue") === "publique")
     const [followBusy, setFollowBusy] = useState(false)
     const [openPortfolio, setOpenPortfolio] = useState<IPublicPortfolio | null>(null)
+    const [searchQuery, setSearchQuery] = useState("")
     const lastLoaded = useRef<string | null>(null)
 
     useEffect(() => {
@@ -205,6 +208,18 @@ function PublicProfileContent() {
         }
     }
 
+    const runSearch = (e: FormEvent) => {
+        e.preventDefault()
+        const q = searchQuery.trim()
+        router.push(q ? `/recherche?q=${encodeURIComponent(q)}` : "/recherche")
+    }
+
+    const quickAction = () => {
+        if (editing) router.push("/connect")
+        else if (mode === "member") toggleFollow()
+        else if (!isOwner) router.push("/auth/signin")
+    }
+
     const updatePost = (updated: IPost) =>
         setProfile((prev) => (prev ? { ...prev, recentPosts: prev.recentPosts.map((p) => (p.id === updated.id ? updated : p)) } : prev))
     const removePost = (id: string) =>
@@ -232,107 +247,142 @@ function PublicProfileContent() {
                 </div>
             )}
 
+            {/* Recherche + action rapide, façon fil communautaire */}
+            <div className="flex items-center gap-3">
+                <form onSubmit={runSearch} className="flex-1">
+                    <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-sm text-muted-foreground transition-colors focus-within:border-primary/50">
+                        <Search className="h-4 w-4 shrink-0" />
+                        <input
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Rechercher sur GORIYA"
+                            className="w-full bg-transparent text-foreground outline-none placeholder:text-muted-foreground"
+                        />
+                    </div>
+                </form>
+                <Button
+                    type="button"
+                    size="icon"
+                    onClick={quickAction}
+                    className="h-11 w-11 shrink-0 rounded-full bg-brand-gradient text-white hover:bg-brand-gradient-hover"
+                    aria-label={editing ? "Publier une actualité" : mode === "member" ? "Suivre" : "Rejoindre GORIYA"}
+                >
+                    <Plus className="h-5 w-5" />
+                </Button>
+            </div>
+
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
                 <div className="min-w-0 space-y-4">
-                    {/* Carte d'identité */}
-                    <Card className="overflow-hidden border border-border">
-                        <div className={cn("h-28 sm:h-40", THEME_COVERS[profile.theme] ?? THEME_COVERS.DEFAULT)} />
-                        <CardContent className="px-4 pb-5 sm:px-6">
-                            <Avatar className="-mt-14 h-28 w-28 border-4 border-card sm:-mt-20 sm:h-36 sm:w-36">
-                                <AvatarImage src={profile.avatar ? formatFileUrl(profile.avatar) : undefined} alt={profile.name} />
-                                <AvatarFallback className="text-3xl">{initials(profile.name)}</AvatarFallback>
-                            </Avatar>
-                            <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                                <div className="min-w-0">
-                                    <h1 className="text-2xl font-bold text-foreground">{profile.name}</h1>
-                                    {profile.title ? (
-                                        <p className="mt-0.5 text-base text-foreground/90">{profile.title}</p>
-                                    ) : (
-                                        editing && (
-                                            <Link href="/parametres" className="mt-0.5 inline-block text-sm text-primary hover:underline">
-                                                Ajouter un titre professionnel
-                                            </Link>
-                                        )
-                                    )}
-                                    <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
-                                        {profile.location && (
-                                            <span className="flex items-center gap-1">
-                                                <MapPin className="h-3.5 w-3.5" />
-                                                {capitalizeFirst(profile.location)}
-                                            </span>
-                                        )}
-                                        <span className="flex items-center gap-1 font-medium text-primary">
-                                            <Users className="h-3.5 w-3.5" />
-                                            {plural(profile.stats.followers, "abonné")}
-                                        </span>
-                                    </p>
-                                    {editing && (
-                                        <Badge variant={profile.isPublic ? "default" : "secondary"} className="mt-2 gap-1">
-                                            {profile.isPublic ? <Globe2 className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
-                                            {profile.isPublic ? "Profil public" : "Visible par les membres uniquement"}
-                                        </Badge>
-                                    )}
-                                </div>
+                    {/* Hero */}
+                    <div className={cn("relative overflow-hidden rounded-[28px] p-5 sm:p-8", THEME_COVERS[profile.theme] ?? THEME_COVERS.DEFAULT)}>
+                        <div className="relative flex items-start justify-between gap-3">
+                            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                                {editing ? (
+                                    profile.isPublic ? <Globe2 className="h-3 w-3" /> : <Lock className="h-3 w-3" />
+                                ) : (
+                                    <Globe2 className="h-3 w-3" />
+                                )}
+                                {editing ? (profile.isPublic ? "Profil public" : "Visible par les membres") : "Profil GORIYA"}
+                            </span>
 
-                                <div className="flex flex-wrap gap-2 sm:justify-end">
-                                    {editing ? (
-                                        <>
-                                            <Button asChild className="rounded-full bg-brand-gradient text-white hover:bg-brand-gradient-hover">
-                                                <Link href="/parametres">
-                                                    <Pencil className="mr-1.5 h-4 w-4" />
-                                                    Modifier le profil
-                                                </Link>
-                                            </Button>
-                                            <Button asChild variant="outline" className="rounded-full">
-                                                <Link href="/profil#profil-public">
-                                                    <Settings2 className="mr-1.5 h-4 w-4" />
-                                                    Gérer le profil public
-                                                </Link>
-                                            </Button>
-                                        </>
-                                    ) : mode === "member" ? (
-                                        <Button
-                                            onClick={toggleFollow}
-                                            disabled={followBusy}
-                                            variant={profile.isFollowing ? "outline" : "default"}
-                                            className={cn("rounded-full", !profile.isFollowing && "bg-brand-gradient text-white hover:bg-brand-gradient-hover")}
-                                        >
-                                            {followBusy ? (
-                                                <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
-                                            ) : profile.isFollowing ? (
-                                                <UserCheck className="mr-1.5 h-4 w-4" />
-                                            ) : (
-                                                <UserPlus className="mr-1.5 h-4 w-4" />
-                                            )}
-                                            {profile.isFollowing ? "Abonné" : "Suivre"}
-                                        </Button>
-                                    ) : (
-                                        <Button
-                                            asChild={!isOwner}
-                                            disabled={isOwner}
-                                            className="rounded-full bg-brand-gradient text-white hover:bg-brand-gradient-hover"
-                                        >
-                                            {isOwner ? (
-                                                <span>
-                                                    <UserPlus className="mr-1.5 inline h-4 w-4" />
-                                                    Suivre
-                                                </span>
-                                            ) : (
-                                                <Link href="/auth/signin">
-                                                    <UserPlus className="mr-1.5 h-4 w-4" />
-                                                    Suivre
-                                                </Link>
-                                            )}
-                                        </Button>
-                                    )}
-                                    <Button variant="outline" onClick={share} className="rounded-full">
-                                        <Share2 className="mr-1.5 h-4 w-4" />
-                                        Partager
+                            <div className="flex shrink-0 items-center gap-2">
+                                <Button
+                                    type="button"
+                                    size="icon"
+                                    variant="ghost"
+                                    onClick={share}
+                                    className="h-9 w-9 rounded-full bg-white/15 text-white hover:bg-white/25"
+                                    aria-label="Partager le profil"
+                                >
+                                    <Share2 className="h-4 w-4" />
+                                </Button>
+                                {editing ? (
+                                    <Button asChild size="sm" className="rounded-full bg-white text-foreground hover:bg-white/90">
+                                        <Link href="/parametres">
+                                            <Pencil className="mr-1.5 h-3.5 w-3.5" />
+                                            Modifier
+                                        </Link>
                                     </Button>
-                                </div>
+                                ) : mode === "member" ? (
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        onClick={toggleFollow}
+                                        disabled={followBusy}
+                                        className={cn("rounded-full", profile.isFollowing ? "bg-white/15 text-white hover:bg-white/25" : "bg-white text-foreground hover:bg-white/90")}
+                                    >
+                                        {followBusy ? (
+                                            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                                        ) : profile.isFollowing ? (
+                                            <UserCheck className="mr-1.5 h-3.5 w-3.5" />
+                                        ) : (
+                                            <UserPlus className="mr-1.5 h-3.5 w-3.5" />
+                                        )}
+                                        {profile.isFollowing ? "Abonné" : "Suivre"}
+                                    </Button>
+                                ) : (
+                                    <Button asChild={!isOwner} disabled={isOwner} size="sm" className="rounded-full bg-white text-foreground hover:bg-white/90">
+                                        {isOwner ? (
+                                            <span>
+                                                <UserPlus className="mr-1.5 inline h-3.5 w-3.5" />
+                                                Suivre
+                                            </span>
+                                        ) : (
+                                            <Link href="/auth/signin">
+                                                <UserPlus className="mr-1.5 h-3.5 w-3.5" />
+                                                Suivre
+                                            </Link>
+                                        )}
+                                    </Button>
+                                )}
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+
+                        <h1 className="relative mt-5 text-3xl font-extrabold leading-tight text-white sm:text-5xl">{profile.name}</h1>
+                        {profile.title ? (
+                            <p className="relative mt-1.5 text-base text-white/85 sm:text-lg">{profile.title}</p>
+                        ) : (
+                            editing && (
+                                <Link href="/parametres" className="relative mt-1.5 inline-block text-sm text-white/80 underline underline-offset-2 hover:text-white">
+                                    Ajouter un titre professionnel
+                                </Link>
+                            )
+                        )}
+
+                        <div className="relative mt-6 flex flex-wrap items-center gap-3">
+                            <Avatar className="h-14 w-14 border-2 border-white/40 shadow-lg sm:h-16 sm:w-16">
+                                <AvatarImage src={profile.avatar ? formatFileUrl(profile.avatar) : undefined} alt={profile.name} />
+                                <AvatarFallback className="bg-white/20 text-lg text-white">{initials(profile.name)}</AvatarFallback>
+                            </Avatar>
+                            <p className="flex flex-wrap items-center gap-x-1.5 text-sm font-medium text-white/90 sm:text-base">
+                                <Users className="h-4 w-4" />
+                                {plural(profile.stats.followers, "abonné")}
+                                {profile.location && (
+                                    <>
+                                        <span aria-hidden>·</span>
+                                        <MapPin className="h-4 w-4" />
+                                        {capitalizeFirst(profile.location)}
+                                    </>
+                                )}
+                                {editing && (
+                                    <>
+                                        <span aria-hidden>·</span>
+                                        {plural(profile.stats.posts, "publication")}
+                                    </>
+                                )}
+                            </p>
+                        </div>
+
+                        {editing && (
+                            <Link
+                                href="/profil#profil-public"
+                                className="relative mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-white/75 underline underline-offset-2 hover:text-white"
+                            >
+                                <Settings2 className="h-3.5 w-3.5" />
+                                Gérer le profil public
+                            </Link>
+                        )}
+                    </div>
 
                     {/* À propos */}
                     {(profile.bio || editing) && (
@@ -581,7 +631,7 @@ function PublicProfileContent() {
 
 export default function PublicProfilePage() {
     return (
-        <div className="min-h-screen bg-background text-foreground">
+        <div className="dark min-h-screen bg-background text-foreground">
             <Header />
             <main className="mx-auto max-w-6xl px-4 pb-16 pt-6 sm:pt-10">
                 {/* useSearchParams exige une frontière Suspense au prérendu. */}
