@@ -49,7 +49,7 @@ import {
 import { capitalizeFirst, cn, formatFileUrl } from "@/lib/utils"
 
 const THEME_COVERS: Record<ProfileTheme, string> = {
-    DEFAULT: "bg-gradient-to-br from-sky-600 via-teal-500 to-lime-400",
+    DEFAULT: "bg-brand-gradient",
     CREATIF: "bg-gradient-to-r from-fuchsia-500 via-rose-400 to-orange-300",
     TECHNIQUE: "bg-gradient-to-r from-slate-800 via-slate-700 to-cyan-600",
     COMMERCIAL: "bg-gradient-to-r from-blue-700 via-blue-500 to-emerald-400",
