@@ -56,6 +56,14 @@ const THEME_COVERS: Record<ProfileTheme, string> = {
     ACADEMIQUE: "bg-gradient-to-r from-indigo-800 via-indigo-600 to-amber-400",
 }
 
+const THEME_LABELS: Record<ProfileTheme, string> = {
+    DEFAULT: "Par défaut",
+    CREATIF: "Créatif",
+    TECHNIQUE: "Technique",
+    COMMERCIAL: "Commercial",
+    ACADEMIQUE: "Académique",
+}
+
 function SectionCard({ title, icon, action, children }: { title: string; icon?: React.ReactNode; action?: React.ReactNode; children: React.ReactNode }) {
     return (
         <Card className="border border-border">
@@ -92,6 +100,7 @@ function PublicProfileContent() {
     const [followBusy, setFollowBusy] = useState(false)
     const [openPortfolio, setOpenPortfolio] = useState<IPublicPortfolio | null>(null)
     const [searchQuery, setSearchQuery] = useState("")
+    const [savingTheme, setSavingTheme] = useState(false)
     const lastLoaded = useRef<string | null>(null)
 
     useEffect(() => {
@@ -208,6 +217,22 @@ function PublicProfileContent() {
         }
     }
 
+    const changeTheme = async (theme: ProfileTheme) => {
+        if (savingTheme || theme === profile.theme) return
+        const previous = profile.theme
+        setProfile({ ...profile, theme })
+        setSavingTheme(true)
+        try {
+            await publicProfileService.update({ theme })
+            toast.success("Thème mis à jour.")
+        } catch (err: any) {
+            setProfile({ ...profile, theme: previous })
+            toast.error(err?.message ?? "Le changement de thème a échoué.")
+        } finally {
+            setSavingTheme(false)
+        }
+    }
+
     const runSearch = (e: FormEvent) => {
         e.preventDefault()
         const q = searchQuery.trim()
@@ -309,7 +334,7 @@ function PublicProfileContent() {
                                         size="sm"
                                         onClick={toggleFollow}
                                         disabled={followBusy}
-                                        className={cn("rounded-full", profile.isFollowing ? "bg-white/15 text-white hover:bg-white/25" : "bg-white text-foreground hover:bg-white/90")}
+                                        className={cn("rounded-full", profile.isFollowing ? "bg-emerald-500 text-white hover:bg-emerald-600" : "bg-white text-foreground hover:bg-white/90")}
                                     >
                                         {followBusy ? (
                                             <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
@@ -383,6 +408,32 @@ function PublicProfileContent() {
                             </Link>
                         )}
                     </div>
+
+                    {/* Thème du profil public */}
+                    {editing && (
+                        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3">
+                            <span className="text-sm font-medium text-foreground">Thème du profil</span>
+                            <div className="flex items-center gap-2">
+                                {(Object.keys(THEME_LABELS) as ProfileTheme[]).map((t) => (
+                                    <button
+                                        key={t}
+                                        type="button"
+                                        onClick={() => changeTheme(t)}
+                                        disabled={savingTheme}
+                                        title={THEME_LABELS[t]}
+                                        aria-label={THEME_LABELS[t]}
+                                        aria-pressed={profile.theme === t}
+                                        className={cn(
+                                            "h-8 w-8 shrink-0 rounded-full ring-offset-2 ring-offset-card transition disabled:opacity-50",
+                                            THEME_COVERS[t],
+                                            profile.theme === t ? "ring-2 ring-foreground" : "opacity-60 hover:opacity-100",
+                                        )}
+                                    />
+                                ))}
+                            </div>
+                            {savingTheme && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+                        </div>
+                    )}
 
                     {/* À propos */}
                     {(profile.bio || editing) && (
