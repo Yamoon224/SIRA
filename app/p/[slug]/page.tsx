@@ -682,7 +682,7 @@ function PublicProfileContent() {
 
 export default function PublicProfilePage() {
     return (
-        <div className="dark min-h-screen bg-background text-foreground">
+        <div className="min-h-screen bg-background text-foreground">
             <Header />
             <main className="mx-auto max-w-6xl px-4 pb-16 pt-6 sm:pt-10">
                 {/* useSearchParams exige une frontière Suspense au prérendu. */}
