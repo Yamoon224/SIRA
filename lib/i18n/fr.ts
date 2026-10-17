@@ -35,6 +35,7 @@ export const fr = {
         library: "Bibliothèque",
         connect: "GORIYA Connect",
         videoCalls: "GORIYA Meet",
+        appointments: "Mes rendez-vous",
         searchJob: "Chercher un emploi",
         myApplications: "Mes candidatures",
         browseCompanies: "Parcourir les entreprises",

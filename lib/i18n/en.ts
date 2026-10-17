@@ -34,6 +34,7 @@ export const en: Dictionary = {
         library: "Library",
         connect: "GORIYA Connect",
         videoCalls: "Video calls",
+        appointments: "My appointments",
         searchJob: "Find a job",
         myApplications: "My applications",
         browseCompanies: "Browse companies",
