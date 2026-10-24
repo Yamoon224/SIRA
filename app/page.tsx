@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
-import { Building2, Upload, ChevronLeft, ChevronRight, Loader2, LogIn, Lock, Sparkles } from "lucide-react"
+import { Building2, Upload, ChevronLeft, ChevronRight, Loader2, LogIn, Lock, Sparkles, Play } from "lucide-react"
 import { jobService } from "@/lib/api/job.service"
 import { companyService } from "@/lib/api/company.service"
 import { IJobOffer, ICompany } from "@/lib/@types/entities"
@@ -106,6 +106,52 @@ function Reveal({ children, delay = 0, className = "" }: { children: ReactNode; 
         >
             {children}
         </div>
+    )
+}
+
+function PromoVideoCard() {
+    const videoRef = useRef<HTMLVideoElement>(null)
+    const [isPlaying, setIsPlaying] = useState(false)
+
+    const handlePlay = () => {
+        setIsPlaying(true)
+        // L'attribut controls n'existe qu'une fois isPlaying=true, donc on
+        // attend le prochain tick pour que le <video> l'ait déjà dans le DOM.
+        requestAnimationFrame(() => videoRef.current?.play())
+    }
+
+    return (
+        <Reveal className="mx-auto max-w-[1180px] px-3 sm:px-4 -mt-6 sm:-mt-10 relative z-10">
+            <div className="rounded-2xl sm:rounded-3xl border border-[#e8edf6] dark:border-border bg-white dark:bg-card shadow-xl shadow-[#20429b]/10 dark:shadow-black/30 overflow-hidden">
+                <div className="relative aspect-video w-full bg-[#0b1430]">
+                    <video
+                        ref={videoRef}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        poster="/images/9933453_4323022.png"
+                        controls={isPlaying}
+                        playsInline
+                        preload="none"
+                        onPause={() => setIsPlaying(false)}
+                        onEnded={() => setIsPlaying(false)}
+                    >
+                        <source src="/videos/goriya-presentation.mp4" type="video/mp4" />
+                    </video>
+                    {!isPlaying && (
+                        <button
+                            type="button"
+                            onClick={handlePlay}
+                            aria-label="Lancer la vidéo de présentation Goriya"
+                            className="absolute inset-0 flex flex-col items-center justify-center gap-3 sm:gap-4 bg-gradient-to-br from-[#20429b]/80 via-[#1b3a8f]/70 to-[#0b1430]/80 group cursor-pointer"
+                        >
+                            <span className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/95 shadow-lg transition-transform duration-300 group-hover:scale-110">
+                                <Play className="w-7 h-7 sm:w-8 sm:h-8 text-[#20429b] fill-[#20429b]" />
+                            </span>
+                            <span className="text-white font-semibold text-sm sm:text-base tracking-wide">Découvre Goriya en vidéo</span>
+                        </button>
+                    )}
+                </div>
+            </div>
+        </Reveal>
     )
 }
 
@@ -328,8 +374,11 @@ export default function Page() {
                 </div>
             </section>
 
+            {/* Vidéo de présentation */}
+            <PromoVideoCard />
+
             {/* Companies */}
-            <section className="py-8 sm:py-12 md:py-16 bg-white dark:bg-background">
+            <section className="pt-10 sm:pt-16 md:pt-20 pb-8 sm:pb-12 md:pb-16 bg-white dark:bg-background">
                 <div className="mx-auto max-w-[1180px] px-3 sm:px-4">
                     <h2 className="text-center text-2xl xs:text-3xl sm:text-4xl md:text-[38px] lg:text-[46px] leading-none font-extrabold text-[#111827] dark:text-foreground">Explorer les entreprises.</h2>
                     {companies.length > 0 ? (
