@@ -114,10 +114,11 @@ function PromoVideoCard() {
     const [isPlaying, setIsPlaying] = useState(false)
 
     const handlePlay = () => {
+        // play() doit rester synchrone avec le clic : le reporter (ex. via
+        // requestAnimationFrame) casse le geste utilisateur exigé par les
+        // politiques d'autoplay et le navigateur ignore silencieusement l'appel.
+        videoRef.current?.play().catch(() => {})
         setIsPlaying(true)
-        // L'attribut controls n'existe qu'une fois isPlaying=true, donc on
-        // attend le prochain tick pour que le <video> l'ait déjà dans le DOM.
-        requestAnimationFrame(() => videoRef.current?.play())
     }
 
     return (
