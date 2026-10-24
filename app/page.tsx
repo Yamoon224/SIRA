@@ -122,7 +122,7 @@ function PromoVideoCard() {
     }
 
     return (
-        <Reveal className="mx-auto max-w-[560px] px-3 sm:px-4 -mt-6 sm:-mt-10 relative z-10">
+        <Reveal className="mx-auto max-w-[560px] px-3 sm:px-4 relative z-10">
             <div className="rounded-2xl sm:rounded-3xl bg-brand-gradient p-2 sm:p-3 shadow-xl shadow-[#20429b]/20 dark:shadow-black/30">
                 <div className="relative aspect-video w-full rounded-xl sm:rounded-2xl overflow-hidden bg-[#0b1430]">
                     <video
@@ -374,9 +374,6 @@ export default function Page() {
                 </div>
             </section>
 
-            {/* Vidéo de présentation */}
-            <PromoVideoCard />
-
             {/* Companies */}
             <section className="pt-10 sm:pt-16 md:pt-20 pb-8 sm:pb-12 md:pb-16 bg-white dark:bg-background">
                 <div className="mx-auto max-w-[1180px] px-3 sm:px-4">
@@ -612,6 +609,11 @@ export default function Page() {
                     </div>
                 </section>
             )}
+
+            {/* Vidéo de présentation */}
+            <section className="bg-white dark:bg-background py-10 sm:py-16">
+                <PromoVideoCard />
+            </section>
 
             <Footer />
         </div>
