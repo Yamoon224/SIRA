@@ -123,8 +123,8 @@ function PromoVideoCard() {
 
     return (
         <Reveal className="mx-auto max-w-[560px] px-3 sm:px-4 -mt-6 sm:-mt-10 relative z-10">
-            <div className="rounded-2xl sm:rounded-3xl border border-[#e8edf6] dark:border-border bg-white dark:bg-card shadow-xl shadow-[#20429b]/10 dark:shadow-black/30 overflow-hidden">
-                <div className="relative aspect-video w-full bg-gradient-to-br from-[#20429b] to-[#0b1430]">
+            <div className="rounded-2xl sm:rounded-3xl bg-brand-gradient p-2 sm:p-3 shadow-xl shadow-[#20429b]/20 dark:shadow-black/30">
+                <div className="relative aspect-video w-full rounded-xl sm:rounded-2xl overflow-hidden bg-[#0b1430]">
                     <video
                         ref={videoRef}
                         className="absolute inset-0 w-full h-full object-cover"
@@ -141,7 +141,7 @@ function PromoVideoCard() {
                             type="button"
                             onClick={handlePlay}
                             aria-label="Lancer la vidéo de présentation Goriya"
-                            className="absolute inset-0 flex flex-col items-center justify-center gap-3 sm:gap-4 bg-gradient-to-br from-[#20429b]/80 via-[#1b3a8f]/70 to-[#0b1430]/80 group cursor-pointer"
+                            className="absolute inset-0 flex flex-col items-center justify-center gap-3 sm:gap-4 bg-black/25 group cursor-pointer"
                         >
                             <span className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/95 shadow-lg transition-transform duration-300 group-hover:scale-110">
                                 <Play className="w-7 h-7 sm:w-8 sm:h-8 text-[#20429b] fill-[#20429b]" />
