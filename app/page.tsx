@@ -121,13 +121,12 @@ function PromoVideoCard() {
     }
 
     return (
-        <Reveal className="mx-auto max-w-[1180px] px-3 sm:px-4 -mt-6 sm:-mt-10 relative z-10">
+        <Reveal className="mx-auto max-w-[560px] px-3 sm:px-4 -mt-6 sm:-mt-10 relative z-10">
             <div className="rounded-2xl sm:rounded-3xl border border-[#e8edf6] dark:border-border bg-white dark:bg-card shadow-xl shadow-[#20429b]/10 dark:shadow-black/30 overflow-hidden">
-                <div className="relative aspect-video w-full bg-[#0b1430]">
+                <div className="relative aspect-video w-full bg-gradient-to-br from-[#20429b] to-[#0b1430]">
                     <video
                         ref={videoRef}
                         className="absolute inset-0 w-full h-full object-cover"
-                        poster="/images/9933453_4323022.png"
                         controls={isPlaying}
                         playsInline
                         preload="none"
