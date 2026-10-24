@@ -33,6 +33,6 @@ export async function proxy(request: NextRequest) {
 // (les routes /api/* gèrent elles-mêmes leur authentification en interne, via getServerSession)
 export const config = {
     matcher: [
-        '/((?!_next/static|_next/image|favicon.ico|manifest.json|service-worker.js|icon|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|auth|auth/signout).*)',
+        '/((?!_next/static|_next/image|favicon.ico|manifest.json|service-worker.js|icon|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp|mp4|webm|mov|m4v|mp3)$|auth|auth/signout).*)',
     ],
 };
