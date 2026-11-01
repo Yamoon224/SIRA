@@ -409,6 +409,13 @@ async function runAnalysis(
     // modèle par défaut des deux côtés du monorepo.
     const model = process.env.CLAUDE_MODEL || "claude-haiku-4-5-20251001"
 
+    console.log("[ANTHROPIC DIAGNOSTIC]", {
+        keyConfigured: Boolean(process.env.ANTHROPIC_API_KEY),
+        keyLength: process.env.ANTHROPIC_API_KEY?.length ?? 0,
+        model: process.env.CLAUDE_MODEL || "claude-haiku-4-5-20251001",
+        vercelEnvironment: process.env.VERCEL_ENV,
+    })
+
     // L'attente vient presque entièrement de la rédaction de la réponse
     // (~2 000 tokens écrits l'un après l'autre). On la répartit donc sur trois
     // appels lancés en même temps - l'évaluation, les expériences, le reste du
@@ -484,13 +491,30 @@ async function runAnalysis(
             demander(demandes.experiences),
             demander(demandes.identite),
         ])
-    } catch (error) {
+    } catch (error: any) {
         // Une partie manquante rendrait l'analyse incomplète : comme avant, on
         // préfère un échec net (le quota n'est pas consommé) à un résultat tronqué.
+        
+        
+        console.error("[ANTHROPIC REQUEST FAILED]", {
+            name: error?.name,
+            message: error?.message,
+            status: error?.status,
+            type: error?.error?.type,
+            requestId: error?.request_id,
+        })
+
         if (error instanceof ReponseIaInvalide) {
             return NextResponse.json({ error: error.message }, { status: 502 })
         }
+
         throw error
+
+        
+        // if (error instanceof ReponseIaInvalide) {
+        //     return NextResponse.json({ error: error.message }, { status: 502 })
+        // }
+        // throw error
     }
 
     const analysis = sanitizeAnalysis({
