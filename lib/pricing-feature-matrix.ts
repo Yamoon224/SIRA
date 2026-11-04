@@ -35,6 +35,7 @@ export const USER_PLAN_FEATURE_MATRIX: PlanFeatureRow[] = [
         label: "Analyse de CV",
         values: { Grouilleur: "2 analyses/mois", Standard: "5 analyses/mois", Premium: "20 analyses/mois" },
     },
+    { label: "Adapter son CV à une offre", values: { Grouilleur: false, Standard: false, Premium: true } },
     { label: "Goriya Pitch", values: { Grouilleur: false, Standard: false, Premium: true } },
     { label: "Goriya Docs", values: { Grouilleur: false, Standard: false, Premium: true } },
     // Le catalogue reste ouvert à tous ; ce qui change, c'est l'accès aux

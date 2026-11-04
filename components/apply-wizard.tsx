@@ -13,11 +13,17 @@ import {
     CheckCircle2,
     FileText,
     Loader2,
+    Lock,
+    Sparkles,
     Star,
     Trash2,
     Upload,
 } from "lucide-react"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
+import { useSubscription } from "@/hooks/use-subscription"
+import { planIncludesFeature } from "@/lib/pricing-feature-matrix"
+import { AdaptationError, adaptResumeToJob } from "@/lib/cv-adapt"
 import { jobService, type JobApplicationPayload } from "@/lib/api/job.service"
 import {
     RESUME_ACCEPT,
@@ -66,6 +72,12 @@ export function ApplyWizard({ open, onOpenChange, job, onApplied }: Props) {
         () => (Array.isArray(job.questions) ? job.questions : []),
         [job.questions],
     )
+
+    const router = useRouter()
+    const { planName } = useSubscription()
+    const peutAdapter = planIncludesFeature(planName, "Adapter son CV à une offre")
+    const [adaptation, setAdaptation] = useState(false)
+    const [adaptations, setAdaptations] = useState<string[]>([])
 
     const [etape, setEtape] = useState(0)
     const [chargement, setChargement] = useState(true)
@@ -208,6 +220,37 @@ export function ApplyWizard({ open, onOpenChange, job, onApplied }: Props) {
         }
     }
 
+    /**
+     * Premium : réécrit le CV choisi pour l'aligner sur les TDR de l'offre. Le
+     * résultat est ajouté à « Mes CV » et sélectionné ; l'original est conservé.
+     */
+    const adapterCv = async () => {
+        const source = cvs.find((cv) => cv.id === cvChoisi)
+        if (!source) {
+            setErreurCv("Sélectionne d'abord le CV à adapter.")
+            return
+        }
+
+        setErreurCv(null)
+        setAdaptations([])
+        setAdaptation(true)
+        try {
+            const { resume, adaptations: notes } = await adaptResumeToJob(source.id, source.name, job)
+            setCvs((prev) => [resume, ...prev])
+            setCvChoisi(resume.id)
+            setAdaptations(notes)
+            toast.success("CV adapté à l'offre et ajouté à ta bibliothèque.")
+        } catch (err: any) {
+            if (err instanceof AdaptationError && err.requiresUpgrade) {
+                router.push("/auth/plan")
+                return
+            }
+            setErreurCv(err?.message ?? "Ton CV n'a pas pu être adapté. Réessaie dans un instant.")
+        } finally {
+            setAdaptation(false)
+        }
+    }
+
     const supprimerCv = async (id: string) => {
         const precedente = cvs
         setCvs((prev) => prev.filter((cv) => cv.id !== id))
@@ -310,6 +353,11 @@ export function ApplyWizard({ open, onOpenChange, job, onApplied }: Props) {
                                 televersement={televersement}
                                 erreur={erreurCv}
                                 inputRef={inputFichier}
+                                peutAdapter={peutAdapter}
+                                adaptation={adaptation}
+                                adaptations={adaptations}
+                                onAdapter={adapterCv}
+                                onVoirForfaits={() => router.push("/auth/plan")}
                             />
                         )}
 
@@ -589,6 +637,11 @@ function EtapeCv({
     televersement,
     erreur,
     inputRef,
+    peutAdapter,
+    adaptation,
+    adaptations,
+    onAdapter,
+    onVoirForfaits,
 }: {
     cvs: IResume[]
     choisi: string | null
@@ -598,6 +651,11 @@ function EtapeCv({
     televersement: boolean
     erreur: string | null
     inputRef: React.RefObject<HTMLInputElement | null>
+    peutAdapter: boolean
+    adaptation: boolean
+    adaptations: string[]
+    onAdapter: () => void
+    onVoirForfaits: () => void
 }) {
     return (
         <div className="space-y-3">
@@ -681,6 +739,40 @@ function EtapeCv({
                 Ajouter un CV
             </Button>
             <p className="text-[11px] text-muted-foreground">PDF ou Word, 5 Mo maximum.</p>
+
+            {cvs.length > 0 && (
+                <div className="space-y-2 rounded-xl border border-[#2f6de6]/30 bg-[#f4f7ff] p-3 dark:border-primary/30 dark:bg-muted">
+                    <p className="text-[12px] text-muted-foreground">
+                        Aligne le CV sélectionné sur les termes de référence de cette offre. Rien n'est inventé,
+                        et ton CV d'origine est conservé.
+                    </p>
+                    <Button
+                        className="w-full rounded-full bg-brand-gradient hover:bg-brand-gradient-hover text-[12px]"
+                        disabled={adaptation || televersement}
+                        onClick={peutAdapter ? onAdapter : onVoirForfaits}
+                    >
+                        {adaptation ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : peutAdapter ? (
+                            <Sparkles className="mr-2 h-4 w-4" />
+                        ) : (
+                            <Lock className="mr-2 h-4 w-4" />
+                        )}
+                        {adaptation
+                            ? "Adaptation en cours..."
+                            : peutAdapter
+                              ? "Adapter mon CV à cette offre"
+                              : "Adapter mon CV à cette offre - Premium"}
+                    </Button>
+                    {adaptations.length > 0 && (
+                        <ul className="list-disc space-y-0.5 pl-4 text-[11px] text-muted-foreground">
+                            {adaptations.map((ligne, i) => (
+                                <li key={i}>{ligne}</li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+            )}
             {erreur && <p className="text-[11px] text-destructive">{erreur}</p>}
         </div>
     )
